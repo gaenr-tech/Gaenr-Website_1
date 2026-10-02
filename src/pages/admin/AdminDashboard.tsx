@@ -353,9 +353,9 @@ export const AdminDashboard: React.FC = () => {
     window.dispatchEvent(new Event('storage'));
   };
 
-  // Login form state
-  const [loginInput, setLoginInput] = useState('operations');
-  const [loginPassword, setLoginPassword] = useState('operations');
+  // Login form state — starts empty, never pre-filled
+  const [loginInput, setLoginInput] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
 
   // -------------------------------------------------------------
@@ -366,11 +366,11 @@ export const AdminDashboard: React.FC = () => {
       e.preventDefault();
       const u = loginInput.trim().toLowerCase();
       const p = loginPassword.trim();
-      if (u === 'operations' && (p === 'operations' || p === 'operations123' || p.length > 0)) {
+      if (u === 'operations' && p === '123456') {
         setLoginError('');
         loginOperations('operations');
       } else {
-        setLoginError('Invalid credentials. Use username: operations & password: operations');
+        setLoginError('Incorrect username or password. Please try again.');
       }
     };
 
@@ -425,7 +425,8 @@ export const AdminDashboard: React.FC = () => {
                   setLoginInput(e.target.value);
                   setLoginError('');
                 }}
-                placeholder="operations"
+                placeholder="Enter username"
+                autoComplete="off"
                 required
                 className="w-full px-3.5 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#006eff] rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono"
               />
@@ -443,6 +444,7 @@ export const AdminDashboard: React.FC = () => {
                   setLoginError('');
                 }}
                 placeholder="Enter password"
+                autoComplete="new-password"
                 required
                 className="w-full px-3.5 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#006eff] rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono"
               />
