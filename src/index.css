@@ -1,0 +1,968 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@layer base {
+  *, ::before, ::after {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+
+  html, body, button, input, select, textarea, optgroup, option, code, kbd, samp, pre, span, p, h1, h2, h3, h4, h5, h6, a, div, li, td, th {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html, body {
+    color: #0f172a;
+    background-color: #fafbfc;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Prevent downloading, dragging, and mobile long-press menus on all photos */
+  img, picture, svg image, [data-photo], .protected-photo {
+    -webkit-user-drag: none !important;
+    -khtml-user-drag: none !important;
+    -moz-user-drag: none !important;
+    -o-user-drag: none !important;
+    user-drag: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    pointer-events: auto;
+  }
+}
+
+/* Custom scrollbar and subtle selection */
+::selection {
+  background-color: #0256d0;
+  color: #ffffff;
+}
+
+/* =========================================================================
+   GAENR BUTTON SYSTEM (RESPONSIVE & ACCESSIBLE)
+   1. Primary/Secondary CTA Buttons (Pill-shaped, touch-friendly min 44px)
+   2. Editorial Section Link Buttons (Text with animated underline)
+   ========================================================================= */
+
+.gaenr-btn-primary {
+  background: linear-gradient(135deg, #1d74f5 0%, #0c67ea 52%, #0056d6 100%);
+  color: #ffffff;
+  padding: 0.75rem 1.625rem;
+  min-height: 44px;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 5px 0 rgba(12, 103, 234, 0.18), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  user-select: none;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.gaenr-btn-primary:hover {
+  background: linear-gradient(135deg, #2b82fa 0%, #1773f2 52%, #0862e6 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px 0 rgba(12, 103, 234, 0.3);
+}
+
+.gaenr-btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 3px 0 rgba(12, 103, 234, 0.2);
+}
+
+.gaenr-btn-primary:focus-visible {
+  outline: 2px solid #1773f2;
+  outline-offset: 2px;
+}
+
+.gaenr-btn-secondary {
+  background-color: #ffffff;
+  color: #0f172a;
+  padding: 0.75rem 1.625rem;
+  min-height: 44px;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1.5px solid #cbd5e1;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gaenr-btn-secondary:hover {
+  background-color: #f8fafc;
+  border-color: #0256d0;
+  color: #0256d0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px 0 rgba(15, 23, 42, 0.08);
+}
+
+.gaenr-btn-secondary:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.gaenr-btn-secondary:focus-visible {
+  outline: 2px solid #0256d0;
+  outline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .gaenr-btn-primary {
+    padding: 0.875rem 2.25rem;
+    font-size: 0.9375rem;
+    min-height: 48px;
+    gap: 0.625rem;
+  }
+
+  .gaenr-btn-secondary {
+    padding: 0.875rem 2.25rem;
+    font-size: 0.9375rem;
+    min-height: 48px;
+    gap: 0.625rem;
+  }
+}
+
+/* Section Link-Button with animated underline */
+.gaenr-link-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #0256d0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.gaenr-link-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #0256d0;
+  transform: scaleX(0.4);
+  transform-origin: left;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+}
+
+.gaenr-link-btn:hover {
+  color: #0143a3;
+}
+
+.gaenr-link-btn:hover::after {
+  transform: scaleX(1);
+  background-color: #0143a3;
+}
+
+/* Keyframes for the phone notification bounce & pulse */
+@keyframes notificationSlideBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-notif {
+  animation: notificationSlideBounce 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite alternate;
+}
+
+/* Hero background dot pattern */
+.bg-hero-grid {
+  background-color: #f8fafc;
+  background-image: radial-gradient(rgba(2, 86, 208, 0.12) 1.25px, transparent 1.25px);
+  background-size: 28px 28px;
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+.animate-float-slow {
+  animation: floatGentle 4.5s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floatGentle 5.2s ease-in-out 1.2s infinite;
+}
+
+/* Fluid colorful wave background matching image.png */
+.bg-gaenr-fluid {
+  background-color: #f6fbff;
+  background-image: 
+    radial-gradient(circle at 8% 12%, rgba(186, 230, 253, 0.6) 0%, transparent 42%),
+    radial-gradient(circle at 92% 18%, rgba(191, 219, 254, 0.55) 0%, transparent 45%),
+    radial-gradient(circle at 15% 65%, rgba(186, 230, 253, 0.5) 0%, transparent 48%),
+    radial-gradient(circle at 88% 80%, rgba(219, 234, 254, 0.6) 0%, transparent 44%),
+    linear-gradient(180deg, #f0f7ff 0%, #ffffff 50%, #f0f7ff 100%);
+  background-repeat: no-repeat;
+}
+
+.bg-hero-colorful {
+  background-color: #f4f9ff;
+  background-image: 
+    radial-gradient(circle at 85% 15%, rgba(186, 230, 253, 0.7) 0%, transparent 45%),
+    radial-gradient(circle at 10% 40%, rgba(191, 219, 254, 0.6) 0%, transparent 40%),
+    radial-gradient(circle at 75% 85%, rgba(147, 197, 253, 0.45) 0%, transparent 50%),
+    linear-gradient(180deg, #eef6ff 0%, #f8fbff 60%, #ffffff 100%);
+  background-repeat: no-repeat;
+}
+
+/* Rich, vibrant Blue background for Become an Expert section matching user UI */
+.bg-expert-blue {
+  background: linear-gradient(135deg, #0248ad 0%, #0256d0 50%, #0369a1 100%);
+  position: relative;
+}
+
+/* =========================================================================
+   NETWORK CONCENTRIC EXPANDING RINGS ANIMATIONS
+   - Mimics radar and growing talent connection network waves
+   ========================================================================= */
+
+@keyframes networkPulseWave {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes networkBurstWave {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.3);
+    opacity: 0;
+  }
+}
+
+@keyframes networkSpinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-network-wave-1 {
+  animation: networkPulseWave 1.8s cubic-bezier(0.16, 0.84, 0.44, 1) infinite;
+}
+
+.animate-network-wave-2 {
+  animation: networkPulseWave 1.8s cubic-bezier(0.16, 0.84, 0.44, 1) 0.45s infinite;
+}
+
+.animate-network-wave-3 {
+  animation: networkPulseWave 1.8s cubic-bezier(0.16, 0.84, 0.44, 1) 0.9s infinite;
+}
+
+.animate-network-wave-4 {
+  animation: networkPulseWave 1.8s cubic-bezier(0.16, 0.84, 0.44, 1) 1.35s infinite;
+}
+
+.animate-network-burst-1 {
+  animation: networkBurstWave 0.65s cubic-bezier(0.12, 0.85, 0.35, 1) forwards;
+}
+
+.animate-network-burst-2 {
+  animation: networkBurstWave 0.8s cubic-bezier(0.12, 0.85, 0.35, 1) 0.1s forwards;
+}
+
+.animate-network-burst-3 {
+  animation: networkBurstWave 0.95s cubic-bezier(0.12, 0.85, 0.35, 1) 0.2s forwards;
+}
+
+.animate-network-spin {
+  animation: networkSpinSlow 20s linear infinite;
+}
+
+/* Seed to Sprout growth animation loop (4.2s cycle) */
+@keyframes stemRise {
+  0% {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  15% {
+    stroke-dashoffset: 100;
+    opacity: 1;
+  }
+  50%, 85% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  95%, 100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes leafUnfurlLeft {
+  0%, 35% {
+    transform: scale(0) rotate(-20deg);
+    opacity: 0;
+  }
+  55%, 85% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  95%, 100% {
+    transform: scale(0.9) rotate(-5deg);
+    opacity: 0;
+  }
+}
+
+@keyframes leafUnfurlRight {
+  0%, 42% {
+    transform: scale(0) rotate(20deg);
+    opacity: 0;
+  }
+  60%, 85% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  95%, 100% {
+    transform: scale(0.9) rotate(5deg);
+    opacity: 0;
+  }
+}
+
+@keyframes leafUnfurlTop {
+  0%, 50% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  65%, 85% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  95%, 100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkleBloom {
+  0%, 65% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  75%, 85% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  95%, 100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes rootGrowth {
+  0%, 10% {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    opacity: 0;
+  }
+  35%, 85% {
+    stroke-dashoffset: 0;
+    opacity: 0.7;
+  }
+  95%, 100% {
+    opacity: 0;
+  }
+}
+
+.animate-stem-rise {
+  stroke-dasharray: 100;
+  animation: stemRise 4.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+.animate-leaf-left {
+  animation: leafUnfurlLeft 4.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+.animate-leaf-right {
+  animation: leafUnfurlRight 4.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+.animate-leaf-top {
+  animation: leafUnfurlTop 4.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+.animate-sparkle-bloom {
+  animation: sparkleBloom 4.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.animate-root-growth {
+  animation: rootGrowth 4.2s ease-out infinite;
+}
+
+/* =========================================================================
+   GAENR ANIMATED ICON PARTS
+   - Container stays completely still as originally designed
+   - Sub-elements (stars, dots, lines, corner arrows, pen nibs) animate smoothly
+   ========================================================================= */
+
+@keyframes sparkleMain {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes starTwinkle {
+  0%, 100% {
+    transform: scale(0.55) rotate(0deg);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.25) rotate(15deg);
+    opacity: 1;
+  }
+}
+
+@keyframes dotPop {
+  0%, 100% {
+    transform: scale(0.75);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.45);
+    opacity: 1;
+  }
+}
+
+@keyframes boxFlap {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-16deg);
+  }
+}
+
+@keyframes lineSweep {
+  0%, 100% {
+    transform: scaleX(0.5);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes expandTR {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(2.5px, -2.5px);
+  }
+}
+
+@keyframes expandBL {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-2.5px, 2.5px);
+  }
+}
+
+@keyframes drawCurve {
+  0%, 100% {
+    stroke-dashoffset: 14;
+    opacity: 0.3;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes penTip {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-2px, -2px) rotate(-8deg);
+  }
+}
+
+@keyframes thumbSlide {
+  0%, 100% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes thumbSlideRev {
+  0%, 100% {
+    transform: translateY(3px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes flameFlicker {
+  0%, 100% {
+    transform: scaleY(0.7) scaleX(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scaleY(1.35) scaleX(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes soundWave {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@keyframes radarRing {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes barRise {
+  0%, 100% {
+    transform: scaleY(0.45);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes layerUp {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+}
+
+@keyframes layerDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2.5px);
+  }
+}
+
+@keyframes clickRipple {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@keyframes pointerTap {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-1.5px, -1.5px) scale(0.92);
+  }
+}
+
+@keyframes checkPop {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes zapFlash {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes wheelSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes filmScroll {
+  0%, 100% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes globeShift {
+  0%, 100% {
+    transform: scaleX(0.5);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes equatorPulse {
+  0%, 100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes pageFlutter {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-7deg);
+  }
+}
+
+@keyframes handleSway {
+  0%, 100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes mailFlap {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.72);
+  }
+}
+
+@keyframes windowGlow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes phoneSwipe {
+  0%, 100% {
+    transform: translateY(2px);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-2px);
+    opacity: 1;
+  }
+}
+
+@keyframes recBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes cursorBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes layoutBlock {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes chipGlint {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes latchClick {
+  0%, 100% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes laserDot {
+  0%, 100% {
+    transform: translate(0, 0) scale(0.9);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(2px, -1px) scale(1.3);
+    opacity: 1;
+  }
+}
+
+@keyframes lineDraw {
+  0%, 100% {
+    stroke-dashoffset: 25;
+    opacity: 0.4;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes copySlide {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-2px, -2px);
+  }
+}
+
+@keyframes screenScan {
+  0%, 100% {
+    transform: translateY(-2px);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(2px);
+    opacity: 0.9;
+  }
+}
+
+@keyframes dashWidget {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes packetFlow {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(3px, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes searchGlide {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(1.5px, -1px);
+  }
+  66% {
+    transform: translate(-1px, 1.5px);
+  }
+}
+
+@keyframes splitPulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes dollarShine {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes arrowAscend {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(2px, -2px);
+  }
+}
+
+@keyframes phoneRing {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes laptopCode {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes shackleLock {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes ribbonSway {
+  0%, 100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes userNudge {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(1px);
+  }
+}
+
+
+
+

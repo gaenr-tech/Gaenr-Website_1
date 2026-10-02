@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /operations
+Disallow: /ops
+Disallow: /manage/
+Disallow: /review/
+Sitemap: https://gaenr.com/sitemap.xml

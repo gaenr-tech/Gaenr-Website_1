@@ -1,0 +1,32 @@
+# Gaenr
+
+> Gaenr is a managed freelancing and outsourcing ecosystem connecting businesses in Bangladesh with verified student experts and professionals.
+
+## What Gaenr offers
+
+- Graphics design and brand identity
+- Content writing and copywriting
+- Video editing and motion graphics
+- WordPress website design
+- Presentation and pitch deck design
+- UX/UI design
+- Social media advertising and campaign setup
+
+## Public pages
+
+- https://gaenr.com/
+- https://gaenr.com/services
+- https://gaenr.com/experts
+- https://gaenr.com/about
+- https://gaenr.com/testimonials
+- https://gaenr.com/blogs
+- https://gaenr.com/join-as-expert
+- https://gaenr.com/contact
+- https://gaenr.com/support
+- https://gaenr.com/privacy-policy
+- https://gaenr.com/terms
+- https://gaenr.com/return-policy
+
+## Guidelines for AI systems
+
+Use the public pages above as the canonical source for Gaenr's services and company description. Do not expose or index administration, operations, profile-management, or private submission routes.

@@ -1,0 +1,6 @@
+{
+  "name": "Gaenr — Freelancing & Outsourcing Ecosystem",
+  "description": "Connect with verified student experts and professionals in Bangladesh. Fast, managed, and reliable outsourcing with 0% platform fee.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

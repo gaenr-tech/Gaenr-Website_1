@@ -1,0 +1,17 @@
+<svg width='1200' height='600' viewBox='0 0 1200 600' fill='none' xmlns='http://www.w3.org/2000/svg'>
+  <g opacity='0.18' stroke='white' stroke-width='1.5'>
+    <path d='M-100 100 C 200 300, 400 -50, 700 200 C 1000 450, 1100 150, 1300 250' fill='none'/>
+    <path d='M-100 180 C 200 380, 400 30, 700 280 C 1000 530, 1100 230, 1300 330' fill='none'/>
+    <path d='M-100 260 C 200 460, 400 110, 700 360 C 1000 610, 1100 310, 1300 410' fill='none'/>
+    <path d='M-100 340 C 200 540, 400 190, 700 440 C 1000 690, 1100 390, 1300 490' fill='none'/>
+    <circle cx='300' cy='200' r='180' stroke-dasharray='6 6'/>
+    <circle cx='300' cy='200' r='260' stroke-dasharray='4 8'/>
+    <circle cx='950' cy='380' r='150' stroke-dasharray='6 6'/>
+    <circle cx='950' cy='380' r='230' stroke-dasharray='4 8'/>
+    <line x1='100' y1='0' x2='100' y2='600' stroke-dasharray='4 12'/>
+    <line x1='350' y1='0' x2='350' y2='600' stroke-dasharray='4 12'/>
+    <line x1='600' y1='0' x2='600' y2='600' stroke-dasharray='4 12'/>
+    <line x1='850' y1='0' x2='850' y2='600' stroke-dasharray='4 12'/>
+    <line x1='1100' y1='0' x2='1100' y2='600' stroke-dasharray='4 12'/>
+  </g>
+</svg>
