@@ -65,6 +65,8 @@ Vercel does not keep a Node process or local JSON file running between requests.
 4. After deployment, open `https://YOUR-DOMAIN/api/state`. It should return JSON with `state` and `updatedAt`.
 5. The frontend automatically uses the same-origin `/api/state`; no `VITE_API_URL` is needed when the API function is deployed in the same Vercel project.
 
+Use `https://YOUR-DOMAIN/api/health` as a quick deployment check. It must return JSON with `ok: true`; if it returns the website HTML, the API files were not included in the deployment or the deployment is still serving an older commit.
+
 The first request creates the `gaenr_app_state` table automatically. Do not expose `DATABASE_URL` in frontend code or commit it to GitHub.
 
 ### Test a production build locally
