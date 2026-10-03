@@ -22,15 +22,14 @@ const snapshot = () => {
   return state;
 };
 
-const queueRemoteWrite = () => {
+const queueRemoteMutation = (payload: { changes?: Record<string, string>; deletedKeys?: string[] }) => {
   if (!hydrated) return;
-  const state = snapshot();
   writeQueue = writeQueue
     .catch(() => undefined)
     .then(() => fetch(apiUrl(), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ state }),
+      body: JSON.stringify(payload),
       keepalive: true,
     }))
     .then((response) => {
@@ -44,11 +43,11 @@ const queueRemoteWrite = () => {
 const installMirror = () => {
   nativeStorage.setItem = ((key: string, value: string) => {
     nativeSetItem(key, value);
-    queueRemoteWrite();
+    queueRemoteMutation({ changes: { [key]: value } });
   }) as Storage['setItem'];
   nativeStorage.removeItem = ((key: string) => {
     nativeRemoveItem(key);
-    queueRemoteWrite();
+    queueRemoteMutation({ deletedKeys: [key] });
   }) as Storage['removeItem'];
 };
 

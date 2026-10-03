@@ -55,6 +55,18 @@ Then start the Vite frontend with `npm.cmd run dev`. Vite proxies `/api/*` to `h
 
 The backend is intentionally self-hostable and has no third-party database dependency. For production, protect the server behind HTTPS, a firewall/reverse proxy, and an authentication layer before exposing write access publicly. Back up `data/gaenr-state.json` regularly.
 
+## 1.2 Deploy the shared API on Vercel
+
+Vercel does not keep a Node process or local JSON file running between requests. The production API is therefore implemented in `api/state.js` as a Vercel Serverless Function and uses a Neon database connected through the Vercel Marketplace.
+
+1. In Vercel, open the project and select **Storage → Create → Neon Postgres** (or add the Neon integration from the Marketplace).
+2. Connect the database to this Vercel project and make sure `DATABASE_URL` is available in **Project Settings → Environment Variables** for Preview and Production.
+3. Push this repository to GitHub and wait for a new Vercel deployment.
+4. After deployment, open `https://YOUR-DOMAIN/api/state`. It should return JSON with `state` and `updatedAt`.
+5. The frontend automatically uses the same-origin `/api/state`; no `VITE_API_URL` is needed when the API function is deployed in the same Vercel project.
+
+The first request creates the `gaenr_app_state` table automatically. Do not expose `DATABASE_URL` in frontend code or commit it to GitHub.
+
 ### Test a production build locally
 
 ```powershell
