@@ -10,6 +10,15 @@ interface BrandingContextType {
 
 const BrandingContext = createContext<BrandingContextType | undefined>(undefined);
 
+const normalizeBranding = (value: Partial<BrandingConfig>): BrandingConfig => {
+  const normalized = { ...INITIAL_BRANDING, ...value };
+  // Repair the mojibake saved by older builds (UTF-8 © decoded as Windows-1252).
+  if (normalized.footerText?.includes('Â©')) {
+    normalized.footerText = normalized.footerText.replace(/Â©/g, '©');
+  }
+  return normalized;
+};
+
 export const BrandingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [branding, setBranding] = useState<BrandingConfig>(() => {
     try {
@@ -31,11 +40,11 @@ export const BrandingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         ) {
           parsed.logoUrl = '/logo.svg';
         }
-        return { ...INITIAL_BRANDING, ...parsed };
+        return normalizeBranding(parsed);
       }
-      return INITIAL_BRANDING;
+      return normalizeBranding(INITIAL_BRANDING);
     } catch {
-      return INITIAL_BRANDING;
+      return normalizeBranding(INITIAL_BRANDING);
     }
   });
 
@@ -61,12 +70,26 @@ export const BrandingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [branding]);
 
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== 'gaenr_branding' || !event.newValue) return;
+      try {
+        setBranding(normalizeBranding(JSON.parse(event.newValue)));
+      } catch {
+        // Ignore malformed values from another tab.
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
   const updateBranding = (updates: Partial<BrandingConfig>) => {
     setBranding((prev) => ({ ...prev, ...updates }));
   };
 
   const resetBranding = () => {
-    setBranding(INITIAL_BRANDING);
+    setBranding(normalizeBranding(INITIAL_BRANDING));
   };
 
   return (

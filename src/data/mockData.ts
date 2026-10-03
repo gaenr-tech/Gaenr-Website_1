@@ -1,4 +1,4 @@
-﻿import {
+import {
   ServiceCategory,
   FreelancerProfile,
   AvatarAsset,
@@ -14,7 +14,7 @@ export const INITIAL_BRANDING: BrandingConfig = {
   backgroundColor: '#f8fafc',
   footerBgColor: '#0c182c',
   footerTextColor: '#cbd5e1',
-  footerText: 'Copyright Â© 2026 Gaenr. All Rights Reserved.',
+  footerText: 'Copyright © 2026 Gaenr. All Rights Reserved.',
   watermarkText: 'GAENR VERIFIED PORTFOLIO',
   watermarkOpacity: 15,
   watermarkPosition: 'diagonal',

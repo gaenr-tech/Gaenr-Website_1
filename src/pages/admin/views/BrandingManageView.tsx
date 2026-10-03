@@ -80,12 +80,18 @@ export const BrandingManageView: React.FC<BrandingManageViewProps> = ({
   // Keep state in sync if branding prop changes externally
   useEffect(() => {
     if (branding.logoUrl) setLogoUrl(branding.logoUrl);
+    if (branding.faviconUrl) setFaviconUrl(branding.faviconUrl);
     if (branding.watermarkImage) setWatermarkImage(branding.watermarkImage);
+    if (branding.watermarkText) setWatermarkText(branding.watermarkText);
+    if (branding.primaryColor) setPrimaryColor(branding.primaryColor);
     if (branding.backgroundColor) setBackgroundColor(branding.backgroundColor);
     if (branding.footerBgColor) setFooterBgColor(branding.footerBgColor);
     if (branding.footerTextColor) setFooterTextColor(branding.footerTextColor);
     if (branding.footerTagline) setFooterTagline(branding.footerTagline);
-    if (branding.footerText) setFooterText(branding.footerText);
+    if (branding.footerText) setFooterText(branding.footerText.replace(/Â©/g, '©'));
+    if (branding.watermarkOpacity !== undefined) setWatermarkOpacity(branding.watermarkOpacity);
+    if (branding.watermarkPosition) setWatermarkPosition(branding.watermarkPosition);
+    if (branding.repeatingWatermark !== undefined) setRepeatingWatermark(branding.repeatingWatermark);
   }, [branding]);
 
   // Handle Logo Upload

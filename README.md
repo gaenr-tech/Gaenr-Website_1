@@ -41,6 +41,20 @@ http://localhost:3000
 
 Keep the terminal open while coding. Vite will automatically update the browser when you save source files. Press `Ctrl+C` in the terminal to stop the local server.
 
+## 1.1 Run the self-hosted backend
+
+The admin data is persisted through the Node API in `server.js`, not only in browser storage. The API stores the shared state in `data/gaenr-state.json` and mirrors the existing application storage keys, including branding, experts, categories, avatars, tasks, feedback, applications, and operations data.
+
+Start the backend in a second terminal:
+
+```powershell
+npm.cmd run server
+```
+
+Then start the Vite frontend with `npm.cmd run dev`. Vite proxies `/api/*` to `http://127.0.0.1:8787` during local development. On a hosted server, run `npm.cmd run build`, run `npm.cmd run server`, serve the generated `dist/` through the same Node process, and set `VITE_API_URL` to the public API origin before building when the API is on a separate domain.
+
+The backend is intentionally self-hostable and has no third-party database dependency. For production, protect the server behind HTTPS, a firewall/reverse proxy, and an authentication layer before exposing write access publicly. Back up `data/gaenr-state.json` regularly.
+
 ### Test a production build locally
 
 ```powershell
