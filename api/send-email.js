@@ -10,35 +10,51 @@ const send = (res, status, body) => res.status(status).setHeader('Cache-Control'
 const buildWelcomeEmail = (expert) => {
   const name = expert.name?.trim() || 'there';
   const profileUrl = `${SITE_URL}/experts/${encodeURIComponent(expert.code)}`;
+  const idCardUrl = `${SITE_URL}/api/id-card?code=${encodeURIComponent(expert.code)}`;
+  const idCardDownloadUrl = `${idCardUrl}&download=1`;
+  const logoUrl = `${SITE_URL}/logo.svg`;
   const subject = 'Welcome to Gaenr — your expert profile is live';
   const text = [
     `Hi ${name},`,
     '',
     'Welcome to Gaenr! Your verified expert profile has been created and is now live.',
     '',
-    `Your Expert ID: ${expert.code}`,
-    `Your profile: ${profileUrl}`,
+    'Your digital Gaenr ID card is ready:',
+    idCardDownloadUrl,
+    `View your profile: ${profileUrl}`,
     '',
-    'Keep your Expert ID private-ish: clients and the Gaenr operations team use it to assign you tasks.',
-    'If any detail on your profile looks wrong, just reply to this email and we will fix it.',
+    'Keep your digital ID card safe. Clients and the Gaenr operations team use it to identify verified experts.',
     '',
-    '— Team Gaenr',
+    'Team Gaenr',
+    'contact@gaenr.com | 09647 922 800',
+    'https://gaenr.com',
   ].join('\n');
   const html = `<!doctype html><html><body style="margin:0;background:#f4f7fb;font-family:Arial,Helvetica,sans-serif;color:#0f172a">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
     <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0">
-      <tr><td style="padding:28px 32px 8px;font-size:22px;font-weight:800;color:#006eff">Gaenr</td></tr>
+      <tr><td style="padding:26px 32px 12px;background:#0b1329;border-radius:16px 16px 0 0">
+        <img src="${logoUrl}" width="42" height="42" alt="Gaenr logo" style="display:block;width:42px;height:42px;margin:0 0 8px" />
+        <div style="font-size:22px;font-weight:900;letter-spacing:4px;color:#ffffff">GAENR</div>
+        <div style="font-size:11px;letter-spacing:1.5px;color:#93c5fd;margin-top:5px">VERIFIED EXPERT ECOSYSTEM</div>
+      </td></tr>
       <tr><td style="padding:8px 32px 0;font-size:18px;font-weight:700">Welcome, ${escapeHtml(name)}!</td></tr>
       <tr><td style="padding:12px 32px 0;font-size:14px;line-height:1.6;color:#334155">
-        Your verified expert profile has been created and is now live on Gaenr.
+        We’re very glad to welcome you. Your verified expert profile is now live on Gaenr.
       </td></tr>
       <tr><td style="padding:20px 32px 0">
-        <div style="background:#f1f5f9;border-radius:12px;padding:14px 16px;font-size:13px;color:#475569">Your Expert ID</div>
-        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px 16px;margin-top:-6px;font-size:22px;font-weight:800;letter-spacing:2px;color:#006eff;font-family:Consolas,monospace">${escapeHtml(expert.code)}</div>
+        <div style="font-size:13px;font-weight:800;color:#334155;margin-bottom:10px">Your digital Gaenr ID card</div>
+        <a href="${idCardUrl}" style="display:block;text-decoration:none;background:#0b1329;border-radius:18px;padding:12px;text-align:center">
+          <img src="${idCardUrl}" width="260" alt="Gaenr digital ID card" style="display:block;width:260px;max-width:100%;height:auto;margin:0 auto;border-radius:12px" />
+        </a>
       </td></tr>
-      <tr><td style="padding:22px 32px 0"><a href="${profileUrl}" style="display:inline-block;background:#006eff;color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 22px;border-radius:12px">View my profile</a></td></tr>
-      <tr><td style="padding:20px 32px 0;font-size:13px;line-height:1.6;color:#64748b">Clients and the Gaenr operations team use your Expert ID to assign you tasks. If any detail on your profile looks wrong, simply reply to this email and we will fix it.</td></tr>
-      <tr><td style="padding:24px 32px 28px;font-size:13px;color:#94a3b8">— Team Gaenr</td></tr>
+      <tr><td style="padding:18px 32px 0;text-align:center"><a href="${idCardDownloadUrl}" style="display:inline-block;background:#006eff;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;padding:12px 20px;border-radius:12px">Download ID Card</a></td></tr>
+      <tr><td style="padding:12px 32px 0;text-align:center"><a href="${profileUrl}" style="color:#006eff;text-decoration:none;font-weight:700;font-size:13px">View my live profile →</a></td></tr>
+      <tr><td style="padding:24px 32px 0"><div style="height:1px;background:#e2e8f0"></div></td></tr>
+      <tr><td style="padding:20px 32px 28px;font-size:12px;line-height:1.8;color:#64748b">
+        <strong style="color:#0f172a">Team Gaenr</strong><br />
+        <a href="https://gaenr.com" style="color:#006eff;text-decoration:none">gaenr.com</a> &nbsp;·&nbsp; <a href="mailto:contact@gaenr.com" style="color:#006eff;text-decoration:none">contact@gaenr.com</a><br />
+        09647 922 800
+      </td></tr>
     </table>
   </td></tr></table></body></html>`;
   return { subject, text, html };
