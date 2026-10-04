@@ -69,6 +69,18 @@ Use `https://YOUR-DOMAIN/api/health` as a quick deployment check. It must return
 
 The first request creates the `gaenr_app_state` table automatically. Do not expose `DATABASE_URL` in frontend code or commit it to GitHub.
 
+## 1.3 Configure expert welcome email
+
+The expert creation flow calls `POST /api/send-email` after the profile is saved. The function reads the recipient from the shared database and sends through Resend. Add these Vercel environment variables for **Production** and **Preview**, then redeploy:
+
+```text
+RESEND_API_KEY=<Resend secret API key>
+EMAIL_FROM=Gaenr <no-reply@your-verified-domain.com>
+SITE_URL=https://gaenr.com                    # optional
+```
+
+The sender domain must be verified in Resend. The email deliberately has no `Reply-To` header. Never put `RESEND_API_KEY` in `.env.example`, frontend code, GitHub, or chat. `GET /api/send-email` intentionally returns `405 Method not allowed`; the application uses `POST`. Check `GET /api/health` and confirm `databaseConfigured: true` and `emailConfigured: true` before testing an expert creation.
+
 ### Test a production build locally
 
 ```powershell

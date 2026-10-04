@@ -29,7 +29,9 @@ export const sendExpertWelcomeEmail = async (code: string): Promise<WelcomeEmail
       if (data.code === 'EMAIL_NOT_CONFIGURED') return { status: 'skipped', reason: 'not-configured' };
       return { status: 'failed', message: data.error || `HTTP ${response.status}` };
     } catch {
-      return { status: 'failed', message: 'Could not reach the email service' };
+      // A transient cold-start/network failure should not immediately report a
+      // permanent failure; continue through the bounded retry window.
+      if (attempt === 4) return { status: 'failed', message: 'Could not reach the email service after several retries' };
     }
   }
   return { status: 'failed', message: 'Profile was not saved to the database in time' };
