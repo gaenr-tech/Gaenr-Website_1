@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../../../context/AppContext';
+import { sendExpertWelcomeEmail } from '../../../utils/email';
 import { FreelancerProfile, ServiceCategory, AvatarAsset, ServiceSlug, ExpertPricingTier, PortfolioItem, DeliverableType, DELIVERABLE_TYPE_OPTIONS } from '../../../types';
 import { AvatarGraphic, getOfficialAvatarUrl, getCategoryAvatar, RAW_AVATAR_SPECS, CategoryAvatarMeta } from '../../../components/common/Avatars';
 import {
@@ -238,6 +239,15 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
       addFreelancer(newProfile);
       showToast(`Expert Profile ${generatedCode} created successfully!`, 'success');
+
+      // Email the expert at the address entered in "Private Email" (runs in the background)
+      if (newProfile.privateEmail) {
+        sendExpertWelcomeEmail(generatedCode).then((result) => {
+          if (result.status === 'sent') showToast(`Welcome email sent to ${newProfile.privateEmail}`, 'success');
+          else if (result.status === 'failed') showToast(`Expert saved, but the welcome email failed: ${result.message}`, 'error');
+          else if (result.status === 'skipped' && result.reason === 'not-configured') showToast('Expert saved. Email service is not set up yet, so no email was sent.', 'info');
+        });
+      }
       navigate('/manage/profiles');
     } catch (err) {
       console.error(err);
