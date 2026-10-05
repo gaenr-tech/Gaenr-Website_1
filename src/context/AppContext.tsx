@@ -742,7 +742,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addFreelancer = (newFl: FreelancerProfile) => {
-    setFreelancers((prev) => [newFl, ...prev]);
+    setFreelancers((prev) => {
+      const updated = [newFl, ...prev];
+      try {
+        localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
     showToast(`Expert profile ${newFl.code} created successfully`, 'success');
   };
 
