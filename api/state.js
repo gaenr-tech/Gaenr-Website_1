@@ -93,37 +93,39 @@ export default async function handler(req, res) {
       const key = typeof change?.key === 'string' ? change.key : '';
       const upserts = Array.isArray(change?.upserts) ? change.upserts : [];
       const deletes = Array.isArray(change?.deletes) ? change.deletes : [];
-      if (!key || !key.startsWith('gaenr_')) continue;
+      if (!key || !key.startsWith('gaenr_') || (upserts.length === 0 && deletes.length === 0)) continue;
 
       await sql`
-        WITH incoming AS (
-          SELECT ${JSON.stringify(upserts)}::jsonb AS upserts,
-                 ${JSON.stringify(deletes)}::jsonb AS deletes
+        WITH existing_items AS (
+          SELECT elements.item, elements.item_order
+          FROM gaenr_app_state AS current_state,
+               jsonb_array_elements(COALESCE(current_state.state->${key}, '[]'::jsonb))
+                 WITH ORDINALITY AS elements(item, item_order)
+          WHERE current_state.id = 1
+        ),
+        merged_items AS (
+          SELECT existing_items.item, existing_items.item_order
+          FROM existing_items
+          WHERE NOT EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(${JSON.stringify(deletes)}::jsonb) AS deleted(item)
+            WHERE COALESCE(deleted.item->>'code', deleted.item->>'id', deleted.item::text)
+                = COALESCE(existing_items.item->>'code', existing_items.item->>'id', existing_items.item::text)
+          )
+          AND NOT EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(${JSON.stringify(upserts)}::jsonb) AS replacement(item)
+            WHERE COALESCE(replacement.item->>'code', replacement.item->>'id', replacement.item::text)
+                = COALESCE(existing_items.item->>'code', existing_items.item->>'id', existing_items.item::text)
+          )
+          UNION ALL
+          SELECT additions.item, 1000000000 + additions.item_order
+          FROM jsonb_array_elements(${JSON.stringify(upserts)}::jsonb)
+            WITH ORDINALITY AS additions(item, item_order)
         ),
         merged AS (
-          SELECT COALESCE(jsonb_agg(item ORDER BY item_order), '[]'::jsonb) AS value
-          FROM (
-            SELECT existing_item AS item, existing_order AS item_order
-            FROM gaenr_app_state AS current_state,
-                 jsonb_array_elements(COALESCE(current_state.state->${key}, '[]'::jsonb))
-                   WITH ORDINALITY AS existing(existing_item, existing_order),
-                 incoming
-            WHERE current_state.id = 1
-              AND NOT EXISTS (
-                SELECT 1 FROM jsonb_array_elements(incoming.deletes) AS deleted(item)
-                WHERE COALESCE(deleted.item->>'code', deleted.item->>'id', deleted.item::text)
-                    = COALESCE(existing.existing_item->>'code', existing.existing_item->>'id', existing.existing_item::text)
-              )
-              AND NOT EXISTS (
-                SELECT 1 FROM jsonb_array_elements(incoming.upserts) AS replacement(item)
-                WHERE COALESCE(replacement.item->>'code', replacement.item->>'id', replacement.item::text)
-                    = COALESCE(existing.existing_item->>'code', existing.existing_item->>'id', existing.existing_item::text)
-              )
-            UNION ALL
-            SELECT replacement.item, 1000000000 + replacement.item_order
-            FROM incoming, jsonb_array_elements(incoming.upserts)
-              WITH ORDINALITY AS replacement(item, item_order)
-          ) AS combined
+          SELECT COALESCE(jsonb_agg(merged_items.item ORDER BY merged_items.item_order), '[]'::jsonb) AS value
+          FROM merged_items
         )
         UPDATE gaenr_app_state AS target
         SET state = jsonb_set(target.state, ARRAY[${key}], merged.value, true), updated_at = now()
