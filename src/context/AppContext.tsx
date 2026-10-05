@@ -179,10 +179,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // One-time migration: clear old fl-1…fl-6 sample data from previous sessions
       const dataVersion = localStorage.getItem('gaenr_data_v2');
       if (!dataVersion) {
-        // First run after update — wipe old sample experts, start clean
-        localStorage.removeItem('gaenr_freelancers');
-        localStorage.setItem('gaenr_data_v2', '1');
-        return [];
+        // Mark the migration without deleting shared or locally hydrated experts.
+        // The shared backend is authoritative; a browser refresh must never wipe it.
+        try {
+          localStorage.setItem('gaenr_data_v2', '1');
+        } catch {}
       }
 
       const saved = localStorage.getItem('gaenr_freelancers');

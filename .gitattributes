@@ -1,0 +1,14 @@
+# Keep source files normalized as UTF-8 with LF endings across Windows, macOS, and Linux.
+* text=auto eol=lf
+
+# Binary assets must never be line-ending converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.pdf binary
