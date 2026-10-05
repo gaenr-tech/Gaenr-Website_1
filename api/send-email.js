@@ -13,6 +13,8 @@ const buildWelcomeEmail = (expert) => {
   const idCardUrl = `${SITE_URL}/api/id-card?code=${encodeURIComponent(expert.code)}`;
   const idCardDownloadUrl = `${idCardUrl}&download=1`;
   const logoUrl = `${SITE_URL}/logo.svg`;
+  const iconUrl = (name) => `${SITE_URL}/email-icons/${name}.svg`;
+  const iconImage = (name, alt) => `<img src="${iconUrl(name)}" width="18" height="18" alt="${alt}" style="display:inline-block;width:18px;height:18px;vertical-align:middle;border:0" />`;
   const subject = 'Welcome to Gaenr — your expert profile is live';
   const text = [
     `Hi ${name},`,
@@ -36,7 +38,7 @@ const buildWelcomeEmail = (expert) => {
     'Threads: https://www.threads.com/@gaenr_global',
     'TikTok: https://www.tiktok.com/@gaenr_global',
   ].join('\n');
-  const html = `<!doctype html><html><body style="margin:0;background:#f4f7fb;font-family:'DM Sans',Arial,Helvetica,sans-serif;color:#0f172a">
+  const html = `<!doctype html><html><head><meta name="x-apple-disable-message-reformatting" /><style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');</style></head><body style="margin:0;background:#f4f7fb;font-family:'DM Sans',Arial,Helvetica,sans-serif;color:#0f172a">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
     <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;font-family:'DM Sans',Arial,Helvetica,sans-serif">
       <tr><td align="center" style="padding:24px 32px 18px;background:#eff6ff;border-radius:16px 16px 0 0;border-bottom:1px solid #dbeafe">
@@ -60,18 +62,19 @@ const buildWelcomeEmail = (expert) => {
         <img src="${logoUrl}" width="26" height="26" alt="Gaenr" style="display:inline-block;width:26px;height:26px;vertical-align:middle;margin-right:6px" />
         <strong style="color:#0f172a;vertical-align:middle;font-size:14px">Team Gaenr</strong>
         <div style="height:1px;background:#e2e8f0;margin:14px 0"></div>
-        <div style="margin-bottom:8px">
-          <a href="https://wa.me/8801608922800" style="color:#16803c;text-decoration:none;font-weight:700;margin:0 7px"><span style="display:inline-block;background:#dcfce7;border-radius:50%;width:20px;height:20px;line-height:20px;text-align:center;font-size:11px">WA</span> WhatsApp</a>
-          <a href="mailto:contact@gaenr.com" style="color:#4f46e5;text-decoration:none;font-weight:700;margin:0 7px"><span style="display:inline-block;background:#e0e7ff;border-radius:50%;width:20px;height:20px;line-height:20px;text-align:center;font-size:12px">@</span> Email</a>
-          <a href="tel:09647922800" style="color:#006eff;text-decoration:none;font-weight:700;margin:0 7px"><span style="display:inline-block;background:#dbeafe;border-radius:50%;width:20px;height:20px;line-height:20px;text-align:center;font-size:12px">☎</span> Phone</a>
+        <div style="margin-bottom:10px;white-space:nowrap">
+          <a href="https://gaenr.com" title="Gaenr website" style="color:#006eff;text-decoration:none;font-weight:700;margin:0 7px">${iconImage('globe', 'Website')} Website</a>
+          <a href="mailto:contact@gaenr.com" title="Email Gaenr" style="color:#4f46e5;text-decoration:none;font-weight:700;margin:0 7px">${iconImage('mail', 'Email')} Email</a>
+          <a href="tel:09647922800" title="Call Gaenr" style="color:#006eff;text-decoration:none;font-weight:700;margin:0 7px">${iconImage('phone', 'Phone')} Phone</a>
+          <a href="https://wa.me/8801608922800" title="WhatsApp Gaenr" style="color:#16803c;text-decoration:none;font-weight:700;margin:0 7px">${iconImage('whatsapp', 'WhatsApp')} WhatsApp</a>
         </div>
-        <div style="margin-top:8px">
-          <a href="https://www.facebook.com/gaenrglobal/" style="color:#1877f2;text-decoration:none;font-weight:800;margin:0 5px">f</a>
-          <a href="https://www.linkedin.com/company/gaenrglobal/" style="color:#0077b5;text-decoration:none;font-weight:800;margin:0 5px">in</a>
-          <a href="https://www.instagram.com/gaenr_global/" style="color:#c13584;text-decoration:none;font-weight:800;margin:0 5px">◎</a>
-          <a href="https://x.com/gaenr_global" style="color:#111827;text-decoration:none;font-weight:800;margin:0 5px">𝕏</a>
-          <a href="https://www.threads.com/@gaenr_global" style="color:#111827;text-decoration:none;font-weight:800;margin:0 5px">@</a>
-          <a href="https://www.tiktok.com/@gaenr_global" style="color:#111827;text-decoration:none;font-weight:800;margin:0 5px">♪</a>
+        <div style="margin-top:8px;white-space:nowrap">
+          <a href="https://www.facebook.com/gaenrglobal/" title="Gaenr on Facebook" style="margin:0 6px">${iconImage('facebook', 'Facebook')}</a>
+          <a href="https://www.linkedin.com/company/gaenrglobal/" title="Gaenr on LinkedIn" style="margin:0 6px">${iconImage('linkedin', 'LinkedIn')}</a>
+          <a href="https://www.instagram.com/gaenr_global/" title="Gaenr on Instagram" style="margin:0 6px">${iconImage('instagram', 'Instagram')}</a>
+          <a href="https://x.com/gaenr_global" title="Gaenr on X" style="margin:0 6px">${iconImage('x', 'X')}</a>
+          <a href="https://www.threads.com/@gaenr_global" title="Gaenr on Threads" style="margin:0 6px">${iconImage('threads', 'Threads')}</a>
+          <a href="https://www.tiktok.com/@gaenr_global" title="Gaenr on TikTok" style="margin:0 6px">${iconImage('tiktok', 'TikTok')}</a>
         </div>
         <div style="margin-top:10px"><a href="https://gaenr.com" style="color:#006eff;text-decoration:none;font-weight:700">gaenr.com</a></div>
       </td></tr>
