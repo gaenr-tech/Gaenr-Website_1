@@ -105,15 +105,15 @@ export const TermsPage: React.FC = () => {
         <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s1')}
-            className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
           >
-            <div className="flex items-center gap-3.5 min-w-0">
+            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
               <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
                 01
               </span>
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
                 <UserCheck className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 truncate">
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
                   Your Account &amp; Participation
                 </h2>
               </div>
@@ -169,15 +169,15 @@ export const TermsPage: React.FC = () => {
         <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s2')}
-            className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
           >
-            <div className="flex items-center gap-3.5 min-w-0">
+            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
               <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
                 02
               </span>
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
                 <Briefcase className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 truncate">
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
                   The Gaenr Service
                 </h2>
               </div>
@@ -233,15 +233,15 @@ export const TermsPage: React.FC = () => {
         <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s3')}
-            className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
           >
-            <div className="flex items-center gap-3.5 min-w-0">
+            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
               <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
                 03
               </span>
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
                 <CreditCard className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 truncate">
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
                   Payments &amp; Escrow
                 </h2>
               </div>
@@ -297,15 +297,15 @@ export const TermsPage: React.FC = () => {
         <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s4')}
-            className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
           >
-            <div className="flex items-center gap-3.5 min-w-0">
+            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
               <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
                 04
               </span>
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
                 <Ban className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 truncate">
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
                   Prohibited Conduct
                 </h2>
               </div>
@@ -363,15 +363,15 @@ export const TermsPage: React.FC = () => {
         <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s5')}
-            className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
           >
-            <div className="flex items-center gap-3.5 min-w-0">
+            <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
               <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
                 05
               </span>
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
                 <Power className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 truncate">
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
                   Termination
                 </h2>
               </div>

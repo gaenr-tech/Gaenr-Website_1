@@ -238,12 +238,12 @@ const AppContent: React.FC = () => {
       <AssignTaskModal />
       <ApplyExpertModal />
 
-      {/* Toast Notification Container */}
+      {/* Toast Notification Container - Clean Auto-Dismissing, No Cross Button */}
       <div className="fixed bottom-5 right-5 z-[110] flex flex-col gap-2 pointer-events-none">
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-xs font-medium max-w-sm animate-in fade-in slide-in-from-bottom-2 ${
+            className={`pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg border text-xs font-medium max-w-sm animate-in fade-in slide-in-from-bottom-2 ${
               toast.type === 'success'
                 ? 'bg-emerald-950/95 text-emerald-100 border-emerald-800'
                 : toast.type === 'error'
@@ -259,12 +259,6 @@ const AppContent: React.FC = () => {
               <Info className="w-4 h-4 text-blue-400 shrink-0" />
             )}
             <span className="flex-1 leading-snug">{toast.message}</span>
-            <button
-              onClick={() => dismissToast(toast.id)}
-              className="text-slate-400 hover:text-white transition-colors cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
           </div>
         ))}
       </div>

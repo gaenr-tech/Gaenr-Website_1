@@ -663,7 +663,7 @@ export const HomePage: React.FC = () => {
          ========================================================================= */}
       <section className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="space-y-1.5 max-w-2xl text-left">
+          <div className="space-y-1.5 max-w-2xl mx-auto text-center flex flex-col items-center">
             <span className="text-xs font-semibold text-[#0256d0] uppercase tracking-wider">
               How It Works
             </span>
@@ -933,19 +933,24 @@ export const HomePage: React.FC = () => {
                     <IphoneWallpaper className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" />
                     {/* Subtle dark gradient overlay so text and status indicators remain crisp */}
                     <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/45 z-0 pointer-events-none" />
-                    {/* Dynamic Island */}
-                    <div className="relative z-30 w-20 h-4.5 bg-black rounded-full mx-auto flex items-center justify-between px-2.5 border border-slate-800/80 shadow-xs">
-                      <div className="w-2 h-2 rounded-full bg-slate-900 border border-slate-800" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-950/80" />
-                    </div>
+                    {/* Unified Top Status Bar + Dynamic Island (Camera-Aligned) */}
+                    <div className="relative z-30 w-full flex items-center justify-between px-2 pt-0.5 pointer-events-none select-none">
+                      {/* Left: Time & WiFi */}
+                      <div className="flex items-center gap-1 text-slate-200 shrink-0">
+                        <span className="text-[9.5px] font-semibold tracking-tight">10:00</span>
+                        <Wifi className="w-2.5 h-2.5 text-slate-300" />
+                      </div>
 
-                    {/* Status Bar - 100% Full Charge */}
-                    <div className="absolute top-2.5 left-4 right-4 flex items-center justify-between text-[10px] text-slate-200 font-medium z-20 pointer-events-none">
-                      <span>10:00</span>
-                      <div className="flex items-center gap-1 text-slate-200">
+                      {/* Center: Dynamic Island (Front Camera & Sensor) */}
+                      <div className="w-16 h-3.5 bg-black rounded-full flex items-center justify-between px-2 border border-slate-800/80 shadow-xs shrink-0 mx-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-900 border border-slate-800" />
+                        <div className="w-1 h-1 rounded-full bg-blue-950/80" />
+                      </div>
+
+                      {/* Right: Charging Percentage & Battery Icon */}
+                      <div className="flex items-center gap-1 text-slate-200 shrink-0">
                         <span className="text-[9px] font-bold text-emerald-300">100%</span>
-                        <Wifi className="w-2.5 h-2.5" />
-                        <div className="relative w-4 h-2 rounded-[3px] border border-emerald-400 p-[1px] flex items-center">
+                        <div className="relative w-3.5 h-2 rounded-[3px] border border-emerald-400 p-[1px] flex items-center">
                           <div className="h-full w-full bg-emerald-400 rounded-[1.5px]" />
                           <div className="absolute -right-[2px] w-[1px] h-0.8 bg-emerald-400 rounded-r-xs" />
                         </div>
