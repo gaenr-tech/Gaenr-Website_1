@@ -157,14 +157,35 @@ const buildCardSvg = (expert) => {
 
 export default async function handler(req, res) {
   const url = new URL(req.url || '/', SITE_URL);
-  const code = (url.searchParams.get('code') || '').trim();
+  const code = (url.searchParams.get('code') || req.body?.code || '').trim();
   if (!/^[A-Za-z0-9]{4,20}$/.test(code)) return sendError(res, 400, 'Invalid expert code');
   const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
   if (!connectionString) return sendError(res, 503, 'Database is not configured');
 
-  try {
-    const sql = neon(connectionString);
+  const sql = neon(connectionString);
 
+  // POST: Allow caching pixel-perfect browser-rendered PNGs directly into DB
+  if (req.method === 'POST') {
+    const rawImage = typeof req.body?.imageData === 'string' ? req.body.imageData.trim() : '';
+    if (!rawImage || !rawImage.startsWith('data:image/png')) {
+      return sendError(res, 400, 'Invalid image data');
+    }
+    try {
+      await sql`CREATE TABLE IF NOT EXISTS gaenr_id_cards (
+        code text PRIMARY KEY,
+        image_data text NOT NULL,
+        updated_at timestamptz NOT NULL DEFAULT now()
+      )`;
+      await sql`INSERT INTO gaenr_id_cards (code, image_data) VALUES (${code}, ${rawImage})
+        ON CONFLICT (code) DO UPDATE SET image_data = EXCLUDED.image_data, updated_at = now()`;
+      return res.status(200).json({ ok: true, code });
+    } catch (saveErr) {
+      console.error('Failed to save id card image:', saveErr);
+      return sendError(res, 500, 'Failed to save card image');
+    }
+  }
+
+  try {
     // 1. If an exact browser-rendered snapshot exists, serve it directly
     try {
       const cardRows = await sql`SELECT image_data FROM gaenr_id_cards WHERE code = ${code} LIMIT 1`;

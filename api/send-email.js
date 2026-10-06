@@ -68,28 +68,33 @@ const buildWelcomeEmail = (expert) => {
       background-color: #006eff;
       color: #ffffff !important;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 14px;
-      padding: 12px 32px;
+      padding: 13px 36px;
       border-radius: 9999px;
-      box-shadow: 0 4px 14px rgba(0, 110, 255, 0.2);
+      box-shadow: 0 4px 14px rgba(0, 110, 255, 0.25);
       transition: all 0.2s ease;
     }
     .action-btn:hover {
       background-color: #0056cc !important;
-      box-shadow: 0 6px 20px rgba(0, 110, 255, 0.3) !important;
+      box-shadow: 0 6px 20px rgba(0, 110, 255, 0.35) !important;
     }
-    .profile-link {
+    .secondary-btn {
       display: inline-block;
-      color: #64748b !important;
+      background-color: #f1f5f9;
+      color: #0f172a !important;
+      border: 1px solid #cbd5e1;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 600;
       font-size: 13px;
-      transition: color 0.2s ease;
+      padding: 10px 28px;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
     }
-    .profile-link:hover {
+    .secondary-btn:hover {
+      background-color: #e2e8f0 !important;
+      border-color: #94a3b8 !important;
       color: #006eff !important;
-      text-decoration: underline;
     }
     .footer-icon-btn {
       display: inline-block;
@@ -162,19 +167,19 @@ const buildWelcomeEmail = (expert) => {
             </td>
           </tr>
 
-          <!-- Actions -->
+          <!-- Actions: Direct Download ID Card primary button + View Live Profile secondary button -->
           <tr>
-            <td style="padding:22px 32px 0;text-align:center;">
-              <a href="${profileUrl}" class="action-btn" target="_blank">
-                View My Live Profile →
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:12px 32px 0;text-align:center;">
-              <a href="${idCardDownloadUrl}" class="profile-link">
-                Download ID Card Badge
-              </a>
+            <td style="padding:24px 32px 0;text-align:center;">
+              <div style="margin-bottom:12px;">
+                <a href="${idCardDownloadUrl}" class="action-btn" target="_blank" style="display:inline-block;background-color:#006eff;color:#ffffff !important;text-decoration:none;font-weight:700;font-size:14px;padding:13px 36px;border-radius:9999px;box-shadow:0 4px 14px rgba(0, 110, 255, 0.25);">
+                  Download ID Card
+                </a>
+              </div>
+              <div>
+                <a href="${profileUrl}" class="secondary-btn" target="_blank" style="display:inline-block;background-color:#f1f5f9;color:#0f172a !important;border:1px solid #cbd5e1;text-decoration:none;font-weight:600;font-size:13px;padding:10px 28px;border-radius:9999px;">
+                  View Live Profile →
+                </a>
+              </div>
             </td>
           </tr>
 
