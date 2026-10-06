@@ -70,48 +70,44 @@ const buildWelcomeEmail = (expert) => {
       text-decoration: none;
       font-weight: 600;
       font-size: 14px;
-      padding: 12px 28px;
-      border-radius: 12px;
-      box-shadow: 0 4px 14px rgba(0, 110, 255, 0.22);
+      padding: 12px 32px;
+      border-radius: 9999px;
+      box-shadow: 0 4px 14px rgba(0, 110, 255, 0.2);
       transition: all 0.2s ease;
     }
     .action-btn:hover {
       background-color: #0056cc !important;
-      box-shadow: 0 6px 20px rgba(0, 110, 255, 0.32) !important;
+      box-shadow: 0 6px 20px rgba(0, 110, 255, 0.3) !important;
     }
     .profile-link {
       display: inline-block;
-      color: #006eff !important;
+      color: #64748b !important;
       text-decoration: none;
       font-weight: 500;
       font-size: 13px;
       transition: color 0.2s ease;
     }
     .profile-link:hover {
-      color: #004bb3 !important;
+      color: #006eff !important;
       text-decoration: underline;
     }
     .footer-icon-btn {
       display: inline-block;
-      width: 38px;
-      height: 38px;
-      line-height: 38px;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
       text-align: center;
       border-radius: 50%;
       background-color: #ffffff;
       border: 1px solid #e2e8f0;
-      margin: 0 4px;
+      margin: 0 3px;
       vertical-align: middle;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .footer-icon-btn:hover {
-      background-color: #006eff !important;
-      border-color: #006eff !important;
-      box-shadow: 0 4px 12px rgba(0, 110, 255, 0.25);
-    }
-    .footer-icon-btn:hover img {
-      filter: brightness(0) invert(1) !important;
+      border-color: #cbd5e1 !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
     }
   </style>
 </head>
@@ -142,51 +138,63 @@ const buildWelcomeEmail = (expert) => {
             </td>
           </tr>
 
-          <!-- Digital ID Card Display (Soft light surrounding background instead of pitch black) -->
+          <!-- Digital ID Card Badge Info (Clean, robust, no broken images) -->
           <tr>
             <td style="padding:22px 32px 0;">
-              <div style="font-size:11px;font-weight:500;color:#64748b;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;">
-                Your Digital Gaenr ID Card
-              </div>
-              <a href="${idCardUrl}" target="_blank" style="display:block;text-decoration:none;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:20px;padding:20px 14px;text-align:center;">
-                <img src="${idCardUrl}" width="270" alt="Gaenr digital ID card" style="display:block;width:270px;max-width:100%;height:auto;margin:0 auto;border-radius:18px;box-shadow:0 12px 32px rgba(11,19,41,0.22);" />
-              </a>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:22px 20px;text-align:center;">
+                <tr>
+                  <td align="center">
+                    <div style="font-size:11px;font-weight:600;color:#006eff;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;">
+                      Official Digital Gaenr ID Card
+                    </div>
+                    <div style="font-size:26px;font-weight:800;color:#0f172a;letter-spacing:4px;font-family:'DM Sans',monospace;margin-bottom:8px;">
+                      ${escapeHtml(expert.code)}
+                    </div>
+                    <div style="display:inline-block;padding:4px 16px;background:#e0edff;border:1px solid #bfdbfe;border-radius:20px;color:#0056cc;font-size:12px;font-weight:600;margin-bottom:14px;">
+                      ${escapeHtml(expert.categoryTitle || 'Verified Expert')}
+                    </div>
+                    <div style="font-size:13px;color:#64748b;line-height:1.5;max-width:420px;margin:0 auto;">
+                      Your official digital ID Card badge is attached to this email as <strong>GAENR-ID-${escapeHtml(expert.code)}.png</strong>. Keep it safe for client verification.
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
           <!-- Actions -->
           <tr>
             <td style="padding:22px 32px 0;text-align:center;">
-              <a href="${idCardDownloadUrl}" class="action-btn">
-                Download ID Card
+              <a href="${profileUrl}" class="action-btn" target="_blank">
+                View My Live Profile →
               </a>
             </td>
           </tr>
           <tr>
-            <td style="padding:14px 32px 0;text-align:center;">
-              <a href="${profileUrl}" class="profile-link" target="_blank">
-                View My Live Profile →
+            <td style="padding:12px 32px 0;text-align:center;">
+              <a href="${idCardDownloadUrl}" class="profile-link">
+                Download ID Card Badge
               </a>
             </td>
           </tr>
 
           <!-- Divider -->
           <tr>
-            <td style="padding:26px 32px 0;">
+            <td style="padding:24px 32px 0;">
               <div style="height:1px;background:#e2e8f0;"></div>
             </td>
           </tr>
 
           <!-- Footer with modern contact & social icons -->
           <tr>
-            <td style="padding:22px 32px 28px;text-align:center;background:#f8fafc;border-top:1px solid #edf2f7;">
+            <td style="padding:20px 32px 26px;text-align:center;background:#f8fafc;border-top:1px solid #edf2f7;">
               <div style="margin-bottom:12px;">
-                <img src="${logoUrl}" width="24" height="24" alt="Gaenr" style="display:inline-block;width:24px;height:24px;vertical-align:middle;margin-right:6px;" />
+                <img src="${logoUrl}" width="22" height="22" alt="Gaenr" style="display:inline-block;width:22px;height:22px;vertical-align:middle;margin-right:6px;" />
                 <span style="color:#0f172a;vertical-align:middle;font-size:13px;font-weight:700;">Team Gaenr</span>
               </div>
 
               <!-- Contact Icons (Directly hyperlinked, no text) -->
-              <div style="margin-bottom:14px;white-space:nowrap;">
+              <div style="margin-bottom:12px;white-space:nowrap;">
                 <a href="https://gaenr.com" class="footer-icon-btn" title="Gaenr Website" target="_blank">
                   <img src="${iconUrl('globe')}" width="18" height="18" alt="Website" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
@@ -201,8 +209,8 @@ const buildWelcomeEmail = (expert) => {
                 </a>
               </div>
 
-              <!-- Social Media Icons -->
-              <div style="margin-bottom:14px;white-space:nowrap;">
+              <!-- Social Media Icons (Authentic brand colors) -->
+              <div style="margin-bottom:12px;white-space:nowrap;">
                 <a href="https://www.facebook.com/gaenrglobal/" class="footer-icon-btn" title="Gaenr on Facebook" target="_blank">
                   <img src="${iconUrl('facebook')}" width="16" height="16" alt="Facebook" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
@@ -254,11 +262,32 @@ export default async function handler(req, res) {
   const sql = neon(connectionString);
 
   try {
-    // 1. Look up the expert in the shared database. The recipient is NEVER taken from the request.
-    const rows = await sql`SELECT state->>'gaenr_freelancers' AS list FROM gaenr_app_state WHERE id = 1`;
-    let experts = [];
-    try { experts = JSON.parse(rows[0]?.list || '[]'); } catch { experts = []; }
-    const expert = experts.find((e) => e?.code === code);
+    // 1. Resolve expert: prioritize client-provided new profile payload to eliminate race conditions
+    let expert = null;
+    if (req.body?.expert && typeof req.body.expert === 'object' && req.body.expert.code === code) {
+      expert = req.body.expert;
+
+      // Auto-save into gaenr_app_state in Neon DB if not yet mirrored
+      try {
+        const rows = await sql`SELECT state FROM gaenr_app_state WHERE id = 1`;
+        let curState = rows[0]?.state || {};
+        let list = [];
+        try { list = JSON.parse(curState['gaenr_freelancers'] || '[]'); } catch { list = []; }
+        if (!list.some((e) => e?.code === code)) {
+          list = [expert, ...list];
+          curState['gaenr_freelancers'] = JSON.stringify(list);
+          await sql`UPDATE gaenr_app_state SET state = ${curState}, updated_at = now() WHERE id = 1`;
+        }
+      } catch (dbSyncErr) {
+        console.warn('Auto-save in send-email error:', dbSyncErr);
+      }
+    } else {
+      const rows = await sql`SELECT state->>'gaenr_freelancers' AS list FROM gaenr_app_state WHERE id = 1`;
+      let experts = [];
+      try { experts = JSON.parse(rows[0]?.list || '[]'); } catch { experts = []; }
+      expert = experts.find((e) => e?.code === code);
+    }
+
     if (!expert) return send(res, 404, { error: 'Expert not saved yet', code: 'EXPERT_NOT_FOUND' });
 
     const to = (expert.privateEmail || '').trim();

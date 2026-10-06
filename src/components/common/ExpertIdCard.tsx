@@ -17,6 +17,9 @@ export const ExpertIdCard = forwardRef<HTMLDivElement, ExpertIdCardProps>(
         style={{
           background: 'linear-gradient(180deg, #0b1329 0%, #0b1120 50%, #0f1d40 100%)',
           backgroundColor: '#0b1120',
+          borderRadius: '24px',
+          overflow: 'hidden',
+          border: '1px solid rgba(59, 130, 246, 0.35)',
           color: '#ffffff',
           fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         }}

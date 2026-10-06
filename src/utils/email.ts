@@ -11,9 +11,12 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
  * Ask the server to email the newly created expert. The recipient is looked up
  * server-side from the saved profile, so only the expert's own address is used.
  */
+import { FreelancerProfile } from '../types';
+
 export const sendExpertWelcomeEmail = async (
   code: string,
-  cardImageDataUrl?: string | null
+  cardImageDataUrl?: string | null,
+  expert?: FreelancerProfile
 ): Promise<WelcomeEmailResult> => {
   // The profile is mirrored to the shared database asynchronously; give it a moment and retry.
   for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -25,6 +28,7 @@ export const sendExpertWelcomeEmail = async (
         body: JSON.stringify({
           code,
           cardImage: cardImageDataUrl || undefined,
+          expert: expert || undefined,
         }),
       });
       const data = (await response.json().catch(() => ({}))) as { alreadySent?: boolean; code?: string; error?: string };

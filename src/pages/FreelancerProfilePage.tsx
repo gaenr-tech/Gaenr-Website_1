@@ -219,11 +219,47 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
   const [reviewIndex, setReviewIndex] = useState(0);
   const [portfolioIndex, setPortfolioIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [remoteExpert, setRemoteExpert] = useState<FreelancerProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const expert = freelancers.find((fl) => fl.code.toLowerCase() === code.toLowerCase());
+  const expert = freelancers.find((fl) => fl.code.toLowerCase() === code.toLowerCase()) || remoteExpert;
   const reviews = expert?.reviews || [];
   const portfolioItems = expert?.portfolioItems || [];
+
+  useEffect(() => {
+    if (expert) {
+      setIsLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    const fetchExpert = async () => {
+      try {
+        const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+        const res = await fetch(`${apiBase}/api/state?_t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          const raw = data?.state?.gaenr_freelancers;
+          if (raw) {
+            const list: FreelancerProfile[] = JSON.parse(raw);
+            const found = list.find((fl) => fl.code.toLowerCase() === code.toLowerCase());
+            if (found && isMounted) {
+              setRemoteExpert(found);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch remote state for expert profile:', err);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    fetchExpert();
+    return () => {
+      isMounted = false;
+    };
+  }, [code, expert]);
 
   const handlePrevReview = () => {
     setReviewIndex((prev) => (prev === 0 ? reviews.length - 1 : prev - 1));
@@ -279,6 +315,15 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isFullscreen, portfolioItems.length]);
+
+  if (isLoading && !expert) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+        <div className="w-10 h-10 border-4 border-blue-200 border-t-[#006eff] rounded-full animate-spin mb-4" />
+        <p className="text-slate-500 text-sm font-medium">Loading verified expert profile...</p>
+      </div>
+    );
+  }
 
   if (!expert) {
     return (

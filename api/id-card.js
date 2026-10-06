@@ -55,7 +55,19 @@ const fetchAvatarBuffer = async (avatarRelPath) => {
   return null;
 };
 
+const ensureFontOnDisk = () => {
+  const tmpDir = process.env.TEMP || process.env.TMP || '/tmp';
+  const fontPath = path.join(tmpDir, 'DMSans-Bold.ttf');
+  if (!fs.existsSync(fontPath)) {
+    try {
+      fs.writeFileSync(fontPath, Buffer.from(dmSansBoldBase64, 'base64'));
+    } catch {}
+  }
+  return fontPath.replace(/\\/g, '/');
+};
+
 const buildCardSvg = (expert) => {
+  const localFontPath = ensureFontOnDisk();
   const code = escapeXml(expert.code || 'GAENR');
   const category = escapeXml(expert.categoryTitle || 'Verified Expert');
   const deliveries = expert.completedProjects || 0;
@@ -70,7 +82,8 @@ const buildCardSvg = (expert) => {
       <style>
         @font-face {
           font-family: 'DM Sans';
-          src: url('data:font/ttf;base64,${dmSansBoldBase64}') format('truetype');
+          src: url('${localFontPath}') format('truetype'),
+               url('file://${localFontPath}') format('truetype');
           font-weight: 700;
           font-style: normal;
         }

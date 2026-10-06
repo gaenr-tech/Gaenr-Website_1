@@ -14,10 +14,30 @@ export async function captureIdCardDataUrl(
   if (!cardElement) return null;
 
   try {
+    // 1. Ensure all fonts and images inside the element are fully loaded & decoded
+    if (typeof document !== 'undefined' && document.fonts) {
+      await document.fonts.ready;
+    }
+
+    const images = Array.from(cardElement.querySelectorAll('img'));
+    await Promise.all(
+      images.map(
+        (img) =>
+          new Promise((resolve) => {
+            if (img.complete) return resolve(true);
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(true);
+          })
+      )
+    );
+
     const dataUrl = await domToPng(cardElement, {
       scale: 3,
       quality: 1,
-      font: false,
+      backgroundColor: 'transparent',
+      font: {
+        preferredFormat: 'woff2',
+      },
       features: {
         removeAbnormalAttributes: true,
       },

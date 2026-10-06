@@ -213,24 +213,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const updated = parsed.map((fl) => {
           let updatedFl = { ...fl };
 
-          // Standardize legacy prefixes
+          // Standardize legacy prefixes if needed
           if (legacyCodeMap[fl.code]) {
             updatedFl.code = legacyCodeMap[fl.code];
-            hasChanges = true;
-          } else if (
-            fl.code.startsWith('GD') ||
-            fl.code.startsWith('CW') ||
-            fl.code.startsWith('VE') ||
-            fl.code.startsWith('WP') ||
-            fl.code.startsWith('UX') ||
-            fl.code.startsWith('SD')
-          ) {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let randomCode = '';
-            for (let i = 0; i < 8; i++) {
-              randomCode += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            updatedFl.code = randomCode;
             hasChanges = true;
           }
 
