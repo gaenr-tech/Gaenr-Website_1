@@ -16,7 +16,7 @@ const MESSAGES: MessageItem[] = [
     role: 'Outsourcer',
     location: 'London',
     message: 'Need clean SaaS UI/UX',
-    avatarUrl: '/images/avatars/student_male_4.png',
+    avatarUrl: '/images/avatars/client_corp_male_1.jpg',
     posClass: 'top-[30%] left-[22%] sm:left-[24%]',
   },
   {
@@ -32,7 +32,7 @@ const MESSAGES: MessageItem[] = [
     role: 'Outsourcer',
     location: 'New York',
     message: 'Need 4K video editing',
-    avatarUrl: '/images/avatars/student_male_2.png',
+    avatarUrl: '/images/avatars/client_corp_male_2.jpg',
     posClass: 'top-[26%] left-1/2 -translate-x-1/2',
   },
   {
@@ -48,7 +48,7 @@ const MESSAGES: MessageItem[] = [
     role: 'Outsourcer',
     location: 'Singapore',
     message: 'WooCommerce speed boost',
-    avatarUrl: '/images/avatars/student_female_4.png',
+    avatarUrl: '/images/avatars/client_corp_female_1.jpg',
     posClass: 'top-[28%] right-[20%] sm:right-[22%]',
   },
   {
@@ -64,7 +64,7 @@ const MESSAGES: MessageItem[] = [
     role: 'Outsourcer',
     location: 'Sydney',
     message: 'Need pitch deck redesign',
-    avatarUrl: '/images/avatars/student_female_2.png',
+    avatarUrl: '/images/avatars/client_corp_female_2.jpg',
     posClass: 'top-[42%] left-[22%] sm:left-[24%]',
   },
   {
