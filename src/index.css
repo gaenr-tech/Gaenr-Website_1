@@ -333,6 +333,20 @@
   animation: networkSpinSlow 20s linear infinite;
 }
 
+/* Dynamic Energy Connection Flow Animation */
+@keyframes electricFlow {
+  from {
+    stroke-dashoffset: 200;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-electric-flow {
+  animation: electricFlow 1.2s linear infinite;
+}
+
 /* Seed to Sprout growth animation loop (4.2s cycle) */
 @keyframes stemRise {
   0% {

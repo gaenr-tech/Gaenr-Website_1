@@ -30,6 +30,75 @@ export const HomePage: React.FC = () => {
   const [expertBurst, setExpertBurst] = React.useState<number>(0);
   const [activeStepIndex, setActiveStepIndex] = React.useState<number>(0);
 
+  // Mobile-only dual-logo interactive connection feature
+  const offeringSectionRef = React.useRef<HTMLElement>(null);
+  const outsourcerLogoRef = React.useRef<HTMLButtonElement>(null);
+  const expertLogoRef = React.useRef<HTMLButtonElement>(null);
+  const [isOfferingConnected, setIsOfferingConnected] = React.useState(false);
+  const [offeringCoords, setOfferingCoords] = React.useState<{ x1: number; y1: number; x2: number; y2: number } | null>(null);
+  const isLogo1Touching = React.useRef(false);
+  const isLogo2Touching = React.useRef(false);
+  const lastLogo1TouchTime = React.useRef(0);
+  const lastLogo2TouchTime = React.useRef(0);
+  const connectionTimerRef = React.useRef<any>(null);
+
+  const triggerOfferingConnection = React.useCallback(() => {
+    if (!outsourcerLogoRef.current || !expertLogoRef.current || !offeringSectionRef.current) return;
+    const sRect = offeringSectionRef.current.getBoundingClientRect();
+    const oRect = outsourcerLogoRef.current.getBoundingClientRect();
+    const eRect = expertLogoRef.current.getBoundingClientRect();
+
+    setOfferingCoords({
+      x1: oRect.left + oRect.width / 2 - sRect.left,
+      y1: oRect.top + oRect.height / 2 - sRect.top,
+      x2: eRect.left + eRect.width / 2 - sRect.left,
+      y2: eRect.top + eRect.height / 2 - sRect.top,
+    });
+
+    setIsOfferingConnected(true);
+
+    try {
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate([40, 50, 40]);
+      }
+    } catch {}
+
+    if (connectionTimerRef.current) clearTimeout(connectionTimerRef.current);
+    connectionTimerRef.current = setTimeout(() => {
+      setIsOfferingConnected(false);
+    }, 3200);
+  }, []);
+
+  const handleLogo1TouchStart = () => {
+    setOutsourcerBurst((b) => b + 1);
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) return;
+    isLogo1Touching.current = true;
+    lastLogo1TouchTime.current = Date.now();
+
+    if (isLogo2Touching.current || (Date.now() - lastLogo2TouchTime.current < 2500)) {
+      triggerOfferingConnection();
+    }
+  };
+
+  const handleLogo1TouchEnd = () => {
+    isLogo1Touching.current = false;
+  };
+
+  const handleLogo2TouchStart = () => {
+    setExpertBurst((b) => b + 1);
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) return;
+    isLogo2Touching.current = true;
+    lastLogo2TouchTime.current = Date.now();
+
+    if (isLogo1Touching.current || (Date.now() - lastLogo1TouchTime.current < 2500)) {
+      triggerOfferingConnection();
+    }
+  };
+
+  const handleLogo2TouchEnd = () => {
+    isLogo2Touching.current = false;
+  };
+
   // Automated 0.85s sequence through steps in "How It Works"
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -389,7 +458,95 @@ export const HomePage: React.FC = () => {
           - Visual 2: Professional beach-side freelancer working on laptop with face visible
           - Responsive mobile alignment without text wrapping or broken lines
          ========================================================================= */}
-      <section className="relative py-14 sm:py-18 lg:py-20 bg-gaenr-fluid overflow-hidden border-b border-blue-100/70">
+      <section
+        ref={offeringSectionRef}
+        className="relative py-14 sm:py-18 lg:py-20 bg-gaenr-fluid overflow-hidden border-b border-blue-100/70"
+      >
+        {/* Dynamic Interactive Multi-Touch Connection Laser Beam (Mobile View Only) */}
+        {isOfferingConnected && offeringCoords && (
+          <div className="absolute inset-0 pointer-events-none z-30 lg:hidden overflow-visible" aria-hidden="true">
+            <svg className="w-full h-full overflow-visible">
+              <defs>
+                <linearGradient id="offering-core-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#0062e6" />
+                  <stop offset="50%" stopColor="#38bdf8" />
+                  <stop offset="100%" stopColor="#00e5ff" />
+                </linearGradient>
+                <linearGradient id="offering-glow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#0256d0" stopOpacity="0.85" />
+                  <stop offset="50%" stopColor="#38bdf8" stopOpacity="0.95" />
+                  <stop offset="100%" stopColor="#00f2fe" stopOpacity="0.85" />
+                </linearGradient>
+                <filter id="offering-laser-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Layer 1: Ambient Outer Glow Beam */}
+              <path
+                d={`M ${offeringCoords.x1} ${offeringCoords.y1} C ${offeringCoords.x1 + (offeringCoords.x2 - offeringCoords.x1) * 0.15} ${offeringCoords.y1 + (offeringCoords.y2 - offeringCoords.y1) * 0.45}, ${offeringCoords.x2 - (offeringCoords.x2 - offeringCoords.x1) * 0.15} ${offeringCoords.y2 - (offeringCoords.y2 - offeringCoords.y1) * 0.55}, ${offeringCoords.x2} ${offeringCoords.y2}`}
+                fill="none"
+                stroke="url(#offering-glow-grad)"
+                strokeWidth="16"
+                strokeLinecap="round"
+                opacity="0.45"
+                filter="url(#offering-laser-glow)"
+              />
+
+              {/* Layer 2: Rapid Traveling Electric Current */}
+              <path
+                d={`M ${offeringCoords.x1} ${offeringCoords.y1} C ${offeringCoords.x1 + (offeringCoords.x2 - offeringCoords.x1) * 0.15} ${offeringCoords.y1 + (offeringCoords.y2 - offeringCoords.y1) * 0.45}, ${offeringCoords.x2 - (offeringCoords.x2 - offeringCoords.x1) * 0.15} ${offeringCoords.y2 - (offeringCoords.y2 - offeringCoords.y1) * 0.55}, ${offeringCoords.x2} ${offeringCoords.y2}`}
+                fill="none"
+                stroke="url(#offering-core-grad)"
+                strokeWidth="5"
+                strokeLinecap="round"
+                strokeDasharray="16 10"
+                className="animate-electric-flow"
+              />
+
+              {/* Layer 3: High-Intensity White Hot Core Laser */}
+              <path
+                d={`M ${offeringCoords.x1} ${offeringCoords.y1} C ${offeringCoords.x1 + (offeringCoords.x2 - offeringCoords.x1) * 0.15} ${offeringCoords.y1 + (offeringCoords.y2 - offeringCoords.y1) * 0.45}, ${offeringCoords.x2 - (offeringCoords.x2 - offeringCoords.x1) * 0.15} ${offeringCoords.y2 - (offeringCoords.y2 - offeringCoords.y1) * 0.55}, ${offeringCoords.x2} ${offeringCoords.y2}`}
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                opacity="0.95"
+              />
+
+              {/* Origin Shockwave Ring (Outsourcer Logo) */}
+              <circle cx={offeringCoords.x1} cy={offeringCoords.y1} r="24" stroke="#38bdf8" strokeWidth="3" fill="none" className="animate-ping" />
+              <circle cx={offeringCoords.x1} cy={offeringCoords.y1} r="12" fill="#00e5ff" opacity="0.8" />
+
+              {/* Target Shockwave Ring (Expert Logo) */}
+              <circle cx={offeringCoords.x2} cy={offeringCoords.y2} r="24" stroke="#0256d0" strokeWidth="3" fill="none" className="animate-ping" />
+              <circle cx={offeringCoords.x2} cy={offeringCoords.y2} r="12" fill="#38bdf8" opacity="0.8" />
+            </svg>
+
+            {/* Center Connected Floating Capsule Badge */}
+            <div
+              className="absolute pointer-events-none transition-all duration-300"
+              style={{
+                left: `${(offeringCoords.x1 + offeringCoords.x2) / 2}px`,
+                top: `${(offeringCoords.y1 + offeringCoords.y2) / 2}px`,
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/95 text-white text-[10px] font-bold shadow-2xl border border-cyan-400/80 backdrop-blur-md animate-bounce">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-ping" />
+                <span className="bg-gradient-to-r from-cyan-300 via-sky-200 to-white bg-clip-text text-transparent font-black tracking-wide">
+                  Connected ⚡
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8 relative z-10">
           {/* Header Bar with Official SVG Logo */}
           <div className="text-center space-y-2 max-w-2xl mx-auto">
@@ -460,9 +617,16 @@ export const HomePage: React.FC = () => {
 
                     {/* Floating Clickable Gaenr Logo Badge using official SVG brand mark */}
                     <button
+                      ref={outsourcerLogoRef}
                       type="button"
-                      onClick={() => setOutsourcerBurst((b) => b + 1)}
-                      className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center cursor-pointer active:scale-90 transition-transform duration-150 hover:scale-105 p-1 group z-10"
+                      onClick={handleLogo1TouchStart}
+                      onTouchStart={handleLogo1TouchStart}
+                      onTouchEnd={handleLogo1TouchEnd}
+                      className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center cursor-pointer active:scale-90 transition-all duration-200 p-1 group z-10 ${
+                        isOfferingConnected
+                          ? 'ring-4 ring-cyan-400 shadow-cyan-400/60 shadow-lg scale-110'
+                          : 'hover:scale-105'
+                      }`}
                       title="Tap Gaenr Logo to broadcast network waves"
                       aria-label="Gaenr Network Pulse"
                     >
@@ -578,9 +742,16 @@ export const HomePage: React.FC = () => {
 
                     {/* Floating Clickable Gaenr Logo Badge using official SVG brand mark */}
                     <button
+                      ref={expertLogoRef}
                       type="button"
-                      onClick={() => setExpertBurst((b) => b + 1)}
-                      className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center cursor-pointer active:scale-90 transition-transform duration-150 hover:scale-105 p-1 group z-10"
+                      onClick={handleLogo2TouchStart}
+                      onTouchStart={handleLogo2TouchStart}
+                      onTouchEnd={handleLogo2TouchEnd}
+                      className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center cursor-pointer active:scale-90 transition-all duration-200 p-1 group z-10 ${
+                        isOfferingConnected
+                          ? 'ring-4 ring-cyan-400 shadow-cyan-400/60 shadow-lg scale-110'
+                          : 'hover:scale-105'
+                      }`}
                       title="Tap Gaenr Logo to broadcast network waves"
                       aria-label="Gaenr Network Pulse"
                     >
