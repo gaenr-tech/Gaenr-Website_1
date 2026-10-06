@@ -62,41 +62,39 @@ export const HomePage: React.FC = () => {
         navigator.vibrate([40, 50, 40]);
       }
     } catch {}
-
-    if (connectionTimerRef.current) clearTimeout(connectionTimerRef.current);
-    connectionTimerRef.current = setTimeout(() => {
-      setIsOfferingConnected(false);
-    }, 3200);
   }, []);
 
-  const handleLogo1TouchStart = () => {
-    setOutsourcerBurst((b) => b + 1);
+  // Strictly simultaneous dual-touch handlers: ONLY activates when BOTH logos are held down at the same time
+  const handleLogo1TouchStart = (e: React.TouchEvent) => {
     if (typeof window !== 'undefined' && window.innerWidth >= 1024) return;
     isLogo1Touching.current = true;
-    lastLogo1TouchTime.current = Date.now();
+    setOutsourcerBurst((b) => b + 1);
 
-    if (isLogo2Touching.current || (Date.now() - lastLogo2TouchTime.current < 2500)) {
+    // Only triggers if Logo 2 is currently being touched at the exact same time
+    if (isLogo2Touching.current) {
       triggerOfferingConnection();
     }
   };
 
   const handleLogo1TouchEnd = () => {
     isLogo1Touching.current = false;
+    setIsOfferingConnected(false);
   };
 
-  const handleLogo2TouchStart = () => {
-    setExpertBurst((b) => b + 1);
+  const handleLogo2TouchStart = (e: React.TouchEvent) => {
     if (typeof window !== 'undefined' && window.innerWidth >= 1024) return;
     isLogo2Touching.current = true;
-    lastLogo2TouchTime.current = Date.now();
+    setExpertBurst((b) => b + 1);
 
-    if (isLogo1Touching.current || (Date.now() - lastLogo1TouchTime.current < 2500)) {
+    // Only triggers if Logo 1 is currently being touched at the exact same time
+    if (isLogo1Touching.current) {
       triggerOfferingConnection();
     }
   };
 
   const handleLogo2TouchEnd = () => {
     isLogo2Touching.current = false;
+    setIsOfferingConnected(false);
   };
 
   // Automated 0.85s sequence through steps in "How It Works"
@@ -619,9 +617,10 @@ export const HomePage: React.FC = () => {
                     <button
                       ref={outsourcerLogoRef}
                       type="button"
-                      onClick={handleLogo1TouchStart}
+                      onClick={() => setOutsourcerBurst((b) => b + 1)}
                       onTouchStart={handleLogo1TouchStart}
                       onTouchEnd={handleLogo1TouchEnd}
+                      onTouchCancel={handleLogo1TouchEnd}
                       className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center cursor-pointer active:scale-90 transition-all duration-200 p-1 group z-10 ${
                         isOfferingConnected
                           ? 'ring-4 ring-cyan-400 shadow-cyan-400/60 shadow-lg scale-110'
@@ -744,9 +743,10 @@ export const HomePage: React.FC = () => {
                     <button
                       ref={expertLogoRef}
                       type="button"
-                      onClick={handleLogo2TouchStart}
+                      onClick={() => setExpertBurst((b) => b + 1)}
                       onTouchStart={handleLogo2TouchStart}
                       onTouchEnd={handleLogo2TouchEnd}
+                      onTouchCancel={handleLogo2TouchEnd}
                       className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center cursor-pointer active:scale-90 transition-all duration-200 p-1 group z-10 ${
                         isOfferingConnected
                           ? 'ring-4 ring-cyan-400 shadow-cyan-400/60 shadow-lg scale-110'
