@@ -9,7 +9,7 @@ interface MessageItem {
   posClass: string;
 }
 
-// Fixed curated messages that strictly stay within the 3D globe boundaries (12 diverse varieties)
+// Fixed curated messages that strictly stay within the 3D globe boundaries (16 diverse varieties)
 const MESSAGES: MessageItem[] = [
   {
     id: 'msg-1',
@@ -78,16 +78,16 @@ const MESSAGES: MessageItem[] = [
   {
     id: 'msg-9',
     role: 'Outsourcer',
-    location: 'Dubai',
-    message: 'Need SEO copy for agency',
-    avatarUrl: '/images/avatars/client_corp_male_1.jpg',
+    location: 'Singapore',
+    message: 'Mobile app UI in Flutter',
+    avatarUrl: '/images/avatars/client_corp_male_3.jpg',
     posClass: 'top-[32%] left-[20%] sm:left-[22%]',
   },
   {
     id: 'msg-10',
     role: 'Expert',
     location: 'Khulna',
-    message: 'Ranked copy & hooks live! ✍️',
+    message: 'Responsive screens done! 📱',
     avatarUrl: '/images/avatars/student_female_2.png',
     posClass: 'top-[46%] right-[18%] sm:right-[20%]',
   },
@@ -96,16 +96,48 @@ const MESSAGES: MessageItem[] = [
     role: 'Outsourcer',
     location: 'Sylhet',
     message: 'Need 15-slide pitch deck',
-    avatarUrl: '/images/avatars/client_corp_female_1.jpg',
+    avatarUrl: '/images/avatars/client_corp_female_3.jpg',
     posClass: 'top-[28%] left-1/2 -translate-x-1/2',
   },
   {
     id: 'msg-12',
     role: 'Expert',
+    location: 'Barisal',
+    message: 'Pitch deck finalized! 📊',
+    avatarUrl: '/images/avatars/student_male_4.png',
+    posClass: 'top-[60%] left-1/2 -translate-x-1/2',
+  },
+  {
+    id: 'msg-13',
+    role: 'Outsourcer',
+    location: 'Toronto',
+    message: 'Need full-stack Next.js dev',
+    avatarUrl: '/images/avatars/client_corp_male_4.jpg',
+    posClass: 'top-[36%] right-[20%] sm:right-[22%]',
+  },
+  {
+    id: 'msg-14',
+    role: 'Expert',
+    location: 'Rangpur',
+    message: 'API integrated & live! 💻',
+    avatarUrl: '/images/avatars/student_female_4.png',
+    posClass: 'top-[52%] left-[22%] sm:left-[24%]',
+  },
+  {
+    id: 'msg-15',
+    role: 'Outsourcer',
+    location: 'Comilla',
+    message: 'Need social media marketing',
+    avatarUrl: '/images/avatars/client_corp_female_4.jpg',
+    posClass: 'top-[34%] left-[22%] sm:left-[24%]',
+  },
+  {
+    id: 'msg-16',
+    role: 'Expert',
     location: 'Dhaka',
     message: 'Milestone approved! 5★ ✅',
     avatarUrl: '/images/avatars/student_female_5.png',
-    posClass: 'top-[60%] left-1/2 -translate-x-1/2',
+    posClass: 'top-[58%] right-[18%] sm:right-[20%]',
   },
 ];
 
