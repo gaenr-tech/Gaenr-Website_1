@@ -9,37 +9,85 @@ interface CityHub {
   lon: number;
 }
 
-// Key global talent & client innovation hubs across all continents
+// Global talent & client innovation hubs spread across all continents of the world
 const HUBS: CityHub[] = [
+  // South Asia
   { id: 'dhaka', name: 'Dhaka', lat: 23.8103, lon: 90.4125 },
-  { id: 'london', name: 'London', lat: 51.5074, lon: -0.1278 },
-  { id: 'sf', name: 'San Francisco', lat: 37.7749, lon: -122.4194 },
-  { id: 'ny', name: 'New York', lat: 40.7128, lon: -74.006 },
+  { id: 'mumbai', name: 'Mumbai', lat: 19.076, lon: 72.8777 },
+
+  // East & Southeast Asia
   { id: 'singapore', name: 'Singapore', lat: 1.3521, lon: 103.8198 },
-  { id: 'dubai', name: 'Dubai', lat: 25.2048, lon: 55.2708 },
   { id: 'tokyo', name: 'Tokyo', lat: 35.6762, lon: 139.6503 },
-  { id: 'sydney', name: 'Sydney', lat: -33.8688, lon: 151.2093 },
+  { id: 'seoul', name: 'Seoul', lat: 37.5665, lon: 126.978 },
+  { id: 'bangkok', name: 'Bangkok', lat: 13.7563, lon: 100.5018 },
+
+  // Middle East & Africa
+  { id: 'dubai', name: 'Dubai', lat: 25.2048, lon: 55.2708 },
+  { id: 'cairo', name: 'Cairo', lat: 30.0444, lon: 31.2357 },
+  { id: 'nairobi', name: 'Nairobi', lat: -1.2921, lon: 36.8219 },
+  { id: 'capetown', name: 'Cape Town', lat: -33.9249, lon: 18.4241 },
+  { id: 'lagos', name: 'Lagos', lat: 6.5244, lon: 3.3792 },
+
+  // Europe
+  { id: 'london', name: 'London', lat: 51.5074, lon: -0.1278 },
   { id: 'berlin', name: 'Berlin', lat: 52.52, lon: 13.405 },
+  { id: 'paris', name: 'Paris', lat: 48.8566, lon: 2.3522 },
+  { id: 'stockholm', name: 'Stockholm', lat: 59.3293, lon: 18.0686 },
+
+  // North America
+  { id: 'ny', name: 'New York', lat: 40.7128, lon: -74.006 },
+  { id: 'sf', name: 'San Francisco', lat: 37.7749, lon: -122.4194 },
   { id: 'toronto', name: 'Toronto', lat: 43.6532, lon: -79.3832 },
+  { id: 'chicago', name: 'Chicago', lat: 41.8781, lon: -87.6298 },
+
+  // South America
+  { id: 'saopaulo', name: 'São Paulo', lat: -23.5505, lon: -46.6333 },
+  { id: 'buenosaires', name: 'Buenos Aires', lat: -34.6037, lon: -58.3816 },
+  { id: 'bogota', name: 'Bogotá', lat: 4.711, lon: -74.0721 },
+
+  // Oceania
+  { id: 'sydney', name: 'Sydney', lat: -33.8688, lon: 151.2093 },
+  { id: 'melbourne', name: 'Melbourne', lat: -37.8136, lon: 144.9631 },
 ];
 
-// Multi-point global connections across the entire world (no single central bottleneck)
+// Globally distributed network routes connecting all continents without clustering
 const NETWORK_ROUTES: [string, string][] = [
+  // Trans-Atlantic & Pan-American
   ['sf', 'ny'],
   ['ny', 'london'],
-  ['london', 'berlin'],
-  ['berlin', 'dubai'],
-  ['dubai', 'dhaka'],
-  ['dhaka', 'singapore'],
-  ['singapore', 'tokyo'],
-  ['tokyo', 'sf'],
-  ['sf', 'sydney'],
-  ['singapore', 'sydney'],
-  ['london', 'toronto'],
-  ['toronto', 'sf'],
+  ['london', 'paris'],
+  ['paris', 'berlin'],
+  ['berlin', 'stockholm'],
+  ['toronto', 'chicago'],
+  ['chicago', 'sf'],
+  ['ny', 'bogota'],
+  ['bogota', 'saopaulo'],
+  ['saopaulo', 'buenosaires'],
+  ['saopaulo', 'lagos'],
+
+  // Africa & Middle East
+  ['lagos', 'capetown'],
+  ['capetown', 'nairobi'],
+  ['nairobi', 'cairo'],
+  ['cairo', 'dubai'],
+  ['dubai', 'london'],
+
+  // Middle East & South Asia
+  ['dubai', 'mumbai'],
+  ['mumbai', 'dhaka'],
   ['dhaka', 'london'],
-  ['dubai', 'singapore'],
-  ['dhaka', 'tokyo'],
+  ['dhaka', 'singapore'],
+  ['dhaka', 'bangkok'],
+
+  // Asia-Pacific & Oceania
+  ['singapore', 'tokyo'],
+  ['tokyo', 'seoul'],
+  ['seoul', 'sf'],
+  ['singapore', 'sydney'],
+  ['sydney', 'melbourne'],
+  ['sydney', 'sf'],
+  ['tokyo', 'sf'],
+  ['bangkok', 'singapore'],
 ];
 
 function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector3 {
