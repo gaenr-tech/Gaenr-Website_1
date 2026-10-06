@@ -53,13 +53,13 @@ const buildWelcomeEmail = (expert) => {
       padding: 0;
       background-color: #f1f5f9;
       font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      color: #0f172a;
+      color: #1e293b;
     }
     .brand-title {
       font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
-      font-size: 24px;
-      font-weight: 900;
-      letter-spacing: 5px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 3px;
       color: #006eff;
       text-align: center;
     }
@@ -68,22 +68,22 @@ const buildWelcomeEmail = (expert) => {
       background-color: #006eff;
       color: #ffffff !important;
       text-decoration: none;
-      font-weight: 700;
+      font-weight: 600;
       font-size: 14px;
-      padding: 13px 28px;
+      padding: 12px 28px;
       border-radius: 12px;
-      box-shadow: 0 4px 14px rgba(0, 110, 255, 0.25);
+      box-shadow: 0 4px 14px rgba(0, 110, 255, 0.22);
       transition: all 0.2s ease;
     }
     .action-btn:hover {
       background-color: #0056cc !important;
-      box-shadow: 0 6px 20px rgba(0, 110, 255, 0.35) !important;
+      box-shadow: 0 6px 20px rgba(0, 110, 255, 0.32) !important;
     }
     .profile-link {
       display: inline-block;
       color: #006eff !important;
       text-decoration: none;
-      font-weight: 700;
+      font-weight: 500;
       font-size: 13px;
       transition: color 0.2s ease;
     }
@@ -115,40 +115,41 @@ const buildWelcomeEmail = (expert) => {
     }
   </style>
 </head>
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:'DM Sans',Arial,Helvetica,sans-serif;color:#0f172a">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;">
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:'DM Sans',Arial,Helvetica,sans-serif;color:#1e293b">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;">
     <tr>
       <td align="center" style="padding:32px 16px;">
-        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:20px;border:1px solid #e2e8f0;font-family:'DM Sans',Arial,Helvetica,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.04);overflow:hidden;">
+        <!-- Card Container with soft light tone -->
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:22px;border:1px solid #e2e8f0;font-family:'DM Sans',Arial,Helvetica,sans-serif;box-shadow:0 8px 30px rgba(15,23,42,0.04);overflow:hidden;">
           
           <!-- Header -->
           <tr>
-            <td align="center" style="padding:28px 32px 20px;background:#f0f6ff;border-bottom:1px solid #dbeafe;">
-              <img src="${logoUrl}" width="46" height="46" alt="Gaenr logo" style="display:block;width:46px;height:46px;margin:0 auto 8px;" />
+            <td align="center" style="padding:24px 32px 18px;background:#f8fafc;border-bottom:1px solid #edf2f7;">
+              <img src="${logoUrl}" width="40" height="40" alt="Gaenr logo" style="display:block;width:40px;height:40px;margin:0 auto 8px;" />
               <div class="brand-title">GAENR</div>
             </td>
           </tr>
 
-          <!-- Welcome Greeting -->
+          <!-- Welcome Greeting (Refined, balanced typography) -->
           <tr>
-            <td style="padding:24px 32px 0;font-size:20px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;">
-              Welcome, ${escapeHtml(name)}!
+            <td style="padding:24px 32px 0;font-size:18px;font-weight:500;color:#1e293b;letter-spacing:-0.2px;">
+              Welcome, <span style="font-weight:600;color:#006eff;">${escapeHtml(name)}</span>!
             </td>
           </tr>
           <tr>
-            <td style="padding:10px 32px 0;font-size:14px;line-height:1.6;color:#475569;">
+            <td style="padding:10px 32px 0;font-size:14px;line-height:1.6;color:#475569;font-weight:400;">
               We’re delighted to welcome you to the Gaenr ecosystem. Your verified expert profile has been created and is now live for clients worldwide.
             </td>
           </tr>
 
-          <!-- Digital ID Card Display -->
+          <!-- Digital ID Card Display (Soft light surrounding background instead of pitch black) -->
           <tr>
-            <td style="padding:24px 32px 0;">
-              <div style="font-size:12px;font-weight:800;color:#64748b;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.8px;">
+            <td style="padding:22px 32px 0;">
+              <div style="font-size:11px;font-weight:500;color:#64748b;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;">
                 Your Digital Gaenr ID Card
               </div>
-              <a href="${idCardUrl}" target="_blank" style="display:block;text-decoration:none;background:#0b1329;border:1px solid #1e293b;border-radius:20px;padding:12px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.12);">
-                <img src="${idCardUrl}" width="270" alt="Gaenr digital ID card" style="display:block;width:270px;max-width:100%;height:auto;margin:0 auto;border-radius:14px;" />
+              <a href="${idCardUrl}" target="_blank" style="display:block;text-decoration:none;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:20px;padding:20px 14px;text-align:center;">
+                <img src="${idCardUrl}" width="270" alt="Gaenr digital ID card" style="display:block;width:270px;max-width:100%;height:auto;margin:0 auto;border-radius:18px;box-shadow:0 12px 32px rgba(11,19,41,0.22);" />
               </a>
             </td>
           </tr>
@@ -171,17 +172,17 @@ const buildWelcomeEmail = (expert) => {
 
           <!-- Divider -->
           <tr>
-            <td style="padding:28px 32px 0;">
+            <td style="padding:26px 32px 0;">
               <div style="height:1px;background:#e2e8f0;"></div>
             </td>
           </tr>
 
           <!-- Footer with modern contact & social icons -->
           <tr>
-            <td style="padding:22px 32px 28px;text-align:center;background:#fafcff;">
+            <td style="padding:22px 32px 28px;text-align:center;background:#f8fafc;border-top:1px solid #edf2f7;">
               <div style="margin-bottom:12px;">
                 <img src="${logoUrl}" width="24" height="24" alt="Gaenr" style="display:inline-block;width:24px;height:24px;vertical-align:middle;margin-right:6px;" />
-                <span style="color:#0f172a;vertical-align:middle;font-size:14px;font-weight:800;">Team Gaenr</span>
+                <span style="color:#0f172a;vertical-align:middle;font-size:13px;font-weight:700;">Team Gaenr</span>
               </div>
 
               <!-- Contact Icons (Directly hyperlinked, no text) -->
@@ -223,7 +224,7 @@ const buildWelcomeEmail = (expert) => {
               </div>
 
               <div>
-                <a href="https://gaenr.com" style="color:#006eff;text-decoration:none;font-weight:700;font-size:13px;" target="_blank">gaenr.com</a>
+                <a href="https://gaenr.com" style="color:#006eff;text-decoration:none;font-weight:600;font-size:13px;" target="_blank">gaenr.com</a>
               </div>
             </td>
           </tr>
@@ -271,10 +272,59 @@ export default async function handler(req, res) {
     if (!claim[0]) return send(res, 200, { ok: true, alreadySent: true });
 
     const { subject, text, html } = buildWelcomeEmail(expert);
+
+    // 3. Cache and attach the exact ID Card PNG image to the email
+    const attachments = [];
+    const incomingCardImage = typeof req.body?.cardImage === 'string' ? req.body.cardImage.trim() : '';
+
+    if (incomingCardImage && incomingCardImage.startsWith('data:image/png')) {
+      // 3a. Save to gaenr_id_cards table so /api/id-card serves this exact rendered card
+      try {
+        await sql`CREATE TABLE IF NOT EXISTS gaenr_id_cards (
+          code text PRIMARY KEY,
+          image_data text NOT NULL,
+          updated_at timestamptz NOT NULL DEFAULT now()
+        )`;
+        await sql`INSERT INTO gaenr_id_cards (code, image_data) VALUES (${code}, ${incomingCardImage})
+          ON CONFLICT (code) DO UPDATE SET image_data = EXCLUDED.image_data, updated_at = now()`;
+      } catch (dbErr) {
+        console.warn('Could not cache card image in DB:', dbErr);
+      }
+
+      const base64Data = incomingCardImage.includes(',') ? incomingCardImage.split(',')[1] : incomingCardImage;
+      attachments.push({
+        filename: `GAENR-ID-${code}.png`,
+        content: base64Data,
+      });
+    } else {
+      // 3b. Fallback: fetch rendered card from /api/id-card endpoint
+      try {
+        const cardRes = await fetch(`${SITE_URL}/api/id-card?code=${encodeURIComponent(code)}`);
+        if (cardRes.ok) {
+          const cardBuffer = Buffer.from(await cardRes.arrayBuffer());
+          attachments.push({
+            filename: `GAENR-ID-${code}.png`,
+            content: cardBuffer.toString('base64'),
+          });
+        }
+      } catch (err) {
+        console.warn('Could not attach ID card image to email:', err);
+      }
+    }
+
+    const emailPayload = {
+      from,
+      to: [to],
+      subject,
+      text,
+      html,
+      attachments: attachments.length > 0 ? attachments : undefined,
+    };
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from, to: [to], subject, text, html }),
+      body: JSON.stringify(emailPayload),
     });
 
     if (!response.ok) {

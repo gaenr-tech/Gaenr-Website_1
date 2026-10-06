@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../../../context/AppContext';
 import { sendExpertWelcomeEmail } from '../../../utils/email';
+import { ExpertIdCard } from '../../../components/common/ExpertIdCard';
+import { captureIdCardDataUrl } from '../../../utils/downloadIdCardImage';
 import { FreelancerProfile, ServiceCategory, AvatarAsset, ServiceSlug, ExpertPricingTier, PortfolioItem, DeliverableType, DELIVERABLE_TYPE_OPTIONS } from '../../../types';
 import { AvatarGraphic, getOfficialAvatarUrl, getCategoryAvatar, RAW_AVATAR_SPECS, CategoryAvatarMeta } from '../../../components/common/Avatars';
 import {
@@ -163,6 +165,8 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
   // Active avatar is either the chosen one, or the auto-recommended one
   const activeAvatar = RAW_AVATAR_SPECS.find((a) => a.id === selectedAvatarId) || autoAvatar;
 
+  const cardPreviewRef = useRef<HTMLDivElement>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -242,7 +246,16 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
       // Email the expert at the address entered in "Private Email" (runs in the background)
       if (newProfile.privateEmail) {
-        sendExpertWelcomeEmail(generatedCode).then((result) => {
+        let capturedCardDataUrl: string | null = null;
+        if (cardPreviewRef.current) {
+          try {
+            capturedCardDataUrl = await captureIdCardDataUrl(cardPreviewRef.current);
+          } catch (captureErr) {
+            console.warn('ID card capture fallback:', captureErr);
+          }
+        }
+
+        sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl).then((result) => {
           if (result.status === 'sent') showToast(`Welcome email sent to ${newProfile.privateEmail}`, 'success');
           else if (result.status === 'failed') showToast(`Expert saved, but the welcome email failed: ${result.message}`, 'error');
           else if (result.status === 'skipped' && result.reason === 'not-configured') showToast('Expert saved. Email service is not set up yet, so no email was sent.', 'info');
@@ -259,6 +272,47 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
   return (
     <div className="space-y-5 sm:space-y-6 max-w-4xl mx-auto pb-16 px-3 sm:px-0">
+      {/* Off-screen ID Card for high-resolution PNG snapshot matching exact download */}
+      <div
+        style={{
+          position: 'fixed',
+          left: '-9999px',
+          top: 0,
+          width: '340px',
+          pointerEvents: 'none',
+          zIndex: -1,
+        }}
+        aria-hidden="true"
+      >
+        <ExpertIdCard
+          ref={cardPreviewRef}
+          freelancer={{
+            code: generatedCode,
+            name: name.trim() || 'Verified Expert',
+            categoryTitle: catObj?.title || 'Verified Expert',
+            avatarId: activeAvatar.id,
+            completedProjects: 0,
+            rating: 0,
+            reviewsCount: 0,
+            satisfactionRate: { satisfied: 100, neutral: 0, unsatisfied: 0 },
+            isPublic: true,
+            skills: selectedSkills,
+            status: 'active',
+            dateAdded: new Date().toISOString(),
+            gender,
+            statement: statement.trim(),
+            address: address.trim(),
+            privateEmail: privateEmail.trim(),
+            contactNumber: contactNumber.trim(),
+            additionalNote: additionalNote.trim(),
+            paymentMethod,
+            paymentDetails: paymentDetails.trim(),
+            mediaType,
+            pricingTiers: pricingTiers.filter((p) => p.serviceName.trim() && p.price.trim()),
+          }}
+        />
+      </div>
+
       {/* Top Breadcrumb */}
       <div className="flex items-center justify-between gap-2">
         <button

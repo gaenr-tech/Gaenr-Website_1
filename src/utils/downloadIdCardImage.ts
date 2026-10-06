@@ -2,13 +2,37 @@ import { domToPng } from 'modern-screenshot';
 import { FreelancerProfile } from '../types';
 
 /**
- * Downloads the EXACT previewed Digital ID Card as a crisp, high-resolution PNG image.
+ * Captures the previewed Digital ID Card as a crisp, high-resolution PNG Data URL.
  * Uses modern-screenshot to clone the exact DOM node:
- * - Exact height (no extra bottom empty space)
- * - Exact CSS gradient and ambient glow (no banding or pixelation)
- * - Exact avatar currently rendered on screen (including custom uploaded images)
- * - Zero hanging because font: false skips remote font HTTP requests.
+ * - Exact height, CSS gradient, and ambient glow
+ * - Exact avatar currently rendered on screen
+ * - font: false prevents hanging on remote Google Fonts HTTP download
  */
+export async function captureIdCardDataUrl(
+  cardElement: HTMLElement | null
+): Promise<string | null> {
+  if (!cardElement) return null;
+
+  try {
+    const dataUrl = await domToPng(cardElement, {
+      scale: 3,
+      quality: 1,
+      font: false,
+      features: {
+        removeAbnormalAttributes: true,
+      },
+    });
+
+    if (dataUrl && dataUrl.startsWith('data:image/png')) {
+      return dataUrl;
+    }
+  } catch (err) {
+    console.error('Failed to capture ID card data URL:', err);
+  }
+
+  return null;
+}
+
 export async function downloadIdCardBadge(
   cardElement: HTMLElement | null,
   freelancer: FreelancerProfile
@@ -16,16 +40,9 @@ export async function downloadIdCardBadge(
   if (!cardElement) return false;
 
   try {
-    const dataUrl = await domToPng(cardElement, {
-      scale: 3,
-      quality: 1,
-      font: false, // Prevents hanging on remote Google Fonts HTTP download
-      features: {
-        removeAbnormalAttributes: true,
-      },
-    });
+    const dataUrl = await captureIdCardDataUrl(cardElement);
 
-    if (dataUrl && dataUrl.startsWith('data:image/png')) {
+    if (dataUrl) {
       const link = document.createElement('a');
       link.download = `GAENR-ID-${freelancer.code}.png`;
       link.href = dataUrl;
@@ -39,7 +56,7 @@ export async function downloadIdCardBadge(
       return true;
     }
   } catch (err) {
-    console.error('Failed to capture ID card with modern-screenshot:', err);
+    console.error('Failed to download ID card badge:', err);
   }
 
   return false;

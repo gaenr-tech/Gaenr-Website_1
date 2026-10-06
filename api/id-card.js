@@ -33,9 +33,12 @@ const gaenrLogoPaths = `
 const sendError = (res, status, error) => res.status(status).setHeader('Cache-Control', 'no-store').json({ error });
 
 const fetchAvatarBuffer = async (avatarRelPath) => {
+  if (!avatarRelPath) return null;
+  const cleanPath = avatarRelPath.split('?')[0];
+
   // 1. Try local filesystem first
   try {
-    const localPath = path.join(process.cwd(), 'public', avatarRelPath);
+    const localPath = path.join(process.cwd(), 'public', cleanPath);
     if (fs.existsSync(localPath)) {
       return fs.readFileSync(localPath);
     }
@@ -43,7 +46,7 @@ const fetchAvatarBuffer = async (avatarRelPath) => {
 
   // 2. Fetch over HTTP if not on local disk
   try {
-    const response = await fetch(`${SITE_URL}${avatarRelPath}`);
+    const response = await fetch(`${SITE_URL}${cleanPath}`);
     if (response.ok) {
       return Buffer.from(await response.arrayBuffer());
     }
@@ -148,6 +151,23 @@ export default async function handler(req, res) {
 
   try {
     const sql = neon(connectionString);
+
+    // 1. If an exact browser-rendered snapshot exists, serve it directly
+    try {
+      const cardRows = await sql`SELECT image_data FROM gaenr_id_cards WHERE code = ${code} LIMIT 1`;
+      if (cardRows[0]?.image_data) {
+        const raw = cardRows[0].image_data;
+        const base64Data = raw.includes(',') ? raw.split(',')[1] : raw;
+        const imageBuffer = Buffer.from(base64Data, 'base64');
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
+        if (url.searchParams.get('download') === '1') {
+          res.setHeader('Content-Disposition', `attachment; filename="GAENR-ID-${code}.png"`);
+        }
+        return res.status(200).send(imageBuffer);
+      }
+    } catch {}
+
     const rows = await sql`SELECT state->>'gaenr_freelancers' AS list FROM gaenr_app_state WHERE id = 1`;
     let experts = [];
     try { experts = JSON.parse(rows[0]?.list || '[]'); } catch { experts = []; }

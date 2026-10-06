@@ -11,7 +11,10 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
  * Ask the server to email the newly created expert. The recipient is looked up
  * server-side from the saved profile, so only the expert's own address is used.
  */
-export const sendExpertWelcomeEmail = async (code: string): Promise<WelcomeEmailResult> => {
+export const sendExpertWelcomeEmail = async (
+  code: string,
+  cardImageDataUrl?: string | null
+): Promise<WelcomeEmailResult> => {
   // The profile is mirrored to the shared database asynchronously; give it a moment and retry.
   for (let attempt = 0; attempt < 5; attempt += 1) {
     await sleep(attempt === 0 ? 1500 : 2000);
@@ -19,7 +22,10 @@ export const sendExpertWelcomeEmail = async (code: string): Promise<WelcomeEmail
       const response = await fetch(`${apiBase()}/api/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({
+          code,
+          cardImage: cardImageDataUrl || undefined,
+        }),
       });
       const data = (await response.json().catch(() => ({}))) as { alreadySent?: boolean; code?: string; error?: string };
 
