@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { HeroGlobeMessages } from './HeroGlobeMessages';
 
 interface CityHub {
   id: string;
@@ -375,8 +376,9 @@ export const Hero3DCanvas: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative w-full aspect-square max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] mx-auto flex items-center justify-center bg-transparent pointer-events-none select-none">
-      <div ref={mountRef} className="w-full h-full bg-transparent flex items-center justify-center" />
+    <div className="relative w-full aspect-square max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] mx-auto flex items-center justify-center bg-transparent select-none">
+      <div ref={mountRef} className="w-full h-full bg-transparent flex items-center justify-center pointer-events-none" />
+      <HeroGlobeMessages />
     </div>
   );
 };

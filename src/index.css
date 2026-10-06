@@ -963,6 +963,40 @@
   }
 }
 
+/* Hero Globe Interactive Pop-up Messages */
+@keyframes heroPopIn {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.05);
+  }
+  80% {
+    transform: translateY(2px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
+@keyframes heroPopOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.88);
+  }
+}
 
+.animate-hero-pop-in {
+  animation: heroPopIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
+.animate-hero-pop-out {
+  animation: heroPopOut 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
