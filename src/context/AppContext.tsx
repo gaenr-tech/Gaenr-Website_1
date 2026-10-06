@@ -157,14 +157,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [isApplyExpertOpen, setIsApplyExpertOpen] = useState(false);
 
-  // Admin Auth
+  // Admin Auth - strictly requires active session authentication
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
     try {
-      const savedEmp = localStorage.getItem('gaenr_current_employee');
+      const isSessionActive = sessionStorage.getItem('gaenr_admin_session') === 'active';
+      if (!isSessionActive) {
+        // Purge any leaked legacy credentials so password prompt always appears
+        try {
+          localStorage.removeItem('gaenr_admin_logged');
+          localStorage.removeItem('gaenr_current_employee');
+          localStorage.removeItem('gaenr_admin_session');
+        } catch {}
+        return false;
+      }
+      const savedEmp = sessionStorage.getItem('gaenr_current_employee') || localStorage.getItem('gaenr_current_employee');
       if (savedEmp) {
         const parsed = JSON.parse(savedEmp);
         if (parsed && parsed.username === 'operations') {
-          return localStorage.getItem('gaenr_admin_logged') === 'true';
+          return (sessionStorage.getItem('gaenr_admin_logged') === 'true' || localStorage.getItem('gaenr_admin_logged') === 'true');
         }
       }
       return false;
@@ -430,14 +440,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [currentEmployee, setCurrentEmployee] = useState<GaenrEmployee | null>(() => {
     try {
-      const saved = localStorage.getItem('gaenr_current_employee');
+      const isSessionActive = sessionStorage.getItem('gaenr_admin_session') === 'active';
+      if (!isSessionActive) return null;
+      const saved = sessionStorage.getItem('gaenr_current_employee') || localStorage.getItem('gaenr_current_employee');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.username === 'operations') return parsed;
       }
-      return INITIAL_EMPLOYEES[0];
+      return null;
     } catch {
-      return INITIAL_EMPLOYEES[0];
+      return null;
     }
   });
 
@@ -813,6 +825,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const loginAdmin = () => {
     setIsAdminLoggedIn(true);
     try {
+      sessionStorage.setItem('gaenr_admin_session', 'active');
+      sessionStorage.setItem('gaenr_admin_logged', 'true');
+      localStorage.setItem('gaenr_admin_session', 'active');
       localStorage.setItem('gaenr_admin_logged', 'true');
     } catch {}
     showToast('Signed in to Gaenr Operations workspace', 'success');
@@ -820,8 +835,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const logoutAdmin = () => {
     setIsAdminLoggedIn(false);
+    setCurrentEmployee(null);
     try {
+      sessionStorage.removeItem('gaenr_admin_session');
+      sessionStorage.removeItem('gaenr_admin_logged');
+      sessionStorage.removeItem('gaenr_current_employee');
+      localStorage.removeItem('gaenr_admin_session');
       localStorage.removeItem('gaenr_admin_logged');
+      localStorage.removeItem('gaenr_current_employee');
     } catch {}
     showToast('Signed out of Operations', 'info');
     navigate('/');
@@ -1029,6 +1050,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCurrentEmployee(emp);
     setIsAdminLoggedIn(true);
     try {
+      sessionStorage.setItem('gaenr_admin_session', 'active');
+      sessionStorage.setItem('gaenr_admin_logged', 'true');
+      sessionStorage.setItem('gaenr_current_employee', JSON.stringify(emp));
+      localStorage.setItem('gaenr_admin_session', 'active');
       localStorage.setItem('gaenr_admin_logged', 'true');
       localStorage.setItem('gaenr_current_employee', JSON.stringify(emp));
     } catch {}
@@ -1063,6 +1088,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCurrentEmployee(null);
     setIsAdminLoggedIn(false);
     try {
+      sessionStorage.removeItem('gaenr_admin_session');
+      sessionStorage.removeItem('gaenr_admin_logged');
+      sessionStorage.removeItem('gaenr_current_employee');
+      localStorage.removeItem('gaenr_admin_session');
       localStorage.removeItem('gaenr_admin_logged');
       localStorage.removeItem('gaenr_current_employee');
     } catch {}

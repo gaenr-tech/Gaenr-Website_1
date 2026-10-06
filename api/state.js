@@ -19,6 +19,8 @@ const send = (res, status, body) => {
   res.status(status).json(body);
 };
 
+const SENSITIVE_LOCAL_KEYS = ['gaenr_admin_logged', 'gaenr_current_employee', 'gaenr_admin_session'];
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -52,6 +54,7 @@ export default async function handler(req, res) {
       const rawState = row?.state || {};
       const normalizedState = {};
       for (const [k, v] of Object.entries(rawState)) {
+        if (SENSITIVE_LOCAL_KEYS.includes(k)) continue;
         normalizedState[k] = typeof v === 'string' ? v : JSON.stringify(v);
       }
       return send(res, 200, {
@@ -77,10 +80,15 @@ export default async function handler(req, res) {
       currentState = { ...existingRows[0].state };
     }
 
+    // Strip any sensitive session keys from the shared DB
+    for (const key of SENSITIVE_LOCAL_KEYS) {
+      delete currentState[key];
+    }
+
     if (incomingState && typeof incomingState === 'object' && !Array.isArray(incomingState)) {
-      // First-browser migration or full state seed if table is currently empty
       if (Object.keys(currentState).length === 0) {
         for (const [key, value] of Object.entries(incomingState)) {
+          if (SENSITIVE_LOCAL_KEYS.includes(key)) continue;
           currentState[key] = typeof value === 'string' ? value : JSON.stringify(value);
         }
       }
@@ -91,7 +99,7 @@ export default async function handler(req, res) {
     // Process array changes by merging on id or code
     for (const change of arrayChanges) {
       const key = change?.key;
-      if (!key || typeof key !== 'string') continue;
+      if (!key || typeof key !== 'string' || SENSITIVE_LOCAL_KEYS.includes(key)) continue;
       const upserts = Array.isArray(change.upserts) ? change.upserts : [];
       const deletes = Array.isArray(change.deletes) ? change.deletes : [];
       if (upserts.length === 0 && deletes.length === 0) continue;
@@ -143,7 +151,7 @@ export default async function handler(req, res) {
     // Process general key-value changes
     if (changes && typeof changes === 'object' && !Array.isArray(changes)) {
       for (const [key, value] of Object.entries(changes)) {
-        if (typeof key !== 'string') continue;
+        if (typeof key !== 'string' || SENSITIVE_LOCAL_KEYS.includes(key)) continue;
         currentState[key] = typeof value === 'string' ? value : JSON.stringify(value);
       }
     }
@@ -155,9 +163,15 @@ export default async function handler(req, res) {
       }
     }
 
+    // Strip sensitive keys again before storing
+    for (const key of SENSITIVE_LOCAL_KEYS) {
+      delete currentState[key];
+    }
+
     // Normalize entire currentState so all values stored are JSON strings
     const finalState = {};
     for (const [k, v] of Object.entries(currentState)) {
+      if (SENSITIVE_LOCAL_KEYS.includes(k)) continue;
       finalState[k] = typeof v === 'string' ? v : JSON.stringify(v);
     }
 

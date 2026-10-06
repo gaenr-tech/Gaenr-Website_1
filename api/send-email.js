@@ -14,7 +14,7 @@ const buildWelcomeEmail = (expert) => {
   const idCardDownloadUrl = `${idCardUrl}&download=1`;
   const logoUrl = `${SITE_URL}/logo.svg`;
   const iconUrl = (name) => `${SITE_URL}/email-icons/${name}.svg`;
-  const iconImage = (name, alt) => `<img src="${iconUrl(name)}" width="18" height="18" alt="${alt}" style="display:inline-block;width:18px;height:18px;vertical-align:middle;border:0" />`;
+
   const subject = 'Welcome to Gaenr — your expert profile is live';
   const text = [
     `Hi ${name},`,
@@ -28,58 +28,213 @@ const buildWelcomeEmail = (expert) => {
     'Keep your digital ID card safe. Clients and the Gaenr operations team use it to identify verified experts.',
     '',
     'Team Gaenr',
+    'Website: https://gaenr.com',
+    'Email: contact@gaenr.com',
+    'Phone: 09647 922 800',
     'WhatsApp: https://wa.me/8801608922800',
-    'Email: contact@gaenr.com | Phone: 09647 922 800',
-    'https://gaenr.com',
-    'Facebook: https://www.facebook.com/gaenrglobal/',
-    'LinkedIn: https://www.linkedin.com/company/gaenrglobal/',
-    'Instagram: https://www.instagram.com/gaenr_global/',
-    'X: https://x.com/gaenr_global',
-    'Threads: https://www.threads.com/@gaenr_global',
-    'TikTok: https://www.tiktok.com/@gaenr_global',
   ].join('\n');
-  const html = `<!doctype html><html><head><meta name="x-apple-disable-message-reformatting" /><style>@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');</style></head><body style="margin:0;background:#f4f7fb;font-family:'DM Sans',Arial,Helvetica,sans-serif;color:#0f172a">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
-    <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;font-family:'DM Sans',Arial,Helvetica,sans-serif">
-      <tr><td align="center" style="padding:24px 32px 18px;background:#eff6ff;border-radius:16px 16px 0 0;border-bottom:1px solid #dbeafe">
-        <img src="${logoUrl}" width="48" height="48" alt="Gaenr logo" style="display:block;width:48px;height:48px;margin:0 auto 8px" />
-        <div style="font-size:23px;font-weight:900;letter-spacing:4px;color:#005dd7;text-align:center">GAENR</div>
-      </td></tr>
-      <tr><td style="padding:8px 32px 0;font-size:18px;font-weight:700">Welcome, ${escapeHtml(name)}!</td></tr>
-      <tr><td style="padding:12px 32px 0;font-size:14px;line-height:1.6;color:#334155">
-        We’re very glad to welcome you. Your verified expert profile is now live on Gaenr.
-      </td></tr>
-      <tr><td style="padding:20px 32px 0">
-        <div style="font-size:13px;font-weight:800;color:#334155;margin-bottom:10px">Your digital Gaenr ID card</div>
-        <a href="${idCardUrl}" style="display:block;text-decoration:none;background:#f8fafc;border:1px solid #dbeafe;border-radius:18px;padding:12px;text-align:center">
-          <img src="${idCardUrl}" width="260" alt="Gaenr digital ID card" style="display:block;width:260px;max-width:100%;height:auto;margin:0 auto;border-radius:12px" />
-        </a>
-      </td></tr>
-      <tr><td style="padding:18px 32px 0;text-align:center"><a href="${idCardDownloadUrl}" style="display:inline-block;background:#006eff;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;padding:12px 20px;border-radius:12px">Download ID Card</a></td></tr>
-      <tr><td style="padding:12px 32px 0;text-align:center"><a href="${profileUrl}" style="color:#006eff;text-decoration:none;font-weight:700;font-size:13px">View my live profile →</a></td></tr>
-      <tr><td style="padding:24px 32px 0"><div style="height:1px;background:#e2e8f0"></div></td></tr>
-      <tr><td style="padding:20px 32px 28px;font-size:12px;line-height:1.8;color:#64748b;text-align:center">
-        <img src="${logoUrl}" width="26" height="26" alt="Gaenr" style="display:inline-block;width:26px;height:26px;vertical-align:middle;margin-right:6px" />
-        <strong style="color:#0f172a;vertical-align:middle;font-size:14px">Team Gaenr</strong>
-        <div style="height:1px;background:#e2e8f0;margin:14px 0"></div>
-        <div style="margin-bottom:10px;white-space:nowrap">
-          <a href="https://gaenr.com" title="Gaenr website" style="color:#006eff;text-decoration:none;font-weight:700;margin:0 7px">${iconImage('globe', 'Website')} Website</a>
-          <a href="mailto:contact@gaenr.com" title="Email Gaenr" style="color:#4f46e5;text-decoration:none;font-weight:700;margin:0 7px">${iconImage('mail', 'Email')} Email</a>
-          <a href="tel:09647922800" title="Call Gaenr" style="color:#006eff;text-decoration:none;font-weight:700;margin:0 7px">${iconImage('phone', 'Phone')} Phone</a>
-          <a href="https://wa.me/8801608922800" title="WhatsApp Gaenr" style="color:#16803c;text-decoration:none;font-weight:700;margin:0 7px">${iconImage('whatsapp', 'WhatsApp')} WhatsApp</a>
-        </div>
-        <div style="margin-top:8px;white-space:nowrap">
-          <a href="https://www.facebook.com/gaenrglobal/" title="Gaenr on Facebook" style="margin:0 6px">${iconImage('facebook', 'Facebook')}</a>
-          <a href="https://www.linkedin.com/company/gaenrglobal/" title="Gaenr on LinkedIn" style="margin:0 6px">${iconImage('linkedin', 'LinkedIn')}</a>
-          <a href="https://www.instagram.com/gaenr_global/" title="Gaenr on Instagram" style="margin:0 6px">${iconImage('instagram', 'Instagram')}</a>
-          <a href="https://x.com/gaenr_global" title="Gaenr on X" style="margin:0 6px">${iconImage('x', 'X')}</a>
-          <a href="https://www.threads.com/@gaenr_global" title="Gaenr on Threads" style="margin:0 6px">${iconImage('threads', 'Threads')}</a>
-          <a href="https://www.tiktok.com/@gaenr_global" title="Gaenr on TikTok" style="margin:0 6px">${iconImage('tiktok', 'TikTok')}</a>
-        </div>
-        <div style="margin-top:10px"><a href="https://gaenr.com" style="color:#006eff;text-decoration:none;font-weight:700">gaenr.com</a></div>
-      </td></tr>
-    </table>
-  </td></tr></table></body></html>`;
+
+  const html = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+    * {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f1f5f9;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+    }
+    .brand-title {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 5px;
+      color: #006eff;
+      text-align: center;
+    }
+    .action-btn {
+      display: inline-block;
+      background-color: #006eff;
+      color: #ffffff !important;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 13px 28px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0, 110, 255, 0.25);
+      transition: all 0.2s ease;
+    }
+    .action-btn:hover {
+      background-color: #0056cc !important;
+      box-shadow: 0 6px 20px rgba(0, 110, 255, 0.35) !important;
+    }
+    .profile-link {
+      display: inline-block;
+      color: #006eff !important;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+      transition: color 0.2s ease;
+    }
+    .profile-link:hover {
+      color: #004bb3 !important;
+      text-decoration: underline;
+    }
+    .footer-icon-btn {
+      display: inline-block;
+      width: 38px;
+      height: 38px;
+      line-height: 38px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      margin: 0 4px;
+      vertical-align: middle;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .footer-icon-btn:hover {
+      background-color: #006eff !important;
+      border-color: #006eff !important;
+      box-shadow: 0 4px 12px rgba(0, 110, 255, 0.25);
+    }
+    .footer-icon-btn:hover img {
+      filter: brightness(0) invert(1) !important;
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:'DM Sans',Arial,Helvetica,sans-serif;color:#0f172a">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:20px;border:1px solid #e2e8f0;font-family:'DM Sans',Arial,Helvetica,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.04);overflow:hidden;">
+          
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding:28px 32px 20px;background:#f0f6ff;border-bottom:1px solid #dbeafe;">
+              <img src="${logoUrl}" width="46" height="46" alt="Gaenr logo" style="display:block;width:46px;height:46px;margin:0 auto 8px;" />
+              <div class="brand-title">GAENR</div>
+            </td>
+          </tr>
+
+          <!-- Welcome Greeting -->
+          <tr>
+            <td style="padding:24px 32px 0;font-size:20px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;">
+              Welcome, ${escapeHtml(name)}!
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:10px 32px 0;font-size:14px;line-height:1.6;color:#475569;">
+              We’re delighted to welcome you to the Gaenr ecosystem. Your verified expert profile has been created and is now live for clients worldwide.
+            </td>
+          </tr>
+
+          <!-- Digital ID Card Display -->
+          <tr>
+            <td style="padding:24px 32px 0;">
+              <div style="font-size:12px;font-weight:800;color:#64748b;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.8px;">
+                Your Digital Gaenr ID Card
+              </div>
+              <a href="${idCardUrl}" target="_blank" style="display:block;text-decoration:none;background:#0b1329;border:1px solid #1e293b;border-radius:20px;padding:12px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.12);">
+                <img src="${idCardUrl}" width="270" alt="Gaenr digital ID card" style="display:block;width:270px;max-width:100%;height:auto;margin:0 auto;border-radius:14px;" />
+              </a>
+            </td>
+          </tr>
+
+          <!-- Actions -->
+          <tr>
+            <td style="padding:22px 32px 0;text-align:center;">
+              <a href="${idCardDownloadUrl}" class="action-btn">
+                Download ID Card
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:14px 32px 0;text-align:center;">
+              <a href="${profileUrl}" class="profile-link" target="_blank">
+                View My Live Profile →
+              </a>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:28px 32px 0;">
+              <div style="height:1px;background:#e2e8f0;"></div>
+            </td>
+          </tr>
+
+          <!-- Footer with modern contact & social icons -->
+          <tr>
+            <td style="padding:22px 32px 28px;text-align:center;background:#fafcff;">
+              <div style="margin-bottom:12px;">
+                <img src="${logoUrl}" width="24" height="24" alt="Gaenr" style="display:inline-block;width:24px;height:24px;vertical-align:middle;margin-right:6px;" />
+                <span style="color:#0f172a;vertical-align:middle;font-size:14px;font-weight:800;">Team Gaenr</span>
+              </div>
+
+              <!-- Contact Icons (Directly hyperlinked, no text) -->
+              <div style="margin-bottom:14px;white-space:nowrap;">
+                <a href="https://gaenr.com" class="footer-icon-btn" title="Gaenr Website" target="_blank">
+                  <img src="${iconUrl('globe')}" width="18" height="18" alt="Website" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="mailto:contact@gaenr.com" class="footer-icon-btn" title="Email Gaenr">
+                  <img src="${iconUrl('mail')}" width="18" height="18" alt="Email" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="tel:09647922800" class="footer-icon-btn" title="Call Gaenr">
+                  <img src="${iconUrl('phone')}" width="18" height="18" alt="Phone" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://wa.me/8801608922800" class="footer-icon-btn" title="WhatsApp Gaenr" target="_blank">
+                  <img src="${iconUrl('whatsapp')}" width="18" height="18" alt="WhatsApp" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+              </div>
+
+              <!-- Social Media Icons -->
+              <div style="margin-bottom:14px;white-space:nowrap;">
+                <a href="https://www.facebook.com/gaenrglobal/" class="footer-icon-btn" title="Gaenr on Facebook" target="_blank">
+                  <img src="${iconUrl('facebook')}" width="16" height="16" alt="Facebook" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://www.linkedin.com/company/gaenrglobal/" class="footer-icon-btn" title="Gaenr on LinkedIn" target="_blank">
+                  <img src="${iconUrl('linkedin')}" width="16" height="16" alt="LinkedIn" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://www.instagram.com/gaenr_global/" class="footer-icon-btn" title="Gaenr on Instagram" target="_blank">
+                  <img src="${iconUrl('instagram')}" width="16" height="16" alt="Instagram" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://x.com/gaenr_global" class="footer-icon-btn" title="Gaenr on X" target="_blank">
+                  <img src="${iconUrl('x')}" width="16" height="16" alt="X" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://www.threads.com/@gaenr_global" class="footer-icon-btn" title="Gaenr on Threads" target="_blank">
+                  <img src="${iconUrl('threads')}" width="16" height="16" alt="Threads" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://www.tiktok.com/@gaenr_global" class="footer-icon-btn" title="Gaenr on TikTok" target="_blank">
+                  <img src="${iconUrl('tiktok')}" width="16" height="16" alt="TikTok" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+              </div>
+
+              <div>
+                <a href="https://gaenr.com" style="color:#006eff;text-decoration:none;font-weight:700;font-size:13px;" target="_blank">gaenr.com</a>
+              </div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
   return { subject, text, html };
 };
 

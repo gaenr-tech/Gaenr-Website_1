@@ -14,6 +14,12 @@ let mirrorInstalled = false;
 let syncTimer: number | undefined;
 const pendingKeys = new Set<string>();
 
+const LOCAL_ONLY_KEYS = new Set([
+  'gaenr_admin_logged',
+  'gaenr_current_employee',
+  'gaenr_admin_session',
+]);
+
 const apiUrl = () => {
   const configured = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
   return `${configured}${API_PATH}`;
@@ -35,7 +41,7 @@ const snapshot = () => {
   const state: Record<string, string> = {};
   for (let index = 0; index < nativeStorage.length; index += 1) {
     const key = nativeStorage.key(index);
-    if (key) {
+    if (key && !LOCAL_ONLY_KEYS.has(key)) {
       const value = nativeStorage.getItem(key);
       if (value !== null) state[key] = value;
     }
@@ -76,14 +82,32 @@ const diffArray = (previous: unknown[], next: unknown[]): ArrayChange | null => 
 
 const queueRemoteMutation = (payload: { changes?: Record<string, string>; deletedKeys?: string[]; arrayChanges?: ArrayChange[] }) => {
   if (!hydrated) return;
+
+  const safeChanges: Record<string, string> = {};
+  for (const [k, v] of Object.entries(payload.changes || {})) {
+    if (!LOCAL_ONLY_KEYS.has(k)) safeChanges[k] = v;
+  }
+  const safeDeletedKeys = (payload.deletedKeys || []).filter((k) => !LOCAL_ONLY_KEYS.has(k));
+  const safeArrayChanges = (payload.arrayChanges || []).filter((c) => !LOCAL_ONLY_KEYS.has(c.key));
+
+  if (Object.keys(safeChanges).length === 0 && safeDeletedKeys.length === 0 && safeArrayChanges.length === 0) {
+    return;
+  }
+
+  const cleanPayload = {
+    changes: Object.keys(safeChanges).length > 0 ? safeChanges : undefined,
+    deletedKeys: safeDeletedKeys.length > 0 ? safeDeletedKeys : undefined,
+    arrayChanges: safeArrayChanges.length > 0 ? safeArrayChanges : undefined,
+  };
+
   const keys = [
-    ...Object.keys(payload.changes || {}),
-    ...(payload.deletedKeys || []),
-    ...(payload.arrayChanges || []).map((change) => change.key),
+    ...Object.keys(cleanPayload.changes || {}),
+    ...(cleanPayload.deletedKeys || []),
+    ...(cleanPayload.arrayChanges || []).map((change) => change.key),
   ];
   keys.forEach((key) => pendingKeys.add(key));
 
-  const body = JSON.stringify(payload);
+  const body = JSON.stringify(cleanPayload);
   const options: RequestInit = {
     method: 'PUT',
     headers: {
@@ -118,7 +142,7 @@ const installMirror = () => {
     value(this: Storage, key: string, value: string) {
       const previous = this === nativeStorage ? this.getItem(key) : null;
       nativeSetItem.call(this, key, value);
-      if (this !== nativeStorage) return;
+      if (this !== nativeStorage || LOCAL_ONLY_KEYS.has(key)) return;
 
       const previousArray = parseArray(previous);
       const nextArray = parseArray(value);
@@ -136,7 +160,9 @@ const installMirror = () => {
     writable: true,
     value(this: Storage, key: string) {
       nativeRemoveItem.call(this, key);
-      if (this === nativeStorage) queueRemoteMutation({ deletedKeys: [key] });
+      if (this === nativeStorage && !LOCAL_ONLY_KEYS.has(key)) {
+        queueRemoteMutation({ deletedKeys: [key] });
+      }
     },
   });
 };
@@ -152,7 +178,7 @@ const refreshRemoteStorage = async () => {
     const database = await response.json() as { state?: Record<string, unknown> };
     const remoteState = database.state && typeof database.state === 'object' ? database.state : {};
     Object.entries(remoteState).forEach(([key, rawValue]) => {
-      if (pendingKeys.has(key)) return;
+      if (LOCAL_ONLY_KEYS.has(key) || pendingKeys.has(key)) return;
       const value = serializeValue(rawValue);
       const previous = nativeStorage.getItem(key);
       if (previous === value) return;
@@ -177,6 +203,7 @@ export const initializeRemoteStorage = async () => {
 
     if (Object.keys(remoteState).length > 0) {
       Object.entries(remoteState).forEach(([key, rawValue]) => {
+        if (LOCAL_ONLY_KEYS.has(key)) return;
         const value = serializeValue(rawValue);
         nativeSetItem.call(nativeStorage, key, value);
       });
