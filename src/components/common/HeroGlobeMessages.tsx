@@ -9,7 +9,7 @@ interface MessageItem {
   posClass: string;
 }
 
-// Fixed curated messages that strictly stay within the 3D globe boundaries
+// Fixed curated messages that strictly stay within the 3D globe boundaries (12 diverse varieties)
 const MESSAGES: MessageItem[] = [
   {
     id: 'msg-1',
@@ -30,50 +30,82 @@ const MESSAGES: MessageItem[] = [
   {
     id: 'msg-3',
     role: 'Outsourcer',
-    location: 'New York',
-    message: 'Need 4K video editing',
+    location: 'Dhaka',
+    message: 'Need brand logo & identity',
     avatarUrl: '/images/avatars/client_corp_male_2.jpg',
     posClass: 'top-[26%] left-1/2 -translate-x-1/2',
   },
   {
     id: 'msg-4',
     role: 'Expert',
-    location: 'Dhaka',
-    message: 'Rendered with sound FX 🎬',
+    location: 'Chittagong',
+    message: 'Vector logo + kit done! 🚀',
     avatarUrl: '/images/avatars/student_male_1.png',
     posClass: 'top-[58%] left-[20%] sm:left-[22%]',
   },
   {
     id: 'msg-5',
     role: 'Outsourcer',
-    location: 'Singapore',
-    message: 'WooCommerce speed boost',
+    location: 'New York',
+    message: 'Need 4K video editing',
     avatarUrl: '/images/avatars/client_corp_female_1.jpg',
     posClass: 'top-[28%] right-[20%] sm:right-[22%]',
   },
   {
     id: 'msg-6',
     role: 'Expert',
-    location: 'Dhaka',
-    message: 'PageSpeed boosted to 98! ⚡',
-    avatarUrl: '/images/avatars/student_male_3.png',
+    location: 'Sylhet',
+    message: 'Rendered with sound FX 🎬',
+    avatarUrl: '/images/avatars/student_male_2.png',
     posClass: 'top-[64%] left-1/2 -translate-x-1/2',
   },
   {
     id: 'msg-7',
     role: 'Outsourcer',
-    location: 'Sydney',
-    message: 'Need pitch deck redesign',
+    location: 'Chittagong',
+    message: 'WooCommerce speed boost',
     avatarUrl: '/images/avatars/client_corp_female_2.jpg',
     posClass: 'top-[42%] left-[22%] sm:left-[24%]',
   },
   {
     id: 'msg-8',
     role: 'Expert',
+    location: 'Rajshahi',
+    message: 'PageSpeed boosted to 98! ⚡',
+    avatarUrl: '/images/avatars/student_male_3.png',
+    posClass: 'top-[56%] right-[20%] sm:right-[22%]',
+  },
+  {
+    id: 'msg-9',
+    role: 'Outsourcer',
+    location: 'Dubai',
+    message: 'Need SEO copy for agency',
+    avatarUrl: '/images/avatars/client_corp_male_1.jpg',
+    posClass: 'top-[32%] left-[20%] sm:left-[22%]',
+  },
+  {
+    id: 'msg-10',
+    role: 'Expert',
+    location: 'Khulna',
+    message: 'Ranked copy & hooks live! ✍️',
+    avatarUrl: '/images/avatars/student_female_2.png',
+    posClass: 'top-[46%] right-[18%] sm:right-[20%]',
+  },
+  {
+    id: 'msg-11',
+    role: 'Outsourcer',
+    location: 'Sylhet',
+    message: 'Need 15-slide pitch deck',
+    avatarUrl: '/images/avatars/client_corp_female_1.jpg',
+    posClass: 'top-[28%] left-1/2 -translate-x-1/2',
+  },
+  {
+    id: 'msg-12',
+    role: 'Expert',
     location: 'Dhaka',
     message: 'Milestone approved! 5★ ✅',
     avatarUrl: '/images/avatars/student_female_5.png',
-    posClass: 'top-[56%] right-[20%] sm:right-[22%]',
+    posClass: 'top-[60%] left-1/2 -translate-x-1/2',
   },
 ];
 
