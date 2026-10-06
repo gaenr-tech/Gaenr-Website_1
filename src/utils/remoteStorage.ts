@@ -19,6 +19,18 @@ const apiUrl = () => {
   return `${configured}${API_PATH}`;
 };
 
+const getApiUrlWithCacheBust = () => {
+  const base = apiUrl();
+  const sep = base.includes('?') ? '&' : '?';
+  return `${base}${sep}_t=${Date.now()}`;
+};
+
+const serializeValue = (val: unknown): string => {
+  if (typeof val === 'string') return val;
+  if (val === null || val === undefined) return '';
+  return JSON.stringify(val);
+};
+
 const snapshot = () => {
   const state: Record<string, string> = {};
   for (let index = 0; index < nativeStorage.length; index += 1) {
@@ -70,20 +82,29 @@ const queueRemoteMutation = (payload: { changes?: Record<string, string>; delete
     ...(payload.arrayChanges || []).map((change) => change.key),
   ];
   keys.forEach((key) => pendingKeys.add(key));
+
+  const body = JSON.stringify(payload);
+  const options: RequestInit = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+    },
+    body,
+  };
+  if (body.length < 60000) {
+    options.keepalive = true;
+  }
+
   writeQueue = writeQueue
     .catch(() => undefined)
-    .then(() => fetch(apiUrl(), {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      keepalive: true,
-    }))
+    .then(() => fetch(apiUrl(), options))
     .then((response) => {
       if (!response.ok) throw new Error(`Remote storage write failed: ${response.status}`);
       keys.forEach((key) => pendingKeys.delete(key));
     })
-    .catch(() => {
-      // Keep the local copy available when the shared API is temporarily offline.
+    .catch((err) => {
+      console.warn('[Gaenr] Remote storage mutation pending retry/offline:', err);
     });
 };
 
@@ -123,12 +144,16 @@ const installMirror = () => {
 const refreshRemoteStorage = async () => {
   if (!hydrated || document.visibilityState === 'hidden') return;
   try {
-    const response = await fetch(apiUrl(), { headers: { Accept: 'application/json' }, cache: 'no-store' });
+    const response = await fetch(getApiUrlWithCacheBust(), {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+    });
     if (!response.ok) return;
-    const database = await response.json() as { state?: Record<string, string> };
+    const database = await response.json() as { state?: Record<string, unknown> };
     const remoteState = database.state && typeof database.state === 'object' ? database.state : {};
-    Object.entries(remoteState).forEach(([key, value]) => {
+    Object.entries(remoteState).forEach(([key, rawValue]) => {
       if (pendingKeys.has(key)) return;
+      const value = serializeValue(rawValue);
       const previous = nativeStorage.getItem(key);
       if (previous === value) return;
       nativeSetItem.call(nativeStorage, key, value);
@@ -142,13 +167,19 @@ const refreshRemoteStorage = async () => {
 export const initializeRemoteStorage = async () => {
   installMirror();
   try {
-    const response = await fetch(apiUrl(), { headers: { Accept: 'application/json' }, cache: 'no-store' });
+    const response = await fetch(getApiUrlWithCacheBust(), {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+    });
     if (!response.ok) throw new Error(`Remote storage unavailable: ${response.status}`);
-    const database = await response.json() as { state?: Record<string, string> };
+    const database = await response.json() as { state?: Record<string, unknown> };
     const remoteState = database.state && typeof database.state === 'object' ? database.state : {};
 
     if (Object.keys(remoteState).length > 0) {
-      Object.entries(remoteState).forEach(([key, value]) => nativeSetItem.call(nativeStorage, key, value));
+      Object.entries(remoteState).forEach(([key, rawValue]) => {
+        const value = serializeValue(rawValue);
+        nativeSetItem.call(nativeStorage, key, value);
+      });
     } else {
       // One-time migration: the first browser seeds the shared store from its local data.
       await fetch(apiUrl(), {
@@ -158,13 +189,17 @@ export const initializeRemoteStorage = async () => {
       });
     }
   } catch (error) {
-    // A local/offline development session still works with the existing localStorage copy.
     console.error('[Gaenr] Shared backend unavailable; using local fallback.', error);
   } finally {
     hydrated = true;
     if (syncTimer === undefined) {
       syncTimer = window.setInterval(refreshRemoteStorage, 5000);
       window.addEventListener('focus', refreshRemoteStorage);
+      window.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          refreshRemoteStorage();
+        }
+      });
     }
   }
 };

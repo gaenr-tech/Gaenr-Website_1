@@ -630,11 +630,96 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const handleExternalSync = (e?: StorageEvent) => {
       try {
-        const raw = localStorage.getItem('gaenr_freelancers');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) {
-            setFreelancers(parsed);
+        const key = e?.key;
+        if (!key || key === 'gaenr_freelancers') {
+          const raw = localStorage.getItem('gaenr_freelancers');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setFreelancers(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_avatars') {
+          const raw = localStorage.getItem('gaenr_avatars');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setAvatars(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_categories') {
+          const raw = localStorage.getItem('gaenr_categories');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setCategories(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_tasks') {
+          const raw = localStorage.getItem('gaenr_tasks');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setTaskAssignments(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_feedbacks') {
+          const raw = localStorage.getItem('gaenr_feedbacks');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setFeedbacks(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_expert_applications') {
+          const raw = localStorage.getItem('gaenr_expert_applications');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setExpertApplications(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_op_tasks') {
+          const raw = localStorage.getItem('gaenr_op_tasks');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setOperationalTasks(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_op_clients') {
+          const raw = localStorage.getItem('gaenr_op_clients');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setOperationalClients(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_op_payments') {
+          const raw = localStorage.getItem('gaenr_op_payments');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setPaymentRecords(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_op_payouts') {
+          const raw = localStorage.getItem('gaenr_op_payouts');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setPayoutRecords(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_op_employees') {
+          const raw = localStorage.getItem('gaenr_op_employees');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setEmployees(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_op_logs') {
+          const raw = localStorage.getItem('gaenr_op_logs');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setActivityLogs(parsed);
+          }
+        }
+        if (!key || key === 'gaenr_op_notifs') {
+          const raw = localStorage.getItem('gaenr_op_notifs');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) setOperationalNotifications(parsed);
           }
         }
       } catch {}
