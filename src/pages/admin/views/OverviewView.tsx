@@ -25,7 +25,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   categories,
   navigate,
 }) => {
-  const [timeframe, setTimeframe] = useState<TrendTimeframe>('monthly');
+  const [timeframe, setTimeframe] = useState<TrendTimeframe>('daily');
   const totalFreelancers = freelancers.length;
   const activePublicProfiles = freelancers.filter((f) => f.isPublic).length;
   const draftProfiles = totalFreelancers - activePublicProfiles;
@@ -36,12 +36,14 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     (sum, f) => sum + (f.completedProjects || 0),
     0
   );
+  const reviewedFreelancers = freelancers.filter((f) => (f.reviewsCount || 0) > 0);
   const avgRating =
-    totalFreelancers > 0
+    totalReviews > 0 && reviewedFreelancers.length > 0
       ? (
-          freelancers.reduce((sum, f) => sum + (f.rating || 5), 0) / totalFreelancers
+          reviewedFreelancers.reduce((sum, f) => sum + (f.rating || 0), 0) /
+          reviewedFreelancers.length
         ).toFixed(1)
-      : '5.0';
+      : '0.0';
 
   // ── Real-time chart data: labels derived from actual current date/time ──────
   const now = new Date();
@@ -77,9 +79,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     return { label: monthAbbr[d.getMonth()], count: 0 };
   });
 
-
-
-
   const currentTrendData =
     timeframe === 'daily'
       ? dailyTrend
@@ -91,25 +90,21 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
   const maxDeliveryCount = Math.max(...currentTrendData.map((d) => d.count), 10);
 
-  const timeframeMeta: Record<TrendTimeframe, { subtitle: string; growthBadge: string; footnote: string }> = {
+  const timeframeMeta: Record<TrendTimeframe, { subtitle: string; footnote: string }> = {
     daily: {
-      subtitle: 'Deliveries per hour — last 24 hours',
-      growthBadge: 'Per Hour',
+      subtitle: 'Daily Deliveries (24 Hours)',
       footnote: 'Hourly delivery activity',
     },
     weekly: {
-      subtitle: 'Daily deliveries — last 7 days',
-      growthBadge: 'Last 7 Days',
+      subtitle: 'Daily Deliveries (7 Days)',
       footnote: 'Daily delivery totals',
     },
     monthly: {
-      subtitle: 'Daily deliveries — last 30 days',
-      growthBadge: 'Last 30 Days',
+      subtitle: 'Daily Deliveries (30 Days)',
       footnote: 'Daily output over the past month',
     },
     yearly: {
-      subtitle: 'Monthly deliveries — last 12 months',
-      growthBadge: 'Last 12 Months',
+      subtitle: 'Monthly Deliveries (12 Months)',
       footnote: 'Monthly delivery totals',
     },
   };
@@ -288,11 +283,6 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   </button>
                 ))}
               </div>
-
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                <TrendingUp className="w-3 h-3" />
-                <span>{timeframeMeta[timeframe].growthBadge}</span>
-              </span>
             </div>
           </div>
 

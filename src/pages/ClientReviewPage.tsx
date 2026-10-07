@@ -208,7 +208,7 @@ export const ClientReviewPage: React.FC<ClientReviewPageProps> = ({ expertCode }
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1.5 font-mono">
-                  <span>Current: ★ {expert.rating.toFixed(1)}</span>
+                  <span>Current: ★ {expert.reviewsCount > 0 ? expert.rating.toFixed(1) : '0.0'}</span>
                   <span>•</span>
                   <span>{expert.reviewsCount} Client Reviews</span>
                   <span>•</span>

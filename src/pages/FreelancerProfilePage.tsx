@@ -375,30 +375,57 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
 
   // Helper: converts known embeddable platform URLs to an iframe-compatible src
   const getEmbedUrl = (url: string): string | null => {
-    // Google Drive — file/d/{ID}/view or open?id={ID}
-    const driveFile = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (driveFile) return `https://drive.google.com/file/d/${driveFile[1]}/preview`;
-    const driveOpen = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
-    if (driveOpen) return `https://drive.google.com/file/d/${driveOpen[1]}/preview`;
-    // Google Docs
-    const docs = url.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
-    if (docs) return `https://docs.google.com/document/d/${docs[1]}/preview`;
-    // Google Slides
-    const slides = url.match(/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/);
-    if (slides) return `https://docs.google.com/presentation/d/${slides[1]}/embed?start=false&loop=false`;
-    // Google Sheets
-    const sheets = url.match(/docs\.google\.com\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
-    if (sheets) return `https://docs.google.com/spreadsheets/d/${sheets[1]}/preview`;
-    // Google Forms
-    const forms = url.match(/docs\.google\.com\/forms\/d\/([a-zA-Z0-9_-]+)/);
-    if (forms) return `https://docs.google.com/forms/d/${forms[1]}/viewform?embedded=true`;
-    // Figma (file, proto, design, board)
-    if (url.includes('figma.com/file/') || url.includes('figma.com/proto/') ||
-        url.includes('figma.com/design/') || url.includes('figma.com/board/'))
-      return `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(url)}`;
+    if (!url) return null;
+    const cleanUrl = url.trim();
+
+    // YouTube
+    const ytMatch = cleanUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+    if (ytMatch) return `https://www.youtube-nocookie.com/embed/${ytMatch[1]}`;
+
+    // Vimeo
+    const vimeoMatch = cleanUrl.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)/);
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[3]}`;
+
     // Loom
-    const loom = url.match(/loom\.com\/share\/([a-zA-Z0-9]+)/);
+    const loom = cleanUrl.match(/loom\.com\/share\/([a-zA-Z0-9]+)/);
     if (loom) return `https://www.loom.com/embed/${loom[1]}`;
+
+    // Google Drive — file/d/{ID}/view or open?id={ID}
+    const driveFile = cleanUrl.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (driveFile) return `https://drive.google.com/file/d/${driveFile[1]}/preview`;
+    const driveOpen = cleanUrl.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+    if (driveOpen) return `https://drive.google.com/file/d/${driveOpen[1]}/preview`;
+
+    // Google Docs
+    const docs = cleanUrl.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
+    if (docs) return `https://docs.google.com/document/d/${docs[1]}/preview`;
+
+    // Google Slides (Presentations / pitch decks)
+    const slides = cleanUrl.match(/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/);
+    if (slides) return `https://docs.google.com/presentation/d/${slides[1]}/embed?start=false&loop=false`;
+
+    // Google Sheets
+    const sheets = cleanUrl.match(/docs\.google\.com\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+    if (sheets) return `https://docs.google.com/spreadsheets/d/${sheets[1]}/preview`;
+
+    // Google Forms
+    const forms = cleanUrl.match(/docs\.google\.com\/forms\/d\/([a-zA-Z0-9_-]+)/);
+    if (forms) return `https://docs.google.com/forms/d/${forms[1]}/viewform?embedded=true`;
+
+    // Figma (file, proto, design, board)
+    if (cleanUrl.includes('figma.com/file/') || cleanUrl.includes('figma.com/proto/') ||
+        cleanUrl.includes('figma.com/design/') || cleanUrl.includes('figma.com/board/'))
+      return `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(cleanUrl)}`;
+
+    // Canva Presentations & Designs
+    const canva = cleanUrl.match(/canva\.com\/design\/([a-zA-Z0-9_-]+)/);
+    if (canva) return `${cleanUrl}${cleanUrl.includes('?') ? '&' : '?'}embed`;
+
+    // PDF links
+    if (cleanUrl.match(/\.pdf($|\?)/i)) {
+      return `https://docs.google.com/viewer?url=${encodeURIComponent(cleanUrl)}&embedded=true`;
+    }
+
     return null;
   };
 
@@ -411,12 +438,14 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
     if (activeMedia) {
       const isYouTube = activeMedia.includes('youtube.com') || activeMedia.includes('youtu.be');
       const isVimeo = activeMedia.includes('vimeo.com');
+      const isLoom = activeMedia.includes('loom.com');
       const isDirectVideo =
         activeMedia.endsWith('.mp4') ||
         activeMedia.endsWith('.webm') ||
+        activeMedia.endsWith('.ogg') ||
         activeMedia.startsWith('data:video');
 
-      if (isYouTube || isVimeo || isDirectVideo || item.previewType === 'video') {
+      if (isYouTube || isVimeo || isLoom || isDirectVideo || item.previewType === 'video') {
         let videoEmbedSrc = activeMedia;
         if (isYouTube) {
           const videoId = activeMedia.includes('youtu.be/')
@@ -426,7 +455,12 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
         } else if (isVimeo) {
           const vimeoId = activeMedia.split('vimeo.com/').pop()?.split('?')[0];
           videoEmbedSrc = vimeoId ? `https://player.vimeo.com/video/${vimeoId}` : activeMedia;
+        } else if (isLoom) {
+          const loomId = activeMedia.match(/loom\.com\/share\/([a-zA-Z0-9]+)/)?.[1];
+          videoEmbedSrc = loomId ? `https://www.loom.com/embed/${loomId}` : activeMedia;
         }
+
+        const isIframeVideo = isYouTube || isVimeo || isLoom;
 
         return (
           <div
@@ -434,8 +468,8 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
             style={{ background: '#0c182c' }}
           >
             {/* Always 16:9 frame — non-16:9 content is centered via object-contain */}
-            <div className="w-full" style={{ aspectRatio: '16/9', background: '#050d1a' }}>
-              {(isYouTube || isVimeo) ? (
+            <div className="w-full relative" style={{ aspectRatio: '16/9', background: '#050d1a' }}>
+              {isIframeVideo ? (
                 <iframe
                   src={videoEmbedSrc}
                   title={item.title}
@@ -443,11 +477,14 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
-              ) : isDirectVideo ? (
+              ) : (isDirectVideo || activeMedia.startsWith('data:video') || activeMedia.startsWith('http') || activeMedia.startsWith('/')) ? (
                 <video
                   src={activeMedia}
                   controls
-                  className="w-full h-full object-contain bg-transparent"
+                  playsInline
+                  controlsList="nodownload"
+                  disablePictureInPicture
+                  className="w-full h-full object-contain bg-black"
                 />
               ) : (
                 /* previewType=video but URL is external (e.g. social) */
@@ -1198,20 +1235,11 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
         <div className="rounded-xl sm:rounded-2xl bg-white border border-slate-200/80 shadow-2xs overflow-hidden">
           {/* Main Visual Stage on Soft Light Backdrop */}
           <div
-            className="relative w-full min-h-[300px] sm:min-h-[340px] bg-gradient-to-b from-slate-50 via-slate-50/70 to-slate-100/50 flex items-center justify-center select-none overflow-hidden group cursor-zoom-in"
+            className="relative w-full min-h-[300px] sm:min-h-[340px] bg-gradient-to-b from-slate-50 via-slate-50/70 to-slate-100/50 flex items-center justify-center select-none overflow-hidden group"
             onContextMenu={(e) => e.preventDefault()}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Transparent Security Shield & Fullscreen Trigger (Click anywhere on card to open fullscreen) */}
-            <div
-              className="absolute inset-0 z-30 select-none cursor-zoom-in"
-              title="Click to view Fullscreen"
-              onClick={() => setIsFullscreen(true)}
-              onContextMenu={(e) => e.preventDefault()}
-              onDragStart={(e) => e.preventDefault()}
-            />
-
             {/* Top-Right Fullscreen Button */}
             <button
               type="button"
@@ -1223,10 +1251,10 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
               <span className="hidden xs:inline">Fullscreen</span>
             </button>
 
-            {/* Watermark Overlay Across the Stage - Both Image and Text Render Together */}
+            {/* Watermark Overlay Across the Stage - Visually layered on top, pointer-events-none preserves video controls & interaction */}
             <div
               className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center overflow-hidden select-none"
-              style={{ opacity: (branding.watermarkOpacity ?? 15) / 100 }}
+              style={{ opacity: Math.max(0.24, (branding.watermarkOpacity ?? 25) / 100) }}
             >
               {branding.repeatingWatermark ? (
                 <div
@@ -1443,17 +1471,10 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
 
           {/* Main Fullscreen Stage */}
           <div className="relative flex-1 flex items-center justify-center p-2 sm:p-6 overflow-hidden">
-            {/* Transparent Shield against drag & right click */}
-            <div
-              className="absolute inset-0 z-30 select-none cursor-default"
-              onContextMenu={(e) => e.preventDefault()}
-              onDragStart={(e) => e.preventDefault()}
-            />
-
-            {/* Watermarks across Fullscreen - Render BOTH Image and Text */}
+            {/* Watermarks across Fullscreen - Render BOTH Image and Text with pointer-events-none for video controls */}
             <div
               className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center overflow-hidden select-none py-8"
-              style={{ opacity: ((branding.watermarkOpacity ?? 15) / 100) }}
+              style={{ opacity: Math.max(0.24, ((branding.watermarkOpacity ?? 25) / 100)) }}
             >
               {branding.repeatingWatermark ? (
                 <div

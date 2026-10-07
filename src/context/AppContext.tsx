@@ -232,10 +232,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }
 
           // If an expert has 0 reviews, ensure rating is accurately 0.0
-          if ((!fl.reviewsCount || fl.reviewsCount === 0) && (!fl.reviews || fl.reviews.length === 0) && fl.rating > 0 && fl.id.startsWith('fl-')) {
-            updatedFl.rating = 0.0;
-            updatedFl.isPublic = true; // Publish previously created test profile so user sees it immediately
-            hasChanges = true;
+          if ((!fl.reviewsCount || fl.reviewsCount === 0) && (!fl.reviews || fl.reviews.length === 0)) {
+            if (fl.rating !== 0.0 || fl.reviewsCount !== 0) {
+              updatedFl.rating = 0.0;
+              updatedFl.reviewsCount = 0;
+              hasChanges = true;
+            }
           }
 
           // Strip fake "Professional Studio Tools" fallback from existing deliverables
