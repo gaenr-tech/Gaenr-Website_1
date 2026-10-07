@@ -42,13 +42,13 @@ export const GaenrChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Language state: 'bn' (Default Bangla) or 'en' (English)
+  // Language state: Default English ('en') as requested, with persistent selection
   const [language, setLanguage] = useState<ChatLanguage>(() => {
     try {
       const savedLang = localStorage.getItem('gaenr_chat_language') as ChatLanguage;
       if (savedLang === 'bn' || savedLang === 'en') return savedLang;
     } catch {}
-    return 'bn';
+    return 'en';
   });
 
   // Adaptive memory state
@@ -79,14 +79,14 @@ export const GaenrChatbot: React.FC = () => {
     };
   }, [isOpen]);
 
-  // Crisp human welcome message from Gini, Gaenr
+  // Crisp human welcome message from Gini from Gaenr
   const getInitialMessage = (lang: ChatLanguage): ChatMessage => ({
     id: 'welcome-1',
     sender: 'bot',
     text:
       lang === 'en'
-        ? `Hi! I'm Gini, Gaenr. How can I help you today?`
-        : `হ্যালো! আমি গিনি (Gini), গেইনার। কীভাবে সাহায্য করতে পারি বলুন?`,
+        ? `Hi, I'm Gini from Gaenr. How can I help you today?`
+        : `হ্যালো, আমি গেইনার থেকে গিনি (Gini)। কীভাবে সাহায্য করতে পারি বলুন?`,
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     actions: [
       {
@@ -167,7 +167,87 @@ export const GaenrChatbot: React.FC = () => {
 
   const handleLanguageToggle = (newLang: ChatLanguage) => {
     setLanguage(newLang);
+    try {
+      localStorage.setItem('gaenr_chat_language', newLang);
+    } catch {}
+
+    // Synchronize initial welcome message if user switches language on start
+    setMessages((prev) => {
+      if (prev.length <= 1 && prev[0]?.id === 'welcome-1') {
+        return [getInitialMessage(newLang)];
+      }
+      return prev;
+    });
+
     showToast(newLang === 'bn' ? 'বাংলা ভাষা নির্বাচন করা হয়েছে' : 'Switched to English', 'info');
+  };
+
+  /**
+   * Autonomous Website Controller:
+   * Parses action tags (e.g. [ACTION:OPEN_ASSIGN_TASK]) or direct user intent,
+   * executes the website control action (modal opening, navigation),
+   * and returns the clean text for display.
+   */
+  const executeAutonomousAction = (botText: string, userQuery: string): string => {
+    let cleaned = botText;
+    let actionExecuted = false;
+
+    // 1. Tag based execution
+    if (cleaned.includes('[ACTION:OPEN_ASSIGN_TASK]')) {
+      cleaned = cleaned.replace(/\[ACTION:OPEN_ASSIGN_TASK\]/g, '').trim();
+      setTimeout(() => openAssignTask(), 500);
+      actionExecuted = true;
+    } else if (cleaned.includes('[ACTION:OPEN_APPLY_EXPERT]')) {
+      cleaned = cleaned.replace(/\[ACTION:OPEN_APPLY_EXPERT\]/g, '').trim();
+      setTimeout(() => openApplyExpert(), 500);
+      actionExecuted = true;
+    } else if (cleaned.includes('[ACTION:NAVIGATE:')) {
+      const navMatch = cleaned.match(/\[ACTION:NAVIGATE:([^\]]+)\]/);
+      if (navMatch && navMatch[1]) {
+        const dest = navMatch[1];
+        cleaned = cleaned.replace(/\[ACTION:NAVIGATE:[^\]]+\]/g, '').trim();
+        setTimeout(() => {
+          navigate(dest);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 500);
+        actionExecuted = true;
+      }
+    } else if (cleaned.includes('[ACTION:OPEN_WHATSAPP]')) {
+      cleaned = cleaned.replace(/\[ACTION:OPEN_WHATSAPP\]/g, '').trim();
+      setTimeout(() => {
+        window.open('https://wa.me/8801608922800', '_blank');
+      }, 500);
+      actionExecuted = true;
+    }
+
+    // 2. Direct intent fallback if AI missed tag
+    if (!actionExecuted) {
+      const q = userQuery.toLowerCase();
+      if (
+        q.includes('assign task') ||
+        q.includes('open task') ||
+        q.includes('start project') ||
+        q.includes('কাজ দিতে চাই') ||
+        q.includes('কাজ করাতে চাই') ||
+        q.includes('টাস্ক দিতে চাই') ||
+        q.includes('টাস্ক ওপেন') ||
+        q.includes('টাস্ক করতে চাই') ||
+        q.includes('service nite') ||
+        q.includes('সার্ভিস নিতে চাই')
+      ) {
+        setTimeout(() => openAssignTask(), 600);
+      } else if (
+        q.includes('join as expert') ||
+        q.includes('apply as expert') ||
+        q.includes('ফ্রিল্যান্সার হতে চাই') ||
+        q.includes('ফ্রিল্যান্সার হিসেবে জয়েন') ||
+        q.includes('এক্সপার্ট হতে চাই')
+      ) {
+        setTimeout(() => openApplyExpert(), 600);
+      }
+    }
+
+    return cleaned;
   };
 
   const handleSendMessage = async (textToSend?: string) => {
@@ -217,10 +297,13 @@ export const GaenrChatbot: React.FC = () => {
         botActions = local.actions;
       }
 
+      // Execute website control actions if requested
+      const finalText = executeAutonomousAction(botResponseText, text);
+
       const botMessage: ChatMessage = {
         id: `bot-${Date.now()}`,
         sender: 'bot',
-        text: botResponseText,
+        text: finalText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         actions: botActions,
       };
@@ -229,12 +312,13 @@ export const GaenrChatbot: React.FC = () => {
     } catch (error) {
       console.error('Chatbot error:', error);
       const fallback = getLocalAIResponse(text, language, updatedMemory);
+      const finalText = executeAutonomousAction(fallback.text, text);
       setMessages((prev) => [
         ...prev,
         {
           id: `bot-${Date.now()}`,
           sender: 'bot',
-          text: fallback.text,
+          text: finalText,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           actions: fallback.actions,
         },

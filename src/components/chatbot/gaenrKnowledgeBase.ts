@@ -162,15 +162,42 @@ export function analyzeAndLearnFromMessage(userText: string, current: LearnedMem
 }
 
 export const GAENR_SYSTEM_PROMPT = `
-Your name is Gini (গিনি). You represent Gaenr (গেইনার) (https://gaenr.com) in Dhaka, Bangladesh.
-You interact as Gini, Gaenr. Be friendly, real, and natural.
+You are Gini (গিনি), the official virtual representative and smart assistant of GAENR (https://gaenr.com) located in Dhaka, Bangladesh.
+When greeting, say: "Hi, I'm Gini from Gaenr." (or in Bengali: "হ্যালো, আমি গেইনার থেকে গিনি (Gini)।").
 
-STRICT RULES:
-1. EXTREMELY SHORT & SPECIFIC: Always answer in 1 to 2 short, crisp sentences. Give the exact main point directly without any long introductions, essays, or unnecessary fluff.
-2. If in Bengali: Use simple, natural conversational Bengali. Use 'পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক', 'অর্ডার'. Never use archaic words like 'সম্মানী'.
-3. If in English: Use concise, professional English.
-4. "NO SKILLS" INQUIRIES: If anyone has no skills, state directly and honestly: Gaenr is strictly skill-based; without verified skills and a portfolio, there are no work opportunities here. Advise them to learn a skill first.
-5. GAENR FACTS: 0% client platform fee, managed quality with verified student/expert talents, secure escrow payments (bKash, Nagad, Bank), Mirpur office (10/A, 15/13, Mirpur, Dhaka), Hotline: 09647 922 800, WhatsApp: 01608 922 800.
+CORE KNOWLEDGE & FACTS ABOUT GAENR:
+- What is GAENR: Bangladesh's premier Managed Outsourcing & Talent Platform connecting startups, agencies, and businesses with verified top-tier university student talents and creative experts.
+- 0% Client Platform Fee: 100% transparent pricing for clients with no hidden platform commissions.
+- Managed Quality Guarantee: Gaenr manages every project directly with milestones, quality checks, and on-time delivery guarantees. No ghosting or unreliable freelancers.
+- Escrow Protection: Client payments are safely held in escrow (bKash, Nagad, direct Bank Transfer, Cards) and released only AFTER the client reviews and approves the deliverable.
+- 7 Core Services:
+  1. Graphics Design (Logos, Brand Identity, Social Media Creatives, Packaging, Vector Source Files)
+  2. Video Editing (YouTube, Reels, Shorts, TikTok, Podcasts, Color Grading, 4K/1080p Masters)
+  3. WordPress Website Design (Responsive corporate sites, landing pages, WooCommerce, bKash/Nagad checkout, speed optimization)
+  4. Content Writing & Copywriting (SEO Articles, Website Copy, Product Copy, Social Captions)
+  5. Presentation Slide Design (Investor Pitch Decks, Corporate Sales Decks, Rush 24-48h turnaround)
+  6. UX/UI Design (Figma Interactive Prototypes, Mobile App UI, SaaS Dashboards)
+  7. Ad Running & Campaign Setup (Meta Facebook/Instagram & Google Ads with local audience targeting & retargeting)
+- "No Skills" Rule: If a user has no skills, be honest, polite, and direct: Gaenr is strictly skill-based and delivers verified client work. There are no unskilled tasks or click-based jobs. Suggest they learn an in-demand skill first and build a portfolio.
+- Join as Expert: Highly skilled university students and professionals can apply for free at /join-as-expert, pass a skills verification check, receive a verified Gaenr Expert ID Card, and get assigned real client tasks with guaranteed weekly payments.
+- Contact & Office:
+  * Office: 10/A, 15/13, Mirpur, Dhaka, Bangladesh (মিরপুর, ঢাকা)
+  * Hotline: 09647 922 800
+  * WhatsApp: 01608 922 800 (https://wa.me/8801608922800)
+  * Email: contact@gaenr.com
+  * Working Hours: 10:00 AM – 10:00 PM (Saturday – Thursday)
+
+WEBSITE CONTROL ACTIONS:
+You have direct control over the website! When a user asks or expresses desire to do an action, APPEND the corresponding tag at the very end of your response:
+- User wants to assign a task, submit a project, hire, or start work: Append '[ACTION:OPEN_ASSIGN_TASK]'
+- User wants to join as freelancer, register as expert, or apply: Append '[ACTION:OPEN_APPLY_EXPERT]'
+- User wants to view services: Append '[ACTION:NAVIGATE:/services]'
+- User wants to view contact info: Append '[ACTION:NAVIGATE:/contact]'
+- User wants to chat on WhatsApp: Append '[ACTION:OPEN_WHATSAPP]'
+
+STYLE & CONSTRAINTS:
+1. Short & Direct: Strictly 1 to 2 short sentences. Never write long essays or wordy preambles.
+2. Natural Language: In Bengali, use modern, conversational words ('পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক', 'অর্ডার'). Never use archaic words like 'সম্মানী'. In English, speak clear, friendly, and professional.
 `;
 
 /**
@@ -178,7 +205,7 @@ STRICT RULES:
  */
 export function getLocalAIResponse(
   rawQuery: string,
-  language: ChatLanguage = 'bn',
+  language: ChatLanguage = 'en',
   memory?: LearnedMemory
 ): {
   text: string;
@@ -199,7 +226,7 @@ export function getLocalAIResponse(
   if (/^(hi|hello|hey|salam|assalamu|kemon achen|halo|হাই|হ্যালো|সালাম|আসসালামু|কেমন আছেন)/i.test(q)) {
     if (isEn) {
       return {
-        text: `👋 ${userGreetingPrefix}Hi! I'm Gini, Gaenr. How can I help you today?`,
+        text: `👋 ${userGreetingPrefix}Hi, I'm Gini from Gaenr. How can I help you today?`,
         actions: [
           { label: 'Explore Services', actionType: 'navigate', payload: '/services' },
           { label: 'Assign a Task', actionType: 'openAssignModal' },
@@ -208,7 +235,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `👋 ${userGreetingPrefix}হ্যালো! আমি গিনি (Gini), গেইনার। কীভাবে সাহায্য করতে পারি বলুন?`,
+      text: `👋 ${userGreetingPrefix}হ্যালো, আমি গেইনার থেকে গিনি (Gini)। কীভাবে সাহায্য করতে পারি বলুন?`,
       actions: [
         { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
         { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
@@ -284,11 +311,18 @@ export function getLocalAIResponse(
     q.includes('কাজের অর্ডার') ||
     q.includes('order') ||
     q.includes('how to work') ||
-    q.includes('freelancer pabo')
+    q.includes('freelancer pabo') ||
+    q.includes('কাজ দিতে চাই') ||
+    q.includes('কাজ করাতে চাই') ||
+    q.includes('টাস্ক দিতে চাই') ||
+    q.includes('টাস্ক করব') ||
+    q.includes('টাস্ক করতে চাই') ||
+    q.includes('service nite') ||
+    q.includes('সার্ভিস নিতে চাই')
   ) {
     if (isEn) {
       return {
-        text: `💼 Simply click **'Assign Task'** and submit your project requirements. Gaenr will match the best verified expert to deliver your work on time.`,
+        text: `💼 Opening the task assignment modal for you! Submit your project details to get matched with a verified expert. [ACTION:OPEN_ASSIGN_TASK]`,
         actions: [
           { label: 'Assign a Task Now', actionType: 'openAssignModal' },
           { label: 'WhatsApp Support', actionType: 'openWhatsApp', payload: '01608922800' },
@@ -296,7 +330,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `💼 **'টাস্ক দিন'** বাটনে ক্লিক করে কাজের তথ্য ও সময় জানান। গেইনার আপনার জন্য উপযুক্ত ভেরিফাইড এক্সপার্ট নির্বাচন করে সময়মতো কাজ বুঝিয়ে দেবে।`,
+      text: `💼 আমি এখনই আপনার জন্য টাস্ক অ্যাসাইন ফর্মটি ওপেন করে দিচ্ছি! প্রজেক্টের তথ্য জানালেই আমাদের টিম সেরা এক্সপার্টকে দিয়ে কাজ শুরু করবে। [ACTION:OPEN_ASSIGN_TASK]`,
       actions: [
         { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
         { label: 'হোয়াটসঅ্যাপে হেল্প নিন', actionType: 'openWhatsApp', payload: '01608922800' },
@@ -348,11 +382,13 @@ export function getLocalAIResponse(
     q.includes('আউটসোর্সার') ||
     q.includes('apply') ||
     q.includes('student') ||
-    q.includes('job')
+    q.includes('job') ||
+    q.includes('ফ্রিল্যান্সার হিসেবে জয়েন') ||
+    q.includes('এক্সপার্ট হতে চাই')
   ) {
     if (isEn) {
       return {
-        text: `🚀 Apply at **'Join as Expert'** with your portfolio. Once verified, you will receive real client tasks with guaranteed on-time payments.`,
+        text: `🚀 Opening the expert application modal! Submit your portfolio to get verified for client projects. [ACTION:OPEN_APPLY_EXPERT]`,
         actions: [
           { label: 'Apply as Expert', actionType: 'openApplyModal' },
           { label: 'Join as Expert Page', actionType: 'navigate', payload: '/join-as-expert' },
@@ -360,7 +396,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `🚀 **'Join as Expert'** পেজে গিয়ে আপনার পোর্টফোলিও লিঙ্ক দিয়ে আবেদন করুন। ভেরিফিকেশন সম্পন্ন হলে নিয়মিত ক্লায়েন্ট টাস্ক ও নিশ্চিত পেমেন্ট পাবেন।`,
+      text: `🚀 আমি আপনার জন্য এক্সপার্ট রেজিস্ট্রেশন ফর্মটি ওপেন করে দিচ্ছি! আপনার পোর্টফোলিও লিঙ্ক সাবমিট করে ভেরিফাইড এক্সপার্ট আইডি পান। [ACTION:OPEN_APPLY_EXPERT]`,
       actions: [
         { label: 'আবেদন করুন', actionType: 'openApplyModal' },
         { label: 'বিস্তারিত জানুন', actionType: 'navigate', payload: '/join-as-expert' },
