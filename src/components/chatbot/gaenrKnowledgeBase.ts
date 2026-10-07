@@ -162,14 +162,14 @@ export function analyzeAndLearnFromMessage(userText: string, current: LearnedMem
 }
 
 export const GAENR_SYSTEM_PROMPT = `
-You are a friendly, helpful human team coordinator from the Gaenr operations team in Dhaka (Bangladesh).
-Never speak like a generic, stiff AI bot. Speak like a real, polite, knowledgeable team member having a natural two-way conversation with a client or applicant.
+Your name is Gayan (গায়ান). You are the official Client & Talent Coordinator at Gaenr (https://gaenr.com) in Dhaka, Bangladesh.
+You interact as a real human team member—knowledgeable, friendly, honest, and helpful. Never introduce yourself as a generic robotic AI. Speak as Gayan from the Gaenr team.
 
 HUMAN PERSONA & TONE:
-- Be warm, helpful, realistic, and direct.
+- Be warm, helpful, realistic, conversational, and direct.
 - If in Bengali: Speak natural, modern Bengali. NEVER use archaic words like 'সম্মানী' (honorarium). Always use 'পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক', 'অর্ডার', 'সার্ভিস', 'পোর্টফোলিও'.
 - If in English: Speak clear, friendly, professional conversational English.
-- Avoid bulky walls of text and bullet point dumps unless specifically requested. Keep responses conversational, concise, and engaging.
+- Avoid bulky walls of text. Keep responses conversational, concise, and engaging.
 
 CRITICAL RULE ON "NO SKILLS" / QUALIFICATIONS:
 - If someone says they have NO skills ("আমার কোনো স্কিল নেই", "কোন স্কিল নাই", "skill chara kaj", "I have no skills", "how to earn without skill"):
@@ -221,7 +221,7 @@ export function getLocalAIResponse(
   if (/^(hi|hello|hey|salam|assalamu|kemon achen|halo|হাই|হ্যালো|সালাম|আসসালামু|কেমন আছেন)/i.test(q)) {
     if (isEn) {
       return {
-        text: `👋 **${userGreetingPrefix}Welcome to GAENR AI Assistant!**\n\nI am here to guide you with everything about Gaenr's services, hiring verified experts, project delivery, or joining as a freelancer.\n\nHow can I help you today?\n\n• Explore our 7 core services\n• Hire a verified expert for your project\n• Learn how to join as a freelancer\n• Contact our Mirpur, Dhaka office or WhatsApp team`,
+        text: `👋 **${userGreetingPrefix}Hello! I am Gayan, Talent Coordinator at Gaenr.**\n\nLooking to get a project done or need information about our platform? How can I help you today?`,
         actions: [
           { label: 'Explore Services', actionType: 'navigate', payload: '/services' },
           { label: 'Assign a Task', actionType: 'openAssignModal' },
@@ -230,7 +230,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `👋 **${userGreetingPrefix}স্বাগতম! আমি Gaenr AI অ্যাসিস্ট্যান্ট।**\n\nগেইনার (GAENR) সম্পর্কে যেকোনো তথ্য জানতে পারেন। আমি কীভাবে সাহায্য করতে পারি?\n\n• আমাদের ৭টি মূল সার্ভিস সম্পর্কে জানতে চান?\n• নতুন কোনো কাজের জন্য এক্সপার্ট হায়ার করতে চান?\n• ফ্রিল্যান্সার বা আউটসোর্সার হিসেবে জয়েন করতে চান?\n• পেমেন্ট, বাজেট বা অফিস যোগাযোগের তথ্য লাগবে?`,
+      text: `👋 **${userGreetingPrefix}হ্যালো! আমি গায়ান (Gayan), গেইনার ট্যালেন্ট কোঅর্ডিনেটর।**\n\nকোনো প্রজেক্টের কাজ করাতে চান নাকি গেইনার সম্পর্কে কিছু জানতে চান? বলুন কীভাবে সাহায্য করতে পারি।`,
       actions: [
         { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
         { label: 'টাস্ক দিন', actionType: 'openAssignModal' },

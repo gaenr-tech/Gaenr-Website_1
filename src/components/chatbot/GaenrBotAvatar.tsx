@@ -7,123 +7,154 @@ interface GaenrBotAvatarProps {
 }
 
 /**
- * Gaenr Butterfly Robot Avatar - Pure White Line Art
- * Minimalist geometric butterfly wings with cyber-robotic antenna and visor.
- * 100% vector line art with crisp white strokes.
+ * Gaenr Butterfly AI Bot Avatar - Bold White Line Art with Whitish Outer Aura
+ * Features bold geometric butterfly wings, robotic center chassis, glowing cyber visor,
+ * antennae sensors, and a subtle whitish outer boundary ring.
  */
 export const GaenrBotAvatar: React.FC<GaenrBotAvatarProps> = ({
   className = '',
-  size = 28,
+  size = 30,
   strokeColor = '#ffffff',
 }) => {
   return (
     <svg
-      viewBox="0 0 48 48"
+      viewBox="0 0 56 56"
       width={size}
       height={size}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`shrink-0 select-none ${className}`}
     >
-      {/* ── Left Butterfly Wing Line Art ────────────────── */}
+      <defs>
+        {/* Soft whitish outer halo glow filter */}
+        <filter id="gBotOuterGlow" x="-15%" y="-15%" width="130%" height="130%">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+
+      {/* ── 1. Whitish Outer Boundary Layer (Tech Halo Ring) ─── */}
+      <circle
+        cx="28"
+        cy="28"
+        r="26"
+        stroke="#ffffff"
+        strokeWidth="1.6"
+        strokeDasharray="4 2.5"
+        opacity="0.5"
+      />
+      <circle
+        cx="28"
+        cy="28"
+        r="24.5"
+        stroke="#ffffff"
+        strokeWidth="1.0"
+        opacity="0.3"
+      />
+
+      {/* ── 2. Left Butterfly Wing (Bold Cyber-Curved Lines) ─── */}
       {/* Upper Wing */}
       <path
-        d="M 21 19 C 17 11 9 9 5 15 C 2 20 6 28 17 29"
+        d="M 23 23 C 18 12 7 11 3 18 C -1 25 5 34 18 35"
         stroke={strokeColor}
-        strokeWidth="1.8"
+        strokeWidth="2.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       {/* Lower Wing */}
       <path
-        d="M 17 29 C 11 31 6 36 8 42 C 10 46 17 45 20 37"
+        d="M 18 35 C 11 37 5 44 8 50 C 11 55 20 52 23 42"
         stroke={strokeColor}
-        strokeWidth="1.8"
+        strokeWidth="2.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Left Wing Inner Tech Line */}
+      {/* Left Wing Inner Tech Trace */}
       <path
-        d="M 10 18 Q 16 21 19 25"
+        d="M 8 22 Q 16 26 20 30"
         stroke={strokeColor}
-        strokeWidth="1.4"
+        strokeWidth="2.0"
         strokeLinecap="round"
-        strokeDasharray="1 3"
-        opacity="0.85"
+        opacity="0.9"
       />
+      <circle cx="8" cy="22" r="1.6" fill={strokeColor} />
 
-      {/* ── Right Butterfly Wing Line Art ───────────────── */}
+      {/* ── 3. Right Butterfly Wing (Bold Cyber-Curved Lines) ── */}
       {/* Upper Wing */}
       <path
-        d="M 27 19 C 31 11 39 9 43 15 C 46 20 42 28 31 29"
+        d="M 33 23 C 38 12 49 11 53 18 C 57 25 51 34 38 35"
         stroke={strokeColor}
-        strokeWidth="1.8"
+        strokeWidth="2.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       {/* Lower Wing */}
       <path
-        d="M 31 29 C 37 31 42 36 40 42 C 38 46 31 45 28 37"
+        d="M 38 35 C 45 37 51 44 48 50 C 45 55 36 52 33 42"
         stroke={strokeColor}
-        strokeWidth="1.8"
+        strokeWidth="2.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Right Wing Inner Tech Line */}
+      {/* Right Wing Inner Tech Trace */}
       <path
-        d="M 38 18 Q 32 21 29 25"
+        d="M 48 22 Q 40 26 36 30"
         stroke={strokeColor}
-        strokeWidth="1.4"
+        strokeWidth="2.0"
         strokeLinecap="round"
-        strokeDasharray="1 3"
-        opacity="0.85"
+        opacity="0.9"
       />
+      <circle cx="48" cy="22" r="1.6" fill={strokeColor} />
 
-      {/* ── Robot Antennae Line Art ─────────────────────── */}
+      {/* ── 4. Robot Butterfly Cyber Antennae ────────────────── */}
       <path
-        d="M 22 15 Q 19 7 14 5"
+        d="M 24 16 Q 19 8 13 6"
         stroke={strokeColor}
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-      <circle cx="14" cy="5" r="1.5" fill={strokeColor} />
-
-      <path
-        d="M 26 15 Q 29 7 34 5"
-        stroke={strokeColor}
-        strokeWidth="1.6"
+        strokeWidth="2.2"
         strokeLinecap="round"
       />
-      <circle cx="34" cy="5" r="1.5" fill={strokeColor} />
+      <circle cx="13" cy="6" r="2.2" fill={strokeColor} filter="url(#gBotOuterGlow)" />
 
-      {/* ── Robot Head / Core Outline ───────────────────── */}
+      <path
+        d="M 32 16 Q 37 8 43 6"
+        stroke={strokeColor}
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <circle cx="43" cy="6" r="2.2" fill={strokeColor} filter="url(#gBotOuterGlow)" />
+
+      {/* ── 5. Robot Bot Head Chassis (Center Core) ─────────── */}
       <rect
-        x="19"
-        y="14"
-        width="10"
-        height="14"
-        rx="5"
+        x="21"
+        y="16"
+        width="14"
+        height="18"
+        rx="7"
         stroke={strokeColor}
-        strokeWidth="1.8"
+        strokeWidth="2.6"
         strokeLinecap="round"
+        fill="rgba(0, 110, 255, 0.45)"
       />
 
-      {/* Robot Visor / Eyes Line */}
-      <path
-        d="M 21.5 19.5 L 26.5 19.5"
-        stroke={strokeColor}
-        strokeWidth="2"
-        strokeLinecap="round"
+      {/* Robot Eye Visor (Bold Horizontal Light Bar) */}
+      <rect
+        x="24"
+        y="22.5"
+        width="8"
+        height="3.5"
+        rx="1.75"
+        fill={strokeColor}
+        filter="url(#gBotOuterGlow)"
       />
 
-      {/* Robot Lower Spine / Tail Line */}
+      {/* Lower Robotic Abdomen / Spine Nodes */}
       <path
-        d="M 24 28 L 24 35"
+        d="M 28 34 L 28 41"
         stroke={strokeColor}
-        strokeWidth="1.8"
+        strokeWidth="2.4"
         strokeLinecap="round"
       />
-      <circle cx="24" cy="38" r="1.4" fill={strokeColor} />
+      <circle cx="28" cy="44" r="2.0" fill={strokeColor} />
     </svg>
   );
 };

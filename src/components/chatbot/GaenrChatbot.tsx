@@ -25,15 +25,15 @@ const SUGGESTIONS_BN = [
   'কী কী সার্ভিস দেওয়া হয়?',
   'টাস্ক কীভাবে দিতে হয়?',
   'স্কিল ছাড়া কি কাজ পাওয়া যাবে?',
-  'মিরপুর অফিস ও ফোন নম্বর?',
-  'পেমেন্ট ও প্ল্যাটফর্ম চার্জ কত?',
+  'মিরপুর অফিস ও সরাসরি ফোন নম্বর?',
+  'পেমেন্ট সিস্টেম ও প্ল্যাটফর্ম চার্জ কত?',
 ];
 
 const SUGGESTIONS_EN = [
   'What services do you offer?',
   'How to assign a project task?',
   'Can I earn without skills?',
-  'Mirpur office & contact info?',
+  'Mirpur office & hotline number?',
   'Pricing & platform fee details?',
 ];
 
@@ -51,17 +51,17 @@ export const GaenrChatbot: React.FC = () => {
     return 'bn';
   });
 
-  // Adaptive memory state (tracks user facts for context without cluttering UI)
+  // Adaptive memory state
   const [memory, setMemory] = useState<LearnedMemory>(() => loadLearnedMemory());
 
-  // 1-Line human welcome message
+  // 1-Line human welcome message from Gayan
   const getInitialMessage = (lang: ChatLanguage): ChatMessage => ({
     id: 'welcome-1',
     sender: 'bot',
     text:
       lang === 'en'
-        ? `Hi there! I'm here from the Gaenr team. How can I help with your project or inquiry today?`
-        : `হ্যালো! আমি গেইনার টিম থেকে আছি। কোনো প্রজেক্ট করাতে চান নাকি কোনো তথ্য জানতে চান? বলুন কীভাবে সাহায্য করতে পারি।`,
+        ? `Hi there! I'm Gayan from the Gaenr team. How can I help with your project or inquiry today?`
+        : `হ্যালো! আমি গায়ান (Gayan), গেইনার টিম থেকে আছি। কোনো প্রজেক্ট করাতে চান নাকি কোনো তথ্য জানতে চান? বলুন কীভাবে সাহায্য করতে পারি।`,
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     actions: [
       {
@@ -248,7 +248,7 @@ export const GaenrChatbot: React.FC = () => {
             onClick={() => setIsOpen(true)}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            aria-label="Chat with Gaenr Team"
+            aria-label="Chat with Gayan (Gaenr Coordinator)"
             className="group relative flex items-center bg-gradient-to-r from-[#006eff] to-[#004dc9] text-white rounded-full shadow-2xl hover:shadow-blue-500/35 border border-blue-400/40 cursor-pointer active:scale-95 transition-all duration-300 ease-out h-12 w-12 sm:h-13 sm:w-13 overflow-hidden px-2 hover:px-3.5"
             style={{
               width: isHovered ? 'auto' : undefined,
@@ -257,9 +257,9 @@ export const GaenrChatbot: React.FC = () => {
             {/* Ambient Pulse Ring */}
             <span className="absolute -inset-1 rounded-full bg-blue-400/30 blur-sm group-hover:bg-blue-400/50 animate-pulse pointer-events-none" />
 
-            {/* Custom Gaenr Butterfly Robot Avatar - Pure White Line Art */}
-            <div className="relative w-8 h-8 rounded-full bg-white/15 flex items-center justify-center shrink-0 border border-white/20">
-              <GaenrBotAvatar size={22} strokeColor="#ffffff" />
+            {/* Custom Gaenr Butterfly AI Bot Avatar - Bold White Line Art + Whitish Outer Aura */}
+            <div className="relative w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0 border border-white/35 shadow-xs">
+              <GaenrBotAvatar size={24} strokeColor="#ffffff" />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full animate-ping" />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full" />
             </div>
@@ -274,11 +274,11 @@ export const GaenrChatbot: React.FC = () => {
             >
               <div className="text-left">
                 <div className="flex items-center gap-1 text-[11px] font-bold leading-tight text-white">
-                  <span>Gaenr</span>
+                  <span>Gayan</span>
                   <Sparkles className="w-2.5 h-2.5 text-amber-300" />
                 </div>
                 <p className="text-[9.5px] text-blue-100 font-medium leading-none mt-0.5">
-                  {language === 'en' ? 'Chat with us' : 'কথা বলুন'}
+                  {language === 'en' ? 'Gaenr Coordinator' : 'ট্যালেন্ট টিম'}
                 </p>
               </div>
             </div>
@@ -289,25 +289,25 @@ export const GaenrChatbot: React.FC = () => {
             2. CHATBOT WINDOW (Refined compact dimensions, zero clutter, no settings button)
            ========================================================================= */}
         {isOpen && (
-          <div className="relative w-[calc(100vw-2rem)] xs:w-[335px] sm:w-[348px] h-[465px] sm:h-[490px] max-h-[80vh] bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-250 select-text">
+          <div className="relative w-[calc(100vw-1.5rem)] xs:w-[335px] sm:w-[350px] h-[475px] sm:h-[500px] max-h-[82vh] bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-250 select-text">
             
-            {/* Header: White Butterfly Line Art Avatar, Title, Language Toggle, Close */}
+            {/* Header: White Butterfly Bot Avatar, Gayan Identity, Language Toggle, Close */}
             <div className="px-3.5 py-2.5 bg-gradient-to-r from-[#006eff] via-[#005cd4] to-[#0048ba] text-white flex items-center justify-between shrink-0 shadow-xs relative">
-              <div className="flex items-center gap-2">
-                <div className="relative w-8 h-8 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/25 shrink-0">
-                  <GaenrBotAvatar size={22} strokeColor="#ffffff" />
+              <div className="flex items-center gap-2.5">
+                <div className="relative w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/35 shrink-0 shadow-xs">
+                  <GaenrBotAvatar size={24} strokeColor="#ffffff" />
                   <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h2 className="text-xs font-bold leading-tight">Gaenr Team</h2>
+                    <h2 className="text-xs font-bold leading-tight">Gayan • Gaenr</h2>
                     <span className="px-1 py-0.2 bg-white/20 rounded text-[8.5px] font-semibold text-emerald-300">
                       Active
                     </span>
                   </div>
                   <p className="text-[10px] text-blue-100 flex items-center gap-1 mt-0.5 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
-                    <span>{language === 'en' ? 'Coordinator' : 'ট্যালেন্ট টিম কোঅর্ডিনেটর'}</span>
+                    <span>{language === 'en' ? 'Talent Coordinator' : 'ট্যালেন্ট কোঅর্ডিনেটর'}</span>
                   </p>
                 </div>
               </div>
@@ -363,8 +363,8 @@ export const GaenrChatbot: React.FC = () => {
                   >
                     <div className="flex items-end gap-1.5 max-w-[89%]">
                       {!isUser && (
-                        <div className="w-6 h-6 rounded-full bg-[#006eff] flex items-center justify-center shrink-0 mb-0.5 shadow-2xs border border-blue-400/40">
-                          <GaenrBotAvatar size={15} strokeColor="#ffffff" />
+                        <div className="w-6 h-6 rounded-full bg-[#006eff] flex items-center justify-center shrink-0 mb-0.5 shadow-2xs border border-white/40">
+                          <GaenrBotAvatar size={16} strokeColor="#ffffff" />
                         </div>
                       )}
 
@@ -385,7 +385,7 @@ export const GaenrChatbot: React.FC = () => {
                                 key={aIdx}
                                 type="button"
                                 onClick={() => handleActionClick(act)}
-                                className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50/80 hover:bg-blue-100/90 text-[#006eff] hover:text-[#005cd4] border border-blue-200/80 rounded-lg text-[10.5px] font-bold transition-all cursor-pointer active:scale-95 shadow-2xs"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50/80 hover:bg-blue-100/90 text-[#006eff] hover:text-[#005cd4] border border-blue-200/80 rounded-lg text-[10.5px] font-bold transition-all cursor-pointer active:scale-95 shadow-2xs"
                               >
                                 {act.actionType === 'openWhatsApp' && <MessageCircle className="w-2.5 h-2.5 text-emerald-600" />}
                                 {act.actionType === 'callPhone' && <Phone className="w-2.5 h-2.5 text-blue-600" />}
@@ -409,35 +409,36 @@ export const GaenrChatbot: React.FC = () => {
               {/* Bot Typing Indicator */}
               {isTyping && (
                 <div className="flex items-center gap-1.5 max-w-[85%] animate-in fade-in">
-                  <div className="w-6 h-6 rounded-full bg-[#006eff] flex items-center justify-center shrink-0 border border-blue-400/40">
-                    <GaenrBotAvatar size={15} strokeColor="#ffffff" />
+                  <div className="w-6 h-6 rounded-full bg-[#006eff] flex items-center justify-center shrink-0 border border-white/40 shadow-2xs">
+                    <GaenrBotAvatar size={16} strokeColor="#ffffff" />
                   </div>
                   <div className="px-3 py-2 bg-white border border-slate-200/80 rounded-2xl rounded-bl-xs shadow-xs flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#006eff] animate-bounce [animation-delay:-0.3s]" />
                     <span className="w-1.5 h-1.5 rounded-full bg-[#006eff] animate-bounce [animation-delay:-0.15s]" />
                     <span className="w-1.5 h-1.5 rounded-full bg-[#006eff] animate-bounce" />
                     <span className="text-[10.5px] font-medium text-slate-500 ml-1">
-                      {language === 'en' ? 'Writing...' : 'টাইপ করছে...'}
+                      {language === 'en' ? 'Gayan is typing...' : 'গায়ান লিখছে...'}
                     </span>
                   </div>
                 </div>
               )}
 
-              {/* Preset Questions: Flexibly wrapped & 100% visible everywhere (no side cut-off) */}
+              {/* Preset Questions: Full-Width Vertical List (100% visible on laptop mouse & mobile without scrolling) */}
               {messages.length <= 2 && !isTyping && (
-                <div className="pt-1.5 space-y-1.5">
-                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-1">
-                    {language === 'en' ? 'Suggested Questions' : 'প্রস্তাবিত প্রশ্নাবলী'}
+                <div className="pt-2 space-y-1.5">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
+                    {language === 'en' ? 'Quick Inquiries' : 'জনপ্রিয় প্রশ্নাবলী'}
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-col gap-1.5">
                     {activeSuggestions.map((question, qIdx) => (
                       <button
                         key={qIdx}
                         type="button"
                         onClick={() => handleSendMessage(question)}
-                        className="text-left px-2.5 py-1.5 bg-white hover:bg-blue-50 text-slate-700 hover:text-[#006eff] border border-slate-200/90 hover:border-blue-300 rounded-xl text-[10.5px] font-medium transition-all shadow-2xs cursor-pointer active:scale-95 leading-snug"
+                        className="w-full text-left px-3 py-2 bg-white hover:bg-blue-50/80 text-slate-700 hover:text-[#006eff] border border-slate-200/90 hover:border-blue-300 rounded-xl text-[11px] font-medium transition-all shadow-2xs cursor-pointer active:scale-[0.98] flex items-center justify-between group"
                       >
-                        {question}
+                        <span className="leading-snug">{question}</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-[#006eff] group-hover:translate-x-0.5 transition-all shrink-0 ml-1.5" />
                       </button>
                     ))}
                   </div>
@@ -463,8 +464,8 @@ export const GaenrChatbot: React.FC = () => {
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={
                     language === 'en'
-                      ? 'Type your message...'
-                      : 'মেসেজ লিখুন...'
+                      ? 'Ask Gayan anything...'
+                      : 'গায়ানকে মেসেজ পাঠান...'
                   }
                   disabled={isTyping}
                   className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#006eff] focus:bg-white transition-all shadow-2xs"
@@ -478,7 +479,7 @@ export const GaenrChatbot: React.FC = () => {
                 </button>
               </form>
               <div className="flex items-center justify-between text-[9px] text-slate-400 mt-1 px-1">
-                <span>Gaenr Operations</span>
+                <span>Gayan • Gaenr Coordinator</span>
                 <span className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
                   <span>Online</span>
