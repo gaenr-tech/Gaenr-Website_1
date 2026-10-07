@@ -162,16 +162,22 @@ export function analyzeAndLearnFromMessage(userText: string, current: LearnedMem
 }
 
 export const GAENR_SYSTEM_PROMPT = `
-You are the official Gaenr AI Assistant (গেইনার এআই সহকারী) for GAENR (https://gaenr.com).
-Your mission is to assist clients, business owners, and freelancers in either Proper English or Natural Bengali based on the user's selected preference or query language.
+You are a friendly, helpful human team coordinator from the Gaenr operations team in Dhaka (Bangladesh).
+Never speak like a generic, stiff AI bot. Speak like a real, polite, knowledgeable team member having a natural two-way conversation with a client or applicant.
 
-CRITICAL TONE & VOCABULARY RULES:
-- If replying in Bengali:
-  * Do NOT use overly bookish or archaic words like 'সম্মানী' (honorarium). Instead, ALWAYS use everyday modern words: 'পেমেন্ট' (Payment), 'টাস্ক' (Task), 'ক্লায়েন্ট' (Client), 'ফ্রিল্যান্সার' (Freelancer), 'অর্ডার' (Order), 'সার্ভিস' (Service), 'বাজেট' (Budget).
-  * Keep the tone friendly, polite, slightly casual, yet highly professional and clear.
-  * Bengali should feel natural, like a modern tech-savvy team representative talking in Dhaka.
-- If replying in English:
-  * Use proper, professional, fluent, and warm business English.
+HUMAN PERSONA & TONE:
+- Be warm, helpful, realistic, and direct.
+- If in Bengali: Speak natural, modern Bengali. NEVER use archaic words like 'সম্মানী' (honorarium). Always use 'পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক', 'অর্ডার', 'সার্ভিস', 'পোর্টফোলিও'.
+- If in English: Speak clear, friendly, professional conversational English.
+- Avoid bulky walls of text and bullet point dumps unless specifically requested. Keep responses conversational, concise, and engaging.
+
+CRITICAL RULE ON "NO SKILLS" / QUALIFICATIONS:
+- If someone says they have NO skills ("আমার কোনো স্কিল নেই", "কোন স্কিল নাই", "skill chara kaj", "I have no skills", "how to earn without skill"):
+  * Be completely honest, polite, and straightforward.
+  * Explain: Gaenr is a strictly managed talent platform where verified student & professional experts deliver high-quality work to clients.
+  * State clearly: If someone has no skills, there are NO earning or work opportunities for them on Gaenr.
+  * We do not offer unskilled tasks or click-based work. One MUST be proficient in at least one specific skill (e.g., Graphics Design, Video Editing, WordPress Development, Content Writing, Slide Presentation, or Ad Campaigns) and have a portfolio of work samples to qualify.
+  * Advise them kindly: Suggest they first pick one specific skill, learn it properly, build 4-5 solid portfolio samples, and then apply to Gaenr.
 
 ABOUT GAENR:
 - What is GAENR: Bangladesh's premier Managed Outsourcing & Talent Platform. Connecting businesses with verified top-tier university student talents and creative experts.
@@ -322,6 +328,40 @@ export function getLocalAIResponse(
         { label: 'টাস্ক অ্যাসাইন করুন', actionType: 'openAssignModal' },
         { label: 'এক্সপার্টদের প্রোফাইল দেখুন', actionType: 'navigate', payload: '/experts' },
         { label: 'হোয়াটসঅ্যাপে হেল্প নিন', actionType: 'openWhatsApp', payload: '01608922800' },
+      ],
+    };
+  }
+
+  // 5a. Explicit Handling for "No skills" / "স্কিল নেই" / "কিভাবে ইনকাম করব স্কিল ছাড়া"
+  if (
+    q.includes('skill nei') ||
+    q.includes('skill nai') ||
+    q.includes('স্কিল নেই') ||
+    q.includes('স্কিল নাই') ||
+    q.includes('কোন স্কিল') ||
+    q.includes('কোনো স্কিল') ||
+    q.includes('no skill') ||
+    q.includes('without skill') ||
+    q.includes('স্কিল ছাড়া') ||
+    q.includes('কাজ পারি না') ||
+    q.includes('kaj pari na') ||
+    q.includes('দক্ষতা নেই') ||
+    q.includes('দক্ষতা নাই')
+  ) {
+    if (isEn) {
+      return {
+        text: `To be completely candid and honest, **Gaenr is a strictly managed talent platform** where verified experts deliver professional client projects.\n\nWithout demonstrable expertise and a solid portfolio in a specific area (like Graphics, Video Editing, Web Development, Content Writing, Presentation Slides, or Ad Campaigns), **there are currently no earning or work opportunities on Gaenr**.\n\nWe don't offer generic or unskilled tasks. My sincere suggestion: pick one in-demand skill that interests you, practice and build 3-5 quality portfolio samples, and then apply to join us as an expert!`,
+        actions: [
+          { label: 'Explore Our Services', actionType: 'navigate', payload: '/services' },
+          { label: 'Chat on WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
+        ],
+      };
+    }
+    return {
+      text: `আমি সরাসরি ও পরিষ্কারভাবে বলি—**গেইনার মূলত একটি প্রফেশনাল ম্যানেজড ট্যালেন্ট প্ল্যাটফর্ম**। এখানে ক্লায়েন্টদের কাজের হাই-কোয়ালিটি স্ট্যান্ডার্ড নিশ্চিত করতে হয়।\n\nতাই কোনো স্কিল না থাকলে দুঃখজনকভাবে **গেইনারে কাজ পাওয়ার বা আর্ন করার কোনো সুযোগ নেই**। এখানে কোনো ক্লিক বা আনস্কিল্ড কাজ দেওয়া হয় না।\n\nগেইনারে কাজ পেতে হলে যেকোনো একটি নির্দিষ্ট বিষয়ে (যেমন: গ্রাফিক্স ডিজাইন, ভিডিও এডিটিং, ওয়েবসাইট তৈরি, কনটেন্ট রাইটিং ইত্যাদি) অবশ্যই ভালো দক্ষতা ও কাজের স্যাম্পল থাকতে হবে।\n\nআমার পরামর্শ থাকবে, আপনি আগে যেকোনো একটি নির্দিষ্ট স্কিল ভালোভাবে শিখে কিছু প্র্যাকটিস প্রজেক্ট রেডি করুন। এরপর আপনি এক্সপার্ট হিসেবে নিশ্চিন্তে আমাদের প্ল্যাটফর্মে আবেদন করতে পারবেন!`,
+      actions: [
+        { label: 'আমাদের সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
+        { label: 'হোয়াটসঅ্যাপে টিমকে জানান', actionType: 'openWhatsApp', payload: '01608922800' },
       ],
     };
   }
