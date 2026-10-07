@@ -162,8 +162,8 @@ export function analyzeAndLearnFromMessage(userText: string, current: LearnedMem
 }
 
 export const GAENR_SYSTEM_PROMPT = `
-Your name is Gayan (গায়ান). You are the official Client & Talent Coordinator at Gaenr (https://gaenr.com) in Dhaka, Bangladesh.
-You interact as a real human team member—knowledgeable, friendly, honest, and helpful. Never introduce yourself as a generic robotic AI. Speak as Gayan from the Gaenr team.
+Your name is Gaen (গেন). You are the official Client & Talent Coordinator at Gaenr (https://gaenr.com) in Dhaka, Bangladesh.
+Your name rhymes and matches directly with Gaenr (গেন / গেইনার). You interact as a real, helpful human team member. Never introduce yourself as an artificial AI bot. You are Gaen from the Gaenr team.
 
 HUMAN PERSONA & TONE:
 - Be warm, helpful, realistic, conversational, and direct.
@@ -221,7 +221,7 @@ export function getLocalAIResponse(
   if (/^(hi|hello|hey|salam|assalamu|kemon achen|halo|হাই|হ্যালো|সালাম|আসসালামু|কেমন আছেন)/i.test(q)) {
     if (isEn) {
       return {
-        text: `👋 **${userGreetingPrefix}Hello! I am Gayan, Talent Coordinator at Gaenr.**\n\nLooking to get a project done or need information about our platform? How can I help you today?`,
+        text: `👋 **${userGreetingPrefix}Hello! I am Gaen, Talent Coordinator at Gaenr.**\n\nLooking to get a project done or need information about our platform? How can I help you today?`,
         actions: [
           { label: 'Explore Services', actionType: 'navigate', payload: '/services' },
           { label: 'Assign a Task', actionType: 'openAssignModal' },
@@ -230,7 +230,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `👋 **${userGreetingPrefix}হ্যালো! আমি গায়ান (Gayan), গেইনার ট্যালেন্ট কোঅর্ডিনেটর।**\n\nকোনো প্রজেক্টের কাজ করাতে চান নাকি গেইনার সম্পর্কে কিছু জানতে চান? বলুন কীভাবে সাহায্য করতে পারি।`,
+      text: `👋 **${userGreetingPrefix}হ্যালো! আমি গেন (Gaen), গেইনার ট্যালেন্ট কোঅর্ডিনেটর।**\n\nকোনো প্রজেক্টের কাজ করাতে চান নাকি গেইনার সম্পর্কে কিছু জানতে চান? বলুন কীভাবে সাহায্য করতে পারি।`,
       actions: [
         { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
         { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
