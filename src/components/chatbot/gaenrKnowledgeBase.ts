@@ -505,6 +505,19 @@ export function getLocalAIResponse(
   };
 }
 
+export function getActiveGeminiApiKey(): string {
+  try {
+    return (
+      localStorage.getItem('gaenr_gemini_api_key') ||
+      (import.meta as any).env?.VITE_GEMINI_API_KEY ||
+      (import.meta as any).env?.GEMINI_API_KEY ||
+      ''
+    );
+  } catch {
+    return '';
+  }
+}
+
 /**
  * Call live Gemini API if an API key is available
  */
@@ -558,35 +571,48 @@ export async function queryGeminiAPI(
     },
   ];
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(
-      apiKey
-    )}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents,
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 800,
-        },
-      }),
+  const keyToUse = (apiKey || getActiveGeminiApiKey()).trim();
+  if (!keyToUse) {
+    throw new Error('No Gemini API key provided');
+  }
+
+  const modelsToTry = ['gemini-3.1-flash-lite', 'gemini-3.8-flash', 'gemini-flash-latest'];
+  let lastError: any = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(
+          keyToUse
+        )}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents,
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 800,
+            },
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (textOutput) {
+          return textOutput;
+        }
+      } else {
+        lastError = new Error(`Model ${model} returned ${response.status}`);
+      }
+    } catch (err) {
+      lastError = err;
     }
-  );
-
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Gemini API error: ${response.status} - ${errorBody}`);
   }
 
-  const data = await response.json();
-  const textOutput = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!textOutput) {
-    throw new Error('No response text received from Gemini');
-  }
-
-  return textOutput;
+  throw lastError || new Error('Failed to generate response from Gemini API');
 }

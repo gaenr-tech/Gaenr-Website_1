@@ -9,6 +9,7 @@ import {
   clearLearnedMemory,
   getLocalAIResponse,
   queryGeminiAPI,
+  getActiveGeminiApiKey,
 } from './gaenrKnowledgeBase';
 import {
   Bot,
@@ -102,12 +103,8 @@ export const GaenrChatbot: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Gemini API Key
-  const envApiKey =
-    (import.meta as any).env?.VITE_GEMINI_API_KEY || (import.meta as any).env?.GEMINI_API_KEY || '';
-  const [apiKey, setApiKey] = useState<string>(() => {
-    return localStorage.getItem('gaenr_gemini_api_key') || envApiKey;
-  });
+  // Gemini API Key (Loaded from .env, localStorage, or user settings)
+  const [apiKey, setApiKey] = useState<string>(() => getActiveGeminiApiKey());
   const [tempApiKey, setTempApiKey] = useState(apiKey);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
