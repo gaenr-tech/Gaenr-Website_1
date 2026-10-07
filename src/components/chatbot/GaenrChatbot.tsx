@@ -79,6 +79,15 @@ export const GaenrChatbot: React.FC = () => {
     };
   }, [isOpen]);
 
+  // Real-time formatted clock (e.g. 1:04 AM)
+  const getRealtimeClock = (): string => {
+    return new Date().toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
   // Crisp human welcome message from Gini from Gaenr
   const getInitialMessage = (lang: ChatLanguage): ChatMessage => ({
     id: 'welcome-1',
@@ -87,7 +96,7 @@ export const GaenrChatbot: React.FC = () => {
       lang === 'en'
         ? `Hi, I'm Gini from Gaenr. How can I help you today?`
         : `হ্যালো, আমি গেইনার থেকে গিনি (Gini)। কীভাবে সাহায্য করতে পারি বলুন?`,
-    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    timestamp: getRealtimeClock(),
     actions: [
       {
         label: lang === 'en' ? 'Services' : 'সার্ভিসসমূহ',
@@ -257,7 +266,7 @@ export const GaenrChatbot: React.FC = () => {
       id: `user-${Date.now()}`,
       sender: 'user',
       text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: getRealtimeClock(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -299,7 +308,7 @@ export const GaenrChatbot: React.FC = () => {
         id: `bot-${Date.now()}`,
         sender: 'bot',
         text: finalText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        timestamp: getRealtimeClock(),
         actions: botActions,
       };
 
@@ -314,7 +323,7 @@ export const GaenrChatbot: React.FC = () => {
           id: `bot-${Date.now()}`,
           sender: 'bot',
           text: finalText,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          timestamp: getRealtimeClock(),
           actions: fallback.actions,
         },
       ]);
@@ -384,8 +393,8 @@ export const GaenrChatbot: React.FC = () => {
             {/* Ambient Pulse Ring */}
             <span className="absolute -inset-1 rounded-full bg-blue-400/30 blur-sm group-hover:bg-blue-400/50 animate-pulse pointer-events-none" />
 
-            {/* Custom Gaenr Butterfly AI Bot Avatar - Whitish 3D Edition */}
-            <div className="relative w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0 border border-white/35 shadow-xs">
+            {/* Custom Gaenr Butterfly AI Bot Avatar - High Contrast Royal Blue Disc */}
+            <div className="relative w-8.5 h-8.5 rounded-full bg-gradient-to-tr from-[#002868] to-[#0048ba] flex items-center justify-center shrink-0 border border-blue-300/40 shadow-inner">
               <GaenrBotAvatar size={24} />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full animate-ping" />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full" />
@@ -418,11 +427,11 @@ export const GaenrChatbot: React.FC = () => {
         {isOpen && (
           <div className="relative w-[calc(100vw-1.5rem)] xs:w-[335px] sm:w-[350px] h-[475px] sm:h-[500px] max-h-[82vh] bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-250 select-text">
             
-            {/* Header: Whitish Butterfly Bot Avatar, Gini Identity, Language Toggle, Close */}
+            {/* Header: High Contrast Avatar Disc, Gini Identity, Language Toggle, Close */}
             <div className="px-3.5 py-2.5 bg-gradient-to-r from-[#006eff] via-[#005cd4] to-[#0048ba] text-white flex items-center justify-between shrink-0 shadow-xs relative">
               <div className="flex items-center gap-2.5">
-                <div className="relative w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/35 shrink-0 shadow-xs">
-                  <GaenrBotAvatar size={24} />
+                <div className="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-[#00225e] to-[#003d99] flex items-center justify-center border border-white/30 shrink-0 shadow-inner">
+                  <GaenrBotAvatar size={25} />
                   <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full" />
                 </div>
                 <div>
@@ -493,8 +502,8 @@ export const GaenrChatbot: React.FC = () => {
                   >
                     <div className="flex items-end gap-1.5 max-w-[89%]">
                       {!isUser && (
-                        <div className="w-6 h-6 rounded-full bg-[#006eff] flex items-center justify-center shrink-0 mb-0.5 shadow-2xs border border-white/40">
-                          <GaenrBotAvatar size={16} />
+                        <div className="w-6.5 h-6.5 rounded-full bg-gradient-to-tr from-[#00225e] to-[#003d99] flex items-center justify-center shrink-0 mb-0.5 shadow-xs border border-white/30">
+                          <GaenrBotAvatar size={18} />
                         </div>
                       )}
 
@@ -539,8 +548,8 @@ export const GaenrChatbot: React.FC = () => {
               {/* Bot Typing Indicator */}
               {isTyping && (
                 <div className="flex items-center gap-1.5 max-w-[85%] animate-in fade-in">
-                  <div className="w-6 h-6 rounded-full bg-[#006eff] flex items-center justify-center shrink-0 border border-white/40 shadow-2xs">
-                    <GaenrBotAvatar size={16} />
+                  <div className="w-6.5 h-6.5 rounded-full bg-gradient-to-tr from-[#00225e] to-[#003d99] flex items-center justify-center shrink-0 border border-white/30 shadow-xs">
+                    <GaenrBotAvatar size={18} />
                   </div>
                   <div className="px-3 py-2 bg-white border border-slate-200/80 rounded-2xl rounded-bl-xs shadow-xs flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#006eff] animate-bounce [animation-delay:-0.3s]" />
