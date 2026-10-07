@@ -79,14 +79,14 @@ export const GaenrChatbot: React.FC = () => {
     };
   }, [isOpen]);
 
-  // 1-Line human welcome message from Gaen
+  // Crisp human welcome message from Gini, Gaenr
   const getInitialMessage = (lang: ChatLanguage): ChatMessage => ({
     id: 'welcome-1',
     sender: 'bot',
     text:
       lang === 'en'
-        ? `Hi there! I'm Gaen from the Gaenr team. How can I help with your project or inquiry today?`
-        : `হ্যালো! আমি গেন (Gaen), গেইনার টিম থেকে আছি। কোনো প্রজেক্ট করাতে চান নাকি কোনো তথ্য জানতে চান? বলুন কীভাবে সাহায্য করতে পারি।`,
+        ? `Hi! I'm Gini, Gaenr. How can I help you today?`
+        : `হ্যালো! আমি গিনি (Gini), গেইনার। কীভাবে সাহায্য করতে পারি বলুন?`,
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     actions: [
       {
@@ -106,8 +106,31 @@ export const GaenrChatbot: React.FC = () => {
     ],
   });
 
-  // Ephemeral session-based messages (fresh every session, no stored clutter)
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [getInitialMessage(language)]);
+  const STORAGE_KEY = 'gaenr_chat_messages_v2';
+
+  // Load persisted messages from localStorage so conversations are saved
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch {}
+    return [getInitialMessage(language)];
+  });
+
+  // Automatically save messages to localStorage
+  useEffect(() => {
+    try {
+      if (messages && messages.length > 0) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-50)));
+      }
+    } catch {}
+  }, [messages]);
+
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
@@ -273,7 +296,7 @@ export const GaenrChatbot: React.FC = () => {
             onClick={() => setIsOpen(true)}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            aria-label="Chat with Gaen (Gaenr Coordinator)"
+            aria-label="Chat with Gini"
             className="group relative flex items-center bg-gradient-to-r from-[#006eff] to-[#004dc9] text-white rounded-full shadow-2xl hover:shadow-blue-500/35 border border-blue-400/40 cursor-pointer active:scale-95 transition-all duration-300 ease-out h-12 w-12 sm:h-13 sm:w-13 overflow-hidden px-2 hover:px-3.5"
             style={{
               width: isHovered ? 'auto' : undefined,
@@ -282,9 +305,9 @@ export const GaenrChatbot: React.FC = () => {
             {/* Ambient Pulse Ring */}
             <span className="absolute -inset-1 rounded-full bg-blue-400/30 blur-sm group-hover:bg-blue-400/50 animate-pulse pointer-events-none" />
 
-            {/* Custom Gaenr Butterfly AI Bot Avatar - Bold White Line Art + Whitish Outer Aura */}
+            {/* Custom Gaenr Butterfly AI Bot Avatar - Whitish 3D Edition */}
             <div className="relative w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0 border border-white/35 shadow-xs">
-              <GaenrBotAvatar size={24} strokeColor="#ffffff" />
+              <GaenrBotAvatar size={24} />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full animate-ping" />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full" />
             </div>
@@ -299,11 +322,11 @@ export const GaenrChatbot: React.FC = () => {
             >
               <div className="text-left">
                 <div className="flex items-center gap-1 text-[11px] font-bold leading-tight text-white">
-                  <span>Gaen</span>
+                  <span>Gini</span>
                   <Sparkles className="w-2.5 h-2.5 text-amber-300" />
                 </div>
                 <p className="text-[9.5px] text-blue-100 font-medium leading-none mt-0.5">
-                  {language === 'en' ? 'Gaenr Coordinator' : 'ট্যালেন্ট টিম'}
+                  {language === 'en' ? 'Gaenr' : 'গেইনার'}
                 </p>
               </div>
             </div>
@@ -316,23 +339,23 @@ export const GaenrChatbot: React.FC = () => {
         {isOpen && (
           <div className="relative w-[calc(100vw-1.5rem)] xs:w-[335px] sm:w-[350px] h-[475px] sm:h-[500px] max-h-[82vh] bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-250 select-text">
             
-            {/* Header: White Butterfly Bot Avatar, Gaen Identity, Language Toggle, Close */}
+            {/* Header: Whitish Butterfly Bot Avatar, Gini Identity, Language Toggle, Close */}
             <div className="px-3.5 py-2.5 bg-gradient-to-r from-[#006eff] via-[#005cd4] to-[#0048ba] text-white flex items-center justify-between shrink-0 shadow-xs relative">
               <div className="flex items-center gap-2.5">
                 <div className="relative w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/35 shrink-0 shadow-xs">
-                  <GaenrBotAvatar size={24} strokeColor="#ffffff" />
+                  <GaenrBotAvatar size={24} />
                   <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h2 className="text-xs font-bold leading-tight">Gaen • Gaenr</h2>
+                    <h2 className="text-xs font-bold leading-tight">{language === 'en' ? 'Gini' : 'গিনি'}</h2>
                     <span className="px-1 py-0.2 bg-white/20 rounded text-[8.5px] font-semibold text-emerald-300">
                       Active
                     </span>
                   </div>
                   <p className="text-[10px] text-blue-100 flex items-center gap-1 mt-0.5 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
-                    <span>{language === 'en' ? 'Talent Coordinator' : 'ট্যালেন্ট কোঅর্ডিনেটর'}</span>
+                    <span>{language === 'en' ? 'Online' : 'অনলাইন'}</span>
                   </p>
                 </div>
               </div>
@@ -392,7 +415,7 @@ export const GaenrChatbot: React.FC = () => {
                     <div className="flex items-end gap-1.5 max-w-[89%]">
                       {!isUser && (
                         <div className="w-6 h-6 rounded-full bg-[#006eff] flex items-center justify-center shrink-0 mb-0.5 shadow-2xs border border-white/40">
-                          <GaenrBotAvatar size={16} strokeColor="#ffffff" />
+                          <GaenrBotAvatar size={16} />
                         </div>
                       )}
 
@@ -438,14 +461,14 @@ export const GaenrChatbot: React.FC = () => {
               {isTyping && (
                 <div className="flex items-center gap-1.5 max-w-[85%] animate-in fade-in">
                   <div className="w-6 h-6 rounded-full bg-[#006eff] flex items-center justify-center shrink-0 border border-white/40 shadow-2xs">
-                    <GaenrBotAvatar size={16} strokeColor="#ffffff" />
+                    <GaenrBotAvatar size={16} />
                   </div>
                   <div className="px-3 py-2 bg-white border border-slate-200/80 rounded-2xl rounded-bl-xs shadow-xs flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#006eff] animate-bounce [animation-delay:-0.3s]" />
                     <span className="w-1.5 h-1.5 rounded-full bg-[#006eff] animate-bounce [animation-delay:-0.15s]" />
                     <span className="w-1.5 h-1.5 rounded-full bg-[#006eff] animate-bounce" />
                     <span className="text-[10.5px] font-medium text-slate-500 ml-1">
-                      {language === 'en' ? 'Gaen is typing...' : 'গেন লিখছে...'}
+                      {language === 'en' ? 'Gini is typing...' : 'গিনি লিখছে...'}
                     </span>
                   </div>
                 </div>
@@ -492,8 +515,8 @@ export const GaenrChatbot: React.FC = () => {
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={
                     language === 'en'
-                      ? 'Ask Gaen anything...'
-                      : 'গেনকে মেসেজ পাঠান...'
+                      ? 'Ask Gini anything...'
+                      : 'গিনিকে মেসেজ পাঠান...'
                   }
                   disabled={isTyping}
                   className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#006eff] focus:bg-white transition-all shadow-2xs"
@@ -507,7 +530,7 @@ export const GaenrChatbot: React.FC = () => {
                 </button>
               </form>
               <div className="flex items-center justify-between text-[9px] text-slate-400 mt-1 px-1">
-                <span>Gaen • Gaenr Coordinator</span>
+                <span>{language === 'en' ? 'Gini' : 'গিনি'}</span>
                 <span className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
                   <span>Online</span>

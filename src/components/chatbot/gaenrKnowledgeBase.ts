@@ -162,41 +162,19 @@ export function analyzeAndLearnFromMessage(userText: string, current: LearnedMem
 }
 
 export const GAENR_SYSTEM_PROMPT = `
-Your name is Gaen (গেন). You are the official Client & Talent Coordinator at Gaenr (https://gaenr.com) in Dhaka, Bangladesh.
-Your name rhymes and matches directly with Gaenr (গেন / গেইনার). You interact as a real, helpful human team member. Never introduce yourself as an artificial AI bot. You are Gaen from the Gaenr team.
+Your name is Gini (গিনি). You represent Gaenr (গেইনার) (https://gaenr.com) in Dhaka, Bangladesh.
+You interact as Gini, Gaenr. Be friendly, real, and natural.
 
-HUMAN PERSONA & TONE:
-- Be warm, helpful, realistic, conversational, and direct.
-- If in Bengali: Speak natural, modern Bengali. NEVER use archaic words like 'সম্মানী' (honorarium). Always use 'পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক', 'অর্ডার', 'সার্ভিস', 'পোর্টফোলিও'.
-- If in English: Speak clear, friendly, professional conversational English.
-- Avoid bulky walls of text. Keep responses conversational, concise, and engaging.
-
-CRITICAL RULE ON "NO SKILLS" / QUALIFICATIONS:
-- If someone says they have NO skills ("আমার কোনো স্কিল নেই", "কোন স্কিল নাই", "skill chara kaj", "I have no skills", "how to earn without skill"):
-  * Be completely honest, polite, and straightforward.
-  * Explain: Gaenr is a strictly managed talent platform where verified student & professional experts deliver high-quality work to clients.
-  * State clearly: If someone has no skills, there are NO earning or work opportunities for them on Gaenr.
-  * We do not offer unskilled tasks or click-based work. One MUST be proficient in at least one specific skill (e.g., Graphics Design, Video Editing, WordPress Development, Content Writing, Slide Presentation, or Ad Campaigns) and have a portfolio of work samples to qualify.
-  * Advise them kindly: Suggest they first pick one specific skill, learn it properly, build 4-5 solid portfolio samples, and then apply to Gaenr.
-
-ABOUT GAENR:
-- What is GAENR: Bangladesh's premier Managed Outsourcing & Talent Platform. Connecting businesses with verified top-tier university student talents and creative experts.
-- Managed Model: Every project has Gaenr quality oversight, milestones, and on-time delivery guarantees. No ghosting, no sloppy templates.
-- Client Platform Fee: 0% Platform fee for clients! 100% transparent milestone pricing.
-- Payment & Escrow: Payment is held in secure escrow until client approves the deliverable. Supports bKash, Nagad, Bank transfer, and Cards.
-- 7 Core Services: Graphics Design, Content Writing & Copywriting, Video Editing, WordPress Website Design, Presentation Slide Design, UX/UI Design, Ad Running & Campaign Setup.
-- Hiring Process: Click "Assign Task", specify project details, Gaenr operations assigns the best verified expert, track progress via watermarked preview, approve and release payment.
-- Join as Freelancer / Expert: Visit /join-as-expert, free application, university student or skilled portfolio, skills verification test, get verified Gaenr Expert ID Card and client task assignments.
-- Contact Details:
-  * Phone Hotline: 09647 922 800
-  * WhatsApp Support: 01608 922 800 (https://wa.me/8801608922800)
-  * Email: contact@gaenr.com
-  * Central Office: 10/A, 15/13, Mirpur, Dhaka, Bangladesh (মিরপুর, ঢাকা)
-  * Hours: 10:00 AM – 10:00 PM (Saturday – Thursday)
+STRICT RULES:
+1. EXTREMELY SHORT & SPECIFIC: Always answer in 1 to 2 short, crisp sentences. Give the exact main point directly without any long introductions, essays, or unnecessary fluff.
+2. If in Bengali: Use simple, natural conversational Bengali. Use 'পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক', 'অর্ডার'. Never use archaic words like 'সম্মানী'.
+3. If in English: Use concise, professional English.
+4. "NO SKILLS" INQUIRIES: If anyone has no skills, state directly and honestly: Gaenr is strictly skill-based; without verified skills and a portfolio, there are no work opportunities here. Advise them to learn a skill first.
+5. GAENR FACTS: 0% client platform fee, managed quality with verified student/expert talents, secure escrow payments (bKash, Nagad, Bank), Mirpur office (10/A, 15/13, Mirpur, Dhaka), Hotline: 09647 922 800, WhatsApp: 01608 922 800.
 `;
 
 /**
- * Intelligent Local Knowledge Engine (Works instantly with 0 external API setup)
+ * Intelligent Local Knowledge Engine (Short, specific, 1-2 sentence answers)
  */
 export function getLocalAIResponse(
   rawQuery: string,
@@ -221,7 +199,7 @@ export function getLocalAIResponse(
   if (/^(hi|hello|hey|salam|assalamu|kemon achen|halo|হাই|হ্যালো|সালাম|আসসালামু|কেমন আছেন)/i.test(q)) {
     if (isEn) {
       return {
-        text: `👋 **${userGreetingPrefix}Hello! I am Gaen, Talent Coordinator at Gaenr.**\n\nLooking to get a project done or need information about our platform? How can I help you today?`,
+        text: `👋 ${userGreetingPrefix}Hi! I'm Gini, Gaenr. How can I help you today?`,
         actions: [
           { label: 'Explore Services', actionType: 'navigate', payload: '/services' },
           { label: 'Assign a Task', actionType: 'openAssignModal' },
@@ -230,7 +208,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `👋 **${userGreetingPrefix}হ্যালো! আমি গেন (Gaen), গেইনার ট্যালেন্ট কোঅর্ডিনেটর।**\n\nকোনো প্রজেক্টের কাজ করাতে চান নাকি গেইনার সম্পর্কে কিছু জানতে চান? বলুন কীভাবে সাহায্য করতে পারি।`,
+      text: `👋 ${userGreetingPrefix}হ্যালো! আমি গিনি (Gini), গেইনার। কীভাবে সাহায্য করতে পারি বলুন?`,
       actions: [
         { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
         { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
@@ -252,20 +230,18 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `🏢 **What is GAENR?**\n\nGAENR is Bangladesh's premier **Managed Outsourcing & Talent Platform**. We bridge businesses, startups, and agencies with verified, highly skilled university student talents and creative experts.\n\n**Why choose Gaenr?**\n• **Managed Quality:** Unlike chaotic traditional marketplaces, every project is monitored by Gaenr operations for quality and on-time delivery.\n• **0% Client Platform Fee:** No hidden client fees or surprise charges.\n• **Secure Escrow:** Your payment is released only after you review and approve the satisfactory deliverable.`,
+        text: `🏢 **Gaenr** connects you with verified expert talents for design, video, web, and marketing with 0% client fee and guaranteed quality.`,
         actions: [
           { label: 'Browse Services', actionType: 'navigate', payload: '/services' },
-          { label: 'About Gaenr', actionType: 'navigate', payload: '/about' },
           { label: 'Assign a Task', actionType: 'openAssignModal' },
         ],
       };
     }
     return {
-      text: `🏢 **GAENR (গেইনার) কী?**\n\nগেইনার হলো বাংলাদেশের একটি নির্ভরযোগ্য **ম্যানেজড আউটসোর্সিং ও ট্যালেন্ট প্ল্যাটফর্ম**। এখানে দেশের শীর্ষ বিশ্ববিদ্যালয়গুলোর যাচাইকৃত মেধাবী ছাত্র ও অভিজ্ঞ ফ্রিল্যান্সারদের দিয়ে বিজনেস প্রজেক্ট করানো হয়।\n\n**গেইনারের মূল সুবিধা:**\n• **ম্যানেজড কোয়ালিটি:** সাধারণ মার্কেটপ্লেসের মতো ফ্রিল্যান্সার উধাও হয়ে যাওয়ার ভয় নেই। প্রতিটি কাজ গেইনার টিম সরাসরি তদারকি করে।\n• **০% ক্লায়েন্ট ফি:** ক্লায়েন্টদের কোনো অতিরিক্ত প্ল্যাটফর্ম ফি দিতে হয় না।\n• **নিরাপদ পেমেন্ট:** সম্পূর্ণ কাজ ডেলিভারি পেয়ে সন্তুষ্ট হওয়ার পরই কেবল ফ্রিল্যান্সারের পেমেন্ট ছাড় করা হয়।`,
+      text: `🏢 **গেইনার** একটি ম্যানেজড প্ল্যাটফর্ম যেখানে ভেরিফাইড এক্সপার্টদের দিয়ে ডিজাইন, ভিডিও, ওয়েব ও মার্কেটিংয়ের কাজ করানো যায়। ক্লায়েন্ট ফি ০%।`,
       actions: [
         { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
-        { label: 'আমাদের সম্পর্কে জানুন', actionType: 'navigate', payload: '/about' },
-        { label: 'টাস্ক অ্যাসাইন করুন', actionType: 'openAssignModal' },
+        { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
       ],
     };
   }
@@ -283,20 +259,18 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `🎯 **GAENR's 7 Core Services:**\n\n1. 🎨 **Graphics Design:** Brand Identity, Logos, Social Media Creatives, Packaging & Vector Graphics.\n2. ✍️ **Content Writing & Copywriting:** SEO Articles, Website Content, Product Copy & Social Captions.\n3. 🎬 **Video Editing:** YouTube Videos, Reels, Shorts, TikTok, Color Grading & Motion Graphics.\n4. 🌐 **WordPress Website Design:** Custom Responsive Sites, Landing Pages, WooCommerce & Payment Gateways (bKash/Nagad/SSLCommerz).\n5. 📊 **Presentation Slide Design:** Investor Pitch Decks, Corporate Sales Decks (Fast 24-48h rush turnaround available).\n6. 📱 **UX / UI Design:** Figma Interactive Prototypes, Mobile App UI & SaaS Dashboards.\n7. 📣 **Ad Running & Campaign Setup:** Meta (Facebook/Instagram) & Google Ads with Local Audience Retargeting.`,
+        text: `🎯 We provide 7 core services: Graphics, Video Editing, WordPress Web, Content Writing, UI/UX, Slide Design, and Ad Campaigns.`,
         actions: [
           { label: 'View All Services', actionType: 'navigate', payload: '/services' },
           { label: 'Assign a Task', actionType: 'openAssignModal' },
-          { label: 'Chat on WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
         ],
       };
     }
     return {
-      text: `🎯 **GAENR-এর ৭টি মূল সার্ভিস:**\n\n1. 🎨 **Graphics Design:** লোগো, ব্র্যান্ড আইডেন্টিটি, সোশ্যাল মিডিয়া পোস্ট, প্যাকেজিং ও ভেক্টর ডিজাইন।\n2. ✍️ **Content Writing & Copywriting:** এসইও ব্লগ, ওয়েবসাইট কনটেন্ট, সেলস কপি ও প্রোডাক্ট ডেসক্রিপশন।\n3. 🎬 **Video Editing:** ইউটিউব ভিডিও, রিলস, শর্টস, টিকটক, কালার গ্রেডিং ও সাউন্ড ডিজাইন।\n4. 🌐 **WordPress Website Design:** রেসপন্সিভ ওয়েবসাইট, ল্যান্ডিং পেজ ও বিকাশ/নগদ পেমেন্ট ইন্টিগ্রেশন।\n5. 📊 **Presentation Slide Design:** ইনভেস্টর পিচ ডেক, বিজনেস প্রেজেন্টেশন (জরুরি প্রয়োজনে ২৪-৪৮ ঘণ্টায়)।\n6. 📱 **UX / UI Design:** ফিগমা প্রোটোটাইপ, মোবাইল অ্যাপ ও ড্যাশবোর্ড ইন্টারফেস।\n7. 📣 **Ad Running & Campaign Setup:** ফেসবুক, ইনস্টাগ্রাম ও গুগল অ্যাডস ক্যাম্পেইন ম্যানেজমেন্ট।`,
+      text: `🎯 গেইনারে ৭টি মূল সার্ভিস দেওয়া হয়: গ্রাফিক্স ডিজাইন, ভিডিও এডিটিং, ওয়ার্ডপ্রেস ওয়েবসাইট, কনটেন্ট রাইটিং, UI/UX, স্লাইড ও ফেসবুক অ্যাড ক্যাম্পেইন।`,
       actions: [
-        { label: 'সব সার্ভিস বিস্তারিত দেখুন', actionType: 'navigate', payload: '/services' },
+        { label: 'সব সার্ভিস দেখুন', actionType: 'navigate', payload: '/services' },
         { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
-        { label: 'হোয়াটসঅ্যাপে আলোচনা', actionType: 'openWhatsApp', payload: '01608922800' },
       ],
     };
   }
@@ -314,25 +288,23 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `💼 **How Hiring Works on GAENR:**\n\n1. **Submit Your Task:** Click 'Assign Task' on our website and share your project brief and timeline.\n2. **Expert Matching:** Our Project Manager assigns the best-verified talent for your specific needs within hours.\n3. **Track Progress:** You will receive watermarked live previews to review revisions safely.\n4. **Approve & Delivery:** Once you are fully satisfied, approve the work and release the payment to receive full source files.`,
+        text: `💼 Simply click **'Assign Task'** and submit your project requirements. Gaenr will match the best verified expert to deliver your work on time.`,
         actions: [
           { label: 'Assign a Task Now', actionType: 'openAssignModal' },
-          { label: 'Explore Experts', actionType: 'navigate', payload: '/experts' },
           { label: 'WhatsApp Support', actionType: 'openWhatsApp', payload: '01608922800' },
         ],
       };
     }
     return {
-      text: `💼 **গেইনারে কাজ করানোর নিয়ম (Hiring Process):**\n\n1. **টাস্ক সাবমিট করুন:** 'Assign Task' বাটনে ক্লিক করে আপনার কাজের বিবরণ, প্রয়োজনীয় সময় ও বাজেট জানান।\n2. **এক্সপার্ট ম্যাচিং:** গেইনার প্রজেক্ট ম্যানেজার কয়েক ঘণ্টার মধ্যে আপনার কাজের জন্য সবচেয়ে উপযুক্ত ভেরিফাইড ফ্রিল্যান্সার অ্যাসাইন করবেন।\n3. **কাজের অগ্রগতি ও প্রিভিউ:** ওয়াটারমার্কড লাইভ প্রিভিউতে কাজ দেখে রিভিশন দিতে পারবেন।\n4. **ডেলিভারি ও পেমেন্ট রিলিজ:** সম্পূর্ণ কাজ ঠিকঠাক বুঝে পাওয়ার পর ফাইনাল ফাইল ডাউনলোড করবেন এবং পেমেন্ট ছাড় করবেন।`,
+      text: `💼 **'টাস্ক দিন'** বাটনে ক্লিক করে কাজের তথ্য ও সময় জানান। গেইনার আপনার জন্য উপযুক্ত ভেরিফাইড এক্সপার্ট নির্বাচন করে সময়মতো কাজ বুঝিয়ে দেবে।`,
       actions: [
-        { label: 'টাস্ক অ্যাসাইন করুন', actionType: 'openAssignModal' },
-        { label: 'এক্সপার্টদের প্রোফাইল দেখুন', actionType: 'navigate', payload: '/experts' },
+        { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
         { label: 'হোয়াটসঅ্যাপে হেল্প নিন', actionType: 'openWhatsApp', payload: '01608922800' },
       ],
     };
   }
 
-  // 5a. Explicit Handling for "No skills" / "স্কিল নেই" / "কিভাবে ইনকাম করব স্কিল ছাড়া"
+  // 5a. Explicit Handling for "No skills"
   if (
     q.includes('skill nei') ||
     q.includes('skill nai') ||
@@ -350,18 +322,18 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `To be completely candid and honest, **Gaenr is a strictly managed talent platform** where verified experts deliver professional client projects.\n\nWithout demonstrable expertise and a solid portfolio in a specific area (like Graphics, Video Editing, Web Development, Content Writing, Presentation Slides, or Ad Campaigns), **there are currently no earning or work opportunities on Gaenr**.\n\nWe don't offer generic or unskilled tasks. My sincere suggestion: pick one in-demand skill that interests you, practice and build 3-5 quality portfolio samples, and then apply to join us as an expert!`,
+        text: `❌ Gaenr is strictly skill-based. Without demonstrable expertise and a verified portfolio in a specific skill, there are no work opportunities here. Please learn a skill first!`,
         actions: [
-          { label: 'Explore Our Services', actionType: 'navigate', payload: '/services' },
+          { label: 'Explore Services', actionType: 'navigate', payload: '/services' },
           { label: 'Chat on WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
         ],
       };
     }
     return {
-      text: `আমি সরাসরি ও পরিষ্কারভাবে বলি—**গেইনার মূলত একটি প্রফেশনাল ম্যানেজড ট্যালেন্ট প্ল্যাটফর্ম**। এখানে ক্লায়েন্টদের কাজের হাই-কোয়ালিটি স্ট্যান্ডার্ড নিশ্চিত করতে হয়।\n\nতাই কোনো স্কিল না থাকলে দুঃখজনকভাবে **গেইনারে কাজ পাওয়ার বা আর্ন করার কোনো সুযোগ নেই**। এখানে কোনো ক্লিক বা আনস্কিল্ড কাজ দেওয়া হয় না।\n\nগেইনারে কাজ পেতে হলে যেকোনো একটি নির্দিষ্ট বিষয়ে (যেমন: গ্রাফিক্স ডিজাইন, ভিডিও এডিটিং, ওয়েবসাইট তৈরি, কনটেন্ট রাইটিং ইত্যাদি) অবশ্যই ভালো দক্ষতা ও কাজের স্যাম্পল থাকতে হবে।\n\nআমার পরামর্শ থাকবে, আপনি আগে যেকোনো একটি নির্দিষ্ট স্কিল ভালোভাবে শিখে কিছু প্র্যাকটিস প্রজেক্ট রেডি করুন। এরপর আপনি এক্সপার্ট হিসেবে নিশ্চিন্তে আমাদের প্ল্যাটফর্মে আবেদন করতে পারবেন!`,
+      text: `❌ গেইনারে স্কিল ছাড়া কোনো কাজের সুযোগ নেই। এখানে কাজ করতে অন্তত একটি বিষয়ে নির্দিষ্ট দক্ষতা ও কাজের পোর্টফোলিও থাকতে হবে। তাই আগে কোনো স্কিল ভালোভাবে শিখে নেওয়ার পরামর্শ থাকবে!`,
       actions: [
-        { label: 'আমাদের সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
-        { label: 'হোয়াটসঅ্যাপে টিমকে জানান', actionType: 'openWhatsApp', payload: '01608922800' },
+        { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
+        { label: 'হোয়াটসঅ্যাপে জানান', actionType: 'openWhatsApp', payload: '01608922800' },
       ],
     };
   }
@@ -380,7 +352,7 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `🚀 **How to Join GAENR as an Expert / Freelancer:**\n\nAre you a university student or a skilled creative professional?\n\n• **Eligibility:** Passionate student or talent with a strong portfolio in design, video, web, writing, or marketing.\n• **Application:** Apply via our **Join as Expert** page with your profile details and sample work.\n• **Verification:** Our team reviews your portfolio and conducts a skills check to grant your verified Gaenr Expert ID Card.\n• **Perks:** 100% free registration, real client projects, and timely guaranteed payments!`,
+        text: `🚀 Apply at **'Join as Expert'** with your portfolio. Once verified, you will receive real client tasks with guaranteed on-time payments.`,
         actions: [
           { label: 'Apply as Expert', actionType: 'openApplyModal' },
           { label: 'Join as Expert Page', actionType: 'navigate', payload: '/join-as-expert' },
@@ -388,7 +360,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `🚀 **এক্সপার্ট হিসেবে GAENR-এ জয়েন করার নিয়ম:**\n\nআপনি যদি ডিজাইনার, ভিডিও এডিটর, ওয়েব ডেভেলপার, রাইটার বা মার্কেটার হন:\n\n• **যোগ্যতা:** বিশ্ববিদ্যালয়ের শিক্ষার্থী অথবা কাজে ভালো দক্ষতা ও কাজের স্যাম্পল থাকতে হবে।\n• **আবেদন:** সাইটের **Join as Expert** অপশনে গিয়ে আপনার তথ্য ও পোর্টফোলিও লিঙ্ক সাবমিট করুন।\n• **ভেরিফিকেশন:** আমাদের টিম আপনার কাজ যাচাই করে গেইনার ভেরিফাইড আইডি কার্ড ও প্রোফাইল দেবে।\n• **সুবিধা:** ১০০% ফ্রি রেজিস্ট্রেশন, সরাসরি ক্লায়েন্ট প্রজেক্ট ও সময়মতো নিশ্চিত পেমেন্ট পাওয়ার গ্যারান্টি!`,
+      text: `🚀 **'Join as Expert'** পেজে গিয়ে আপনার পোর্টফোলিও লিঙ্ক দিয়ে আবেদন করুন। ভেরিফিকেশন সম্পন্ন হলে নিয়মিত ক্লায়েন্ট টাস্ক ও নিশ্চিত পেমেন্ট পাবেন।`,
       actions: [
         { label: 'আবেদন করুন', actionType: 'openApplyModal' },
         { label: 'বিস্তারিত জানুন', actionType: 'navigate', payload: '/join-as-expert' },
@@ -411,7 +383,7 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `💳 **Pricing & Payment System:**\n\n• **0% Client Fee:** Clients pay zero platform fees on Gaenr.\n• **Transparent Milestones:** Upfront fixed or custom project pricing without hidden charges.\n• **Escrow Protection:** Your payment stays 100% secure in escrow and is released only upon your project approval.\n• **Payment Methods:** bKash, Nagad, direct Bank Transfer, and major Cards.\n\nWant an instant custom quote? Message us directly on WhatsApp!`,
+        text: `💳 **0% Client Platform Fee.** Payments are held in secure escrow (bKash, Nagad, Bank, Card) and released only after you approve the deliverable.`,
         actions: [
           { label: 'Get WhatsApp Quote', actionType: 'openWhatsApp', payload: '01608922800' },
           { label: 'Assign a Task', actionType: 'openAssignModal' },
@@ -419,10 +391,10 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `💳 **গেইনারের চার্জ ও পেমেন্ট সিস্টেম:**\n\n• **০% ক্লায়েন্ট প্ল্যাটফর্ম ফি:** ক্লায়েন্টদের জন্য গেইনার কোনো অতিরিক্ত প্ল্যাটফর্ম চার্জ কাটে না।\n• **ক্লিয়ার প্রজেক্ট বাজেট:** কাজের ধরন ও স্কোপ অনুযায়ী ফিক্সড বাজেট ঠিক করা হয়। কোনো হিডেন চার্জ নেই।\n• **পেমেন্ট সম্পূর্ণ নিরাপদ:** আপনার পেমেন্ট এসক্রোতে সুরক্ষিত থাকে। কাজ ডেলিভারি পাওয়ার পর আপনি সন্তুষ্ট হলেই পেমেন্ট ফ্রিল্যান্সারকে দেওয়া হয়।\n• **পেমেন্ট মেথড:** বিকাশ, নগদ, ব্যাংক ট্রান্সফার এবং কার্ডের মাধ্যমে পেমেন্ট করতে পারবেন।`,
+      text: `💳 **ক্লায়েন্টদের প্ল্যাটফর্ম চার্জ ০%।** বিকাশ, নগদ ও ব্যাংকে নিরাপদ এস্ক্রো পেমেন্ট—কাজ দেখে সন্তুষ্ট হয়ে অ্যাপ্রুভ করার পরেই কেবল পেমেন্ট রিলিজ হয়।`,
       actions: [
-        { label: 'বাজেট নিয়ে আলোচনা করুন', actionType: 'openWhatsApp', payload: '01608922800' },
-        { label: 'টাস্ক অ্যাসাইন করুন', actionType: 'openAssignModal' },
+        { label: 'বাজেট নিয়ে আলোচনা', actionType: 'openWhatsApp', payload: '01608922800' },
+        { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
       ],
     };
   }
@@ -445,20 +417,18 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `📞 **Official Contact Information:**\n\n• 📱 **Hotline Phone:** 09647 922 800 (Direct call)\n• 💬 **WhatsApp Support:** 01608 922 800 (Fast proposals & queries)\n• ✉️ **Official Email:** contact@gaenr.com\n• 📍 **Office Address:** 10/A, 15/13, Mirpur, Dhaka, Bangladesh\n• ⏰ **Operating Hours:** 10:00 AM – 10:00 PM (Saturday – Thursday)`,
+        text: `📞 **Mirpur Office:** 10/A, 15/13, Mirpur, Dhaka. Hotline: 09647 922 800 | WhatsApp: 01608 922 800 | Hours: 10 AM – 10 PM.`,
         actions: [
           { label: 'Chat on WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
           { label: 'Call Hotline', actionType: 'callPhone', payload: '09647922800' },
-          { label: 'Contact Us Page', actionType: 'navigate', payload: '/contact' },
         ],
       };
     }
     return {
-      text: `📞 **GAENR-এর অফিসিয়াল যোগাযোগ মাধ্যম:**\n\n• 📱 **হটলাইন ফোন:** 09647 922 800 (সরাসরি কল করতে পারেন)\n• 💬 **হোয়াটসঅ্যাপ:** 01608 922 800 (যেকোনো কাজের আলোচনা বা মেসেজ দিতে)\n• ✉️ **অফিসিয়াল ইমেইল:** contact@gaenr.com\n• 📍 **অফিস ঠিকানা:** 10/A, 15/13, মিরপুর, ঢাকা, বাংলাদেশ\n• ⏰ **সাপোর্ট টাইম:** সকাল ১০:০০ টা – রাত ১০:০০ টা (শনিবার – বৃহস্পতিবার)`,
+      text: `📞 **মিরপুর অফিস:** ১০/এ, ১৫/১৩, মিরপুর, ঢাকা। হটলাইন: 09647 922 800 | হোয়াটসঅ্যাপ: 01608 922 800 | সময়: সকাল ১০টা – রাত ১০টা।`,
       actions: [
-        { label: 'হোয়াটসঅ্যাপে মেসেজ পাঠান', actionType: 'openWhatsApp', payload: '01608922800' },
+        { label: 'হোয়াটসঅ্যাপে মেসেজ', actionType: 'openWhatsApp', payload: '01608922800' },
         { label: 'হটলাইনে কল করুন', actionType: 'callPhone', payload: '09647922800' },
-        { label: 'যোগাযোগ পেজ দেখুন', actionType: 'navigate', payload: '/contact' },
       ],
     };
   }
@@ -467,7 +437,7 @@ export function getLocalAIResponse(
   if (q.includes('video') || q.includes('ভিডিও') || q.includes('reels') || q.includes('youtube')) {
     if (isEn) {
       return {
-        text: `🎬 **Video Editing Services:**\n\nOur verified video creators work in Premiere Pro, DaVinci Resolve, and After Effects:\n• YouTube long-form videos & podcast audio/video sync\n• High-retention Reels, TikToks & Shorts\n• Color grading, sound effects & dynamic typography\n• Exported in full 4K / 1080p master quality.`,
+        text: `🎬 Professional video editing for YouTube, Reels, Shorts, and podcasts with color grading and dynamic subtitles.`,
         actions: [
           { label: 'Assign Video Task', actionType: 'openAssignModal' },
           { label: 'Service Details', actionType: 'navigate', payload: '/services/video-editing' },
@@ -475,7 +445,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `🎬 **Video Editing সার্ভিস:**\n\nআমাদের এক্সপার্টরা প্রিমিয়ার প্রো, ডাভিঞ্চি রিজলভ ও আফটার ইফেক্টসে কাজ করেন:\n• ইউটিউব ভিডিও ও পডকাস্ট এডিটিং\n• হাই-রিটেনশন রিলস, শর্টস ও টিকটক\n• কালার গ্রেডিং, সাউন্ড ডিজাইন ও ডায়নামিক সাবটাইটেল\n• ফুল 4K / 1080p হাই-কোয়ালিটি মাস্টার ডেলিভারি।`,
+      text: `🎬 ইউটিউব, রিলস, শর্টস ও পডকাস্টের জন্য প্রফেশনাল ভিডিও এডিটিং, কালার গ্রেডিং ও ক্যাপশন তৈরি সার্ভিস।`,
       actions: [
         { label: 'ভিডিও টাস্ক দিন', actionType: 'openAssignModal' },
         { label: 'সার্ভিস বিস্তারিত', actionType: 'navigate', payload: '/services/video-editing' },
@@ -486,7 +456,7 @@ export function getLocalAIResponse(
   if (q.includes('graphic') || q.includes('logo') || q.includes('লোগো') || q.includes('ডিজাইন') || q.includes('banner')) {
     if (isEn) {
       return {
-        text: `🎨 **Graphics Design Services:**\n\n• Custom Logo & Brand Identity packages\n• Social media creative banners & flyers\n• Product packaging & label design\n• Source vector files (AI, EPS, SVG, PNG) with guaranteed revision rounds.`,
+        text: `🎨 Custom logos, branding packages, social media creatives, and print designs with vector source files and revision support.`,
         actions: [
           { label: 'Assign Design Task', actionType: 'openAssignModal' },
           { label: 'Service Details', actionType: 'navigate', payload: '/services/graphics-design' },
@@ -494,7 +464,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `🎨 **Graphics Design সার্ভিস:**\n\n• কাস্টম লোগো ও ব্র্যান্ড আইডেন্টিটি\n• সোশ্যাল মিডিয়া পোস্টার ও ব্যানার ডিজাইন\n• প্যাকেজিং ও লেবেল ডিজাইন\n• সম্পূর্ণ প্রিন্ট-রেডি ভেক্টর সোর্স ফাইল (AI, EPS, SVG, PNG) সহ প্রতিটি কাজে রিভিশন সুবিধা।`,
+      text: `🎨 লোগো, ব্র্যান্ড আইডেন্টিটি, সোশ্যাল মিডিয়া ব্যানার ও ভেক্টর ডিজাইন সোর্স ফাইল ও রিভিশন সুবিধাসহ।`,
       actions: [
         { label: 'ডিজাইন টাস্ক দিন', actionType: 'openAssignModal' },
         { label: 'সার্ভিস বিস্তারিত', actionType: 'navigate', payload: '/services/graphics-design' },
@@ -505,7 +475,7 @@ export function getLocalAIResponse(
   if (q.includes('web') || q.includes('wordpress') || q.includes('website') || q.includes('ওয়েবসাইট') || q.includes('সাইট')) {
     if (isEn) {
       return {
-        text: `🌐 **WordPress Website Design:**\n\n• Modern, mobile-responsive corporate sites & landing pages\n• WooCommerce online stores with local payment gateways (bKash, Nagad, SSLCommerz)\n• Speed optimization & clean architecture without bloated themes.`,
+        text: `🌐 Responsive WordPress and WooCommerce websites with local bKash/Nagad checkout and speed optimization.`,
         actions: [
           { label: 'Assign Web Task', actionType: 'openAssignModal' },
           { label: 'Service Details', actionType: 'navigate', payload: '/services/wordpress-website' },
@@ -513,7 +483,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `🌐 **WordPress Website Design:**\n\n• রেসপন্সিভ ওয়েবসাইট ও হাই-কনভার্টিং ল্যান্ডিং পেজ\n• WooCommerce অনলাইন স্টোর ও বিকাশ/নগদ পেমেন্ট গেটওয়ে সেটআপ\n• স্পিড অপ্টিমাইজেশন ও মোবাইল-ফ্রেন্ডলি আর্কিটেকচার।`,
+      text: `🌐 রেসপন্সিভ ওয়ার্ডপ্রেস ও ই-কমার্স ওয়েবসাইট ডিজাইন বিকাশ/নগদ পেমেন্ট গেটওয়ে ও ফাস্ট লোডিংসহ।`,
       actions: [
         { label: 'ওয়েব টাস্ক দিন', actionType: 'openAssignModal' },
         { label: 'সার্ভিস বিস্তারিত', actionType: 'navigate', payload: '/services/wordpress-website' },
@@ -524,23 +494,21 @@ export function getLocalAIResponse(
   // 9. Default fallback response
   if (isEn) {
     return {
-      text: `Thank you for reaching out! I can assist you with any of Gaenr's services, hiring verified talents, project scoping, or reaching our Mirpur office team.\n\nFeel free to describe what you need or pick an option below:`,
+      text: `I'm here to help with any project task, hiring, or Gaenr services. What would you like to get done?`,
       actions: [
         { label: 'Explore Services', actionType: 'navigate', payload: '/services' },
         { label: 'Assign a Task', actionType: 'openAssignModal' },
-        { label: 'Chat on WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
-        { label: 'Call Hotline', actionType: 'callPhone', payload: '09647922800' },
+        { label: 'WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
       ],
     };
   }
 
   return {
-    text: `ধন্যবাদ আপনার মেসেজের জন্য! আমি গেইনারের যেকোনো সার্ভিস, এক্সপার্ট হায়ার করার নিয়ম, ফ্রিল্যান্সার হিসেবে রেজিস্ট্রেশন বা পেমেন্ট সংক্রান্ত বিষয়ে সাহায্য করতে পারি।\n\nআপনার রিকোয়ারমেন্ট লিখে জানাতে পারেন অথবা নিচের অপশনগুলোতে ক্লিক করতে পারেন:`,
+    text: `গেইনারের যেকোনো কাজ করানো, এক্সপার্ট হায়ার বা সার্ভিস সংক্রান্ত তথ্যের জন্য বলুন—কীভাবে সাহায্য করতে পারি?`,
     actions: [
       { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
       { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
       { label: 'হোয়াটসঅ্যাপে চ্যাট', actionType: 'openWhatsApp', payload: '01608922800' },
-      { label: 'হটলাইনে কল করুন', actionType: 'callPhone', payload: '09647922800' },
     ],
   };
 }
@@ -581,15 +549,15 @@ export async function queryGeminiAPI(
 
   const languageDirective =
     language === 'en'
-      ? 'CRITICAL: Answer strictly in Proper, fluent, professional English.'
-      : "CRITICAL: Answer strictly in natural, modern conversational Bengali. Do NOT use overly archaic words like 'সম্মানী'; ALWAYS use 'পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক', 'অর্ডার'. Keep it friendly and clear.";
+      ? 'CRITICAL: Answer strictly in Proper, fluent English. MUST BE 1-2 SHORT SENTENCES ONLY.'
+      : "CRITICAL: Answer strictly in natural conversational Bengali. MUST BE 1-2 SHORT SENTENCES ONLY. Always use 'পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক'. Never use 'সম্মানী'.";
 
   const contents = [
     {
       role: 'user',
       parts: [
         {
-          text: `SYSTEM CONTEXT INSTRUCTIONS:\n${GAENR_SYSTEM_PROMPT}\n${memoryContext}\n${languageDirective}\n\nPlease strictly follow these instructions and answer the user query based on GAENR's real facts.`,
+          text: `SYSTEM CONTEXT INSTRUCTIONS:\n${GAENR_SYSTEM_PROMPT}\n${memoryContext}\n${languageDirective}\n\nCRITICAL LENGTH CONSTRAINT: Strictly respond in 1 to 2 short sentences maximum. Be specific and direct to the point.`,
         },
       ],
     },
@@ -597,7 +565,7 @@ export async function queryGeminiAPI(
       role: 'model',
       parts: [
         {
-          text: `Understood! I am Gaenr AI, the official assistant for GAENR. I will follow the language directive (${language.toUpperCase()}) and use natural modern terminology like 'পেমেন্ট' instead of 'সম্মানী'.`,
+          text: `Understood! I am Gini, representing Gaenr. I will give direct, specific answers in 1 to 2 short sentences only.`,
         },
       ],
     },
@@ -633,8 +601,8 @@ export async function queryGeminiAPI(
           body: JSON.stringify({
             contents,
             generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 800,
+              temperature: 0.6,
+              maxOutputTokens: 250,
             },
           }),
         }
