@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 interface GaenrBotAvatarProps {
   className?: string;
@@ -8,19 +8,21 @@ interface GaenrBotAvatarProps {
 
 /**
  * Gini Butterfly Bot Avatar - "Dana with a Bot"
- * Clean, symmetrical, front-facing 1-color vector SVG designed from simple geometric shapes.
- * Perfectly readable and sharp at compact icon sizes (16px to 32px).
+ * Solid, filled ("ভরাট") 1-color pure white vector design.
+ * Straight and perfectly symmetrical front-facing view with clean negative-space cutouts.
  * Features:
- * - Symmetrical front-facing butterfly wings (ডানা) with circuit traces & terminal nodes
- * - Cute front-facing robot monitor head with screen visor & capsule eyes
- * - Straight cyber antennae rising with solid sphere tips
- * - Robotic torso & segmented tapered abdomen
+ * - Solid butterfly wings with cyber circuit cutouts & node pads
+ * - Solid robot monitor head with screen visor cutout & glowing white capsule eyes
+ * - Symmetrical cyber antennae with sphere tips
+ * - Solid torso & segmented ribbed abdomen
  */
 export const GaenrBotAvatar: React.FC<GaenrBotAvatarProps> = ({
   className = '',
   size = 24,
   color = '#ffffff',
 }) => {
+  const maskId = useId().replace(/:/g, '_');
+
   return (
     <svg
       viewBox="0 0 100 100"
@@ -30,179 +32,139 @@ export const GaenrBotAvatar: React.FC<GaenrBotAvatarProps> = ({
       xmlns="http://www.w3.org/2000/svg"
       className={`shrink-0 select-none ${className}`}
     >
-      {/* ── 1. Cyber Antennae with Sphere Tips (Front-facing symmetrical) ── */}
-      <path
-        d="M 44 26 C 41 18 38 14 34 11"
-        stroke={color}
-        strokeWidth="2.8"
-        strokeLinecap="round"
-      />
-      <circle cx="33" cy="10.5" r="3.4" fill={color} />
+      <defs>
+        {/* Negative Space Mask: White draws solid body, Black carves out clean circuit & visor details */}
+        <mask id={`bot-mask-${maskId}`}>
+          {/* Base white covering entire area */}
+          <rect width="100" height="100" fill="#ffffff" />
 
-      <path
-        d="M 56 26 C 59 18 62 14 66 11"
-        stroke={color}
-        strokeWidth="2.8"
-        strokeLinecap="round"
-      />
-      <circle cx="67" cy="10.5" r="3.4" fill={color} />
+          {/* ── Screen Visor Cutout in Head ── */}
+          <rect
+            x="38.5"
+            y="28.5"
+            width="23"
+            height="17"
+            rx="4.5"
+            fill="#000000"
+          />
 
-      {/* ── 2. Butterfly Wings (Straight, Symmetrical, Bold Shape Lines) ── */}
-      {/* Left Upper Wing */}
-      <path
-        d="M 36 38 C 24 20 10 16 6 24 C 2 34 10 50 35 54"
-        stroke={color}
-        strokeWidth="2.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Left Lower Wing */}
-      <path
-        d="M 36 55 C 22 58 14 69 17 79 C 21 87 33 83 39 67"
-        stroke={color}
-        strokeWidth="2.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+          {/* ── Wing Circuit Cuts (Negative Space) ── */}
+          {/* Left Upper Wing Circuit */}
+          <path
+            d="M 16 31 L 24 37 L 33 37"
+            stroke="#000000"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="15.5" cy="30.5" r="2.4" fill="#000000" />
 
-      {/* Right Upper Wing */}
-      <path
-        d="M 64 38 C 76 20 90 16 94 24 C 98 34 90 50 65 54"
-        stroke={color}
-        strokeWidth="2.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Right Lower Wing */}
-      <path
-        d="M 64 55 C 78 58 86 69 83 79 C 79 87 67 83 61 67"
-        stroke={color}
-        strokeWidth="2.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+          {/* Left Lower Wing Circuit */}
+          <path
+            d="M 24 71 L 30 71 L 34 66"
+            stroke="#000000"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="24" cy="71" r="2.2" fill="#000000" />
 
-      {/* ── 3. Wing Circuit Traces & Nodes (Clean geometric accents) ── */}
-      {/* Left Circuit */}
-      <path
-        d="M 15 31 L 22 37 L 31 37"
-        stroke={color}
-        strokeWidth="2.0"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="14.5" cy="30.5" r="2.2" fill={color} />
+          {/* Right Upper Wing Circuit */}
+          <path
+            d="M 84 31 L 76 37 L 67 37"
+            stroke="#000000"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="84.5" cy="30.5" r="2.4" fill="#000000" />
 
-      <path
-        d="M 23 70 L 29 70 L 33 65"
-        stroke={color}
-        strokeWidth="2.0"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="23" cy="70" r="2.0" fill={color} />
+          {/* Right Lower Wing Circuit */}
+          <path
+            d="M 76 71 L 70 71 L 66 66"
+            stroke="#000000"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="76" cy="71" r="2.2" fill="#000000" />
 
-      {/* Right Circuit */}
-      <path
-        d="M 85 31 L 78 37 L 69 37"
-        stroke={color}
-        strokeWidth="2.0"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="85.5" cy="30.5" r="2.2" fill={color} />
+          {/* ── Abdomen Segment Grooves ── */}
+          <line
+            x1="43"
+            y1="67"
+            x2="57"
+            y2="67"
+            stroke="#000000"
+            strokeWidth="2.0"
+            strokeLinecap="round"
+          />
+          <line
+            x1="45"
+            y1="75"
+            x2="55"
+            y2="75"
+            stroke="#000000"
+            strokeWidth="2.0"
+            strokeLinecap="round"
+          />
+        </mask>
+      </defs>
 
-      <path
-        d="M 77 70 L 71 70 L 67 65"
-        stroke={color}
-        strokeWidth="2.0"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="77" cy="70" r="2.0" fill={color} />
+      {/* ── Main Solid Filled Silhouette with Masked Details ── */}
+      <g mask={`url(#bot-mask-${maskId})`} fill={color}>
+        {/* Left Upper Wing (Solid Filled) */}
+        <path d="M 37 38 C 24 18 8 14 5 24 C 1 35 10 51 36 55 Z" />
+        {/* Left Lower Wing (Solid Filled) */}
+        <path d="M 36 55 C 20 58 12 70 16 80 C 20 89 34 85 40 67 Z" />
 
-      {/* ── 4. Robotic Torso & Segmented Abdomen (Straight Center Axis) ── */}
-      {/* Torso Top Joint */}
+        {/* Right Upper Wing (Solid Filled) */}
+        <path d="M 63 38 C 76 18 92 14 95 24 C 99 35 90 51 64 55 Z" />
+        {/* Right Lower Wing (Solid Filled) */}
+        <path d="M 64 55 C 80 58 88 70 84 80 C 80 89 66 85 60 67 Z" />
+
+        {/* Cyber Antennae & Tips */}
+        <path
+          d="M 44 26 C 41 17 37 13 33 10"
+          stroke={color}
+          strokeWidth="3.2"
+          strokeLinecap="round"
+        />
+        <circle cx="32" cy="9.5" r="3.6" />
+
+        <path
+          d="M 56 26 C 59 17 63 13 67 10"
+          stroke={color}
+          strokeWidth="3.2"
+          strokeLinecap="round"
+        />
+        <circle cx="68" cy="9.5" r="3.6" />
+
+        {/* Robot Monitor Head Chassis (Solid Filled) */}
+        <rect x="35" y="25" width="30" height="24" rx="7" />
+
+        {/* Torso Top Joint (Solid Filled) */}
+        <rect x="41" y="49" width="18" height="11" rx="4" />
+
+        {/* Abdomen Tail (Solid Filled) */}
+        <path d="M 42 59 C 42 70 45 81 50 88 C 55 81 58 70 58 59 Z" />
+      </g>
+
+      {/* ── Glowing Visor Capsule Eyes (Crisp Solid Shapes Inside Visor) ── */}
       <rect
-        x="42"
-        y="49"
-        width="16"
-        height="9"
-        rx="3.5"
-        stroke={color}
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Segmented Abdomen Silhouette */}
-      <path
-        d="M 44 59 C 44 68 47 79 50 86 C 53 79 56 68 56 59"
-        stroke={color}
-        strokeWidth="2.6"
-        strokeLinecap="round"
-      />
-      {/* Horizontal Rib Segments */}
-      <line
-        x1="45"
-        y1="67"
-        x2="55"
-        y2="67"
-        stroke={color}
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-      <line
-        x1="47"
-        y1="75"
-        x2="53"
-        y2="75"
-        stroke={color}
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-
-      {/* ── 5. Robot Head Chassis (Straight Front-Facing Monitor) ── */}
-      {/* Monitor Chassis */}
-      <rect
-        x="36"
-        y="25"
-        width="28"
-        height="23"
-        rx="7"
-        stroke={color}
-        strokeWidth="2.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Inner Screen Visor */}
-      <rect
-        x="39.5"
-        y="28.5"
-        width="21"
-        height="16"
-        rx="4.5"
-        stroke={color}
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-
-      {/* Symmetrical Visor Eyes (Solid One-Color Pill Shapes) */}
-      <rect
-        x="43.5"
+        x="43"
         y="33.5"
-        width="3.5"
-        height="6.5"
-        rx="1.75"
+        width="4"
+        height="7"
+        rx="2"
         fill={color}
       />
       <rect
         x="53"
         y="33.5"
-        width="3.5"
-        height="6.5"
-        rx="1.75"
+        width="4"
+        height="7"
+        rx="2"
         fill={color}
       />
     </svg>

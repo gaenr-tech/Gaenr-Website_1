@@ -106,30 +106,25 @@ export const GaenrChatbot: React.FC = () => {
     ],
   });
 
-  const STORAGE_KEY = 'gaenr_chat_messages_v2';
-
-  // Load persisted messages from localStorage so conversations are saved
+  // Ephemeral, strictly one-time session-based messages:
+  // Messages are NEVER saved across sessions or refreshes, ensuring 100% privacy so no one else sees previous chats.
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
+      localStorage.removeItem('gaenr_chat_messages_v2');
+      localStorage.removeItem('gaenr_chat_messages_v1');
     } catch {}
     return [getInitialMessage(language)];
   });
 
-  // Automatically save messages to localStorage
+  // Keep initial welcome message synchronized if user toggles language
   useEffect(() => {
-    try {
-      if (messages && messages.length > 0) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-50)));
+    setMessages((prev) => {
+      if (prev.length <= 1 && prev[0]?.id === 'welcome-1') {
+        return [getInitialMessage(language)];
       }
-    } catch {}
-  }, [messages]);
+      return prev;
+    });
+  }, [language]);
 
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
