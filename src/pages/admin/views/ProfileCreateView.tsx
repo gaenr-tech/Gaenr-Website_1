@@ -596,9 +596,9 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
                         </label>
                         <div className="relative">
                           <input
-                            type="url"
+                            type="text"
                             required
-                            placeholder="e.g. Google Drive, Figma prototype, Behance project, Live website URL"
+                            placeholder="e.g. Google Drive, Figma, Google Slides, YouTube, Loom, Canva, Live website URL"
                             value={item.mediaUrl}
                             onChange={(e) =>
                               setInitialPortfolio(

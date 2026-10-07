@@ -48,15 +48,11 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   // ── Real-time chart data: labels derived from actual current date/time ──────
   const now = new Date();
 
-  // Daily: 6 blocks of 4 hours each
-  const dailyTrend = [
-    { label: '1–4h', count: 0 },
-    { label: '5–8h', count: 0 },
-    { label: '9–12h', count: 0 },
-    { label: '13–16h', count: 0 },
-    { label: '17–20h', count: 0 },
-    { label: '21–24h', count: 0 },
-  ];
+  // Daily: 24 hourly divisions for 24 hours (1h - 24h)
+  const dailyTrend = Array.from({ length: 24 }, (_, i) => ({
+    label: `${i + 1}h`,
+    count: 0,
+  }));
 
   // Weekly: last 7 days (today backwards)
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -360,22 +356,53 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               </div>
             ) : (
               /* ── Bar Chart (Daily / Weekly / Yearly) ───────────────────── */
-              <div className={`h-56 flex items-end gap-2.5 sm:gap-6 justify-between px-2 sm:px-6 border-b border-slate-100 pb-3 ${timeframe === 'daily' ? 'sm:gap-10' : ''}`}>
+              <div
+                className={`h-56 flex items-end justify-between border-b border-slate-100 pb-3 ${
+                  timeframe === 'daily'
+                    ? 'gap-1 sm:gap-1.5 px-1 sm:px-3 overflow-x-auto'
+                    : 'gap-2.5 sm:gap-6 px-2 sm:px-6'
+                }`}
+              >
                 {currentTrendData.map((d) => {
                   const heightPercent = d.count === 0 ? 5 : Math.max(15, Math.round((d.count / maxDeliveryCount) * 100));
                   const isEmpty = d.count === 0;
+                  const isDaily = timeframe === 'daily';
+
                   return (
-                    <div key={d.label} className="flex-1 flex flex-col items-center gap-2 group">
-                      <span className={`text-[11px] font-mono font-bold transition-colors ${isEmpty ? 'text-slate-300' : 'text-slate-600 group-hover:text-[#006eff]'}`}>
+                    <div
+                      key={d.label}
+                      className={`flex-1 flex flex-col items-center gap-1.5 group ${
+                        isDaily ? 'min-w-[12px] sm:min-w-[16px]' : ''
+                      }`}
+                    >
+                      <span
+                        className={`font-mono font-bold transition-colors ${
+                          isDaily ? 'text-[9px] sm:text-[10px]' : 'text-[11px]'
+                        } ${isEmpty ? 'text-slate-300' : 'text-slate-600 group-hover:text-[#006eff]'}`}
+                      >
                         {d.count}
                       </span>
-                      <div className="w-full max-w-[48px] bg-slate-100 rounded-t-xl overflow-hidden h-40 flex items-end">
+                      <div
+                        className={`w-full bg-slate-100 rounded-t-lg overflow-hidden h-40 flex items-end ${
+                          isDaily ? 'max-w-[20px]' : 'max-w-[48px]'
+                        }`}
+                      >
                         <div
-                          className={`w-full rounded-t-xl transition-all duration-500 ${isEmpty ? 'bg-slate-100' : 'bg-gradient-to-t from-[#006eff] to-blue-400 group-hover:brightness-110'}`}
+                          className={`w-full rounded-t-lg transition-all duration-500 ${
+                            isEmpty
+                              ? 'bg-slate-100'
+                              : 'bg-gradient-to-t from-[#006eff] to-blue-400 group-hover:brightness-110'
+                          }`}
                           style={{ height: `${heightPercent}%` }}
                         />
                       </div>
-                      <span className="text-[10px] font-semibold text-slate-500 mt-1 whitespace-nowrap">
+                      <span
+                        className={`font-semibold text-slate-500 mt-0.5 whitespace-nowrap ${
+                          isDaily
+                            ? 'text-[7.5px] sm:text-[9px] font-mono'
+                            : 'text-[10px]'
+                        }`}
+                      >
                         {d.label}
                       </span>
                     </div>

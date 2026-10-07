@@ -83,6 +83,32 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
   const [mediaUrl, setMediaUrl] = useState('');
   const [toolsInput, setToolsInput] = useState('');
   const [description, setDescription] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (file: File) => {
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+      showToast('Please select a valid image or video file', 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        const dataUrl = event.target.result as string;
+        setMediaUrl(dataUrl);
+        if (file.type.startsWith('image/')) {
+          setMediaType('image');
+        } else if (file.type.startsWith('video/')) {
+          setMediaType('video');
+        }
+        if (!mediaTitle.trim()) {
+          const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+          setMediaTitle(cleanName.charAt(0).toUpperCase() + cleanName.slice(1));
+        }
+        showToast('File loaded for portfolio preview!', 'success');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleUploadPortfolio = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,8 +120,30 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
 
     const trimmedUrl = mediaUrl.trim();
     if (!trimmedUrl) {
-      showToast('Please provide a valid deliverable URL link', 'error');
+      showToast('Please provide a valid deliverable URL link or upload a file', 'error');
       return;
+    }
+
+    let finalType = mediaType;
+    if (trimmedUrl.startsWith('data:image') || trimmedUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)($|\?)/i)) {
+      finalType = 'image';
+    } else if (
+      trimmedUrl.startsWith('data:video') ||
+      trimmedUrl.match(/\.(mp4|webm|ogg)($|\?)/i) ||
+      trimmedUrl.includes('youtube.com') ||
+      trimmedUrl.includes('youtu.be') ||
+      trimmedUrl.includes('vimeo.com') ||
+      trimmedUrl.includes('loom.com')
+    ) {
+      finalType = 'video';
+    } else if (trimmedUrl.includes('figma.com')) {
+      finalType = 'figma';
+    } else if (
+      trimmedUrl.includes('docs.google.com/presentation') ||
+      trimmedUrl.includes('canva.com') ||
+      trimmedUrl.match(/\.pdf($|\?)/i)
+    ) {
+      finalType = 'document';
     }
 
     const newItem: PortfolioItem = {
@@ -108,11 +156,12 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
       tools: toolsInput
         ? toolsInput.split(',').map((t) => t.trim()).filter(Boolean)
         : ['Verified Toolset'],
-      previewType: mediaType,
+      previewType: finalType,
       accentColor: '#006eff',
       aspectRatio: '16:9',
       mediaUrl: trimmedUrl || undefined,
       imageUrl:
+        finalType === 'image' ||
         trimmedUrl.startsWith('data:image') ||
         trimmedUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)($|\?)/i)
           ? trimmedUrl
@@ -127,7 +176,7 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
 
     onUpdateFreelancer(updatedFreelancer);
     showToast(
-      `Added deliverable link "${newItem.title}" to ${selectedFreelancer.code}'s portfolio!`,
+      `Added deliverable "${newItem.title}" to ${selectedFreelancer.code}'s portfolio!`,
       'success'
     );
 
@@ -529,27 +578,48 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
                 />
               </div>
 
-              {/* Deliverable Link Input Section */}
+              {/* Deliverable Media / Link Input Section */}
               <div className="p-4 bg-blue-50/40 border border-blue-100 rounded-2xl space-y-3">
-                <div>
-                  <label className="block font-bold text-slate-800 mb-1">
-                    Deliverable URL Link <span className="text-rose-500">*</span>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/png, image/jpeg, image/webp, image/svg+xml, video/mp4, video/webm"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      handleFileSelect(e.target.files[0]);
+                    }
+                  }}
+                  className="hidden"
+                />
+
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-slate-800">
+                    Deliverable Media / Link <span className="text-rose-500">*</span>
                   </label>
-                  <div className="relative">
-                    <input
-                      type="url"
-                      required
-                      placeholder="e.g. Google Drive, Figma prototype, Behance project, Live website URL"
-                      value={mediaUrl}
-                      onChange={(e) => setMediaUrl(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-mono text-xs focus:border-[#006eff] focus:outline-none shadow-2xs"
-                    />
-                    <LinkIcon className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
-                  </div>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Direct deliverable link to proof of work (Google Drive, Figma, Behance, Live website, or YouTube).
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-slate-50 text-[#006eff] border border-blue-200 rounded-lg text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Upload File</span>
+                  </button>
                 </div>
+
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Paste link: Google Drive, Figma, Google Slides, YouTube, Loom, Canva, Web URL or upload file"
+                    value={mediaUrl}
+                    onChange={(e) => setMediaUrl(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-mono text-xs focus:border-[#006eff] focus:outline-none shadow-2xs"
+                  />
+                  <LinkIcon className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  Upload an image/video file directly or paste any live URL (Google Drive, Figma, Google Slides, YouTube, Loom, Canva, Web URL).
+                </p>
 
                 {/* Live Preview */}
                 {mediaUrl.trim() && (
