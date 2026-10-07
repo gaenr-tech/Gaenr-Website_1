@@ -28,6 +28,7 @@ import { ReturnPolicyPage } from './pages/policies/ReturnPolicyPage';
 import { SupportCenterPage } from './pages/SupportCenterPage';
 import { BlogsPage } from './pages/BlogsPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { GaenrChatbot } from './components/chatbot/GaenrChatbot';
 import { ServiceSlug } from './types';
 import { X, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
@@ -184,8 +185,11 @@ const AppContent: React.FC = () => {
       >
         <AdminDashboard />
 
+        {/* Global AI Chatbot */}
+        <GaenrChatbot />
+
         {/* Toast Notification Container */}
-        <div className="fixed bottom-5 right-5 z-[110] flex flex-col gap-2 pointer-events-none">
+        <div className="fixed bottom-24 right-5 z-[110] flex flex-col gap-2 pointer-events-none">
           {toasts.map((toast) => (
             <div
               key={toast.id}
@@ -238,8 +242,11 @@ const AppContent: React.FC = () => {
       <AssignTaskModal />
       <ApplyExpertModal />
 
+      {/* Global AI Chatbot */}
+      <GaenrChatbot />
+
       {/* Toast Notification Container - Clean Auto-Dismissing, No Cross Button */}
-      <div className="fixed bottom-5 right-5 z-[110] flex flex-col gap-2 pointer-events-none">
+      <div className="fixed bottom-24 right-5 z-[110] flex flex-col gap-2 pointer-events-none">
         {toasts.map((toast) => (
           <div
             key={toast.id}
