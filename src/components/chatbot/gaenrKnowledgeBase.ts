@@ -22,8 +22,14 @@ export interface ChatMessage {
       | 'openWhatsApp'
       | 'callPhone'
       | 'startInChatTask'
+      | 'promptTaskOptions'
       | 'selectTaskCategory'
+      | 'selectTaskSubCategory'
+      | 'selectTaskExpert'
+      | 'selectTaskDeadline'
+      | 'skipTaskEmail'
       | 'skipTaskDocument'
+      | 'confirmTaskAgreement'
       | 'openWhatsAppUrl';
     payload?: string;
   }>;
@@ -191,24 +197,39 @@ export function analyzeAndLearnFromMessage(userText: string, current: LearnedMem
 
 export const GAENR_SYSTEM_PROMPT = `
 You are Ginny (গিনি), the official virtual assistant of GAENR (https://gaenr.com) located in Dhaka, Bangladesh.
+The spelling of your name is strictly: G-I-N-N-Y (গিনি).
 
 CORE CONVERSATIONAL RULES:
 1. GREETING RULE: The initial welcome greeting was already given at the start of the chat. DO NOT say 'Hi, I'm Ginny' or 'হ্যালো, আমি গিনি' or introduce yourself repeatedly in ongoing replies. Jump straight to answering or asking the next question.
-2. LANGUAGE ADAPTABILITY: Automatically reply in the same language the user uses: if user writes in Bengali (Bangla script or Banglish), reply in natural Bengali. If user writes in English, reply in English.
-3. CONCISE & SPECIFIC: Strictly 1 to 2 short sentences. No wordy preambles.
-4. ASSIGN TASK DECISION RULE:
+2. DUAL PERSPECTIVE RULE: Gaenr serves TWO distinct groups:
+   - Clients / Outsourcers (Businesses, startups, SMEs, NGOs, individuals who need skilled work done).
+   - Experts / Freelancers (Skilled university students, college students, and professionals offering services).
+   Never assume every visitor is only a client or only a freelancer. When appropriate, provide helpful guidance for both perspectives.
+3. LANGUAGE ADAPTABILITY: Automatically reply in the same language the user uses: if user writes in Bengali (Bangla script or Banglish), reply in natural Bangladeshi conversational Bengali. If user writes in English, reply in English.
+4. CONCISE & SPECIFIC: Strictly 1 to 2 short sentences. No wordy preambles.
+5. ASSIGN TASK DECISION RULE:
    When the user states they want to assign a task, start a project, hire, or order work:
-   NEVER say hesitant or vague phrases like 'You can start by detailing your requirements'. The user has ALREADY made up their mind to assign a task!
    Tell them clearly and directly:
-   - They can open the Task Form to submit the details themselves.
+   - They can open the Task Form to submit details themselves.
    - OR, Ginny can handle the whole task assignment right here for them—they don't have to fill out any forms, just provide the info step-by-step. Ginny will prepare everything and take them directly to WhatsApp where they simply click Send!
    In Bengali: "তুমি সরাসরি ফর্ম ওপেন করে নিজেই টাস্কের তথ্য পূরণ করতে পারো, অথবা আমি নিজেই তোমার সম্পূর্ণ টাস্ক অ্যাসাইন করে দিতে পারি—তোমার কোনো ফর্ম পূরণ করতে হবে না! শুধু একে একে আমাকে তথ্যগুলো বলবে। আমি সবকিছু সাজিয়ে সরাসরি WhatsApp-এ নিয়ে যাব, সেখানে শুধু 'Send' বাটনটা ক্লিক করলেই কাজ শুরু হয়ে যাবে!"
 
-CORE KNOWLEDGE & FACTS ABOUT GAENR:
-- What is GAENR: Bangladesh's premier Managed Outsourcing & Talent Platform connecting startups, agencies, and businesses with verified top-tier university student talents and creative experts.
-- 0% Client Platform Fee: 100% transparent pricing for clients with no hidden platform commissions.
-- Managed Quality Guarantee: Gaenr manages every project directly with milestones, quality checks, and on-time delivery guarantees. No ghosting or unreliable freelancers.
-- Escrow Protection: Client payments are safely held in escrow (bKash, Nagad, direct Bank Transfer, Cards) and released only AFTER the client reviews and approves the deliverable.
+MASTER KNOWLEDGE BASE (V1 + V2 COMBINED):
+- What is GAENR (Current Beta): A Bangladesh-based freelancing and outsourcing ecosystem connecting skilled Bangladeshi Experts with local and global clients. Currently operating in Beta with human-assisted, manually managed operations via WhatsApp.
+- Long-Term Vision: A comprehensive skill-based community economy ("Grow Together") where people can earn with their skills, hire other skills when needed, learn, and grow together. A person can be both a skill provider and a skill user.
+- Who Can Be An Expert: Anyone with demonstrable, verified skills (university students, college students, school students, early professionals). Skill and portfolio quality are the criteria, not academic year alone.
+- Who Can Be A Client: Anyone with legitimate skilled digital needs—startups, SMEs, corporate businesses, agencies, NGOs, clubs, and individuals.
+- Client Platform Fee: 0% client platform charge. Transparent pricing with no hidden client fees.
+- Expert Commission: 20% commission on the Expert side.
+- Payment Initiation Logic: Payment is NOT collected blindly at the beginning. First, client discusses requirements and confirms scope with Gaenr; once agreed, a secure payment link is issued. Project begins upon payment receipt.
+- Communication Model: In the current Beta model, Gaenr manages all coordination as the middleman to eliminate ghosting, miscommunication, and project stalls.
+- Quality Control & Revision: 1 revision round included against the agreed project brief.
+- Failure Resolution Guarantee: If the assigned Expert cannot deliver acceptable work meeting the agreed requirement after the revision process, the client has 2 protected options:
+  1. Receive a full 100% refund; OR
+  2. Have the work reassigned to another verified Gaenr Expert at zero additional charge.
+- Privacy & Non-Disclosure (STRICT):
+  NEVER reveal an Expert's real name (unless publicly exposed), private phone, email, bank/MFS details, or private profile/application data.
+  Experts are identified publicly by their unique verified Expert Codes (e.g., GD2602001, 8K2N9X4P).
 - 7 Core Services:
   1. Graphics Design (Logos, Brand Identity, Social Media Creatives, Packaging, Vector Source Files)
   2. Video Editing (YouTube, Reels, Shorts, TikTok, Podcasts, Color Grading, 4K/1080p Masters)
@@ -217,22 +238,20 @@ CORE KNOWLEDGE & FACTS ABOUT GAENR:
   5. Presentation Slide Design (Investor Pitch Decks, Corporate Sales Decks, Rush 24-48h turnaround)
   6. UX/UI Design (Figma Interactive Prototypes, Mobile App UI, SaaS Dashboards)
   7. Ad Running & Campaign Setup (Meta Facebook/Instagram & Google Ads with local audience targeting & retargeting)
-- "No Skills" Rule: If a user has no skills, be honest, polite, and direct: Gaenr is strictly skill-based and delivers verified client work. There are no unskilled tasks or click-based jobs. Suggest they learn an in-demand skill first and build a portfolio.
-- Join as Expert: Highly skilled university students and professionals can apply for free at /join-as-expert, pass a skills verification check, receive a verified Gaenr Expert ID Card, and get assigned real client tasks with guaranteed weekly payments.
+- "No Skills" Policy: Strictly skill-based work. No click-work or unskilled jobs.
 - Contact & Office:
   * Office: 10/A, 15/13, Mirpur, Dhaka, Bangladesh (মিরপুর, ঢাকা)
   * Hotline: 09647 922 800
   * WhatsApp: 01608 922 800 (https://wa.me/8801608922800)
   * Email: contact@gaenr.com
-  * Working Hours: 10:00 AM – 10:00 PM (Saturday – Thursday)
 
 WEBSITE CONTROL ACTIONS:
-You have direct control over the website! When a user asks or expresses desire to do an action, APPEND the corresponding tag at the very end of your response:
-- User wants to assign a task, submit a project, hire, or start work: Append '[ACTION:OPEN_ASSIGN_TASK]'
-- User wants to join as freelancer, register as expert, or apply: Append '[ACTION:OPEN_APPLY_EXPERT]'
-- User wants to view services: Append '[ACTION:NAVIGATE:/services]'
-- User wants to view contact info: Append '[ACTION:NAVIGATE:/contact]'
-- User wants to chat on WhatsApp: Append '[ACTION:OPEN_WHATSAPP]'
+Append corresponding tag at the end when user intends:
+- Assign task / hire: '[ACTION:OPEN_ASSIGN_TASK]'
+- Apply as expert / join: '[ACTION:OPEN_APPLY_EXPERT]'
+- View services: '[ACTION:NAVIGATE:/services]'
+- View contact: '[ACTION:NAVIGATE:/contact]'
+- Chat WhatsApp: '[ACTION:OPEN_WHATSAPP]'
 `;
 
 /**
@@ -253,8 +272,14 @@ export function getLocalAIResponse(
       | 'openWhatsApp'
       | 'callPhone'
       | 'startInChatTask'
+      | 'promptTaskOptions'
       | 'selectTaskCategory'
+      | 'selectTaskSubCategory'
+      | 'selectTaskExpert'
+      | 'selectTaskDeadline'
+      | 'skipTaskEmail'
       | 'skipTaskDocument'
+      | 'confirmTaskAgreement'
       | 'openWhatsAppUrl';
     payload?: string;
   }>;
@@ -267,24 +292,26 @@ export function getLocalAIResponse(
     ? (isEn ? `Hello ${memory.userName}! ` : `হ্যালো ${memory.userName}! `)
     : '';
 
-  // 1. Greetings (Direct, does NOT repeat introductory "Hi, I am Ginny")
+  // 1. Greetings (Dual Perspective: Client vs Freelancer)
   if (/^(hi|hello|hey|salam|assalamu|kemon achen|halo|হাই|হ্যালো|সালাম|আসসালামু|কেমন আছেন)/i.test(q)) {
     if (isEn) {
       return {
-        text: `👋 ${userGreetingPrefix}Hello! How can I help you today?`,
+        text: `👋 ${userGreetingPrefix}Hello! How can I help you today? Whether you're looking to hire talent or join us as an Expert, I'm here for you.`,
         actions: [
+          { label: 'Assign a Task', actionType: 'promptTaskOptions' },
+          { label: 'Apply as Expert', actionType: 'openApplyModal' },
           { label: 'Explore Services', actionType: 'navigate', payload: '/services' },
-          { label: 'Assign a Task', actionType: 'startInChatTask' },
-          { label: 'Chat on WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
+          { label: 'WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
         ],
       };
     }
     return {
-      text: `👋 ${userGreetingPrefix}জি বলুন, কীভাবে সাহায্য করতে পারি?`,
+      text: `👋 ${userGreetingPrefix}জি বলুন, কীভাবে সাহায্য করতে পারি? আপনি যদি প্রজেক্টের জন্য এক্সপার্ট হায়ার করতে চান বা নিজে এক্সপার্ট হিসেবে জয়েন করতে চান—দুটোতেই সাহায্য করতে পারি।`,
       actions: [
-        { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
-        { label: 'টাস্ক দিন', actionType: 'startInChatTask' },
-        { label: 'হোয়াটসঅ্যাপে চ্যাট', actionType: 'openWhatsApp', payload: '01608922800' },
+        { label: 'টাস্ক দিন (হায়ার)', actionType: 'promptTaskOptions' },
+        { label: 'এক্সপার্ট হিসেবে জয়েন', actionType: 'openApplyModal' },
+        { label: 'সার্ভিসসমূহ', actionType: 'navigate', payload: '/services' },
+        { label: 'হোয়াটসঅ্যাপ', actionType: 'openWhatsApp', payload: '01608922800' },
       ],
     };
   }
@@ -302,18 +329,20 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `🏢 **Gaenr** connects you with verified expert talents for design, video, web, and marketing with 0% client fee and guaranteed quality.`,
+        text: `🏢 **Gaenr** connects clients with verified Bangladeshi Experts with 0% client fee. Currently in Beta with full human management, moving towards a skill-based community economy.`,
         actions: [
+          { label: 'Assign a Task', actionType: 'promptTaskOptions' },
+          { label: 'Apply as Expert', actionType: 'openApplyModal' },
           { label: 'Browse Services', actionType: 'navigate', payload: '/services' },
-          { label: 'Assign a Task', actionType: 'openAssignModal' },
         ],
       };
     }
     return {
-      text: `🏢 **গেইনার** একটি ম্যানেজড প্ল্যাটফর্ম যেখানে ভেরিফাইড এক্সপার্টদের দিয়ে ডিজাইন, ভিডিও, ওয়েব ও মার্কেটিংয়ের কাজ করানো যায়। ক্লায়েন্ট ফি ০%।`,
+      text: `🏢 **গেইনার** একটি ম্যানেজড ফ্রিল্যান্সিং প্ল্যাটফর্ম যেখানে ০% ক্লায়েন্ট ফিতে ভেরিফাইড এক্সপার্টদের দিয়ে কাজ করানো যায়। বর্তমানে বেটা স্টেজে সম্পূর্ণ টিম-ম্যানেজড পদ্ধতিতে পরিচালিত হচ্ছে।`,
       actions: [
+        { label: 'টাস্ক দিন', actionType: 'promptTaskOptions' },
+        { label: 'এক্সপার্ট হিসেবে জয়েন', actionType: 'openApplyModal' },
         { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
-        { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
       ],
     };
   }
@@ -476,6 +505,35 @@ export function getLocalAIResponse(
       actions: [
         { label: 'বাজেট নিয়ে আলোচনা', actionType: 'openWhatsApp', payload: '01608922800' },
         { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
+      ],
+    };
+  }
+
+  // 6b. Refund, Failure Resolution & Revisions
+  if (
+    q.includes('refund') ||
+    q.includes('রিফান্ড') ||
+    q.includes('টাকা ফেরত') ||
+    q.includes('revision') ||
+    q.includes('রিভিশন') ||
+    q.includes('পছন্দ না হলে') ||
+    q.includes('কাজ না পারলে') ||
+    q.includes('if not satisfied')
+  ) {
+    if (isEn) {
+      return {
+        text: `🛡️ We include 1 revision based on the agreed brief. If the Expert cannot deliver acceptable work, you have 2 options: receive a 100% full refund OR have the work reassigned to another Expert at zero extra cost.`,
+        actions: [
+          { label: 'Assign a Task', actionType: 'startInChatTask' },
+          { label: 'Chat on WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
+        ],
+      };
+    }
+    return {
+      text: `🛡️ প্রতিটি কাজে ১টি রিভিশন অন্তর্ভুক্ত। এক্সপার্ট যদি আপনার ব্রিফ অনুযায়ী সঠিক কাজ দিতে ব্যর্থ হয়, তবে আপনি ১০০% রিফান্ড পাবেন অথবা কোনো অতিরিক্ত চার্জ ছাড়া অন্য এক্সপার্টকে দিয়ে কাজটি করিয়ে নিতে পারবেন।`,
+      actions: [
+        { label: 'টাস্ক দিন', actionType: 'startInChatTask' },
+        { label: 'হোয়াটসঅ্যাপ সাপোর্ট', actionType: 'openWhatsApp', payload: '01608922800' },
       ],
     };
   }

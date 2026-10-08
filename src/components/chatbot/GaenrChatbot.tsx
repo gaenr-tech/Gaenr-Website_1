@@ -12,7 +12,8 @@ import {
   detectLanguage,
 } from './gaenrKnowledgeBase';
 import { GaenrBotAvatar } from './GaenrBotAvatar';
-import { ServiceSlug } from '../../types';
+import { ServiceSlug, FreelancerProfile } from '../../types';
+import { SERVICE_CATEGORIES } from '../../data/mockData';
 import {
   Send,
   X,
@@ -44,19 +45,39 @@ const SUGGESTIONS_EN = [
 
 interface InChatTaskState {
   active: boolean;
-  step: 'idle' | 'name' | 'contact' | 'service' | 'brief' | 'deadline' | 'document';
+  step:
+    | 'idle'
+    | 'name'
+    | 'whatsapp'
+    | 'email'
+    | 'category'
+    | 'subCategory'
+    | 'expert'
+    | 'brief'
+    | 'deadline'
+    | 'document'
+    | 'agreement';
   fullName: string;
   email: string;
   whatsapp: string;
   category: ServiceSlug;
+  categoryTitle: string;
   subCategory: string;
+  expertCode: string;
   description: string;
   deadline: string;
   documentUrl?: string;
 }
 
 export const GaenrChatbot: React.FC = () => {
-  const { navigate, openAssignTask, openApplyExpert, submitTaskAssignment, showToast } = useApp();
+  const {
+    navigate,
+    openAssignTask,
+    openApplyExpert,
+    submitTaskAssignment,
+    showToast,
+    freelancers,
+  } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -75,7 +96,9 @@ export const GaenrChatbot: React.FC = () => {
     email: '',
     whatsapp: '',
     category: 'graphics-design',
-    subCategory: 'Graphics Design',
+    categoryTitle: 'Graphics Design',
+    subCategory: 'Logo & Brand Identity',
+    expertCode: 'Gaenr Verified Match',
     description: '',
     deadline: 'Flexible (3-5 Days)',
   });
@@ -136,13 +159,17 @@ export const GaenrChatbot: React.FC = () => {
     sender: 'bot',
     text:
       lang === 'en'
-        ? `Hi, I'm Ginny from Gaenr. How can I help you today?`
-        : `হ্যালো, আমি গেইনার থেকে গিনি (Ginny)। কীভাবে সাহায্য করতে পারি বলুন?`,
+        ? `Hi, I'm Ginny from Gaenr. How can I help you today? Whether you're looking to hire top talent or join us as a verified Expert, I'm here for you.`
+        : `হ্যালো, আমি গেইনার থেকে গিনি (Ginny)। কীভাবে সাহায্য করতে পারি? আপনি যদি প্রজেক্টের জন্য এক্সপার্ট হায়ার করতে চান বা নিজে এক্সপার্ট হিসেবে জয়েন করতে চান—দুটোতেই আমি সাহায্য করতে পারি।`,
     timestamp: getRealtimeClock(),
     actions: [
       {
         label: lang === 'en' ? 'Assign a Task' : 'টাস্ক দিন',
         actionType: 'promptTaskOptions',
+      },
+      {
+        label: lang === 'en' ? 'Apply as Expert' : 'এক্সপার্ট হিসেবে জয়েন',
+        actionType: 'openApplyModal',
       },
       {
         label: lang === 'en' ? 'Explore Services' : 'সার্ভিসসমূহ',
@@ -192,7 +219,9 @@ export const GaenrChatbot: React.FC = () => {
       email: '',
       whatsapp: '',
       category: 'graphics-design',
-      subCategory: 'Graphics Design',
+      categoryTitle: 'Graphics Design',
+      subCategory: 'Logo & Brand Identity',
+      expertCode: 'Gaenr Verified Match',
       description: '',
       deadline: 'Flexible (3-5 Days)',
     });
@@ -277,6 +306,51 @@ export const GaenrChatbot: React.FC = () => {
     }
   };
 
+  // Helpers to resolve categories, sub-services, and experts
+  const getCategoryMeta = (slugOrKey: string): { slug: ServiceSlug; title: string } => {
+    const lower = slugOrKey.toLowerCase();
+    if (lower.includes('video') || lower.includes('ভিডিও')) {
+      return { slug: 'video-editing', title: 'Video Editing' };
+    }
+    if (lower.includes('word') || lower.includes('web') || lower.includes('সাইট') || lower.includes('site')) {
+      return { slug: 'wordpress-website', title: 'WordPress Website Design' };
+    }
+    if (lower.includes('content') || lower.includes('write') || lower.includes('লেখা') || lower.includes('কন্টেন্ট')) {
+      return { slug: 'content-writing', title: 'Content Writing & Copywriting' };
+    }
+    if (lower.includes('slide') || lower.includes('presentation') || lower.includes('স্লাইড') || lower.includes('পাওয়ারপয়েন্ট')) {
+      return { slug: 'presentation-slide-design', title: 'Presentation Slide Design' };
+    }
+    if (lower.includes('ui') || lower.includes('ux') || lower.includes('figma') || lower.includes('ফিগমা')) {
+      return { slug: 'ux-ui-design', title: 'UX / UI Design' };
+    }
+    if (lower.includes('ad') || lower.includes('campaign') || lower.includes('বিজ্ঞাপন') || lower.includes('boost')) {
+      return { slug: 'ad-running', title: 'Ad Running & Campaign Setup' };
+    }
+    return { slug: 'graphics-design', title: 'Graphics Design' };
+  };
+
+  const getSubCategories = (slug: ServiceSlug): string[] => {
+    const found = SERVICE_CATEGORIES.find((c) => c.slug === slug);
+    if (found && found.subServices && found.subServices.length > 0) {
+      return found.subServices;
+    }
+    return [
+      'Logo & Brand Identity',
+      'Social Media Creatives',
+      'Packaging & Label Design',
+      'Vector Illustrations',
+    ];
+  };
+
+  const getMatchedFreelancers = (slug: ServiceSlug): FreelancerProfile[] => {
+    const matched = freelancers.filter((f) => f.category === slug);
+    if (matched.length > 0) {
+      return matched.slice(0, 3);
+    }
+    return freelancers.slice(0, 3);
+  };
+
   /**
    * Finalizes the task collected in chat:
    * 1. Saves task to backend database (AppContext + localStorage + remote storage)
@@ -290,7 +364,9 @@ export const GaenrChatbot: React.FC = () => {
       email: taskFlow.email || 'client@gaenr.com',
       whatsapp: taskFlow.whatsapp || 'Not provided',
       category: taskFlow.category,
-      subCategory: taskFlow.subCategory,
+      categoryTitle: taskFlow.categoryTitle || 'Graphics Design',
+      subCategory: taskFlow.subCategory || 'General Deliverable',
+      expertCode: taskFlow.expertCode || 'Gaenr Verified Match',
       deadline: taskFlow.deadline || 'Flexible (3-5 Days)',
       description: taskFlow.description || 'Project details provided via Ginny AI chat.',
       documentUrl,
@@ -304,7 +380,7 @@ export const GaenrChatbot: React.FC = () => {
       preferredChannel: 'WhatsApp',
       category: taskData.category,
       subCategory: taskData.subCategory,
-      expertCode: 'Gaenr Verified Match',
+      expertCode: taskData.expertCode,
       deadline: taskData.deadline,
       description: taskData.description,
       documentUrl: taskData.documentUrl,
@@ -314,8 +390,10 @@ export const GaenrChatbot: React.FC = () => {
     });
 
     // 2. Format exact WhatsApp message matching AssignTaskModal
-    const categoryTitle = taskData.subCategory;
-    const resolvedExpert = 'Gaenr Verified Match (Auto Assignment)';
+    const categoryTitle = taskData.categoryTitle;
+    const resolvedExpert = taskData.expertCode.toLowerCase().includes('match')
+      ? 'Gaenr Verified Match (Auto Assignment)'
+      : `Gaenr Verified Expert #${taskData.expertCode}`;
     const resolvedDeadline = taskData.deadline;
     const resolvedSubCategory = taskData.subCategory;
 
@@ -358,7 +436,9 @@ ${taskData.description.trim()}`;
       email: '',
       whatsapp: '',
       category: 'graphics-design',
-      subCategory: 'Graphics Design',
+      categoryTitle: 'Graphics Design',
+      subCategory: 'Logo & Brand Identity',
+      expertCode: 'Gaenr Verified Match',
       description: '',
       deadline: 'Flexible (3-5 Days)',
     });
@@ -370,7 +450,7 @@ ${taskData.description.trim()}`;
 
     return {
       text: isBn
-        ? `✅ **টাস্ক সফলভাবে তৈরি হয়েছে! (রেফারেন্স: ${newTask.id})**\n\nপ্রজেক্টের তথ্য আমাদের সিস্টেমে যুক্ত হয়েছে। নিচের বাটনে ক্লিক করলেই প্রস্তুতকৃত প্রজেক্ট ব্রিফসহ হোয়াটসঅ্যাপে চলে যাবে—আপনার কাজ শুধু সেন্ড বাটনে ক্লিক করা:`
+        ? `✅ **টাস্ক সফলভাবে তৈরি হয়েছে! (রেফারেন্স: ${newTask.id})**\n\nপ্রজেক্টের তথ্য আমাদের সিস্টেমে সংরক্ষিত হয়েছে। নিচের বাটনে ক্লিক করলেই প্রস্তুতকৃত প্রজেক্ট ব্রিফসহ হোয়াটসঅ্যাপে চলে যাবে—আপনার কাজ শুধু সেন্ড বাটনে ক্লিক করা:`
         : `✅ **Task Registered Successfully! (Ref: ${newTask.id})**\n\nYour project details are saved in our database. Click the button below to send your pre-formatted project brief directly on WhatsApp—you just need to hit Send:`,
       actions: [
         {
@@ -403,13 +483,15 @@ ${taskData.description.trim()}`;
         email: '',
         whatsapp: '',
         category: 'graphics-design',
-        subCategory: 'Graphics Design',
+        categoryTitle: 'Graphics Design',
+        subCategory: 'Logo & Brand Identity',
+        expertCode: 'Gaenr Verified Match',
         description: '',
         deadline: 'Flexible (3-5 Days)',
       });
       return {
         text: isBn
-          ? 'টাস্ক প্রসেসটি বাতিল করা হয়েছে। আর কীভাবে সাহায্য করতে পারি?'
+          ? 'টাস্ক প্রক্রিয়াটি বাতিল করা হয়েছে। আর কীভাবে সাহায্য করতে পারি?'
           : 'Task assignment has been cancelled. How else can I help you today?',
         actions: [
           { label: isBn ? 'সার্ভিসসমূহ' : 'Explore Services', actionType: 'navigate', payload: '/services' },
@@ -421,102 +503,136 @@ ${taskData.description.trim()}`;
     // Step 1: Client Full Name
     if (taskFlow.step === 'name') {
       const fullName = cleanText;
-      setTaskFlow((prev) => ({ ...prev, fullName, step: 'contact' }));
+      setTaskFlow((prev) => ({ ...prev, fullName, step: 'whatsapp' }));
       return {
         text: isBn
-          ? `ধন্যবাদ **${fullName}**! এবার তোমার WhatsApp নম্বর এবং Email অ্যাড্রেস বলো (যেমন: 01700000000, name@example.com):`
-          : `Thank you **${fullName}**! Please provide your WhatsApp number and Email address (e.g. 01700000000, name@example.com):`,
+          ? `ধন্যবাদ **${fullName}**! এবার আপনার WhatsApp নম্বরটি দিন (যেমন: 01700000000):`
+          : `Thank you **${fullName}**! What is your WhatsApp number? (e.g. 01700000000):`,
       };
     }
 
-    // Step 2: Contact Info
-    if (taskFlow.step === 'contact') {
-      const emailMatch = cleanText.match(/[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}/);
-      const email = emailMatch ? emailMatch[0] : (taskFlow.email || 'client@gaenr.com');
+    // Step 2: WhatsApp Number specifically
+    if (taskFlow.step === 'whatsapp') {
       const phoneMatch = cleanText.match(/(?:\+?88)?01[3-9]\d{8}/) || cleanText.match(/\d{10,13}/);
-      const whatsapp = phoneMatch ? phoneMatch[0] : cleanText.replace(emailMatch ? emailMatch[0] : '', '').trim();
-
-      setTaskFlow((prev) => ({
-        ...prev,
-        whatsapp: whatsapp || cleanText,
-        email,
-        step: 'service',
-      }));
-
+      const whatsapp = phoneMatch ? phoneMatch[0] : cleanText;
+      setTaskFlow((prev) => ({ ...prev, whatsapp, step: 'email' }));
       return {
         text: isBn
-          ? 'প্রজেক্টটি কোন সার্ভিসের অন্তর্ভুক্ত? নিচের তালিকা থেকে বেছে নাও অথবা লিখে দাও:'
-          : 'Which service category does your project belong to? Choose below or type it out:',
+          ? `আপনার ইমেইল অ্যাড্রেসটি দিন (প্রজেক্ট ডেলিভারি ও রসিদের জন্য):`
+          : `Please provide your Email address (for final delivery & receipt):`,
+        actions: [
+          {
+            label: isBn ? '⏩ Skip (পরে দেব)' : '⏩ Skip / Use Default',
+            actionType: 'skipTaskEmail',
+          },
+        ],
+      };
+    }
+
+    // Step 3: Email specifically
+    if (taskFlow.step === 'email') {
+      const emailMatch = cleanText.match(/[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}/);
+      const isSkip = /^(skip|no|নেই|না|পরে|default)$/i.test(cleanText);
+      const email = emailMatch ? emailMatch[0] : isSkip ? 'client@gaenr.com' : cleanText;
+      setTaskFlow((prev) => ({ ...prev, email, step: 'category' }));
+      return {
+        text: isBn
+          ? 'কোন সার্ভিসের জন্য কাজটি করাতে চান? নিচের সার্ভিস ক্যাটাগরি থেকে বেছে নিন:'
+          : 'Which service category does your project belong to? Please select below:',
         actions: [
           { label: '🎨 Graphics Design', actionType: 'selectTaskCategory', payload: 'graphics-design' },
           { label: '🎬 Video Editing', actionType: 'selectTaskCategory', payload: 'video-editing' },
           { label: '🌐 WordPress Website', actionType: 'selectTaskCategory', payload: 'wordpress-website' },
           { label: '✍️ Content Writing', actionType: 'selectTaskCategory', payload: 'content-writing' },
-          { label: '📊 Slide Design', actionType: 'selectTaskCategory', payload: 'presentation-slide' },
+          { label: '📊 Slide Design', actionType: 'selectTaskCategory', payload: 'presentation-slide-design' },
           { label: '📱 UX/UI Design', actionType: 'selectTaskCategory', payload: 'ux-ui-design' },
-          { label: '📢 Ad Campaign', actionType: 'selectTaskCategory', payload: 'ad-campaign' },
+          { label: '📢 Ad Campaign', actionType: 'selectTaskCategory', payload: 'ad-running' },
         ],
       };
     }
 
-    // Step 3: Service Category
-    if (taskFlow.step === 'service') {
-      const lower = cleanText.toLowerCase();
-      let catSlug: ServiceSlug = 'graphics-design';
-      let catName = 'Graphics Design';
-
-      if (lower.includes('video') || lower.includes('ভিডিও')) {
-        catSlug = 'video-editing';
-        catName = 'Video Editing';
-      } else if (lower.includes('web') || lower.includes('word') || lower.includes('সাইট') || lower.includes('site')) {
-        catSlug = 'wordpress-website';
-        catName = 'WordPress Website Design';
-      } else if (lower.includes('content') || lower.includes('write') || lower.includes('লেখা')) {
-        catSlug = 'content-writing';
-        catName = 'Content Writing & Copy';
-      } else if (lower.includes('slide') || lower.includes('presentation') || lower.includes('স্লাইড')) {
-        catSlug = 'presentation-slide';
-        catName = 'Presentation Slide Design';
-      } else if (lower.includes('ui') || lower.includes('ux') || lower.includes('figma')) {
-        catSlug = 'ux-ui-design';
-        catName = 'UX/UI Design';
-      } else if (lower.includes('ad') || lower.includes('boost') || lower.includes('বিজ্ঞাপন')) {
-        catSlug = 'ad-campaign';
-        catName = 'Ad Running & Campaign';
-      }
-
+    // Step 4: Service Category
+    if (taskFlow.step === 'category') {
+      const meta = getCategoryMeta(cleanText);
+      const subList = getSubCategories(meta.slug);
       setTaskFlow((prev) => ({
         ...prev,
-        category: catSlug,
-        subCategory: catName,
-        step: 'brief',
+        category: meta.slug,
+        categoryTitle: meta.title,
+        subCategory: subList[0] || meta.title,
+        step: 'subCategory',
       }));
-
       return {
         text: isBn
-          ? `সার্ভিস: **${catName}**। এবার প্রজেক্টের কাজের সংক্ষিপ্ত বিবরণ ও প্রয়োজনীয় রিকোয়ারমেন্টস (Brief) বলো:`
-          : `Service: **${catName}**. Please describe your project requirements and brief:`,
+          ? `সার্ভিস: **${meta.title}**। এই সার্ভিসের কোন কাজটি করাতে চান? নিচে ক্লিক করুন বা লিখে জানান:`
+          : `Service: **${meta.title}**. What specific deliverable do you need? Choose below or type:`,
+        actions: subList.slice(0, 5).map((sub) => ({
+          label: sub,
+          actionType: 'selectTaskSubCategory',
+          payload: sub,
+        })),
       };
     }
 
-    // Step 4: Project Brief
+    // Step 5: Sub-Category / Deliverable
+    if (taskFlow.step === 'subCategory') {
+      const subCategory = cleanText;
+      const matchedExperts = getMatchedFreelancers(taskFlow.category);
+      setTaskFlow((prev) => ({ ...prev, subCategory, step: 'expert' }));
+      return {
+        text: isBn
+          ? `ডেলিভারেবল: **${subCategory}**। এবার এক্সপার্ট নির্বাচন করুন। গেইনার ভেরিফাইড অটো-ম্যাচ নিতে পারেন অথবা নির্দিষ্ট এক্সপার্ট কোড বেছে নিন:`
+          : `Deliverable: **${subCategory}**. Select an Expert for your project. Choose Gaenr Auto-Match or pick an Expert code:`,
+        actions: [
+          {
+            label: '✨ Gaenr Verified Match (Auto)',
+            actionType: 'selectTaskExpert',
+            payload: 'Gaenr Verified Match',
+          },
+          ...matchedExperts.map((f) => ({
+            label: `👤 Expert #${f.code} (${f.rating}★)`,
+            actionType: 'selectTaskExpert' as const,
+            payload: f.code,
+          })),
+        ],
+      };
+    }
+
+    // Step 6: Expert Selection
+    if (taskFlow.step === 'expert') {
+      const expertCode = cleanText || 'Gaenr Verified Match';
+      setTaskFlow((prev) => ({ ...prev, expertCode, step: 'brief' }));
+      return {
+        text: isBn
+          ? `নির্বাচিত এক্সপার্ট: **${expertCode}**। এবার আপনার কাজের বিবরণ ও প্রয়োজনীয় রিকোয়ারমেন্টস (Brief) লিখুন:`
+          : `Selected Expert: **${expertCode}**. Please describe your project requirements and brief:`,
+      };
+    }
+
+    // Step 7: Project Brief
     if (taskFlow.step === 'brief') {
       const description = cleanText;
       setTaskFlow((prev) => ({ ...prev, description, step: 'deadline' }));
       return {
         text: isBn
-          ? 'কাজটি কবে নাগাদ ডেলিভারি প্রয়োজন? (যেমন: ২-৩ দিন, ১ সপ্তাহ, জরুরি ইত্যাদি):'
-          : 'What is your target deadline? (e.g. 2-3 days, 1 week, urgent, specific date):',
+          ? 'কাজটি কবে নাগাদ ডেলিভারি প্রয়োজন? নিচের অপশন থেকে বেছে নিন বা লিখে দিন:'
+          : 'What is your target deadline? Choose below or specify:',
+        actions: [
+          { label: '⚡ Rush (24-48 Hours)', actionType: 'selectTaskDeadline', payload: 'Rush (24-48 Hours)' },
+          { label: '📅 3-5 Days', actionType: 'selectTaskDeadline', payload: '3-5 Days' },
+          { label: '🗓️ 1 Week', actionType: 'selectTaskDeadline', payload: '1 Week' },
+          { label: '✨ Flexible', actionType: 'selectTaskDeadline', payload: 'Flexible (3-5 Days)' },
+        ],
       };
     }
 
-    // Step 5: Target Deadline
+    // Step 8: Target Deadline
     if (taskFlow.step === 'deadline') {
       const deadline = cleanText || 'Flexible (3-5 Days)';
       setTaskFlow((prev) => ({ ...prev, deadline, step: 'document' }));
       return {
         text: isBn
-          ? 'কাজের কোনো রেফারেন্স ফাইল বা ড্রাইভ লিংক আছে কি? (না থাকলে নিচের Skip বাটনে ক্লিক করো বা "নেই" লেখো):'
+          ? 'কাজের কোনো রেফারেন্স ফাইল বা Google Drive লিংক আছে কি? (না থাকলে নিচের Skip বাটনে ক্লিক করুন বা "নেই" লিখুন):'
           : 'Do you have any reference document, Google Drive link, or asset URL? (If none, click Skip below):',
         actions: [
           { label: isBn ? '⏩ Skip (নেই)' : '⏩ Skip', actionType: 'skipTaskDocument' },
@@ -524,11 +640,50 @@ ${taskData.description.trim()}`;
       };
     }
 
-    // Step 6: Document Link & Finalize
+    // Step 9: Document Link -> Step 10: Agreement Confirmation
     if (taskFlow.step === 'document') {
       const isSkip = /^(skip|no|নেই|না|none|-)$/i.test(cleanText);
       const documentUrl = isSkip ? undefined : cleanText;
-      return completeTaskFlow(documentUrl, lang);
+      setTaskFlow((prev) => ({ ...prev, documentUrl, step: 'agreement' }));
+
+      return {
+        text: isBn
+          ? `📋 **টাস্ক সামারি ও সম্মতি যাচাই:**\n- ক্লায়েন্ট: **${taskFlow.fullName}** (${taskFlow.whatsapp})\n- ক্যাটাগরি: **${taskFlow.categoryTitle}**\n- ডেলিভারেবল: **${taskFlow.subCategory}**\n- এক্সপার্ট: **${taskFlow.expertCode}**\n- ডেডলাইন: **${taskFlow.deadline}**\n\nআপনি কি নিশ্চিত করছেন যে তথ্যগুলো সঠিক এবং আপনি গেইনারের কোয়ালিটি ও এস্ক্রো পলিসিতে সম্মত আছেন?`
+          : `📋 **Task Summary & Confirmation:**\n- Client: **${taskFlow.fullName}** (${taskFlow.whatsapp})\n- Category: **${taskFlow.categoryTitle}**\n- Deliverable: **${taskFlow.subCategory}**\n- Expert: **${taskFlow.expertCode}**\n- Deadline: **${taskFlow.deadline}**\n\nDo you confirm that this scope is accurate and you agree to Gaenr's escrow protection and delivery policies?`,
+        actions: [
+          {
+            label: isBn ? '✅ I Confirm & Agree (সম্মত ও সম্পন্ন করুন)' : '✅ I Confirm & Agree',
+            actionType: 'confirmTaskAgreement',
+          },
+          {
+            label: isBn ? '❌ Cancel (বাতিল)' : '❌ Cancel',
+            actionType: 'startInChatTask',
+          },
+        ],
+      };
+    }
+
+    // Step 10: Agreement confirmed via chat text
+    if (taskFlow.step === 'agreement') {
+      if (/^(cancel|বাতিল|না|no)$/i.test(cleanText)) {
+        setTaskFlow({
+          active: false,
+          step: 'idle',
+          fullName: '',
+          email: '',
+          whatsapp: '',
+          category: 'graphics-design',
+          categoryTitle: 'Graphics Design',
+          subCategory: 'Logo & Brand Identity',
+          expertCode: 'Gaenr Verified Match',
+          description: '',
+          deadline: 'Flexible (3-5 Days)',
+        });
+        return {
+          text: isBn ? 'টাস্ক বাতিল করা হয়েছে।' : 'Task assignment cancelled.',
+        };
+      }
+      return completeTaskFlow(taskFlow.documentUrl, lang);
     }
 
     return null;
@@ -762,7 +917,9 @@ ${taskData.description.trim()}`;
         email: '',
         whatsapp: '',
         category: 'graphics-design',
-        subCategory: 'Graphics Design',
+        categoryTitle: 'Graphics Design',
+        subCategory: 'Logo & Brand Identity',
+        expertCode: 'Gaenr Verified Match',
         description: '',
         deadline: 'Flexible (3-5 Days)',
       });
@@ -770,26 +927,102 @@ ${taskData.description.trim()}`;
         id: `bot-${Date.now()}`,
         sender: 'bot',
         text: isBn
-          ? 'দারুণ! তোমার কোনো ফর্ম পূরণ করতে হবে না, শুধু একে একে আমাকে বলো। প্রথমে তোমার পূর্ণ নাম (Full Name) কী?'
+          ? 'দারুণ! আপনার কোনো ফর্ম পূরণ করতে হবে না, শুধু একে একে আমাকে বলুন। প্রথমে আপনার পূর্ণ নাম (Full Name) কী?'
           : 'Awesome! You don\'t have to fill out any forms, just tell me step-by-step. First, what is your Full Name?',
         timestamp: getRealtimeClock(),
       };
       setMessages((prev) => [...prev, promptMsg]);
-    } else if (action.actionType === 'selectTaskCategory' && action.payload) {
-      const catMap: Record<string, { slug: ServiceSlug; label: string }> = {
-        'graphics-design': { slug: 'graphics-design', label: 'Graphics Design' },
-        'video-editing': { slug: 'video-editing', label: 'Video Editing' },
-        'wordpress-website': { slug: 'wordpress-website', label: 'WordPress Website' },
-        'content-writing': { slug: 'content-writing', label: 'Content Writing' },
-        'presentation-slide': { slug: 'presentation-slide', label: 'Presentation Slide' },
-        'ux-ui-design': { slug: 'ux-ui-design', label: 'UX/UI Design' },
-        'ad-campaign': { slug: 'ad-campaign', label: 'Ad Campaign' },
-      };
-      const sel = catMap[action.payload] || { slug: 'graphics-design', label: 'Graphics Design' };
+    } else if (action.actionType === 'skipTaskEmail') {
+      const isBn = language === 'bn';
       setTaskFlow((prev) => ({
         ...prev,
-        category: sel.slug,
-        subCategory: sel.label,
+        email: 'client@gaenr.com',
+        step: 'category',
+      }));
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          sender: 'bot',
+          text: isBn
+            ? 'কোন সার্ভিসের জন্য কাজটি করাতে চান? নিচের সার্ভিস ক্যাটাগরি থেকে বেছে নিন:'
+            : 'Which service category does your project belong to? Please select below:',
+          timestamp: getRealtimeClock(),
+          actions: [
+            { label: '🎨 Graphics Design', actionType: 'selectTaskCategory', payload: 'graphics-design' },
+            { label: '🎬 Video Editing', actionType: 'selectTaskCategory', payload: 'video-editing' },
+            { label: '🌐 WordPress Website', actionType: 'selectTaskCategory', payload: 'wordpress-website' },
+            { label: '✍️ Content Writing', actionType: 'selectTaskCategory', payload: 'content-writing' },
+            { label: '📊 Slide Design', actionType: 'selectTaskCategory', payload: 'presentation-slide-design' },
+            { label: '📱 UX/UI Design', actionType: 'selectTaskCategory', payload: 'ux-ui-design' },
+            { label: '📢 Ad Campaign', actionType: 'selectTaskCategory', payload: 'ad-running' },
+          ],
+        },
+      ]);
+    } else if (action.actionType === 'selectTaskCategory' && action.payload) {
+      const meta = getCategoryMeta(action.payload);
+      const subList = getSubCategories(meta.slug);
+      setTaskFlow((prev) => ({
+        ...prev,
+        category: meta.slug,
+        categoryTitle: meta.title,
+        subCategory: subList[0] || meta.title,
+        step: 'subCategory',
+      }));
+      const isBn = language === 'bn';
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          sender: 'bot',
+          text: isBn
+            ? `সার্ভিস: **${meta.title}**। এই সার্ভিসের কোন নির্দিষ্ট কাজটি করাতে চান? নিচে ক্লিক করুন বা লিখে জানান:`
+            : `Service: **${meta.title}**. What specific deliverable do you need? Choose below or type:`,
+          timestamp: getRealtimeClock(),
+          actions: subList.slice(0, 5).map((sub) => ({
+            label: sub,
+            actionType: 'selectTaskSubCategory',
+            payload: sub,
+          })),
+        },
+      ]);
+    } else if (action.actionType === 'selectTaskSubCategory' && action.payload) {
+      const subCategory = action.payload;
+      const matchedExperts = getMatchedFreelancers(taskFlow.category);
+      setTaskFlow((prev) => ({
+        ...prev,
+        subCategory,
+        step: 'expert',
+      }));
+      const isBn = language === 'bn';
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          sender: 'bot',
+          text: isBn
+            ? `ডেলিভারেবল: **${subCategory}**। এবার এক্সপার্ট নির্বাচন করুন। গেইনার ভেরিফাইড অটো-ম্যাচ নিতে পারেন অথবা নির্দিষ্ট এক্সপার্ট কোড বেছে নিন:`
+            : `Deliverable: **${subCategory}**. Select an Expert for your project. Choose Gaenr Auto-Match or pick an Expert code:`,
+          timestamp: getRealtimeClock(),
+          actions: [
+            {
+              label: '✨ Gaenr Verified Match (Auto)',
+              actionType: 'selectTaskExpert',
+              payload: 'Gaenr Verified Match',
+            },
+            ...matchedExperts.map((f) => ({
+              label: `👤 Expert #${f.code} (${f.rating}★)`,
+              actionType: 'selectTaskExpert' as const,
+              payload: f.code,
+            })),
+          ],
+        },
+      ]);
+    } else if (action.actionType === 'selectTaskExpert' && action.payload) {
+      const expertCode = action.payload;
+      setTaskFlow((prev) => ({
+        ...prev,
+        expertCode,
         step: 'brief',
       }));
       const isBn = language === 'bn';
@@ -799,13 +1032,63 @@ ${taskData.description.trim()}`;
           id: `bot-${Date.now()}`,
           sender: 'bot',
           text: isBn
-            ? `সার্ভিস: **${sel.label}**। এবার প্রজেক্টের কাজের বিবরণ ও রিকোয়ারমেন্টস (Brief) বলো:`
-            : `Selected Service: **${sel.label}**. Please describe your project requirements and brief:`,
+            ? `নির্বাচিত এক্সপার্ট: **${expertCode}**। এবার আপনার কাজের সংক্ষিপ্ত বিবরণ ও প্রয়োজনীয় রিকোয়ারমেন্টস (Brief) লিখে দিন:`
+            : `Selected Expert: **${expertCode}**. Please describe your project requirements and brief:`,
           timestamp: getRealtimeClock(),
         },
       ]);
+    } else if (action.actionType === 'selectTaskDeadline' && action.payload) {
+      const deadline = action.payload;
+      setTaskFlow((prev) => ({
+        ...prev,
+        deadline,
+        step: 'document',
+      }));
+      const isBn = language === 'bn';
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          sender: 'bot',
+          text: isBn
+            ? 'কাজের কোনো রেফারেন্স ফাইল বা Google Drive লিংক আছে কি? (না থাকলে নিচের Skip বাটনে ক্লিক করুন বা "নেই" লিখুন):'
+            : 'Do you have any reference document, Google Drive link, or asset URL? (If none, click Skip below):',
+          timestamp: getRealtimeClock(),
+          actions: [
+            { label: isBn ? '⏩ Skip (নেই)' : '⏩ Skip', actionType: 'skipTaskDocument' },
+          ],
+        },
+      ]);
     } else if (action.actionType === 'skipTaskDocument') {
-      const resp = completeTaskFlow(undefined, language);
+      setTaskFlow((prev) => ({
+        ...prev,
+        documentUrl: undefined,
+        step: 'agreement',
+      }));
+      const isBn = language === 'bn';
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          sender: 'bot',
+          text: isBn
+            ? `📋 **টাস্ক সামারি ও সম্মতি যাচাই:**\n- ক্লায়েন্ট: **${taskFlow.fullName}** (${taskFlow.whatsapp})\n- ক্যাটাগরি: **${taskFlow.categoryTitle}**\n- ডেলিভারেবল: **${taskFlow.subCategory}**\n- এক্সপার্ট: **${taskFlow.expertCode}**\n- ডেডলাইন: **${taskFlow.deadline}**\n\nআপনি কি নিশ্চিত করছেন যে তথ্যগুলো সঠিক এবং আপনি গেইনারের কোয়ালিটি ও এস্ক্রো পলিসিতে সম্মত আছেন?`
+            : `📋 **Task Summary & Confirmation:**\n- Client: **${taskFlow.fullName}** (${taskFlow.whatsapp})\n- Category: **${taskFlow.categoryTitle}**\n- Deliverable: **${taskFlow.subCategory}**\n- Expert: **${taskFlow.expertCode}**\n- Deadline: **${taskFlow.deadline}**\n\nDo you confirm that this scope is accurate and you agree to Gaenr's escrow protection and delivery policies?`,
+          timestamp: getRealtimeClock(),
+          actions: [
+            {
+              label: isBn ? '✅ I Confirm & Agree (সম্মত ও সম্পন্ন করুন)' : '✅ I Confirm & Agree',
+              actionType: 'confirmTaskAgreement',
+            },
+            {
+              label: isBn ? '❌ Cancel (বাতিল)' : '❌ Cancel',
+              actionType: 'startInChatTask',
+            },
+          ],
+        },
+      ]);
+    } else if (action.actionType === 'confirmTaskAgreement') {
+      const resp = completeTaskFlow(taskFlow.documentUrl, language);
       setMessages((prev) => [
         ...prev,
         {
