@@ -6,9 +6,47 @@ export interface DriveUploadResponse {
   success: boolean;
   fileId?: string;
   fileUrl?: string;
+  previewUrl?: string;
+  directImageUrl?: string;
   downloadUrl?: string;
   error?: string;
 }
+
+/**
+ * Extracts a Google Drive file ID from a URL or raw ID string.
+ */
+export const extractGoogleDriveFileId = (urlOrId: string): string | null => {
+  if (!urlOrId) return null;
+  const trimmed = urlOrId.trim();
+  if (/^[a-zA-Z0-9_-]{25,}$/.test(trimmed)) {
+    return trimmed;
+  }
+  const dMatch = trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (dMatch && dMatch[1]) return dMatch[1];
+  const idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (idMatch && idMatch[1]) return idMatch[1];
+  return null;
+};
+
+/**
+ * Generates a direct Google Drive image CDN URL that renders natively in <img> tags.
+ */
+export const getGoogleDriveDirectImageUrl = (driveUrlOrId: string): string => {
+  if (!driveUrlOrId) return '';
+  const fileId = extractGoogleDriveFileId(driveUrlOrId);
+  if (!fileId) return driveUrlOrId;
+  return `https://lh3.googleusercontent.com/d/${fileId}`;
+};
+
+/**
+ * Generates a Google Drive preview embed URL that renders in <iframe> (documents, videos, slides).
+ */
+export const getGoogleDriveEmbedPreviewUrl = (driveUrlOrId: string): string => {
+  if (!driveUrlOrId) return '';
+  const fileId = extractGoogleDriveFileId(driveUrlOrId);
+  if (!fileId) return driveUrlOrId;
+  return `https://drive.google.com/file/d/${fileId}/preview`;
+};
 
 export const getDriveWebhookUrl = (): string => {
   if (typeof window !== 'undefined') {
@@ -25,7 +63,7 @@ export const setDriveWebhookUrl = (url: string): void => {
 };
 
 /**
- * Uploads file base64 directly to the designated Google Drive folder (ID: 13TfzgSRtRCy2ubOU4fyFEg_NEGZLonDO)
+ * Uploads file base64 directly to the designated cloud folder (ID: 13TfzgSRtRCy2ubOU4fyFEg_NEGZLonDO)
  * via Google Apps Script Webhook. Zero storage consumed on web hosting.
  */
 export const uploadFileToGoogleDrive = async (
@@ -69,24 +107,27 @@ export const uploadFileToGoogleDrive = async (
         });
 
         const data = await response.json();
-        if (data && (data.status === 'success' || data.success || data.fileUrl)) {
+        if (data && (data.status === 'success' || data.success || data.fileUrl || data.fileId)) {
+          const fileId = data.fileId || extractGoogleDriveFileId(data.fileUrl || '') || '';
           resolve({
             success: true,
-            fileId: data.fileId,
-            fileUrl: data.fileUrl || data.url,
+            fileId,
+            fileUrl: data.fileUrl || (fileId ? `https://drive.google.com/file/d/${fileId}/view` : ''),
+            previewUrl: data.previewUrl || (fileId ? `https://drive.google.com/file/d/${fileId}/preview` : ''),
+            directImageUrl: data.directImageUrl || (fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : ''),
             downloadUrl: data.downloadUrl || data.viewUrl,
           });
         } else {
           resolve({
             success: false,
-            error: data?.message || 'Google Drive webhook response did not contain file URL',
+            error: data?.message || 'Storage webhook response did not contain file data',
           });
         }
       } catch (err: any) {
-        console.warn('Google Drive direct upload error:', err);
+        console.warn('Direct cloud upload error:', err);
         resolve({
           success: false,
-          error: err?.message || 'Network error during Google Drive upload',
+          error: err?.message || 'Network error during cloud upload',
         });
       }
     };

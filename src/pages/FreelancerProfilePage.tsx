@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useBranding } from '../context/BrandingContext';
 import { AvatarGraphic, getAvatarImageSrc, VerifiedBadge3D } from '../components/common/Avatars';
+import { getGoogleDriveDirectImageUrl } from '../utils/googleDriveUpload';
 import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink, Upload, Copy } from 'lucide-react';
 import { PortfolioItem } from '../types';
 
@@ -61,6 +62,9 @@ const ZoomableImageCard: React.FC<{
   const bump = (e: React.MouseEvent) => { e.stopPropagation(); setZoom(z => Math.min(3, +(z + 0.5).toFixed(1))); };
   const shrink = (e: React.MouseEvent) => { e.stopPropagation(); setZoom(z => Math.max(1, +(z - 0.5).toFixed(1))); };
 
+  const displaySrc = getGoogleDriveDirectImageUrl(src);
+  const showExternal = externalUrl && !externalUrl.includes('drive.google.com');
+
   return (
     <div
       className={`w-full ${isExpanded ? 'max-w-3xl' : 'max-w-md'} rounded-xl overflow-hidden flex flex-col shadow-xl`}
@@ -72,7 +76,7 @@ const ZoomableImageCard: React.FC<{
         style={{ aspectRatio: '16/9', background: '#0c182c' }}
       >
         <img
-          src={src}
+          src={displaySrc}
           alt={alt}
           style={{
             transform: `scale(${zoom})`,
@@ -110,14 +114,14 @@ const ZoomableImageCard: React.FC<{
             className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none"
             title="Zoom in"
           >+</button>
-          {externalUrl && (
+          {showExternal && (
             <a
               href={externalUrl}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#006eff] text-white flex items-center justify-center transition-colors"
-              title="Open original"
+              title="Open project link"
             >
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
@@ -1036,7 +1040,8 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                 />
               </div>
             </div>
-            <div className="absolute -bottom-1 -right-1 z-10" title="Verified Expert">
+            {/* Halfway inside, halfway outside avatar circular perimeter */}
+            <div className="absolute bottom-[2px] right-[2px] sm:bottom-[3px] sm:right-[3px] z-10" title="Verified Expert">
               <VerifiedBadge3D size={26} className="drop-shadow-[0_0_8px_rgba(0,110,255,0.85)]" />
             </div>
           </div>

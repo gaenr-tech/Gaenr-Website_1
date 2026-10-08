@@ -308,9 +308,14 @@ export const FreelancerDirectoryPage: React.FC = () => {
 
                   {/* Middle Section: Centered Borderless Avatar, ID & Keywords */}
                   <div className="flex flex-col items-center text-center space-y-3 pt-1">
-                    {/* Circular Avatar (Borderless, Active indicator removed) */}
-                    <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full flex items-center justify-center shrink-0 overflow-hidden transition-transform duration-300 group-hover:scale-105">
-                      <AvatarGraphic id={expert.avatarId} size={84} className="rounded-full" />
+                    {/* Circular Avatar with Halfway Inside/Outside Verified Badge */}
+                    <div className="relative transition-transform duration-300 group-hover:scale-105">
+                      <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-slate-100">
+                        <AvatarGraphic id={expert.avatarId} size={84} className="rounded-full" />
+                      </div>
+                      <div className="absolute bottom-[2px] right-[2px] z-10" title="Verified Expert">
+                        <VerifiedBadge3D size={22} className="drop-shadow-[0_0_8px_rgba(0,110,255,0.7)]" />
+                      </div>
                     </div>
 
                     {/* ID & Role */}
@@ -319,7 +324,6 @@ export const FreelancerDirectoryPage: React.FC = () => {
                         <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-snug group-hover:text-[#002f6c] transition-colors">
                           {expert.code}
                         </h3>
-                        <VerifiedBadge3D size={18} />
                       </div>
                       <p className="text-xs sm:text-sm font-medium text-slate-500">
                         {expert.categoryTitle}

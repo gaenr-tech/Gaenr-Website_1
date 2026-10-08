@@ -61,8 +61,8 @@ export const ExpertIdCard = forwardRef<HTMLDivElement, ExpertIdCardProps>(
                 />
               </div>
             </div>
-            {/* 3D Glowing Verified Badge on avatar */}
-            <div className="absolute -bottom-1 -right-1 z-10" title="Verified Expert">
+            {/* 3D Glowing Verified Badge on avatar - Halfway inside, halfway outside avatar boundary */}
+            <div className="absolute bottom-[3px] right-[3px] z-10" title="Verified Expert">
               <VerifiedBadge3D size={28} className="drop-shadow-[0_0_8px_rgba(0,110,255,0.85)]" />
             </div>
           </div>
