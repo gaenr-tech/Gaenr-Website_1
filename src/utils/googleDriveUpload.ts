@@ -48,12 +48,18 @@ export const getGoogleDriveEmbedPreviewUrl = (driveUrlOrId: string): string => {
   return `https://drive.google.com/file/d/${fileId}/preview`;
 };
 
+export const DEFAULT_DRIVE_WEBHOOK_URL =
+  'https://script.google.com/macros/s/AKfycbzSo8p6JPfJKNfv9_yFBMyBMOxoOLyFcDkuirNgjj3dpvVOH-4la7FjyS_ybqLlQhYSUg/exec';
+
 export const getDriveWebhookUrl = (): string => {
   if (typeof window !== 'undefined') {
     const local = localStorage.getItem('gaenr_drive_webhook_url');
     if (local && local.trim()) return local.trim();
   }
-  return (import.meta.env.VITE_GOOGLE_DRIVE_WEBHOOK_URL as string) || '';
+  return (
+    (import.meta.env.VITE_GOOGLE_DRIVE_WEBHOOK_URL as string) ||
+    DEFAULT_DRIVE_WEBHOOK_URL
+  );
 };
 
 export const setDriveWebhookUrl = (url: string): void => {

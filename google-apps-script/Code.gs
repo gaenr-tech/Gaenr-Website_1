@@ -49,3 +49,9 @@ function doGet(e) {
     message: "Gaenr Cloud Direct Storage Endpoint is online."
   })).setMimeType(ContentService.MimeType.JSON);
 }
+
+// একবার চালান (Run) বাটনে চাপ দিয়ে ড্রাইভ পারমিশন Authorize করুন
+function testDriveAccess() {
+  var folder = DriveApp.getFolderById(TARGET_FOLDER_ID);
+  Logger.log("Drive connected successfully: " + folder.getName());
+}
