@@ -20,6 +20,8 @@ import {
   Sparkles,
   Code,
   Share2,
+  Copy,
+  ExternalLink,
 } from 'lucide-react';
 import { CustomSelect } from '../../../components/common/CustomSelect';
 
@@ -36,6 +38,7 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
   selectedCode,
   onUpdateFreelancer,
   showToast,
+  navigate,
 }) => {
   const { branding } = useBranding();
   const [activeCode, setActiveCode] = useState<string>(
@@ -336,6 +339,58 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Dedicated Upload Portal Banner for the selected expert */}
+        {selectedFreelancer && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-50/70 via-indigo-50/50 to-emerald-50/60 border border-blue-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
+                  Dedicated Portfolio Portal for {selectedFreelancer.code}
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+                  Live Preview Vault
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 max-w-xl">
+                This is the private portal where <b className="text-slate-900">{selectedFreelancer.code}</b> uploads project deliverables, connects Google Drive assets, and tests the client card in real time.
+              </p>
+              <div className="flex items-center gap-2 pt-1 flex-wrap">
+                <span className="text-[10px] text-slate-500 font-mono">Portal URL:</span>
+                <span className="font-mono text-xs text-[#006eff] font-bold bg-white/90 px-2.5 py-0.5 rounded-lg border border-blue-200/80 select-all">
+                  {`${window.location.origin}/expert-portfolio-upload/${selectedFreelancer.code}`}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/expert-portfolio-upload/${selectedFreelancer.code}`
+                  );
+                  showToast(`Copied portal link for ${selectedFreelancer.code}`, 'success');
+                }}
+                className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+              >
+                <Copy className="w-3.5 h-3.5 text-slate-500" />
+                <span>Copy Portal Link</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate(`/expert-portfolio-upload/${selectedFreelancer.code}`)}
+                className="px-4 py-2 rounded-xl bg-[#006eff] hover:bg-[#005cd4] text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md shadow-blue-500/20"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>Open Dedicated Portal</span>
+                <ExternalLink className="w-3 h-3 ml-0.5" />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Selected Profile's Portfolio Showcase Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">

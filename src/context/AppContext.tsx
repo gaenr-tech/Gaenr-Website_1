@@ -340,6 +340,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           return updatedFl;
         });
 
+        if (parsed.length === 0) {
+          try {
+            localStorage.setItem('gaenr_freelancers', JSON.stringify(INITIAL_FREELANCERS));
+          } catch {}
+          return INITIAL_FREELANCERS;
+        }
+
         if (hasChanges) {
           try {
             localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
@@ -347,9 +354,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
         return updated;
       }
-      return [];
+      try {
+        localStorage.setItem('gaenr_freelancers', JSON.stringify(INITIAL_FREELANCERS));
+      } catch {}
+      return INITIAL_FREELANCERS;
     } catch {
-      return [];
+      return INITIAL_FREELANCERS;
     }
   });
 

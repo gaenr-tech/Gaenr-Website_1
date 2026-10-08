@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useBranding } from '../context/BrandingContext';
 import { AvatarGraphic, getAvatarImageSrc } from '../components/common/Avatars';
-import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink, Upload, Copy } from 'lucide-react';
 import { PortfolioItem } from '../types';
 
 const defaultPricingByCategory: Record<string, { serviceName: string; price: string }[]> = {
@@ -959,6 +959,48 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
           >
             Manage Status
           </button>
+        </div>
+      )}
+
+      {/* Admin Quick Operations Bar: Dedicated Portfolio Portal Access */}
+      {isAdminLoggedIn && (
+        <div className="mb-4 p-3 sm:p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+              <Upload className="w-4 h-4" />
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-white">Operations Control: Portfolio Portal</span>
+                <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">
+                  {expert.portfolioItems?.length || 0} Items
+                </span>
+              </div>
+              <div className="text-[11px] text-slate-400 font-mono">
+                Dedicated Portal: /expert-portfolio-upload/{expert.code}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(`${window.location.origin}/expert-portfolio-upload/${expert.code}`);
+              }}
+              className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <Copy className="w-3.5 h-3.5 text-slate-300" />
+              <span>Copy Portal Link</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(`/expert-portfolio-upload/${expert.code}`)}
+              className="px-3 py-1.5 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>Upload Portal (Live Preview)</span>
+            </button>
+          </div>
         </div>
       )}
 
