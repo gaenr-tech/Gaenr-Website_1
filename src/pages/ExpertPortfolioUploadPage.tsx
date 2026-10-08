@@ -166,8 +166,13 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
             finalMediaUrl = driveResult.downloadUrl || driveResult.fileUrl || mediaPreview;
             if (previewType === 'image') finalImageUrl = finalMediaUrl;
           }
+          showToast('✓ Successfully deposited in Google Drive & published!', 'success');
+        } else if (driveResult.error === 'NO_WEBHOOK_CONFIGURED') {
+          showToast('⚠️ Google Drive Webhook not set in .env! Saved locally.', 'error');
+        } else {
+          showToast(`⚠️ Cloud upload notice: ${driveResult.error || 'Failed'}`, 'error');
         }
-      } catch (err) {
+      } catch (err: any) {
         console.warn('Direct upload error:', err);
       }
     }

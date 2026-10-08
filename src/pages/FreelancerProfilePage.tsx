@@ -59,8 +59,21 @@ const ZoomableImageCard: React.FC<{
   isExpanded?: boolean;
 }> = ({ src, alt, title, tools, externalUrl, isExpanded }) => {
   const [zoom, setZoom] = useState(1);
-  const bump = (e: React.MouseEvent) => { e.stopPropagation(); setZoom(z => Math.min(3, +(z + 0.5).toFixed(1))); };
-  const shrink = (e: React.MouseEvent) => { e.stopPropagation(); setZoom(z => Math.max(1, +(z - 0.5).toFixed(1))); };
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setZoom(1);
+    setHasError(false);
+  }, [src]);
+
+  const bump = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)));
+  };
+  const shrink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoom((z) => Math.max(0.4, +(z - 0.25).toFixed(2)));
+  };
 
   const displaySrc = getGoogleDriveDirectImageUrl(src);
   const showExternal = externalUrl && !externalUrl.includes('drive.google.com');
@@ -75,20 +88,28 @@ const ZoomableImageCard: React.FC<{
         className="relative w-full overflow-hidden flex items-center justify-center"
         style={{ aspectRatio: '16/9', background: '#0c182c' }}
       >
-        <img
-          src={displaySrc}
-          alt={alt}
-          style={{
-            transform: `scale(${zoom})`,
-            transformOrigin: 'center center',
-            transition: 'transform 0.25s ease',
-            maxHeight: '100%',
-            maxWidth: '100%',
-            objectFit: 'contain',
-            display: 'block',
-          }}
-          onError={(e) => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
-        />
+        {!hasError ? (
+          <img
+            key={displaySrc}
+            src={displaySrc}
+            alt={alt}
+            style={{
+              transform: `scale(${zoom})`,
+              transformOrigin: 'center center',
+              transition: 'transform 0.2s ease',
+              maxHeight: '100%',
+              maxWidth: '100%',
+              objectFit: 'contain',
+              display: 'block',
+            }}
+            onError={() => setHasError(true)}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center p-6 text-center text-slate-400 gap-2">
+            <Layers className="w-8 h-8 text-slate-500" />
+            <span className="text-xs font-semibold text-slate-300">{title}</span>
+          </div>
+        )}
       </div>
       {/* Controls bar */}
       <div className="flex items-center justify-between px-3 py-2 border-t border-white/10" style={{ background: '#0c182c' }}>
@@ -102,16 +123,23 @@ const ZoomableImageCard: React.FC<{
           <button
             type="button"
             onClick={shrink}
-            disabled={zoom <= 1}
-            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none"
+            disabled={zoom <= 0.4}
+            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
             title="Zoom out"
           >−</button>
-          <span className="text-[10px] text-white/60 font-mono w-9 text-center">{Math.round(zoom * 100)}%</span>
+          <button
+            type="button"
+            onClick={() => setZoom(1)}
+            title="Reset zoom to 100%"
+            className="text-[10px] text-white/70 hover:text-white font-mono w-9 text-center cursor-pointer"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
           <button
             type="button"
             onClick={bump}
             disabled={zoom >= 3}
-            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none"
+            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
             title="Zoom in"
           >+</button>
           {showExternal && (
@@ -223,12 +251,21 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
   const [reviewIndex, setReviewIndex] = useState(0);
   const [portfolioIndex, setPortfolioIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [fsZoom, setFsZoom] = useState(1);
   const [remoteExpert, setRemoteExpert] = useState<FreelancerProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const expert = freelancers.find((fl) => fl.code.toLowerCase() === code.toLowerCase()) || remoteExpert;
   const reviews = expert?.reviews || [];
   const portfolioItems = expert?.portfolioItems || [];
+
+  const totalPortfolios = portfolioItems.length;
+  const validIndex = totalPortfolios > 0 ? ((portfolioIndex % totalPortfolios) + totalPortfolios) % totalPortfolios : 0;
+  const currentPortfolio = portfolioItems[validIndex];
+
+  useEffect(() => {
+    setFsZoom(1);
+  }, [portfolioIndex, isFullscreen]);
 
   useEffect(() => {
     if (expert) {
@@ -274,11 +311,15 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
   };
 
   const handlePrevPortfolio = () => {
-    setPortfolioIndex((prev) => (prev === 0 ? portfolioItems.length - 1 : prev - 1));
+    if (totalPortfolios <= 1) return;
+    setPortfolioIndex((prev) => (prev <= 0 ? totalPortfolios - 1 : prev - 1));
+    setFsZoom(1);
   };
 
   const handleNextPortfolio = () => {
-    setPortfolioIndex((prev) => (prev === portfolioItems.length - 1 ? 0 : prev + 1));
+    if (totalPortfolios <= 1) return;
+    setPortfolioIndex((prev) => (prev >= totalPortfolios - 1 ? 0 : prev + 1));
+    setFsZoom(1);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -374,8 +415,6 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
     date: 'Recently',
     rating: 5,
   };
-
-  const currentPortfolio = portfolioItems[portfolioIndex] || portfolioItems[0];
 
   // Helper: converts known embeddable platform URLs to an iframe-compatible src
   const getEmbedUrl = (url: string): string | null => {
@@ -1393,9 +1432,12 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
               </>
             )}
 
-            {/* Direct Visual Content Preview */}
-            <div className="w-full h-full flex items-center justify-center p-2.5 sm:p-4">
-              {renderVisualCard(currentPortfolio, portfolioIndex, false)}
+            {/* Direct Visual Content Preview with Unique Key */}
+            <div
+              key={currentPortfolio?.id || `portfolio-card-${validIndex}`}
+              className="w-full h-full flex items-center justify-center p-2.5 sm:p-4"
+            >
+              {renderVisualCard(currentPortfolio, validIndex, false)}
             </div>
           </div>
 
@@ -1508,9 +1550,39 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
               </span>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-mono text-slate-400 font-semibold">
-                Piece {portfolioIndex + 1} of {portfolioItems.length}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Fullscreen Zoom Controller (− / % / +) */}
+              <div className="flex items-center gap-1 bg-white/10 backdrop-blur-md rounded-xl p-1 border border-white/15">
+                <button
+                  type="button"
+                  onClick={() => setFsZoom((z) => Math.max(0.4, +(z - 0.2).toFixed(1)))}
+                  disabled={fsZoom <= 0.4}
+                  className="w-7 h-7 rounded-lg hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer select-none"
+                  title="Zoom out (− make smaller)"
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFsZoom(1)}
+                  className="px-2 py-0.5 text-xs font-mono font-bold text-white/90 hover:text-white cursor-pointer select-none"
+                  title="Reset to 100%"
+                >
+                  {Math.round(fsZoom * 100)}%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFsZoom((z) => Math.min(3, +(z + 0.2).toFixed(1)))}
+                  disabled={fsZoom >= 3}
+                  className="w-7 h-7 rounded-lg hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer select-none"
+                  title="Zoom in (+ make larger)"
+                >
+                  +
+                </button>
+              </div>
+
+              <span className="text-xs font-mono text-slate-400 font-semibold hidden xs:inline">
+                Piece {validIndex + 1} of {portfolioItems.length}
               </span>
               <button
                 type="button"
@@ -1652,7 +1724,25 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                   // ── Image ────────────────────────────────────────────────
                   const isImage = activeMedia.startsWith('data:image') || activeMedia.match(/\.(jpeg|jpg|gif|png|webp|svg)($|\?)/i) || item.previewType === 'image';
                   if (isImage) {
-                    return <img src={activeMedia} alt={item.title} className="max-w-5xl max-h-full w-full object-contain rounded-lg shadow-2xl" />;
+                    const directImageSrc = getGoogleDriveDirectImageUrl(activeMedia);
+                    return (
+                      <div className="relative w-full h-full flex items-center justify-center overflow-auto p-2 sm:p-6">
+                        <img
+                          key={`fs-img-${item.id || validIndex}-${directImageSrc}`}
+                          src={directImageSrc}
+                          alt={item.title}
+                          style={{
+                            transform: `scale(${fsZoom})`,
+                            transformOrigin: 'center center',
+                            transition: 'transform 0.2s ease-out',
+                            maxHeight: '82vh',
+                            maxWidth: '88vw',
+                            objectFit: 'contain',
+                          }}
+                          className="rounded-xl shadow-2xl select-none"
+                        />
+                      </div>
+                    );
                   }
                   // ── WordPress website ────────────────────────────────────
                   if (item.category === 'wordpress-website') {
@@ -1738,10 +1828,13 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => setPortfolioIndex(idx)}
+                  onClick={() => {
+                    setPortfolioIndex(idx);
+                    setFsZoom(1);
+                  }}
                   title={`Slide to piece ${idx + 1}`}
                   className={`h-2.5 rounded-full transition-all cursor-pointer ${
-                    idx === portfolioIndex ? 'w-7 bg-[#006eff]' : 'w-2.5 bg-white/20 hover:bg-white/40'
+                    idx === validIndex ? 'w-7 bg-[#006eff]' : 'w-2.5 bg-white/20 hover:bg-white/40'
                   }`}
                 />
               ))}

@@ -104,9 +104,20 @@ export const uploadFileToGoogleDrive = async (
             'Content-Type': 'text/plain;charset=utf-8',
           },
           body: JSON.stringify(payload),
+          redirect: 'follow',
         });
 
-        const data = await response.json();
+        let data: any = null;
+        try {
+          data = await response.json();
+        } catch {
+          try {
+            const rawText = await response.text();
+            data = JSON.parse(rawText);
+          } catch (jsonErr) {
+            console.warn('Could not parse response JSON:', jsonErr);
+          }
+        }
         if (data && (data.status === 'success' || data.success || data.fileUrl || data.fileId)) {
           const fileId = data.fileId || extractGoogleDriveFileId(data.fileUrl || '') || '';
           resolve({
