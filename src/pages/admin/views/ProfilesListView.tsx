@@ -690,26 +690,17 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
               </div>
             </div>
 
-            {/* Google Drive Vault Status */}
+            {/* Cloud Storage Vault Status */}
             <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between gap-3 text-xs">
               <div className="space-y-0.5">
                 <div className="font-bold text-emerald-950 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Gaenr Official Cloud Drive Vault</span>
+                  <span>Cloud Storage Vault</span>
                 </div>
                 <p className="text-[11px] text-emerald-800">
-                  Deliverables uploaded via this portal are linked to the team's cloud drive repository.
+                  Deliverables uploaded via this portal are automatically backed up and synced to the secure team cloud vault.
                 </p>
               </div>
-              <a
-                href="https://drive.google.com/drive/folders/13TfzgSRtRCy2ubOU4fyFEg_NEGZLonDO?usp=sharing"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shrink-0 transition-colors shadow-2xs"
-              >
-                <span>Drive Folder</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
             </div>
 
             {/* Modal Bottom Actions */}

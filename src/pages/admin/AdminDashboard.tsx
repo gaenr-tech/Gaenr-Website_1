@@ -97,8 +97,7 @@ export const AdminDashboard: React.FC = () => {
   const getTabFromRoute = (route: string): SitemapTab => {
     const clean = route.split('#')[0].split('?')[0];
     if (clean === '/manage/profiles/new') return 'profiles_new';
-    if (clean === '/manage/profiles') return 'profiles';
-    if (clean === '/manage/portfolio') return 'portfolio';
+    if (clean === '/manage/profiles' || clean === '/manage/portfolio') return 'profiles';
     if (clean === '/manage/categories') return 'categories';
     if (clean === '/manage/skills') return 'skills';
     if (clean === '/manage/directory') return 'directory';
@@ -592,17 +591,6 @@ export const AdminDashboard: React.FC = () => {
                   <span>Create Expert Profile</span>
                 </button>
                 <button
-                  onClick={() => handleNavigateTab('portfolio')}
-                  className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                    activeTab === 'portfolio'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
-                  }`}
-                >
-                  <FolderKanban className="w-4 h-4 shrink-0" />
-                  <span>Portfolio Management</span>
-                </button>
-                <button
                   onClick={() => handleNavigateTab('directory')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'directory'
@@ -884,22 +872,6 @@ export const AdminDashboard: React.FC = () => {
             >
               <UserPlus className="w-4 h-4 shrink-0" />
               {!sidebarCollapsed && <span className="truncate">Create Expert Profile</span>}
-            </button>
-
-            {/* /manage/portfolio */}
-            <button
-              onClick={() => handleNavigateTab('portfolio')}
-              title="Portfolio Management"
-              className={`w-full flex items-center ${
-                sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
-              } transition-colors cursor-pointer ${
-                activeTab === 'portfolio'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
-              }`}
-            >
-              <FolderKanban className="w-4 h-4 shrink-0" />
-              {!sidebarCollapsed && <span className="truncate">Portfolio Management</span>}
             </button>
 
             {/* /manage/directory */}
