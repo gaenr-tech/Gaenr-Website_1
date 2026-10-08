@@ -212,7 +212,7 @@ export const GaenrChatbot: React.FC = () => {
     if (!SpeechRecognition) {
       showToast(
         language === 'bn'
-          ? 'আপনার ব্রাউজারে স্পিচ রিকগনিশন সাপোর্ট নেই। গুগল ক্রোম বা এজ ব্যবহার করুন।'
+          ? 'আপনার ব্রাউজারে স্পিচ রিকগনিশন সাপোর্ট নেই। দয়া করে গুগল ক্রোম বা এজ ব্যবহার করুন।'
           : 'Speech recognition is not supported in this browser. Please use Chrome or Edge.',
         'info'
       );
@@ -232,33 +232,37 @@ export const GaenrChatbot: React.FC = () => {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang = language === 'bn' ? 'bn-BD' : 'en-US';
+      recognition.maxAlternatives = 1;
+
+      // Smart recognition language: default to Bengali if user or browser locale is in Bangla, else English
+      const userLocale = typeof navigator !== 'undefined' && navigator.language ? navigator.language.toLowerCase() : '';
+      recognition.lang = language === 'bn' || userLocale.includes('bn') ? 'bn-BD' : 'en-US';
 
       recognition.onstart = () => {
         setIsListening(true);
       };
 
       recognition.onresult = (event: any) => {
-        let transcript = '';
-        for (let i = 0; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
+        let fullText = '';
+        for (let i = 0; i < event.results.length; ++i) {
+          fullText += event.results[i][0].transcript;
         }
-        if (transcript.trim()) {
-          setInputValue(transcript);
+        if (fullText.trim()) {
+          setInputValue(fullText.trim());
         }
       };
 
       recognition.onerror = (event: any) => {
         console.warn('Speech recognition error:', event.error);
-        setIsListening(false);
-        if (event.error === 'not-allowed') {
+        if (event.error === 'not-allowed' || event.error === 'permission-denied') {
           showToast(
             language === 'bn'
-              ? 'মাইক্রোফোন পারমিশন প্রয়োজন। দয়া করে ব্রাউজারে পারমিশন দিন।'
-              : 'Microphone permission denied. Please allow microphone access.',
+              ? 'মাইক্রোফোন পারমিশন প্রয়োজন। দয়া করে ব্রাউজারে পারমিশন এলাও করুন।'
+              : 'Microphone permission denied. Please allow microphone access in your browser.',
             'error'
           );
         }
+        setIsListening(false);
       };
 
       recognition.onend = () => {
@@ -1044,47 +1048,58 @@ ${taskData.description.trim()}`;
               </div>
             )}
 
-            {/* Voice Command Live Recording Status Banner */}
-            {isListening && (
-              <div className="px-3 py-1.5 bg-rose-50 border-t border-rose-100 flex items-center justify-between text-[10.5px] text-rose-600 font-medium shrink-0 animate-in fade-in">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-                  <span>
-                    {language === 'bn'
-                      ? 'ভয়েস শুনছি... কথা শেষ হলে মাইক বন্ধ করুন'
-                      : 'Listening... click mic to finish and convert'}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleToggleVoiceInput}
-                  className="text-rose-700 font-bold underline text-[10.5px] cursor-pointer"
-                >
-                  {language === 'bn' ? 'অফ করুন' : 'Done'}
-                </button>
-              </div>
-            )}
-
-            {/* Input Box Footer with Voice Command Mic Button */}
+            {/* Input Box Footer with Voice Command Mic Button placed right beside Send Button */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSendMessage();
               }}
-              className="p-2.5 bg-white border-t border-slate-200/80 flex items-center gap-2 shrink-0"
+              className="p-2.5 bg-white border-t border-slate-200/80 flex items-center gap-1.5 shrink-0"
             >
-              {/* Voice Command Button */}
+              {/* Input container with inline jumping audio visualizer */}
+              <div className="relative flex-1 flex items-center">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder={
+                    isListening
+                      ? 'Listening to voice...'
+                      : taskFlow.active
+                      ? 'Type your answer or brief...'
+                      : 'Ask me anything...'
+                  }
+                  className={`w-full bg-slate-50 border rounded-2xl px-3.5 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#006eff]/20 focus:border-[#006eff] transition-all ${
+                    isListening
+                      ? 'border-[#006eff] ring-1 ring-[#006eff]/30 pr-14 bg-blue-50/20'
+                      : 'border-slate-200/90'
+                  }`}
+                  disabled={isTyping}
+                />
+
+                {/* Inline Jumping Audio Soundwave Visualizer Bars */}
+                {isListening && (
+                  <div
+                    className="absolute right-2.5 flex items-center gap-0.5 pointer-events-none"
+                    title="Audio detecting"
+                  >
+                    <span className="w-0.5 bg-[#006eff] rounded-full animate-bounce [animation-duration:500ms] h-2" />
+                    <span className="w-0.5 bg-[#006eff] rounded-full animate-bounce [animation-duration:800ms] [animation-delay:150ms] h-4" />
+                    <span className="w-0.5 bg-[#006eff] rounded-full animate-bounce [animation-duration:450ms] [animation-delay:300ms] h-3" />
+                    <span className="w-0.5 bg-[#006eff] rounded-full animate-bounce [animation-duration:700ms] [animation-delay:100ms] h-5" />
+                    <span className="w-0.5 bg-[#006eff] rounded-full animate-bounce [animation-duration:600ms] [animation-delay:250ms] h-2" />
+                  </div>
+                )}
+              </div>
+
+              {/* Voice Command Button — Positioned right beside the Send button */}
               <button
                 type="button"
                 onClick={handleToggleVoiceInput}
                 title={
                   isListening
-                    ? language === 'bn'
-                      ? 'ভয়েস বন্ধ করুন (টেক্সট জমা হবে)'
-                      : 'Stop voice recording'
-                    : language === 'bn'
-                    ? 'ভয়েস কমান্ড দিয়ে কথা বলুন'
-                    : 'Speak with voice command'
+                    ? 'Stop recording (converts to text)'
+                    : 'Voice command'
                 }
                 aria-label="Voice command"
                 className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all cursor-pointer ${
@@ -1100,25 +1115,7 @@ ${taskData.description.trim()}`;
                 )}
               </button>
 
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder={
-                  isListening
-                    ? language === 'bn'
-                      ? 'কথা বলুন, ভয়েস টেক্সটে কনভার্ট হচ্ছে...'
-                      : 'Listening to your voice...'
-                    : taskFlow.active
-                    ? 'Type your answer or brief...'
-                    : language === 'en'
-                    ? 'Ask Ginny or type in Bangla...'
-                    : 'গিনিকে কিছু জিজ্ঞেস করুন...'
-                }
-                className="flex-1 bg-slate-50 border border-slate-200/90 rounded-2xl px-3.5 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#006eff]/20 focus:border-[#006eff] transition-all"
-                disabled={isTyping}
-              />
-
+              {/* Send Button */}
               <button
                 type="submit"
                 disabled={!inputValue.trim() || isTyping}
