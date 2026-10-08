@@ -9,6 +9,13 @@ import {
   DELIVERABLE_TYPE_OPTIONS,
 } from '../types';
 import {
+  GAENR_DRIVE_FOLDER_URL,
+  GAENR_DRIVE_FOLDER_ID,
+  uploadFileToGoogleDrive,
+  getDriveWebhookUrl,
+  setDriveWebhookUrl,
+} from '../utils/googleDriveUpload';
+import {
   Upload,
   CheckCircle,
   Sparkles,
@@ -27,6 +34,10 @@ import {
   Check,
   Maximize2,
   FileUp,
+  FolderKanban,
+  Link as LinkIcon,
+  Settings,
+  CloudUpload,
 } from 'lucide-react';
 
 interface ExpertPortfolioUploadPageProps {
@@ -64,6 +75,11 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
   const [aspectRatio, setAspectRatio] = useState<'16:9' | '4:3' | '1:1' | '9:16'>('16:9');
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isUploading, setIsUploading] = useState(false);
+  const [showDriveConfigModal, setShowDriveConfigModal] = useState(false);
+  const [webhookInput, setWebhookInput] = useState(getDriveWebhookUrl());
+  const [uploadMode, setUploadMode] = useState<'file' | 'link'>('file');
+  const [pastedDriveLink, setPastedDriveLink] = useState('');
+  const [uploadStatusMsg, setUploadStatusMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const formatFileSize = (bytes: number): string => {
@@ -131,7 +147,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleUploadAndPublish = (e: React.FormEvent) => {
+  const handleUploadAndPublish = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!expert) {
@@ -139,8 +155,13 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
       return;
     }
 
-    if (!mediaPreview) {
+    if (uploadMode === 'file' && !mediaPreview) {
       showToast('Please select a file to upload', 'error');
+      return;
+    }
+
+    if (uploadMode === 'link' && !pastedDriveLink.trim()) {
+      showToast('Please enter your Google Drive file link', 'error');
       return;
     }
 
@@ -153,25 +174,48 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
     const formattedTitle =
       cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
 
+    let finalMediaUrl = mediaPreview;
+    let finalExternalUrl: string | undefined = undefined;
+
+    if (uploadMode === 'link') {
+      finalMediaUrl = pastedDriveLink.trim();
+      finalExternalUrl = pastedDriveLink.trim();
+    } else if (selectedFile) {
+      setUploadStatusMsg('Depositing directly into Google Drive folder...');
+      try {
+        const driveResult = await uploadFileToGoogleDrive(selectedFile, expert.code);
+        if (driveResult.success && (driveResult.fileUrl || driveResult.downloadUrl)) {
+          finalMediaUrl = driveResult.downloadUrl || driveResult.fileUrl || mediaPreview;
+          finalExternalUrl = driveResult.fileUrl;
+          showToast('✓ Successfully deposited in Gaenr Google Drive folder!', 'success');
+        } else if (driveResult.error === 'NO_WEBHOOK_CONFIGURED') {
+          finalExternalUrl = GAENR_DRIVE_FOLDER_URL;
+        }
+      } catch (err) {
+        console.warn('Google Drive direct upload error:', err);
+      }
+    }
+
     const newItem: PortfolioItem = {
       id: `port-${Date.now()}`,
       title: formattedTitle,
       category: expert.category,
-      description: `Verified deliverable uploaded to ${expert.code}'s live portfolio.`,
+      description: `Verified deliverable deposited in team Google Drive for ${expert.code}.`,
       tools: [expert.categoryTitle],
-      previewType,
+      previewType: uploadMode === 'link' ? (pastedDriveLink.includes('video') ? 'video' : 'website') : previewType,
       accentColor: '#006eff',
       aspectRatio: aspectRatio === '9:16' ? '16:9' : (aspectRatio as '16:9' | '4:3' | '1:1'),
-      mediaUrl: mediaPreview,
-      imageUrl: previewType === 'image' ? mediaPreview : undefined,
+      mediaUrl: finalMediaUrl,
+      imageUrl: previewType === 'image' && uploadMode === 'file' ? finalMediaUrl : undefined,
+      externalUrl: finalExternalUrl || GAENR_DRIVE_FOLDER_URL,
     };
 
-    setTimeout(() => {
-      addExpertPortfolioItem(expert.code, newItem);
-      setIsUploading(false);
-      handleClearSelected();
-      showToast(`Uploaded and published to ${expert.code}'s profile!`, 'success');
-    }, 400);
+    addExpertPortfolioItem(expert.code, newItem);
+    setIsUploading(false);
+    setUploadStatusMsg('');
+    handleClearSelected();
+    setPastedDriveLink('');
+    showToast(`Published to ${expert.code}'s live profile!`, 'success');
   };
 
   if (!expert) {
@@ -293,84 +337,187 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
         {/* Two-Column: Direct File Upload on Left, Live Instant Preview on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Direct Upload Box (6 cols) */}
-          <div className="lg:col-span-6 bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Upload className="w-5 h-5 text-[#006eff]" />
-                <span>Upload New Portfolio Item</span>
-              </h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Drop your file below to upload directly. No external links required.
-              </p>
+          <div className="lg:col-span-6 bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs space-y-5">
+            {/* Direct Google Drive Cloud Storage Header Banner */}
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/80 to-indigo-50/60 border border-blue-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#006eff] text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <FolderKanban className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-slate-900">Official Team Drive Storage</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-tight">
+                    Direct Cloud Deposit • 0 web hosting storage consumed
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <a
+                  href={GAENR_DRIVE_FOLDER_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-xl bg-white hover:bg-blue-50 text-[#006eff] text-xs font-bold border border-blue-200 flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer"
+                >
+                  <span>Open Drive Folder</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setShowDriveConfigModal(true)}
+                  className="p-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 transition-colors cursor-pointer"
+                  title="Google Drive Auto-Sync Settings"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Upload className="w-5 h-5 text-[#006eff]" />
+                  <span>Deposit &amp; Publish Deliverable</span>
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Deposit files into the team Google Drive folder to build your verified portfolio.
+                </p>
+              </div>
+            </div>
+
+            {/* Upload Method Switcher */}
+            <div className="flex border-b border-slate-100 pb-2 gap-4">
+              <button
+                type="button"
+                onClick={() => setUploadMode('file')}
+                className={`text-xs font-bold pb-1.5 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+                  uploadMode === 'file'
+                    ? 'border-[#006eff] text-[#006eff]'
+                    : 'border-transparent text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                <CloudUpload className="w-3.5 h-3.5" />
+                <span>Upload Master File</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setUploadMode('link')}
+                className={`text-xs font-bold pb-1.5 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+                  uploadMode === 'link'
+                    ? 'border-[#006eff] text-[#006eff]'
+                    : 'border-transparent text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                <LinkIcon className="w-3.5 h-3.5" />
+                <span>Paste Drive File Link</span>
+              </button>
             </div>
 
             <form onSubmit={handleUploadAndPublish} className="space-y-5">
-              {/* Drag and Drop File Upload Area */}
-              <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onClick={() => fileInputRef.current?.click()}
-                className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${
-                  mediaPreview
-                    ? 'border-emerald-400 bg-emerald-50/20'
-                    : 'border-slate-300 hover:border-[#006eff] bg-slate-50/60 hover:bg-blue-50/30'
-                }`}
-              >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*,video/*,application/pdf"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
+              {uploadMode === 'file' ? (
+                /* Drag and Drop File Upload Area */
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${
+                    mediaPreview
+                      ? 'border-emerald-400 bg-emerald-50/20'
+                      : 'border-slate-300 hover:border-[#006eff] bg-slate-50/60 hover:bg-blue-50/30'
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,video/*,application/pdf"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
 
-                {mediaPreview ? (
-                  <div className="space-y-2">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-2xs">
-                      {isVideoMedia ? (
-                        <Video className="w-6 h-6" />
-                      ) : isDocMedia ? (
-                        <FileText className="w-6 h-6" />
-                      ) : (
-                        <ImageIcon className="w-6 h-6" />
-                      )}
+                  {mediaPreview ? (
+                    <div className="space-y-2">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-2xs">
+                        {isVideoMedia ? (
+                          <Video className="w-6 h-6" />
+                        ) : isDocMedia ? (
+                          <FileText className="w-6 h-6" />
+                        ) : (
+                          <ImageIcon className="w-6 h-6" />
+                        )}
+                      </div>
+                      <div className="font-bold text-slate-900 text-xs truncate max-w-xs mx-auto">
+                        {fileName}
+                      </div>
+                      <div className="text-[11px] text-emerald-700 font-mono font-semibold">
+                        {fileSizeStr} • Ready to Deposit
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClearSelected();
+                        }}
+                        className="text-xs text-rose-600 hover:underline pt-1 inline-block font-semibold"
+                      >
+                        Change or remove file
+                      </button>
                     </div>
-                    <div className="font-bold text-slate-900 text-xs truncate max-w-xs mx-auto">
-                      {fileName}
-                    </div>
-                    <div className="text-[11px] text-emerald-700 font-mono font-semibold">
-                      {fileSizeStr} • Ready to Publish
-                    </div>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleClearSelected();
-                      }}
-                      className="text-xs text-rose-600 hover:underline pt-1 inline-block font-semibold"
-                    >
-                      Change or remove file
-                    </button>
+                  ) : (
+                    <>
+                      <div className="w-14 h-14 rounded-2xl bg-blue-50 text-[#006eff] flex items-center justify-center shadow-2xs">
+                        <FileUp className="w-7 h-7" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs font-bold text-slate-800">
+                          Click to browse or drag and drop your file here
+                        </p>
+                        <p className="text-[11px] text-slate-400">
+                          Supports Images (PNG, JPG, WebP), Videos (MP4) &amp; Presentations (PDF)
+                        </p>
+                      </div>
+                      <span className="px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 text-[10px] font-mono font-bold shadow-2xs mt-1">
+                        Max file size: 50MB
+                      </span>
+                    </>
+                  )}
+                </div>
+              ) : (
+                /* Paste Google Drive Link Area */
+                <div className="space-y-3 p-5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <FolderKanban className="w-4 h-4 text-[#006eff]" />
+                    <label className="text-xs font-bold text-slate-800">
+                      Google Drive File Share Link
+                    </label>
                   </div>
-                ) : (
-                  <>
-                    <div className="w-14 h-14 rounded-2xl bg-blue-50 text-[#006eff] flex items-center justify-center shadow-2xs">
-                      <FileUp className="w-7 h-7" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-bold text-slate-800">
-                        Click to browse or drag and drop your file here
-                      </p>
-                      <p className="text-[11px] text-slate-400">
-                        Supports High-Res Images (PNG, JPG, WebP), Videos (MP4, WebM) &amp; PDF Presentations
-                      </p>
-                    </div>
-                    <span className="px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 text-[10px] font-mono font-bold shadow-2xs mt-1">
-                      Max file size: 50MB
-                    </span>
-                  </>
-                )}
-              </div>
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://drive.google.com/file/d/... or shareable link"
+                    value={pastedDriveLink}
+                    onChange={(e) => {
+                      setPastedDriveLink(e.target.value);
+                      if (!mediaPreview) setMediaPreview(e.target.value);
+                    }}
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:outline-none focus:border-[#006eff]"
+                  />
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+                    <span>Drop your file in the official Google Drive folder, right click &gt; "Copy link".</span>
+                    <a
+                      href={GAENR_DRIVE_FOLDER_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#006eff] font-bold hover:underline flex items-center gap-1 shrink-0 ml-2"
+                    >
+                      <span>Open Folder</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              )}
 
               {/* Minimal Options: Format & Aspect Ratio */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
@@ -417,12 +564,12 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
 
                 <button
                   type="submit"
-                  disabled={!mediaPreview || isUploading}
+                  disabled={(uploadMode === 'file' ? !mediaPreview : !pastedDriveLink.trim()) || isUploading}
                   className="flex-1 py-3 px-6 bg-[#006eff] hover:bg-[#005cd4] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>
-                    {isUploading ? 'Uploading to Profile...' : 'Upload & Add to Profile'}
+                    {isUploading ? (uploadStatusMsg || 'Depositing to Google Drive...') : 'Deposit to Drive & Publish'}
                   </span>
                 </button>
               </div>
@@ -658,6 +805,93 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
           )}
         </div>
       </div>
+
+      {/* Google Drive Automated Storage Setup Modal */}
+      {showDriveConfigModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] flex items-center justify-center">
+                  <Settings className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Google Drive Storage Endpoint</h3>
+                  <p className="text-[11px] text-slate-500">Zero hosting storage • Direct to your Drive</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDriveConfigModal(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="p-3.5 bg-blue-50/60 rounded-2xl border border-blue-100 text-xs text-blue-900 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold">Target Drive Folder ID:</span>
+                  <a
+                    href={GAENR_DRIVE_FOLDER_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#006eff] font-mono text-[11px] underline flex items-center gap-1"
+                  >
+                    <span>{GAENR_DRIVE_FOLDER_ID}</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <p className="text-[11px] text-blue-700 leading-relaxed">
+                  All uploaded deliverables deposit directly into this Google Drive folder without touching web hosting bandwidth or disk storage.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-800 block">
+                  Google Apps Script Webhook URL (For Direct 1-Click Upload):
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://script.google.com/macros/s/AKfycb.../exec"
+                  value={webhookInput}
+                  onChange={(e) => setWebhookInput(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:outline-none focus:border-[#006eff]"
+                />
+                <p className="text-[11px] text-slate-400">
+                  Deploy the free script provided in <code className="bg-slate-100 px-1 py-0.5 rounded text-slate-700">google-apps-script/Code.gs</code> as a Web App to enable automatic binary sync.
+                </p>
+              </div>
+
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1.5">
+                <p className="font-bold text-slate-800">Quick 60-Second Setup:</p>
+                <ol className="list-decimal list-inside space-y-1 text-slate-600">
+                  <li>Go to <a href="https://script.google.com" target="_blank" rel="noopener noreferrer" className="text-[#006eff] underline">script.google.com</a> and click "New project".</li>
+                  <li>Copy &amp; paste code from <span className="font-mono text-slate-800">google-apps-script/Code.gs</span>.</li>
+                  <li>Click <strong>Deploy &gt; New deployment &gt; Web app</strong>.</li>
+                  <li>Execute as: <strong>Me</strong>, Who has access: <strong>Anyone</strong>.</li>
+                  <li>Copy the resulting Web App URL and paste it above!</li>
+                </ol>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setDriveWebhookUrl(webhookInput.trim());
+                  setShowDriveConfigModal(false);
+                  showToast('Google Drive Webhook URL updated!', 'success');
+                }}
+                className="px-4 py-2 bg-[#006eff] hover:bg-[#005cd4] text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                Save Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

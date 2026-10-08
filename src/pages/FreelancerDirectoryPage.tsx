@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { SERVICE_CATEGORIES } from '../data/mockData';
-import { AvatarGraphic } from '../components/common/Avatars';
+import { AvatarGraphic, VerifiedBadge3D } from '../components/common/Avatars';
 import { Star, Share2, ChevronDown, Check, SlidersHorizontal } from 'lucide-react';
 
 export const FreelancerDirectoryPage: React.FC = () => {
@@ -315,9 +315,12 @@ export const FreelancerDirectoryPage: React.FC = () => {
 
                     {/* ID & Role */}
                     <div className="space-y-0.5">
-                      <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-snug group-hover:text-[#002f6c] transition-colors">
-                        {expert.code}
-                      </h3>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-snug group-hover:text-[#002f6c] transition-colors">
+                          {expert.code}
+                        </h3>
+                        <VerifiedBadge3D size={18} />
+                      </div>
                       <p className="text-xs sm:text-sm font-medium text-slate-500">
                         {expert.categoryTitle}
                       </p>
