@@ -84,6 +84,7 @@ export const AdminDashboard: React.FC = () => {
     deleteTaskAssignment,
     expertApplications,
     deleteExpertApplication,
+    updateExpertApplicationStatus,
     feedbacks,
     deleteFeedback,
     navigate,
@@ -1300,7 +1301,9 @@ export const AdminDashboard: React.FC = () => {
             <ExpertApplicationsView
               applications={expertApplications}
               onDeleteApplication={deleteExpertApplication}
+              onUpdateStatus={updateExpertApplicationStatus}
               showToast={showToast}
+              navigate={navigate}
             />
           )}
 

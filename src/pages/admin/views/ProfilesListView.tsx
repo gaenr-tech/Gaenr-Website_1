@@ -22,6 +22,7 @@ import {
   Briefcase,
   User,
   Trash2,
+  Upload,
 } from 'lucide-react';
 import { CustomSelect } from '../../../components/common/CustomSelect';
 import { downloadIdCardBadge } from '../../../utils/downloadIdCardImage';
@@ -416,6 +417,17 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                         >
                           <CreditCard className="w-3 h-3 text-[#006eff] shrink-0" />
                           <span>ID Card</span>
+                        </button>
+
+                        {/* Dedicated Portfolio Upload Portal Action Button */}
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/expert-portfolio-upload/${fl.code}`)}
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
+                          title="Open dedicated Portfolio Upload Portal with Live Preview"
+                        >
+                          <Upload className="w-3 h-3 text-emerald-700 shrink-0" />
+                          <span>Portfolio</span>
                         </button>
 
                         <button

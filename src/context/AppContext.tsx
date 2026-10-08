@@ -3,9 +3,12 @@ import {
   ServiceSlug,
   ServiceCategory,
   FreelancerProfile,
+  PortfolioItem,
   TaskAssignment,
   FeedbackSubmission,
   ExpertApplication,
+  ExpertApplicationStatus,
+  ExpertOnboardingData,
   AvatarAsset,
   GaenrEmployee,
   OperationalTask,
@@ -19,6 +22,34 @@ import {
 } from '../types';
 import { INITIAL_FREELANCERS, INITIAL_AVATARS, SERVICE_CATEGORIES } from '../data/mockData';
 import { getCategoryAvatar, RAW_AVATAR_SPECS } from '../components/common/Avatars';
+
+export const GAENR_OFFICIAL_DRIVE_FOLDER_URL =
+  'https://drive.google.com/drive/folders/13TfzgSRtRCy2ubOU4fyFEg_NEGZLonDO?usp=sharing';
+
+export const mapSkillToCategory = (
+  skillString: string
+): { slug: ServiceSlug; title: string; codePrefix: string } => {
+  const lower = (skillString || '').toLowerCase();
+  if (lower.includes('video') || lower.includes('ভিডিও')) {
+    return { slug: 'video-editing', title: 'Video Editing', codePrefix: 'VE' };
+  }
+  if (lower.includes('word') || lower.includes('web') || lower.includes('সাইট')) {
+    return { slug: 'wordpress-website', title: 'WordPress Website Design', codePrefix: 'WP' };
+  }
+  if (lower.includes('content') || lower.includes('write') || lower.includes('লেখা')) {
+    return { slug: 'content-writing', title: 'Content Writing & Copywriting', codePrefix: 'CW' };
+  }
+  if (lower.includes('slide') || lower.includes('presentation') || lower.includes('স্লাইড')) {
+    return { slug: 'presentation-slide-design', title: 'Presentation Slide Design', codePrefix: 'PS' };
+  }
+  if (lower.includes('ui') || lower.includes('ux') || lower.includes('figma')) {
+    return { slug: 'ux-ui-design', title: 'UX / UI Design', codePrefix: 'UI' };
+  }
+  if (lower.includes('ad') || lower.includes('campaign') || lower.includes('মার্কেটিং')) {
+    return { slug: 'ad-running', title: 'Ad Running & Campaign Setup', codePrefix: 'AD' };
+  }
+  return { slug: 'graphics-design', title: 'Graphics Design', codePrefix: 'GD' };
+};
 import {
   INITIAL_EMPLOYEES,
   INITIAL_OPERATIONAL_TASKS,
@@ -97,8 +128,14 @@ interface AppContextType {
   deleteFeedback: (id: string) => void;
 
   expertApplications: ExpertApplication[];
-  submitExpertApplication: (app: Omit<ExpertApplication, 'id' | 'createdAt'>) => void;
+  submitExpertApplication: (app: Omit<ExpertApplication, 'id' | 'createdAt' | 'status'>) => void;
+  updateExpertApplicationStatus: (id: string, newStatus: ExpertApplicationStatus) => void;
+  saveExpertOnboardingResponse: (applicationId: string, data: ExpertOnboardingData) => void;
   deleteExpertApplication: (id: string) => void;
+
+  // Dedicated Portfolio Management for specific expert
+  addExpertPortfolioItem: (expertCode: string, item: PortfolioItem) => void;
+  deleteExpertPortfolioItem: (expertCode: string, itemId: string) => void;
 
   // Notification Toast
   toasts: Toast[];
@@ -1284,14 +1321,172 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('Feedback record deleted', 'info');
   };
 
-  const submitExpertApplication = (appData: Omit<ExpertApplication, 'id' | 'createdAt'>) => {
+  const submitExpertApplication = (appData: Omit<ExpertApplication, 'id' | 'createdAt' | 'status'>) => {
     const newApp: ExpertApplication = {
       ...appData,
       id: `app_${Date.now()}`,
       createdAt: new Date().toISOString(),
-      status: 'New',
+      status: 'applied',
+      googleDriveAssetFolderUrl: GAENR_OFFICIAL_DRIVE_FOLDER_URL,
     };
     setExpertApplications((prev) => [newApp, ...prev]);
+    showToast('Application received! Status is set to Applied.', 'success');
+  };
+
+  const updateExpertApplicationStatus = (id: string, newStatus: ExpertApplicationStatus) => {
+    const targetApp = expertApplications.find((a) => a.id === id);
+    if (!targetApp) return;
+
+    if (newStatus === 'onboarded') {
+      let generatedCode = targetApp.convertedExpertCode;
+
+      if (!generatedCode || !freelancers.some((f) => f.code === generatedCode)) {
+        const catMeta = mapSkillToCategory(targetApp.otherSkill || targetApp.skill);
+        const matchingPrefix = freelancers.filter((f) => f.code.startsWith(catMeta.codePrefix));
+        let seq = matchingPrefix.length + 1;
+        generatedCode = `${catMeta.codePrefix}26${seq.toString().padStart(3, '0')}`;
+
+        while (freelancers.some((f) => f.code === generatedCode)) {
+          seq++;
+          generatedCode = `${catMeta.codePrefix}26${seq.toString().padStart(3, '0')}`;
+        }
+
+        const chosenAvatar =
+          targetApp.onboardingData?.avatarId ||
+          (targetApp.gender.toLowerCase().includes('female') ? 'avatar-youth-f1' : 'avatar-youth-m1');
+
+        const chosenStatement =
+          targetApp.onboardingData?.statement ||
+          `Verified Gaenr Expert in ${catMeta.title}. Specialized in professional deliverables and timely delivery.`;
+
+        const newProfile: FreelancerProfile = {
+          id: `fl_${Date.now()}`,
+          code: generatedCode,
+          name: targetApp.fullName,
+          gender: targetApp.gender.toLowerCase().includes('female') ? 'Female' : 'Male',
+          contactNumber: targetApp.whatsapp,
+          privateEmail: targetApp.email,
+          address: targetApp.otherAddress || targetApp.address,
+          category: catMeta.slug,
+          categoryTitle: catMeta.title,
+          avatarId: chosenAvatar,
+          rating: 5.0,
+          reviewsCount: 0,
+          completedProjects: 0,
+          statement: chosenStatement,
+          status: 'active',
+          isPublic: true,
+          satisfactionRate: { satisfied: 100, neutral: 0, unsatisfied: 0 },
+          reviews: [],
+          pricingTiers: targetApp.onboardingData?.pricingTiers || [
+            {
+              id: `tier_${Date.now()}`,
+              serviceName: 'Standard Project Deliverable',
+              price: targetApp.onboardingData?.pricingModel || '5,000 BDT',
+            },
+          ],
+          googleDriveFolderUrl: GAENR_OFFICIAL_DRIVE_FOLDER_URL,
+          portfolioItems: targetApp.portfolioUrl
+            ? [
+                {
+                  id: `port_${Date.now()}`,
+                  title: `${catMeta.title} Verified Showcase`,
+                  category: catMeta.slug,
+                  description: 'Verified deliverable reviewed during Gaenr application vetting.',
+                  tools: [catMeta.title],
+                  previewType: 'drive',
+                  accentColor: '#006eff',
+                  aspectRatio: '16:9',
+                  mediaUrl: targetApp.portfolioUrl,
+                },
+              ]
+            : [],
+        };
+
+        setFreelancers((prev) => {
+          const updated = [newProfile, ...prev];
+          try {
+            localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
+          } catch {}
+          return updated;
+        });
+
+        showToast(`🎉 Expert #${generatedCode} (${targetApp.fullName}) is now live on Gaenr!`, 'success');
+      }
+
+      setExpertApplications((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, status: 'onboarded', convertedExpertCode: generatedCode } : a))
+      );
+      return;
+    }
+
+    if (newStatus === 'approved') {
+      setExpertApplications((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, status: 'approved' } : a))
+      );
+      showToast(`Application approved! Onboarding link ready for ${targetApp.fullName}`, 'success');
+      return;
+    }
+
+    setExpertApplications((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
+    );
+    showToast(`Status updated to ${newStatus}`, 'info');
+  };
+
+  const saveExpertOnboardingResponse = (applicationId: string, data: ExpertOnboardingData) => {
+    setExpertApplications((prev) =>
+      prev.map((a) =>
+        a.id === applicationId
+          ? {
+              ...a,
+              onboardingData: {
+                ...data,
+                submittedAt: new Date().toISOString(),
+              },
+            }
+          : a
+      )
+    );
+    showToast('Onboarding preferences saved successfully!', 'success');
+  };
+
+  const addExpertPortfolioItem = (expertCode: string, item: PortfolioItem) => {
+    setFreelancers((prev) => {
+      const updated = prev.map((fl) => {
+        if (fl.code === expertCode) {
+          return {
+            ...fl,
+            portfolioItems: [item, ...(fl.portfolioItems || [])],
+          };
+        }
+        return fl;
+      });
+      try {
+        localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    showToast(`Deliverable "${item.title}" published to Expert #${expertCode}!`, 'success');
+  };
+
+  const deleteExpertPortfolioItem = (expertCode: string, itemId: string) => {
+    setFreelancers((prev) => {
+      const updated = prev.map((fl) => {
+        if (fl.code === expertCode) {
+          return {
+            ...fl,
+            portfolioItems: (fl.portfolioItems || []).filter((p) => p.id !== itemId),
+          };
+        }
+        return fl;
+      });
+      try {
+        localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    showToast('Portfolio item removed', 'info');
   };
 
   const deleteExpertApplication = (id: string) => {
@@ -1321,6 +1516,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toggleFreelancerVisibility,
         addExpertReview,
         confirmExpertDelivery,
+        addExpertPortfolioItem,
+        deleteExpertPortfolioItem,
         avatars,
         addAvatar,
         deleteAvatar,
@@ -1338,6 +1535,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteFeedback,
         expertApplications,
         submitExpertApplication,
+        updateExpertApplicationStatus,
+        saveExpertOnboardingResponse,
         deleteExpertApplication,
         toasts,
         showToast,

@@ -150,6 +150,7 @@ export interface FreelancerProfile {
   paymentDetails?: string;
   mediaType?: string;
   pricingTiers?: ExpertPricingTier[];
+  googleDriveFolderUrl?: string;
 }
 
 export interface ExpertPricingTier {
@@ -217,6 +218,17 @@ export interface FeedbackSubmission {
   status?: 'New' | 'Reviewed' | 'Archived';
 }
 
+export type ExpertApplicationStatus = 'applied' | 'approved' | 'onboarded' | 'rejected' | string;
+
+export interface ExpertOnboardingData {
+  pricingModel?: string; // e.g. Fixed per task, Hourly, Custom Tiers
+  pricingTiers?: ExpertPricingTier[];
+  avatarId?: string; // e.g. avatar-youth-m1 to avatar-youth-f5
+  statement?: string; // My Statement / Bio for client profile
+  submittedAt?: string;
+  notes?: string;
+}
+
 export interface ExpertApplication {
   id: string;
   fullName: string;
@@ -232,7 +244,10 @@ export interface ExpertApplication {
   experience: string;
   portfolioUrl: string;
   createdAt: string;
-  status?: 'New' | 'Reviewed' | 'Accepted' | 'Rejected';
+  status: ExpertApplicationStatus;
+  onboardingData?: ExpertOnboardingData;
+  convertedExpertCode?: string; // Code of generated expert profile (e.g. GD2603001)
+  googleDriveAssetFolderUrl?: string; // Connected Google Drive Asset Folder
 }
 
 // ==========================================

@@ -20,6 +20,8 @@ import { TestimonialsPage } from './pages/TestimonialsPage';
 import { FeedbackPage } from './pages/FeedbackPage';
 import { ClientReviewPage } from './pages/ClientReviewPage';
 import { JoinAsExpertPage } from './pages/JoinAsExpertPage';
+import { ExpertOnboardingPage } from './pages/ExpertOnboardingPage';
+import { ExpertPortfolioUploadPage } from './pages/ExpertPortfolioUploadPage';
 import { AboutUsPage } from './pages/AboutUsPage';
 import { ContactPage } from './pages/ContactPage';
 import { PrivacyPolicyPage } from './pages/policies/PrivacyPolicyPage';
@@ -109,6 +111,18 @@ const AppContent: React.FC = () => {
     if (cleanRoute.startsWith('/profile/')) {
       const code = cleanRoute.replace('/profile/', '');
       return <FreelancerProfilePage code={code} />;
+    }
+
+    // Expert Onboarding private route match: /expert-onboarding/:id
+    if (cleanRoute.startsWith('/expert-onboarding/')) {
+      const applicationId = cleanRoute.replace('/expert-onboarding/', '');
+      return <ExpertOnboardingPage applicationId={applicationId} />;
+    }
+
+    // Expert Portfolio Upload portal match: /expert-portfolio-upload/:expertCode
+    if (cleanRoute.startsWith('/expert-portfolio-upload/')) {
+      const expertCode = cleanRoute.replace('/expert-portfolio-upload/', '');
+      return <ExpertPortfolioUploadPage expertCode={expertCode} />;
     }
 
     // Client Review route match: /review/:expertCode
