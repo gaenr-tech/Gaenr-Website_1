@@ -12,7 +12,13 @@ function doPost(e) {
     var blob = Utilities.newBlob(decoded, data.mimeType || "application/octet-stream", data.fileName || "deliverable");
     
     var file = folder.createFile(blob);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    
+    // ফাইল শেয়ারিং ট্রাই-ক্যাচে রাখা হয়েছে যাতে ব্যক্তিগত/ওয়ার্কস্পেস ড্রাইভ অ্যাকাউন্টে এক্সেস এরর না দেয়
+    try {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (shareErr) {
+      // ড্রাইভ ফোল্ডার শেয়ারিং পারমিশন স্বয়ংক্রিয়ভাবে ইনহেরিট করে
+    }
     
     var fileId = file.getId();
     var viewUrl = "https://drive.google.com/file/d/" + fileId + "/view";
@@ -22,6 +28,7 @@ function doPost(e) {
     
     var output = {
       status: "success",
+      success: true,
       fileId: fileId,
       fileName: file.getName(),
       fileUrl: viewUrl,

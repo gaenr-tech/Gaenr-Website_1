@@ -39,6 +39,26 @@ export const getGoogleDriveDirectImageUrl = (driveUrlOrId: string): string => {
 };
 
 /**
+ * Fallback high-res thumbnail endpoint from Google Drive.
+ */
+export const getGoogleDriveFallbackThumbnailUrl = (driveUrlOrId: string): string => {
+  if (!driveUrlOrId) return '';
+  const fileId = extractGoogleDriveFileId(driveUrlOrId);
+  if (!fileId) return driveUrlOrId;
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`;
+};
+
+/**
+ * Fallback direct view/export URL from Google Drive.
+ */
+export const getGoogleDriveExportDownloadUrl = (driveUrlOrId: string): string => {
+  if (!driveUrlOrId) return '';
+  const fileId = extractGoogleDriveFileId(driveUrlOrId);
+  if (!fileId) return driveUrlOrId;
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+};
+
+/**
  * Generates a Google Drive preview embed URL that renders in <iframe> (documents, videos, slides).
  */
 export const getGoogleDriveEmbedPreviewUrl = (driveUrlOrId: string): string => {

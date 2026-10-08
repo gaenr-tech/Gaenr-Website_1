@@ -1469,7 +1469,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const addExpertPortfolioItem = (expertCode: string, item: PortfolioItem) => {
     setFreelancers((prev) => {
       const updated = prev.map((fl) => {
-        if (fl.code === expertCode) {
+        if (fl.code.toLowerCase() === expertCode.toLowerCase()) {
           return {
             ...fl,
             portfolioItems: [item, ...(fl.portfolioItems || [])],
@@ -1488,7 +1488,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const deleteExpertPortfolioItem = (expertCode: string, itemId: string) => {
     setFreelancers((prev) => {
       const updated = prev.map((fl) => {
-        if (fl.code === expertCode) {
+        if (fl.code.toLowerCase() === expertCode.toLowerCase()) {
           return {
             ...fl,
             portfolioItems: (fl.portfolioItems || []).filter((p) => p.id !== itemId),

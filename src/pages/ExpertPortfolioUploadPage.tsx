@@ -152,11 +152,13 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
 
     let finalMediaUrl = mediaPreview;
     let finalImageUrl: string | undefined = previewType === 'image' ? mediaPreview : undefined;
+    let externalDriveUrl: string | undefined = undefined;
 
     if (selectedFile) {
       try {
         const driveResult = await uploadFileToGoogleDrive(selectedFile, expert.code);
         if (driveResult.success) {
+          externalDriveUrl = driveResult.fileUrl;
           if (previewType === 'image' && driveResult.directImageUrl) {
             finalMediaUrl = driveResult.directImageUrl;
             finalImageUrl = driveResult.directImageUrl;
@@ -188,6 +190,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
       aspectRatio: aspectRatio === '9:16' ? '16:9' : (aspectRatio as '16:9' | '4:3' | '1:1'),
       mediaUrl: finalMediaUrl,
       imageUrl: finalImageUrl,
+      externalUrl: externalDriveUrl,
     };
 
     addExpertPortfolioItem(expert.code, newItem);

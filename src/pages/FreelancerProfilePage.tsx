@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useBranding } from '../context/BrandingContext';
 import { AvatarGraphic, getAvatarImageSrc, VerifiedBadge3D } from '../components/common/Avatars';
-import { getGoogleDriveDirectImageUrl } from '../utils/googleDriveUpload';
-import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink, Upload, Copy } from 'lucide-react';
+import {
+  getGoogleDriveDirectImageUrl,
+  getGoogleDriveFallbackThumbnailUrl,
+  getGoogleDriveExportDownloadUrl,
+  extractGoogleDriveFileId,
+} from '../utils/googleDriveUpload';
+import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink, Upload, Copy, Layers } from 'lucide-react';
 import { PortfolioItem } from '../types';
 
 const defaultPricingByCategory: Record<string, { serviceName: string; price: string }[]> = {
@@ -50,6 +55,7 @@ interface FreelancerProfilePageProps {
 
 // ── ZoomableImageCard ────────────────────────────────────────────────────────
 // Image preview on navy background with working +/- zoom buttons (phone & desktop)
+// Multi-tier CDN fallback: lh3 -> Drive thumbnail -> uc export view -> raw URL
 const ZoomableImageCard: React.FC<{
   src: string;
   alt: string;
@@ -59,11 +65,11 @@ const ZoomableImageCard: React.FC<{
   isExpanded?: boolean;
 }> = ({ src, alt, title, tools, externalUrl, isExpanded }) => {
   const [zoom, setZoom] = useState(1);
-  const [hasError, setHasError] = useState(false);
+  const [fallbackStep, setFallbackStep] = useState(0);
 
   useEffect(() => {
     setZoom(1);
-    setHasError(false);
+    setFallbackStep(0);
   }, [src]);
 
   const bump = (e: React.MouseEvent) => {
@@ -75,7 +81,29 @@ const ZoomableImageCard: React.FC<{
     setZoom((z) => Math.max(0.4, +(z - 0.25).toFixed(2)));
   };
 
-  const displaySrc = getGoogleDriveDirectImageUrl(src);
+  const isDrive = !!extractGoogleDriveFileId(src);
+
+  let currentSrc = src;
+  if (isDrive) {
+    if (fallbackStep === 0) {
+      currentSrc = getGoogleDriveDirectImageUrl(src);
+    } else if (fallbackStep === 1) {
+      currentSrc = getGoogleDriveFallbackThumbnailUrl(src);
+    } else if (fallbackStep === 2) {
+      currentSrc = getGoogleDriveExportDownloadUrl(src);
+    } else {
+      currentSrc = src;
+    }
+  }
+
+  const handleImageError = () => {
+    if (isDrive && fallbackStep < 3) {
+      setFallbackStep((prev) => prev + 1);
+    } else {
+      setFallbackStep(4);
+    }
+  };
+
   const showExternal = externalUrl && !externalUrl.includes('drive.google.com');
 
   return (
@@ -88,10 +116,10 @@ const ZoomableImageCard: React.FC<{
         className="relative w-full overflow-hidden flex items-center justify-center"
         style={{ aspectRatio: '16/9', background: '#0c182c' }}
       >
-        {!hasError ? (
+        {fallbackStep !== 4 ? (
           <img
-            key={displaySrc}
-            src={displaySrc}
+            key={`${currentSrc}-${fallbackStep}`}
+            src={currentSrc}
             alt={alt}
             style={{
               transform: `scale(${zoom})`,
@@ -102,7 +130,7 @@ const ZoomableImageCard: React.FC<{
               objectFit: 'contain',
               display: 'block',
             }}
-            onError={() => setHasError(true)}
+            onError={handleImageError}
           />
         ) : (
           <div className="flex flex-col items-center justify-center p-6 text-center text-slate-400 gap-2">
@@ -240,6 +268,64 @@ const ZoomableEmbedCard: React.FC<{
           </a>
         </div>
       </div>
+    </div>
+  );
+};
+
+// ── FullscreenImageRenderer ──────────────────────────────────────────────────
+// Dedicated high-performance fullscreen image view with multi-tier CDN fallback
+const FullscreenImageRenderer: React.FC<{
+  src: string;
+  title: string;
+  zoom: number;
+}> = ({ src, title, zoom }) => {
+  const [fallbackStep, setFallbackStep] = useState(0);
+  const isDrive = !!extractGoogleDriveFileId(src);
+
+  useEffect(() => {
+    setFallbackStep(0);
+  }, [src]);
+
+  let currentSrc = src;
+  if (isDrive) {
+    if (fallbackStep === 0) currentSrc = getGoogleDriveDirectImageUrl(src);
+    else if (fallbackStep === 1) currentSrc = getGoogleDriveFallbackThumbnailUrl(src);
+    else if (fallbackStep === 2) currentSrc = getGoogleDriveExportDownloadUrl(src);
+    else currentSrc = src;
+  }
+
+  const handleImageError = () => {
+    if (isDrive && fallbackStep < 3) {
+      setFallbackStep((prev) => prev + 1);
+    } else {
+      setFallbackStep(4);
+    }
+  };
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center overflow-auto p-2 sm:p-6">
+      {fallbackStep !== 4 ? (
+        <img
+          key={`fs-img-${currentSrc}-${fallbackStep}`}
+          src={currentSrc}
+          alt={title}
+          style={{
+            transform: `scale(${zoom})`,
+            transformOrigin: 'center center',
+            transition: 'transform 0.2s ease-out',
+            maxHeight: '76vh',
+            maxWidth: '85vw',
+            objectFit: 'contain',
+          }}
+          className="rounded-xl shadow-2xl select-none"
+          onError={handleImageError}
+        />
+      ) : (
+        <div className="flex flex-col items-center justify-center p-8 text-center text-slate-400 gap-2">
+          <Layers className="w-10 h-10 text-slate-500" />
+          <span className="text-sm font-semibold text-slate-300">{title}</span>
+        </div>
+      )}
     </div>
   );
 };
@@ -568,6 +654,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
       if (isImage) {
         return (
           <ZoomableImageCard
+            key={item.id || `${item.title}-${index}-${activeMedia}`}
             src={activeMedia}
             alt={item.title}
             title={item.title}
@@ -1458,10 +1545,13 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => setPortfolioIndex(idx)}
+                    onClick={() => {
+                      setPortfolioIndex(idx);
+                      setFsZoom(1);
+                    }}
                     title={`Slide to piece ${idx + 1}`}
                     className={`h-2 rounded-full transition-all cursor-pointer ${
-                      idx === portfolioIndex ? 'w-5 bg-[#006eff]' : 'w-2 bg-slate-200 hover:bg-slate-300'
+                      idx === validIndex ? 'w-5 bg-[#006eff]' : 'w-2 bg-slate-200 hover:bg-slate-300'
                     }`}
                   />
                 ))}
@@ -1724,24 +1814,12 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                   // ── Image ────────────────────────────────────────────────
                   const isImage = activeMedia.startsWith('data:image') || activeMedia.match(/\.(jpeg|jpg|gif|png|webp|svg)($|\?)/i) || item.previewType === 'image';
                   if (isImage) {
-                    const directImageSrc = getGoogleDriveDirectImageUrl(activeMedia);
                     return (
-                      <div className="relative w-full h-full flex items-center justify-center overflow-auto p-2 sm:p-6">
-                        <img
-                          key={`fs-img-${item.id || validIndex}-${directImageSrc}`}
-                          src={directImageSrc}
-                          alt={item.title}
-                          style={{
-                            transform: `scale(${fsZoom})`,
-                            transformOrigin: 'center center',
-                            transition: 'transform 0.2s ease-out',
-                            maxHeight: '82vh',
-                            maxWidth: '88vw',
-                            objectFit: 'contain',
-                          }}
-                          className="rounded-xl shadow-2xl select-none"
-                        />
-                      </div>
+                      <FullscreenImageRenderer
+                        src={activeMedia}
+                        title={item.title}
+                        zoom={fsZoom}
+                      />
                     );
                   }
                   // ── WordPress website ────────────────────────────────────
@@ -1809,6 +1887,36 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                 );
               })()}
             </div>
+          </div>
+
+          {/* Floating Prominent Zoom Dock for Fullscreen (+ / 100% / -) */}
+          <div className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 bg-slate-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setFsZoom((z) => Math.max(0.4, +(z - 0.2).toFixed(1)))}
+              disabled={fsZoom <= 0.4}
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center text-lg font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer active:scale-95 select-none"
+              title="Zoom out (− make smaller)"
+            >
+              −
+            </button>
+            <button
+              type="button"
+              onClick={() => setFsZoom(1)}
+              className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold text-white/90 hover:text-white hover:bg-white/10 transition-colors cursor-pointer select-none"
+              title="Reset zoom to 100%"
+            >
+              {Math.round(fsZoom * 100)}%
+            </button>
+            <button
+              type="button"
+              onClick={() => setFsZoom((z) => Math.min(3, +(z + 0.2).toFixed(1)))}
+              disabled={fsZoom >= 3}
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center text-lg font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer active:scale-95 select-none"
+              title="Zoom in (+ make larger)"
+            >
+              +
+            </button>
           </div>
 
           {/* Bottom Fullscreen Controls Bar */}
