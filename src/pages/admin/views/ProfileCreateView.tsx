@@ -24,6 +24,7 @@ import {
   Eye,
   Link as LinkIcon,
   Play,
+  Upload,
 } from 'lucide-react';
 
 import { CustomSelect, SelectOption } from '../../../components/common/CustomSelect';
@@ -71,6 +72,28 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
   const [paymentDetails, setPaymentDetails] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialPortfolio, setInitialPortfolio] = useState<InitialPortfolioInput[]>([]);
+  const deliverableFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDeliverableFileUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      const cleanTitle = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+      const formattedTitle = cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
+      setInitialPortfolio((prev) => [
+        ...prev,
+        {
+          id: `port-init-${Date.now()}`,
+          title: formattedTitle,
+          mediaUrl: dataUrl,
+          toolsInput: '',
+          description: `Deliverable uploaded for ${generatedCode}`,
+        },
+      ]);
+      showToast(`Deliverable file "${file.name}" attached successfully!`, 'success');
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Service Pricing Tiers
   const [pricingTiers, setPricingTiers] = useState<ExpertPricingTier[]>([
@@ -487,6 +510,17 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
         {/* Card 3: Initial Portfolio Deliverables / Work Samples (Optional) */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+          <input
+            ref={deliverableFileInputRef}
+            type="file"
+            accept="image/*,video/*,application/pdf"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleDeliverableFileUpload(file);
+            }}
+            className="hidden"
+          />
+
           <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <FolderKanban className="w-4 h-4 text-[#006eff]" />
@@ -494,37 +528,54 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
                 3. Portfolio Deliverables &amp; Work Samples (Optional)
               </h2>
             </div>
-            <button
-              type="button"
-              onClick={() =>
-                setInitialPortfolio([
-                  ...initialPortfolio,
-                  {
-                    id: `port-init-${Date.now()}`,
-                    title: '',
-                    mediaUrl: '',
-                    toolsInput: '',
-                    description: '',
-                  },
-                ])
-              }
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#006eff] rounded-xl text-xs font-bold transition-all cursor-pointer border border-blue-200/70 shadow-2xs active:scale-95 self-start sm:self-auto"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Deliverable Link</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => deliverableFileInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>Direct File Upload</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setInitialPortfolio([
+                    ...initialPortfolio,
+                    {
+                      id: `port-init-${Date.now()}`,
+                      title: '',
+                      mediaUrl: '',
+                      toolsInput: '',
+                      description: '',
+                    },
+                  ])
+                }
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#006eff] rounded-xl text-xs font-bold transition-all cursor-pointer border border-blue-200/70 shadow-2xs active:scale-95"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Link</span>
+              </button>
+            </div>
           </div>
 
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Attach project or deliverable links (Google Drive, Figma, Behance, GitHub, website, etc.) to showcase on the expert's profile.
-          </p>
+          {/* Info pill about dedicated upload portal */}
+          <div className="p-3 bg-blue-50/50 border border-blue-200/60 rounded-xl text-xs text-slate-600 flex items-start gap-2.5">
+            <Sparkles className="w-4 h-4 text-[#006eff] shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <span className="font-bold text-slate-900 block">Dedicated Creator Upload Portal</span>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Deliverables can be uploaded directly here or added anytime via the expert's dedicated Creator Upload Portal (<code className="font-mono text-[#006eff] bg-white px-1.5 py-0.5 rounded border border-blue-100">/expert-portfolio-upload/{generatedCode}</code>). No manual cloud drive folder setup is required.
+              </p>
+            </div>
+          </div>
 
           {initialPortfolio.length === 0 ? (
             <div className="p-8 border border-dashed border-slate-200 rounded-2xl text-center space-y-2 bg-slate-50/50">
               <FolderKanban className="w-8 h-8 text-slate-400 mx-auto" />
               <p className="text-xs font-semibold text-slate-700">No deliverables added yet</p>
               <p className="text-[11px] text-slate-400">
-                Click "+ Add Deliverable Link" above to add work links now, or upload them later via Portfolio Management.
+                Click "Direct File Upload" above to attach work files now, or upload them later via the Creator Portal.
               </p>
             </div>
           ) : (
@@ -592,13 +643,12 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
                     <div className="p-3.5 bg-blue-50/40 border border-blue-100 rounded-2xl space-y-3">
                       <div>
                         <label className="block text-[11px] font-bold text-slate-800 mb-1">
-                          Deliverable URL Link <span className="text-rose-500">*</span>
+                          Deliverable File / URL Link (Optional)
                         </label>
                         <div className="relative">
                           <input
                             type="text"
-                            required
-                            placeholder="e.g. Google Drive, Figma, Google Slides, YouTube, Loom, Canva, Live website URL"
+                            placeholder="File data or deliverable link (Google Drive, Figma, Canva, Web)"
                             value={item.mediaUrl}
                             onChange={(e) =>
                               setInitialPortfolio(

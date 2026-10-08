@@ -2,6 +2,7 @@ import React from 'react';
 
 interface AvatarProps {
   id?: string;
+  avatar?: CategoryAvatarMeta | any;
   size?: number | string;
   className?: string;
   title?: string;
@@ -149,19 +150,21 @@ export const getAvatarDataUri = (avatarId?: string): string => {
  */
 export const AvatarGraphic: React.FC<AvatarProps> = ({
   id,
+  avatar,
   size = 48,
   className = '',
   title,
   shape = 'circle',
 }) => {
+  const effectiveId = id || (avatar && typeof avatar === 'object' ? avatar.id || avatar.url : avatar);
   const pixelSize = typeof size === 'number' ? `${size}px` : size;
   const shapeClass = shape === 'square' ? 'rounded-none' : shape === 'rounded' ? 'rounded-xl' : 'rounded-full';
 
   // Direct data URLs or remote photos
-  if (id && (id.startsWith('data:image/') || id.startsWith('http://') || id.startsWith('https://') || id.startsWith('/images/'))) {
+  if (effectiveId && (effectiveId.startsWith('data:image/') || effectiveId.startsWith('http://') || effectiveId.startsWith('https://') || effectiveId.startsWith('/images/'))) {
     return (
       <img
-        src={id}
+        src={effectiveId}
         alt={title || 'Expert Avatar'}
         style={{ width: pixelSize, height: pixelSize }}
         className={`block aspect-square ${shapeClass} object-cover shrink-0 select-none ${className}`}
@@ -171,7 +174,7 @@ export const AvatarGraphic: React.FC<AvatarProps> = ({
   }
 
   // Exact ID match or name match
-  const normalizedId = (id || '').trim().toLowerCase();
+  const normalizedId = (effectiveId || '').trim().toLowerCase();
   const exact = RAW_AVATAR_SPECS.find(
     (s) => s.id.toLowerCase() === normalizedId || s.name.toLowerCase() === normalizedId
   );
@@ -220,6 +223,34 @@ export const AvatarGraphic: React.FC<AvatarProps> = ({
           img.src = spec.fallbackUrl;
         }
       }}
+      loading="lazy"
+    />
+  );
+};
+
+export interface VerifiedBadge3DProps {
+  size?: number | string;
+  className?: string;
+  title?: string;
+}
+
+/**
+ * 3D Glowing Blue Scalloped Rosette Verified Badge
+ * Matches Gaenr high-aesthetic identity ("জলজল করা 3D ভেরিফাইড ব্যাজ")
+ */
+export const VerifiedBadge3D: React.FC<VerifiedBadge3DProps> = ({
+  size = 20,
+  className = '',
+  title = 'Gaenr Verified Expert',
+}) => {
+  const pixelSize = typeof size === 'number' ? `${size}px` : size;
+  return (
+    <img
+      src="/images/verified-badge-3d.png"
+      alt={title}
+      title={title}
+      style={{ width: pixelSize, height: pixelSize }}
+      className={`inline-block aspect-square object-contain shrink-0 select-none drop-shadow-[0_0_10px_rgba(59,130,246,0.85)] filter ${className}`}
       loading="lazy"
     />
   );

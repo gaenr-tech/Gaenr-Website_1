@@ -1,8 +1,8 @@
 import React, { forwardRef } from 'react';
 import { FreelancerProfile } from '../../types';
-import { AvatarGraphic, getAvatarImageSrc } from './Avatars';
+import { AvatarGraphic, getAvatarImageSrc, VerifiedBadge3D } from './Avatars';
 import { GaenrLogo } from './GaenrLogo';
-import { Star, CheckCircle2 } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 interface ExpertIdCardProps {
   freelancer: FreelancerProfile;
@@ -61,12 +61,9 @@ export const ExpertIdCard = forwardRef<HTMLDivElement, ExpertIdCardProps>(
                 />
               </div>
             </div>
-            {/* Verified Badge on avatar */}
-            <div
-              className="absolute bottom-0 right-0 p-1.5 rounded-full bg-[#006eff] text-white border-2 border-slate-900 shadow-md"
-              title="Verified Expert"
-            >
-              <CheckCircle2 className="w-4 h-4 text-white" />
+            {/* 3D Glowing Verified Badge on avatar */}
+            <div className="absolute -bottom-1 -right-1 z-10" title="Verified Expert">
+              <VerifiedBadge3D size={28} className="drop-shadow-[0_0_8px_rgba(0,110,255,0.85)]" />
             </div>
           </div>
 

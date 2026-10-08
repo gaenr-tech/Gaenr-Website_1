@@ -1388,6 +1388,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           isPublic: true,
           satisfactionRate: { satisfied: 100, neutral: 0, unsatisfied: 0 },
           reviews: [],
+          paymentMethod: targetApp.onboardingData?.payoutMethod === 'bank' ? 'Bank Transfer' : 'MFS',
+          paymentDetails:
+            targetApp.onboardingData?.payoutMethod === 'bank'
+              ? `${targetApp.onboardingData.bankName || 'Bank'} | A/C: ${targetApp.onboardingData.accountNumber || ''} | Holder: ${targetApp.onboardingData.accountHolderName || ''} | Branch: ${targetApp.onboardingData.branchName || ''} ${targetApp.onboardingData.routingNumber ? `(${targetApp.onboardingData.routingNumber})` : ''}`
+              : `${targetApp.onboardingData?.payoutMethod || 'MFS'}: ${targetApp.onboardingData?.mfsNumber || targetApp.whatsapp}`,
           pricingTiers: targetApp.onboardingData?.pricingTiers || [
             {
               id: `tier_${Date.now()}`,

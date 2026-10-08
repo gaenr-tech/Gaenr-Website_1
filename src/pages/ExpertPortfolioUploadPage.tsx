@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { useBranding } from '../context/BrandingContext';
 import { GaenrLogo } from '../components/common/GaenrLogo';
-import { RAW_AVATAR_SPECS, AvatarGraphic } from '../components/common/Avatars';
+import { RAW_AVATAR_SPECS, AvatarGraphic, VerifiedBadge3D } from '../components/common/Avatars';
 import {
   PortfolioItem,
   DeliverableType,
@@ -243,46 +243,50 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
         {/* Creator Workspace Header Profile Card */}
         <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-[#006eff] to-cyan-400 p-[2.5px] shrink-0 shadow-md">
-              <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
-                <AvatarGraphic avatar={avatarSpec} />
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#006eff] to-cyan-400 p-[2.5px] shrink-0 shadow-lg shadow-blue-500/20">
+              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-slate-900">
+                <AvatarGraphic
+                  id={expert.avatarId}
+                  size="100%"
+                  className="w-full h-full object-cover rounded-full"
+                  title={expert.code}
+                />
               </div>
-              <span className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-emerald-500 ring-2 ring-white flex items-center justify-center text-white text-[9px] font-bold">
-                ✓
-              </span>
+              <div className="absolute -bottom-1 -right-1 z-10" title="Verified Expert">
+                <VerifiedBadge3D size={26} className="drop-shadow-[0_0_8px_rgba(0,110,255,0.85)]" />
+              </div>
             </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-lg sm:text-xl font-bold text-slate-900 font-mono">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-mono">
                   {expert.code}
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-[#006eff] text-[11px] font-bold border border-blue-200">
+                <div className="flex items-center gap-1.5">
+                  <VerifiedBadge3D size={18} />
+                  <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+                    Verified Creator
+                  </span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
                   {expert.categoryTitle}
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-mono font-bold border border-emerald-200">
-                  ACTIVE CREATOR
                 </span>
               </div>
               <p className="text-xs text-slate-500 max-w-xl leading-relaxed">
-                Welcome to your private creator workspace. Upload your work files directly to build your verified portfolio. Deliverables are backed up to the cloud and published immediately to your public client profile.
+                Welcome to your creator workspace. Upload your project deliverables directly below. Deliverables are instantly verified and showcased on your live client profile.
               </p>
             </div>
           </div>
 
-          {/* Cloud Storage Vault Synced Badge (Private, No Raw Links) */}
-          <div className="p-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50/70 border border-emerald-200/90 flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold text-emerald-950">Cloud Vault Storage</span>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
-              <div className="text-[10px] text-emerald-700 font-mono">
-                Encrypted &amp; Live Synced
-              </div>
-            </div>
+          {/* Quick Profile Actions / Live Status (Clean, no cloud vault mention) */}
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => navigate(`/profile/${expert.code}`)}
+              className="px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95"
+            >
+              <span>View Public Profile</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
 

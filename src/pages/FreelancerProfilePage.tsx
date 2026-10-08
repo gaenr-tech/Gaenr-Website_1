@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useBranding } from '../context/BrandingContext';
-import { AvatarGraphic, getAvatarImageSrc } from '../components/common/Avatars';
+import { AvatarGraphic, getAvatarImageSrc, VerifiedBadge3D } from '../components/common/Avatars';
 import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink, Upload, Copy } from 'lucide-react';
 import { PortfolioItem } from '../types';
 
@@ -1024,23 +1024,31 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
         {/* Profile Hero Block: Centered Picture, ID, Category */}
         <div className="flex flex-col items-center justify-center space-y-2.5 pt-1">
           {/* Centered Avatar: Circular boundary filled with portrait */}
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#006eff] to-cyan-400 p-[2.5px] shadow-lg shadow-blue-500/15 overflow-hidden">
-            <div className="w-full h-full rounded-full bg-[#eef2f6] overflow-hidden flex items-center justify-center">
-              <AvatarGraphic
-                id={expert.avatarId}
-                size="100%"
-                className="w-full h-full rounded-full"
-                shape="circle"
-                title={expert.code}
-              />
+          <div className="relative">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#006eff] to-cyan-400 p-[2.5px] shadow-lg shadow-blue-500/15 overflow-hidden">
+              <div className="w-full h-full rounded-full bg-[#eef2f6] overflow-hidden flex items-center justify-center">
+                <AvatarGraphic
+                  id={expert.avatarId}
+                  size="100%"
+                  className="w-full h-full rounded-full"
+                  shape="circle"
+                  title={expert.code}
+                />
+              </div>
+            </div>
+            <div className="absolute -bottom-1 -right-1 z-10" title="Verified Expert">
+              <VerifiedBadge3D size={26} className="drop-shadow-[0_0_8px_rgba(0,110,255,0.85)]" />
             </div>
           </div>
 
           {/* ID Code, Role & Star Rating */}
           <div className="space-y-1">
-            <h1 className="text-xl sm:text-2xl font-mono font-extrabold text-slate-900 tracking-tight leading-none">
-              {expert.code}
-            </h1>
+            <div className="flex items-center justify-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-mono font-extrabold text-slate-900 tracking-tight leading-none">
+                {expert.code}
+              </h1>
+              <VerifiedBadge3D size={20} title="Gaenr Verified Expert" />
+            </div>
             <div className="flex items-center justify-center gap-2 pt-0.5">
               <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-50 text-[#006eff] font-semibold text-[11px] sm:text-xs border border-blue-100">
                 {expert.categoryTitle}

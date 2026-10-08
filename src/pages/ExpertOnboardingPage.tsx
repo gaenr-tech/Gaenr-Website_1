@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { useBranding } from '../context/BrandingContext';
 import { GaenrLogo } from '../components/common/GaenrLogo';
-import { RAW_AVATAR_SPECS, AvatarGraphic } from '../components/common/Avatars';
+import { RAW_AVATAR_SPECS, AvatarGraphic, VerifiedBadge3D } from '../components/common/Avatars';
 import { ExpertPricingTier } from '../types';
 import {
   CheckCircle,
@@ -17,6 +17,9 @@ import {
   Plus,
   Trash2,
   Lock,
+  Building2,
+  Smartphone,
+  Wallet,
 } from 'lucide-react';
 
 interface ExpertOnboardingPageProps {
@@ -62,6 +65,21 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       `Dedicated Gaenr Expert specializing in ${
         application?.otherSkill || application?.skill?.split('/')[0].trim() || 'creative digital work'
       }. Committed to delivering exceptional quality with verified precision.`
+  );
+
+  // Payout & Banking Details
+  const [payoutMethod, setPayoutMethod] = useState<'bank' | 'bkash' | 'nagad'>(
+    application?.onboardingData?.payoutMethod || 'bank'
+  );
+  const [bankName, setBankName] = useState(application?.onboardingData?.bankName || '');
+  const [accountHolderName, setAccountHolderName] = useState(
+    application?.onboardingData?.accountHolderName || application?.fullName || ''
+  );
+  const [accountNumber, setAccountNumber] = useState(application?.onboardingData?.accountNumber || '');
+  const [branchName, setBranchName] = useState(application?.onboardingData?.branchName || '');
+  const [routingNumber, setRoutingNumber] = useState(application?.onboardingData?.routingNumber || '');
+  const [mfsNumber, setMfsNumber] = useState(
+    application?.onboardingData?.mfsNumber || application?.whatsapp || ''
   );
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -124,15 +142,32 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       return;
     }
 
+    if (payoutMethod === 'bank' && (!bankName.trim() || !accountNumber.trim())) {
+      showToast('Please provide your Bank Name and Account Number.', 'error');
+      return;
+    }
+
+    if ((payoutMethod === 'bkash' || payoutMethod === 'nagad') && !mfsNumber.trim()) {
+      showToast(`Please enter your ${payoutMethod === 'bkash' ? 'bKash' : 'Nagad'} personal number.`, 'error');
+      return;
+    }
+
     saveExpertOnboardingResponse(application.id, {
       pricingModel,
       pricingTiers,
       avatarId: selectedAvatarId,
       statement: statement.trim(),
+      payoutMethod,
+      bankName: bankName.trim(),
+      accountHolderName: accountHolderName.trim(),
+      accountNumber: accountNumber.trim(),
+      branchName: branchName.trim(),
+      routingNumber: routingNumber.trim(),
+      mfsNumber: mfsNumber.trim(),
     });
 
     setIsSubmitted(true);
-    showToast('Onboarding profile details saved successfully!', 'success');
+    showToast('Onboarding profile & payout details saved successfully!', 'success');
   };
 
   const skillTitle = application.otherSkill || application.skill.split('/')[0].trim();
@@ -152,6 +187,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
           </div>
 
           <div className="flex items-center gap-2">
+            <VerifiedBadge3D size={20} />
             <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/60 font-semibold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Verified Applicant
@@ -161,26 +197,29 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       </header>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-8">
-        {/* Welcome Card */}
+        {/* Welcome Card - Official Selection Notice */}
         <div className="bg-gradient-to-br from-[#0c182c] to-[#050d1a] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden mb-8 border border-slate-800">
           <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
                 <Sparkles className="w-3.5 h-3.5 text-blue-300" />
-                <span>Gaenr Expert Vetting &amp; Profile Setup</span>
+                <span>Gaenr Expert Selection &amp; Profile Setup</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Welcome, {application.fullName}!
+                Congratulations, {application.fullName}!
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-                Congratulations on advancing in the Gaenr vetting process. Please configure your public profile credentials below. These details will be showcased to clients upon activation.
+                You have been officially selected as a Gaenr Expert! Please complete your 3D youth avatar selection, pricing model, bio statement, and bank payout details below to activate your verified creator profile.
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs text-xs space-y-1.5 shrink-0 min-w-[220px]">
-              <div className="text-[10px] text-slate-400 uppercase font-mono font-bold">Applicant Details</div>
+              <div className="text-[10px] text-slate-400 uppercase font-mono font-bold flex items-center justify-between">
+                <span>Selected Candidate</span>
+                <span className="text-emerald-400 font-bold">APPROVED</span>
+              </div>
               <div className="font-bold text-white text-sm">{application.fullName}</div>
               <div className="text-blue-300 font-semibold">{skillTitle}</div>
               <div className="text-slate-400 text-[11px] truncate">{application.email}</div>
@@ -200,27 +239,39 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                 Onboarding Details Saved Successfully!
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Your avatar, pricing structure, and statement have been attached to your Gaenr application. Gaenr Operations is finalizing your profile verification.
+                Your 3D avatar, pricing structure, bio statement, and payout account have been linked to your Gaenr Expert record. Gaenr Operations is finalizing your profile activation.
               </p>
             </div>
 
             {/* Summary Card */}
             <div className="max-w-md mx-auto p-5 rounded-2xl bg-slate-50 border border-slate-200/80 text-left space-y-4">
               <div className="flex items-center gap-3 pb-3 border-b border-slate-200/70">
-                <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-200 border border-slate-300 shrink-0">
-                  <AvatarGraphic avatarId={selectedAvatarId} className="w-full h-full object-cover" />
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-900 border border-slate-300 shrink-0 relative">
+                  <AvatarGraphic id={selectedAvatarId} size="100%" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Chosen Avatar</span>
-                  <span className="font-bold text-slate-900 text-xs">
-                    {RAW_AVATAR_SPECS.find((a) => a.id === selectedAvatarId)?.name || 'Custom Avatar'}
-                  </span>
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Selected Avatar</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-slate-900 text-xs">
+                      {RAW_AVATAR_SPECS.find((a) => a.id === selectedAvatarId)?.name || 'Custom Avatar'}
+                    </span>
+                    <VerifiedBadge3D size={16} />
+                  </div>
                 </div>
               </div>
 
               <div>
                 <span className="text-[10px] text-slate-400 uppercase font-mono block">Pricing Model</span>
                 <span className="font-bold text-slate-800 text-xs">{pricingModel}</span>
+              </div>
+
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-mono block">Payout Method</span>
+                <span className="font-bold text-slate-800 text-xs uppercase">
+                  {payoutMethod === 'bank'
+                    ? `${bankName || 'Bank'} (${accountNumber ? `•••• ${accountNumber.slice(-4)}` : 'Active'})`
+                    : `${payoutMethod} (${mfsNumber})`}
+                </span>
               </div>
 
               <div>
@@ -273,8 +324,8 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                           : 'border-slate-200 hover:border-blue-200 bg-white hover:bg-slate-50'
                       }`}
                     >
-                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-2xs group-hover:scale-105 transition-transform">
-                        <AvatarGraphic avatarId={avatar.id} className="w-full h-full object-cover" />
+                      <div className="w-16 h-16 rounded-full overflow-hidden bg-slate-900 border border-slate-200/80 shadow-2xs group-hover:scale-105 transition-transform flex items-center justify-center">
+                        <AvatarGraphic id={avatar.id} size="100%" className="w-full h-full object-cover" />
                       </div>
                       <div className="text-xs font-bold text-slate-900">{avatar.name}</div>
                       <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
@@ -282,8 +333,8 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                       </span>
 
                       {isSelected && (
-                        <div className="absolute top-2 right-2 w-5 h-5 bg-[#006eff] text-white rounded-full flex items-center justify-center shadow-xs">
-                          <CheckCircle className="w-3.5 h-3.5" />
+                        <div className="absolute top-2 right-2">
+                          <VerifiedBadge3D size={22} className="drop-shadow-sm" />
                         </div>
                       )}
                     </button>
@@ -402,6 +453,160 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                   <span>This bio will be proudly highlighted on your official Gaenr Profile page.</span>
                   <span>{statement.length} characters</span>
                 </div>
+              </div>
+            </section>
+
+            {/* Step 4: Bank & Payout Details (Secure Freelancer Earnings) */}
+            <section className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] font-bold text-xs flex items-center justify-center font-mono">
+                  4
+                </span>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                    <span>Bank &amp; Payment Payout Details</span>
+                    <Lock className="w-4 h-4 text-emerald-600" />
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Provide your preferred payout account to receive direct client project earnings and milestone fees with 0% platform deductions.
+                  </p>
+                </div>
+              </div>
+
+              {/* Method Selection Tabs */}
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPayoutMethod('bank')}
+                  className={`p-3.5 rounded-2xl border-2 flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
+                    payoutMethod === 'bank'
+                      ? 'border-[#006eff] bg-blue-50/60 text-[#006eff] font-bold shadow-xs'
+                      : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                  }`}
+                >
+                  <Building2 className="w-5 h-5" />
+                  <span className="text-xs font-bold">Bank Account</span>
+                  <span className="text-[10px] text-slate-400 font-mono">EFT / NPSB / RTGS</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPayoutMethod('bkash')}
+                  className={`p-3.5 rounded-2xl border-2 flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
+                    payoutMethod === 'bkash'
+                      ? 'border-[#006eff] bg-blue-50/60 text-[#006eff] font-bold shadow-xs'
+                      : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                  }`}
+                >
+                  <Smartphone className="w-5 h-5 text-rose-500" />
+                  <span className="text-xs font-bold">bKash</span>
+                  <span className="text-[10px] text-slate-400 font-mono">Personal Account</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPayoutMethod('nagad')}
+                  className={`p-3.5 rounded-2xl border-2 flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
+                    payoutMethod === 'nagad'
+                      ? 'border-[#006eff] bg-blue-50/60 text-[#006eff] font-bold shadow-xs'
+                      : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                  }`}
+                >
+                  <Wallet className="w-5 h-5 text-amber-500" />
+                  <span className="text-xs font-bold">Nagad</span>
+                  <span className="text-[10px] text-slate-400 font-mono">Personal Account</span>
+                </button>
+              </div>
+
+              {/* Conditional Inputs */}
+              {payoutMethod === 'bank' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Bank Name <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      placeholder="e.g. Dutch-Bangla Bank, BRAC Bank, City Bank"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-[#006eff]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Account Holder Name <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={accountHolderName}
+                      onChange={(e) => setAccountHolderName(e.target.value)}
+                      placeholder="Exact name as in bank record"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-[#006eff]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Account Number <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                      placeholder="e.g. 1201010023456"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#006eff]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      Branch Name &amp; Routing Number
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        value={branchName}
+                        onChange={(e) => setBranchName(e.target.value)}
+                        placeholder="Branch (e.g. Gulshan)"
+                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-[#006eff]"
+                      />
+                      <input
+                        type="text"
+                        value={routingNumber}
+                        onChange={(e) => setRoutingNumber(e.target.value)}
+                        placeholder="Routing No. (Optional)"
+                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#006eff]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="pt-1 space-y-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      {payoutMethod === 'bkash' ? 'bKash' : 'Nagad'} Personal Mobile Number <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      value={mfsNumber}
+                      onChange={(e) => setMfsNumber(e.target.value)}
+                      placeholder="01XXXXXXXXX"
+                      className="w-full max-w-md px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#006eff]"
+                    />
+                    <span className="text-[11px] text-slate-400 mt-1 block">
+                      Must be a personal wallet registered under your verified NID.
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5 text-slate-500 text-[11px]">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>
+                  Payout details are securely encrypted and accessed only by Gaenr Finance for processing your project payments.
+                </span>
               </div>
             </section>
 

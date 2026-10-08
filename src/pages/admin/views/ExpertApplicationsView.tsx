@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ExpertApplication, ExpertApplicationStatus } from '../../../types';
-import { RAW_AVATAR_SPECS, AvatarGraphic } from '../../../components/common/Avatars';
+import { RAW_AVATAR_SPECS, AvatarGraphic, VerifiedBadge3D } from '../../../components/common/Avatars';
 import {
   Users,
   Search,
@@ -79,6 +79,39 @@ export const ExpertApplicationsView: React.FC<ExpertApplicationsViewProps> = ({
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     showToast(`${label} copied to clipboard`, 'success');
+    setTimeout(() => setCopiedId(null), 2500);
+  };
+
+  const handleCopyWelcomeEmail = (app: ExpertApplication) => {
+    const onboardingUrl = `${window.location.origin}/expert-onboarding/${app.id}`;
+    const skillName = app.otherSkill || app.skill.split('/')[0].trim();
+    const emailBody = `Subject: Congratulations! You have been selected as a Gaenr Expert
+
+Dear ${app.fullName},
+
+Congratulations! We are pleased to inform you that following the review of your portfolio and experience, you have been officially selected to join Gaenr as a Verified Expert in ${skillName}.
+
+To activate your verified creator profile, choose your official 3D Youth Avatar, and submit your payout bank/MFS account details, please complete your private onboarding setup using your secure invitation link below:
+
+👉 Complete Your Onboarding: ${onboardingUrl}
+
+During onboarding, you will:
+1. Select your official 3D Youth Avatar identity
+2. Set your deliverable pricing packages
+3. Provide your professional bio statement
+4. Enter your secure Bank / bKash / Nagad payout account (direct 0% commission payouts)
+
+Once submitted, your live creator profile and deliverable upload portal will be activated immediately.
+
+Welcome to the Gaenr family!
+
+Warm regards,
+Gaenr Operations & Talent Acquisition Team
+https://gaenr.com`;
+
+    navigator.clipboard.writeText(emailBody);
+    setCopiedId(`email-${app.id}`);
+    showToast('Official Welcome & Selection Email copied to clipboard!', 'success');
     setTimeout(() => setCopiedId(null), 2500);
   };
 
@@ -640,29 +673,30 @@ export const ExpertApplicationsView: React.FC<ExpertApplicationsViewProps> = ({
                     {/* Selected Avatar */}
                     {selectedApp.onboardingData.avatarId && (
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 p-1 shrink-0">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-900 border border-slate-200 shrink-0 relative flex items-center justify-center">
                           <AvatarGraphic
-                            avatar={
-                              RAW_AVATAR_SPECS.find(
-                                (a) => a.id === selectedApp.onboardingData?.avatarId
-                              ) || RAW_AVATAR_SPECS[0]
-                            }
+                            id={selectedApp.onboardingData?.avatarId}
+                            size="100%"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                         <div>
                           <span className="text-[10px] text-slate-400 font-mono uppercase block">
                             Selected Avatar Identity
                           </span>
-                          <span className="font-bold text-slate-900">
-                            {
-                              RAW_AVATAR_SPECS.find(
-                                (a) => a.id === selectedApp.onboardingData?.avatarId
-                              )?.name
-                            }{' '}
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-slate-900">
+                              {
+                                RAW_AVATAR_SPECS.find(
+                                  (a) => a.id === selectedApp.onboardingData?.avatarId
+                                )?.name
+                              }
+                            </span>
+                            <VerifiedBadge3D size={18} />
                             <span className="text-slate-400 font-mono text-xs">
                               ({selectedApp.onboardingData.avatarId})
                             </span>
-                          </span>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -711,26 +745,82 @@ export const ExpertApplicationsView: React.FC<ExpertApplicationsViewProps> = ({
                         </div>
                       </div>
                     )}
+
+                    {/* Bank & Payout Information */}
+                    {selectedApp.onboardingData.payoutMethod && (
+                      <div className="pt-2 border-t border-slate-200/80">
+                        <span className="text-[10px] text-slate-400 font-mono uppercase block mb-1.5">
+                          Bank &amp; Payment Payout Details
+                        </span>
+                        <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs space-y-1.5">
+                          <div className="flex items-center justify-between font-bold pb-1 border-b border-slate-100">
+                            <span className="uppercase text-slate-500">Method</span>
+                            <span className="text-[#006eff] uppercase font-mono font-bold">
+                              {selectedApp.onboardingData.payoutMethod === 'bank' ? 'Bank Transfer' : selectedApp.onboardingData.payoutMethod}
+                            </span>
+                          </div>
+                          {selectedApp.onboardingData.payoutMethod === 'bank' ? (
+                            <>
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-500">Bank Name:</span>
+                                <span className="font-semibold text-slate-800">{selectedApp.onboardingData.bankName}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-500">Account Holder:</span>
+                                <span className="font-semibold text-slate-800">{selectedApp.onboardingData.accountHolderName}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-500">Account Number:</span>
+                                <span className="font-mono font-bold text-slate-900">{selectedApp.onboardingData.accountNumber}</span>
+                              </div>
+                              {(selectedApp.onboardingData.branchName || selectedApp.onboardingData.routingNumber) && (
+                                <div className="flex items-center justify-between text-[11px] text-slate-500">
+                                  <span>Branch / Routing:</span>
+                                  <span className="font-mono">
+                                    {selectedApp.onboardingData.branchName || ''} {selectedApp.onboardingData.routingNumber ? `(${selectedApp.onboardingData.routingNumber})` : ''}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <span className="text-slate-500">Personal Mobile No:</span>
+                              <span className="font-mono font-bold text-slate-900">{selectedApp.onboardingData.mfsNumber}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 text-center space-y-2">
+                  <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 text-center space-y-2.5">
                     <p className="text-xs text-amber-800">
                       The applicant has not yet filled out their onboarding questionnaire.
                     </p>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleCopyLink(
-                          `${window.location.origin}/expert-onboarding/${selectedApp.id}`,
-                          `modal-${selectedApp.id}`,
-                          'Onboarding Link'
-                        )
-                      }
-                      className="px-3 py-1.5 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Copy className="w-3 h-3" />
-                      <span>Copy Onboarding Link for Candidate</span>
-                    </button>
+                    <div className="flex items-center justify-center gap-2 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => handleCopyWelcomeEmail(selectedApp)}
+                        className="px-3.5 py-1.5 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>Copy Welcome &amp; Selection Email</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleCopyLink(
+                            `${window.location.origin}/expert-onboarding/${selectedApp.id}`,
+                            `modal-${selectedApp.id}`,
+                            'Onboarding Link'
+                          )
+                        }
+                        className="px-3 py-1.5 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Copy className="w-3 h-3" />
+                        <span>Copy Link Only</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
