@@ -22,6 +22,8 @@ import {
   MessageCircle,
   RotateCcw,
   Bot,
+  Mic,
+  MicOff,
 } from 'lucide-react';
 
 const SUGGESTIONS_BN = [
@@ -61,6 +63,10 @@ export const GaenrChatbot: React.FC = () => {
   // Dynamic language state: starts in English, automatically adapts to user's query
   const [language, setLanguage] = useState<ChatLanguage>('en');
 
+  // Speech-to-text / Voice Command state
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
   // Interactive step-by-step task flow state
   const [taskFlow, setTaskFlow] = useState<InChatTaskState>({
     active: false,
@@ -80,6 +86,17 @@ export const GaenrChatbot: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const apiKey = getActiveGeminiApiKey();
+
+  // Clean up speech recognition on unmount
+  useEffect(() => {
+    return () => {
+      try {
+        if (recognitionRef.current) {
+          recognitionRef.current.stop();
+        }
+      } catch {}
+    };
+  }, []);
 
   // Auto-shrink back to compact circle when clicking outside the chat container
   useEffect(() => {
@@ -125,7 +142,7 @@ export const GaenrChatbot: React.FC = () => {
     actions: [
       {
         label: lang === 'en' ? 'Assign a Task' : 'টাস্ক দিন',
-        actionType: 'startInChatTask',
+        actionType: 'promptTaskOptions',
       },
       {
         label: lang === 'en' ? 'Explore Services' : 'সার্ভিসসমূহ',
@@ -162,6 +179,12 @@ export const GaenrChatbot: React.FC = () => {
 
   // Handle resetting the chat cleanly
   const handleResetChat = () => {
+    if (isListening) {
+      try {
+        recognitionRef.current?.stop();
+      } catch {}
+      setIsListening(false);
+    }
     setTaskFlow({
       active: false,
       step: 'idle',
@@ -175,6 +198,79 @@ export const GaenrChatbot: React.FC = () => {
     });
     setMessages([getInitialMessage(language)]);
     showToast('Started new conversation', 'info');
+  };
+
+  /**
+   * Toggle Voice Command (Speech Recognition)
+   * Converts voice to text live; when turned off or paused, the writing remains in input!
+   */
+  const handleToggleVoiceInput = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      showToast(
+        language === 'bn'
+          ? 'আপনার ব্রাউজারে স্পিচ রিকগনিশন সাপোর্ট নেই। গুগল ক্রোম বা এজ ব্যবহার করুন।'
+          : 'Speech recognition is not supported in this browser. Please use Chrome or Edge.',
+        'info'
+      );
+      return;
+    }
+
+    if (isListening) {
+      // User turned off voice command -> stop listening, transcription is in input field
+      try {
+        recognitionRef.current?.stop();
+      } catch {}
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = language === 'bn' ? 'bn-BD' : 'en-US';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event: any) => {
+        let transcript = '';
+        for (let i = 0; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (transcript.trim()) {
+          setInputValue(transcript);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.warn('Speech recognition error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          showToast(
+            language === 'bn'
+              ? 'মাইক্রোফোন পারমিশন প্রয়োজন। দয়া করে ব্রাউজারে পারমিশন দিন।'
+              : 'Microphone permission denied. Please allow microphone access.',
+            'error'
+          );
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error('Failed to start speech recognition:', err);
+      setIsListening(false);
+    }
   };
 
   /**
@@ -324,7 +420,7 @@ ${taskData.description.trim()}`;
       setTaskFlow((prev) => ({ ...prev, fullName, step: 'contact' }));
       return {
         text: isBn
-          ? `ধন্যবাদ **${fullName}**! এবার আপনার WhatsApp নম্বর এবং Email অ্যাড্রেস দিন (যেমন: 01700000000, name@example.com):`
+          ? `ধন্যবাদ **${fullName}**! এবার তোমার WhatsApp নম্বর এবং Email অ্যাড্রেস বলো (যেমন: 01700000000, name@example.com):`
           : `Thank you **${fullName}**! Please provide your WhatsApp number and Email address (e.g. 01700000000, name@example.com):`,
       };
     }
@@ -345,7 +441,7 @@ ${taskData.description.trim()}`;
 
       return {
         text: isBn
-          ? 'আপনার প্রজেক্টটি কোন সার্ভিসের অন্তর্ভুক্ত? নিচের অপশন থেকে বেছে নিন বা টাইপ করুন:'
+          ? 'প্রজেক্টটি কোন সার্ভিসের অন্তর্ভুক্ত? নিচের তালিকা থেকে বেছে নাও অথবা লিখে দাও:'
           : 'Which service category does your project belong to? Choose below or type it out:',
         actions: [
           { label: '🎨 Graphics Design', actionType: 'selectTaskCategory', payload: 'graphics-design' },
@@ -394,7 +490,7 @@ ${taskData.description.trim()}`;
 
       return {
         text: isBn
-          ? `সার্ভিস: **${catName}**। এবার প্রজেক্টের কাজের সংক্ষিপ্ত বিবরণ ও প্রয়োজনীয় রিকোয়ারমেন্টস (Brief) লিখুন:`
+          ? `সার্ভিস: **${catName}**। এবার প্রজেক্টের কাজের সংক্ষিপ্ত বিবরণ ও প্রয়োজনীয় রিকোয়ারমেন্টস (Brief) বলো:`
           : `Service: **${catName}**. Please describe your project requirements and brief:`,
       };
     }
@@ -416,7 +512,7 @@ ${taskData.description.trim()}`;
       setTaskFlow((prev) => ({ ...prev, deadline, step: 'document' }));
       return {
         text: isBn
-          ? 'কাজের কোনো রেফারেন্স ফাইল বা ড্রাইভ লিংক আছে কি? (না থাকলে নিচের Skip বাটনে ক্লিক করুন বা "নেই" লিখুন):'
+          ? 'কাজের কোনো রেফারেন্স ফাইল বা ড্রাইভ লিংক আছে কি? (না থাকলে নিচের Skip বাটনে ক্লিক করো বা "নেই" লেখো):'
           : 'Do you have any reference document, Google Drive link, or asset URL? (If none, click Skip below):',
         actions: [
           { label: isBn ? '⏩ Skip (নেই)' : '⏩ Skip', actionType: 'skipTaskDocument' },
@@ -470,6 +566,14 @@ ${taskData.description.trim()}`;
     const text = (textToSend || inputValue).trim();
     if (!text || isTyping) return;
 
+    // If voice listening is currently on, stop it
+    if (isListening) {
+      try {
+        recognitionRef.current?.stop();
+      } catch {}
+      setIsListening(false);
+    }
+
     // Detect user language automatically from their message
     const detectedLang = detectLanguage(text);
     setLanguage(detectedLang);
@@ -508,7 +612,46 @@ ${taskData.description.trim()}`;
         }
       }
 
-      // 2. Otherwise normal AI handling (Gemini or Local Knowledge)
+      // 2. Direct intent for assigning task: directly present the clear, specific choice!
+      const qLower = text.toLowerCase();
+      if (
+        qLower.includes('assign task') ||
+        qLower.includes('hire') ||
+        qLower.includes('start project') ||
+        qLower.includes('কাজ দিতে চাই') ||
+        qLower.includes('টাস্ক দিতে চাই') ||
+        qLower.includes('কাজ করাতে চাই') ||
+        qLower.includes('টাস্ক করব') ||
+        qLower.includes('টাস্ক করতে চাই') ||
+        qLower.includes('অ্যাসাইন টাস্ক') ||
+        qLower.includes('সার্ভিস নিতে চাই')
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        const isBn = detectedLang === 'bn';
+        const taskPromptMsg: ChatMessage = {
+          id: `bot-${Date.now()}`,
+          sender: 'bot',
+          text: isBn
+            ? 'তুমি সরাসরি ফর্ম ওপেন করে নিজেই টাস্কের তথ্য পূরণ করতে পারো, অথবা **আমি নিজেই তোমার সম্পূর্ণ টাস্ক অ্যাসাইন করে দিতে পারি!** তোমার কোনো ফর্ম পূরণ করতে হবে না—শুধু একে একে আমাকে তথ্যগুলো বলবে। আমি সবকিছু সাজিয়ে সরাসরি WhatsApp-এ নিয়ে যাব, সেখানে শুধু "Send" বাটনটা ক্লিক করলেই কাজ শুরু হয়ে যাবে!'
+            : 'You can click the task form button to submit the details yourself, or **I can handle the entire task assignment for you right here!** You don\'t have to fill out any forms—just tell me the details step-by-step. I\'ll prepare everything and take you directly to WhatsApp where you simply click Send!',
+          timestamp: getRealtimeClock(),
+          actions: [
+            {
+              label: isBn ? '🤖 গিনির সাথেই চ্যাটে করুন' : '🤖 Assign with Ginny',
+              actionType: 'startInChatTask',
+            },
+            {
+              label: isBn ? '📋 সরাসরি ফর্ম ওপেন করুন' : '📋 Open Task Form',
+              actionType: 'openAssignModal',
+            },
+          ],
+        };
+        setMessages((prev) => [...prev, taskPromptMsg]);
+        setIsTyping(false);
+        return;
+      }
+
+      // 3. Otherwise normal AI handling (Gemini or Local Knowledge)
       let botResponseText = '';
       let botActions: ChatMessage['actions'] = undefined;
 
@@ -583,6 +726,29 @@ ${taskData.description.trim()}`;
       window.open(`tel:${number.replace(/\D/g, '')}`, '_self');
     } else if (action.actionType === 'openWhatsAppUrl' && action.payload) {
       window.open(action.payload, '_blank');
+    } else if (action.actionType === 'promptTaskOptions') {
+      const isBn = language === 'bn';
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `bot-${Date.now()}`,
+          sender: 'bot',
+          text: isBn
+            ? 'তুমি সরাসরি ফর্ম ওপেন করে নিজেই টাস্কের তথ্য পূরণ করতে পারো, অথবা **আমি নিজেই তোমার সম্পূর্ণ টাস্ক অ্যাসাইন করে দিতে পারি!** তোমার কোনো ফর্ম পূরণ করতে হবে না—শুধু একে একে আমাকে তথ্যগুলো বলবে। আমি সবকিছু সাজিয়ে সরাসরি WhatsApp-এ নিয়ে যাব, সেখানে শুধু "Send" বাটনটা ক্লিক করলেই কাজ শুরু হয়ে যাবে!'
+            : 'You can click the task form button to submit the details yourself, or **I can handle the entire task assignment for you right here!** You don\'t have to fill out any forms—just tell me the details step-by-step. I\'ll prepare everything and take you directly to WhatsApp where you simply click Send!',
+          timestamp: getRealtimeClock(),
+          actions: [
+            {
+              label: isBn ? '🤖 গিনির সাথেই চ্যাটে করুন' : '🤖 Assign with Ginny',
+              actionType: 'startInChatTask',
+            },
+            {
+              label: isBn ? '📋 সরাসরি ফর্ম ওপেন করুন' : '📋 Open Task Form',
+              actionType: 'openAssignModal',
+            },
+          ],
+        },
+      ]);
     } else if (action.actionType === 'startInChatTask') {
       const isBn = language === 'bn';
       setTaskFlow({
@@ -600,8 +766,8 @@ ${taskData.description.trim()}`;
         id: `bot-${Date.now()}`,
         sender: 'bot',
         text: isBn
-          ? 'অসাধারণ! প্রজেক্টটি শুরু করতে আপনার পূর্ণ নাম (Full Name) লিখুন:'
-          : 'Great! To initiate the project, please provide your Full Name:',
+          ? 'দারুণ! তোমার কোনো ফর্ম পূরণ করতে হবে না, শুধু একে একে আমাকে বলো। প্রথমে তোমার পূর্ণ নাম (Full Name) কী?'
+          : 'Awesome! You don\'t have to fill out any forms, just tell me step-by-step. First, what is your Full Name?',
         timestamp: getRealtimeClock(),
       };
       setMessages((prev) => [...prev, promptMsg]);
@@ -629,7 +795,7 @@ ${taskData.description.trim()}`;
           id: `bot-${Date.now()}`,
           sender: 'bot',
           text: isBn
-            ? `সার্ভিস: **${sel.label}**। এবার প্রজেক্টের কাজের সংক্ষিপ্ত বিবরণ ও প্রয়োজনীয় রিকোয়ারমেন্টস (Brief) লিখুন:`
+            ? `সার্ভিস: **${sel.label}**। এবার প্রজেক্টের কাজের বিবরণ ও রিকোয়ারমেন্টস (Brief) বলো:`
             : `Selected Service: **${sel.label}**. Please describe your project requirements and brief:`,
           timestamp: getRealtimeClock(),
         },
@@ -878,7 +1044,28 @@ ${taskData.description.trim()}`;
               </div>
             )}
 
-            {/* Input Box Footer */}
+            {/* Voice Command Live Recording Status Banner */}
+            {isListening && (
+              <div className="px-3 py-1.5 bg-rose-50 border-t border-rose-100 flex items-center justify-between text-[10.5px] text-rose-600 font-medium shrink-0 animate-in fade-in">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+                  <span>
+                    {language === 'bn'
+                      ? 'ভয়েস শুনছি... কথা শেষ হলে মাইক বন্ধ করুন'
+                      : 'Listening... click mic to finish and convert'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleToggleVoiceInput}
+                  className="text-rose-700 font-bold underline text-[10.5px] cursor-pointer"
+                >
+                  {language === 'bn' ? 'অফ করুন' : 'Done'}
+                </button>
+              </div>
+            )}
+
+            {/* Input Box Footer with Voice Command Mic Button */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -886,12 +1073,43 @@ ${taskData.description.trim()}`;
               }}
               className="p-2.5 bg-white border-t border-slate-200/80 flex items-center gap-2 shrink-0"
             >
+              {/* Voice Command Button */}
+              <button
+                type="button"
+                onClick={handleToggleVoiceInput}
+                title={
+                  isListening
+                    ? language === 'bn'
+                      ? 'ভয়েস বন্ধ করুন (টেক্সট জমা হবে)'
+                      : 'Stop voice recording'
+                    : language === 'bn'
+                    ? 'ভয়েস কমান্ড দিয়ে কথা বলুন'
+                    : 'Speak with voice command'
+                }
+                aria-label="Voice command"
+                className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all cursor-pointer ${
+                  isListening
+                    ? 'bg-rose-500 text-white animate-pulse shadow-md shadow-rose-500/40 ring-2 ring-rose-300'
+                    : 'bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-[#006eff] active:scale-95'
+                }`}
+              >
+                {isListening ? (
+                  <MicOff className="w-4 h-4 text-white" />
+                ) : (
+                  <Mic className="w-4 h-4" />
+                )}
+              </button>
+
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={
-                  taskFlow.active
+                  isListening
+                    ? language === 'bn'
+                      ? 'কথা বলুন, ভয়েস টেক্সটে কনভার্ট হচ্ছে...'
+                      : 'Listening to your voice...'
+                    : taskFlow.active
                     ? 'Type your answer or brief...'
                     : language === 'en'
                     ? 'Ask Ginny or type in Bangla...'
@@ -900,6 +1118,7 @@ ${taskData.description.trim()}`;
                 className="flex-1 bg-slate-50 border border-slate-200/90 rounded-2xl px-3.5 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#006eff]/20 focus:border-[#006eff] transition-all"
                 disabled={isTyping}
               />
+
               <button
                 type="submit"
                 disabled={!inputValue.trim() || isTyping}

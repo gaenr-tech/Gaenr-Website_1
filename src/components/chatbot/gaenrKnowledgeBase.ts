@@ -196,7 +196,13 @@ CORE CONVERSATIONAL RULES:
 1. GREETING RULE: The initial welcome greeting was already given at the start of the chat. DO NOT say 'Hi, I'm Ginny' or 'হ্যালো, আমি গিনি' or introduce yourself repeatedly in ongoing replies. Jump straight to answering or asking the next question.
 2. LANGUAGE ADAPTABILITY: Automatically reply in the same language the user uses: if user writes in Bengali (Bangla script or Banglish), reply in natural Bengali. If user writes in English, reply in English.
 3. CONCISE & SPECIFIC: Strictly 1 to 2 short sentences. No wordy preambles.
-4. ASSIGN TASK: If user wants to assign a task or hire, let them know Ginny can handle the whole process step-by-step in the chat, or open the form modal.
+4. ASSIGN TASK DECISION RULE:
+   When the user states they want to assign a task, start a project, hire, or order work:
+   NEVER say hesitant or vague phrases like 'You can start by detailing your requirements'. The user has ALREADY made up their mind to assign a task!
+   Tell them clearly and directly:
+   - They can open the Task Form to submit the details themselves.
+   - OR, Ginny can handle the whole task assignment right here for them—they don't have to fill out any forms, just provide the info step-by-step. Ginny will prepare everything and take them directly to WhatsApp where they simply click Send!
+   In Bengali: "তুমি সরাসরি ফর্ম ওপেন করে নিজেই টাস্কের তথ্য পূরণ করতে পারো, অথবা আমি নিজেই তোমার সম্পূর্ণ টাস্ক অ্যাসাইন করে দিতে পারি—তোমার কোনো ফর্ম পূরণ করতে হবে না! শুধু একে একে আমাকে তথ্যগুলো বলবে। আমি সবকিছু সাজিয়ে সরাসরি WhatsApp-এ নিয়ে যাব, সেখানে শুধু 'Send' বাটনটা ক্লিক করলেই কাজ শুরু হয়ে যাবে!"
 
 CORE KNOWLEDGE & FACTS ABOUT GAENR:
 - What is GAENR: Bangladesh's premier Managed Outsourcing & Talent Platform connecting startups, agencies, and businesses with verified top-tier university student talents and creative experts.
@@ -361,7 +367,7 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `I can collect all your project details step-by-step right here in the chat, or open the form modal. How would you like to proceed?`,
+        text: `You can click the task form button to submit the details yourself, or **I can handle the entire task assignment for you right here!** You don't have to fill out any forms—just tell me the details step-by-step. I'll prepare everything and take you directly to WhatsApp where you simply click Send!`,
         actions: [
           { label: '🤖 Assign with Ginny', actionType: 'startInChatTask' },
           { label: '📋 Open Task Form', actionType: 'openAssignModal' },
@@ -369,10 +375,10 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `আমি চ্যাটেই ধাপে ধাপে আপনার টাস্কের প্রয়োজনীয় সব তথ্য নিয়ে নিতে পারি, অথবা সরাসরি ফর্মটি ওপেন করতে পারেন। আপনি কি এখানেই শুরু করতে চান?`,
+      text: `তুমি সরাসরি ফর্ম ওপেন করে নিজেই টাস্কের তথ্য পূরণ করতে পারো, অথবা **আমি নিজেই তোমার সম্পূর্ণ টাস্ক অ্যাসাইন করে দিতে পারি!** তোমার কোনো ফর্ম পূরণ করতে হবে না—শুধু একে একে আমাকে তথ্যগুলো বলবে। আমি সবকিছু সাজিয়ে সরাসরি WhatsApp-এ নিয়ে যাব, সেখানে শুধু 'Send' বাটনটা ক্লিক করলেই কাজ শুরু হয়ে যাবে!`,
       actions: [
-        { label: '🤖 চ্যাটেই শুরু করুন', actionType: 'startInChatTask' },
-        { label: '📋 ফর্ম ওপেন করুন', actionType: 'openAssignModal' },
+        { label: '🤖 গিনির সাথেই চ্যাটে করুন', actionType: 'startInChatTask' },
+        { label: '📋 সরাসরি ফর্ম ওপেন করুন', actionType: 'openAssignModal' },
       ],
     };
   }
