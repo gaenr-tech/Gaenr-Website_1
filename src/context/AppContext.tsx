@@ -87,8 +87,10 @@ interface AppContextType {
   deleteCategory: (categoryId: string) => void;
 
   taskAssignments: TaskAssignment[];
-  submitTaskAssignment: (task: Omit<TaskAssignment, 'id' | 'createdAt' | 'status'>) => TaskAssignment;
+  submitTaskAssignment: (task: Omit<TaskAssignment, 'id' | 'createdAt' | 'status'> & Partial<Pick<TaskAssignment, 'status' | 'price' | 'pricingNotes' | 'assignedVia'>>) => TaskAssignment;
   updateTaskStatus: (taskId: string, status: TaskAssignment['status']) => void;
+  updateTaskAssignment: (taskId: string, updates: Partial<TaskAssignment>) => void;
+  deleteTaskAssignment: (taskId: string) => void;
 
   feedbacks: FeedbackSubmission[];
   submitFeedback: (feedback: Omit<FeedbackSubmission, 'id' | 'createdAt'>) => void;
@@ -1202,12 +1204,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
-  const submitTaskAssignment = (taskData: Omit<TaskAssignment, 'id' | 'createdAt' | 'status'>) => {
+  const submitTaskAssignment = (
+    taskData: Omit<TaskAssignment, 'id' | 'createdAt' | 'status'> &
+      Partial<Pick<TaskAssignment, 'status' | 'price' | 'pricingNotes' | 'assignedVia'>>
+  ) => {
     const newTask: TaskAssignment = {
       ...taskData,
       id: `task_${Date.now()}`,
       createdAt: new Date().toISOString(),
-      status: 'pending_review',
+      status: taskData.status || 'pending_review',
+      price: taskData.price,
+      pricingNotes: taskData.pricingNotes,
+      assignedVia: taskData.assignedVia || 'website_modal',
     };
     setTaskAssignments((prev) => [newTask, ...prev]);
 
@@ -1226,16 +1234,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       paymentStatus: 'Unpaid',
       freelancerStatus: taskData.expertCode ? 'Assigned' : 'Unassigned',
       clientConfirmationStatus: 'Pending',
-      budgetAmount: 5000,
+      budgetAmount: typeof taskData.price === 'number' ? taskData.price : (Number(taskData.price) || 5000),
       payoutAmount: 4000,
       createdAt: new Date().toISOString(),
       deadline: taskData.deadline,
-      internalNotes: `Submitted via website form. Preferred Channel: ${taskData.preferredChannel}. Expert Code: ${taskData.expertCode || 'None'}.`,
+      internalNotes: `Submitted via ${taskData.assignedVia === 'ginny_ai' ? 'Ginny AI Chatbot' : 'Website Form'}. Preferred Channel: ${taskData.preferredChannel}. Expert Code: ${taskData.expertCode || 'None'}.`,
       activityHistory: [
         {
           timestamp: new Date().toISOString(),
-          action: 'Task submitted by client via public website',
-          performedBy: 'Public Gateway',
+          action: `Task submitted by client via ${taskData.assignedVia === 'ginny_ai' ? 'Ginny AI' : 'Public Website'}`,
+          performedBy: taskData.assignedVia === 'ginny_ai' ? 'Ginny AI' : 'Public Gateway',
           details: `Client ${taskData.fullName} requested ${taskData.subCategory}`,
         },
       ],
@@ -1248,6 +1256,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTaskAssignments((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, status } : t))
     );
+  };
+
+  const updateTaskAssignment = (taskId: string, updates: Partial<TaskAssignment>) => {
+    setTaskAssignments((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
+    );
+  };
+
+  const deleteTaskAssignment = (taskId: string) => {
+    setTaskAssignments((prev) => prev.filter((t) => t.id !== taskId));
+    showToast('Task record deleted', 'info');
   };
 
   const submitFeedback = (fbData: Omit<FeedbackSubmission, 'id' | 'createdAt'>) => {
@@ -1312,6 +1331,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         taskAssignments,
         submitTaskAssignment,
         updateTaskStatus,
+        updateTaskAssignment,
+        deleteTaskAssignment,
         feedbacks,
         submitFeedback,
         deleteFeedback,

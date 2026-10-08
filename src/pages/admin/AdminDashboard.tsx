@@ -43,6 +43,7 @@ import { SettingsManageView, AdminUser } from './views/SettingsManageView';
 import { BrandingManageView } from './views/BrandingManageView';
 import { ExpertApplicationsView } from './views/ExpertApplicationsView';
 import { FeedbackResponsesView } from './views/FeedbackResponsesView';
+import { TaskAssignmentsView } from './views/TaskAssignmentsView';
 import { MessageSquare, UserCheck } from 'lucide-react';
 
 type SitemapTab =
@@ -56,6 +57,7 @@ type SitemapTab =
   | 'avatars'
   | 'settings'
   | 'branding'
+  | 'tasks'
   | 'applications'
   | 'feedbacks';
 
@@ -76,6 +78,10 @@ export const AdminDashboard: React.FC = () => {
     deleteAvatar,
     categories: categoriesList,
     updateCategories: handleUpdateCategories,
+    taskAssignments,
+    updateTaskStatus,
+    updateTaskAssignment,
+    deleteTaskAssignment,
     expertApplications,
     deleteExpertApplication,
     feedbacks,
@@ -98,6 +104,7 @@ export const AdminDashboard: React.FC = () => {
     if (clean === '/manage/avatars') return 'avatars';
     if (clean === '/manage/settings') return 'settings';
     if (clean === '/manage/branding') return 'branding';
+    if (clean === '/manage/tasks') return 'tasks';
     if (clean === '/manage/applications') return 'applications';
     if (clean === '/manage/feedbacks') return 'feedbacks';
     return 'dashboard';
@@ -147,6 +154,9 @@ export const AdminDashboard: React.FC = () => {
         break;
       case 'branding':
         navigate('/manage/branding');
+        break;
+      case 'tasks':
+        navigate('/manage/tasks');
         break;
       case 'applications':
         navigate('/manage/applications');
@@ -639,6 +649,20 @@ export const AdminDashboard: React.FC = () => {
                   RESPONSES &amp; INBOX
                 </div>
                 <button
+                  onClick={() => handleNavigateTab('tasks')}
+                  className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    activeTab === 'tasks'
+                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  }`}
+                >
+                  <FolderKanban className="w-4 h-4 shrink-0" />
+                  <span>Assigned Tasks</span>
+                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-[#006eff]">
+                    {taskAssignments.length}
+                  </span>
+                </button>
+                <button
                   onClick={() => handleNavigateTab('applications')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'applications'
@@ -961,6 +985,29 @@ export const AdminDashboard: React.FC = () => {
               <div className="h-px bg-slate-100 my-2 mx-1" />
             )}
 
+            {/* /manage/tasks */}
+            <button
+              onClick={() => handleNavigateTab('tasks')}
+              title="Assigned Tasks & Client Orders"
+              className={`w-full flex items-center ${
+                sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
+              } transition-colors cursor-pointer ${
+                activeTab === 'tasks'
+                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+              }`}
+            >
+              <FolderKanban className="w-4 h-4 shrink-0" />
+              {!sidebarCollapsed && (
+                <>
+                  <span className="truncate">Assigned Tasks</span>
+                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-[#006eff]">
+                    {taskAssignments.length}
+                  </span>
+                </>
+              )}
+            </button>
+
             {/* /manage/applications */}
             <button
               onClick={() => handleNavigateTab('applications')}
@@ -1235,6 +1282,16 @@ export const AdminDashboard: React.FC = () => {
               branding={branding}
               onUpdateBranding={updateBranding}
               onResetBranding={resetBranding}
+              showToast={showToast}
+            />
+          )}
+
+          {activeTab === 'tasks' && (
+            <TaskAssignmentsView
+              tasks={taskAssignments}
+              onUpdateStatus={updateTaskStatus}
+              onUpdateTask={updateTaskAssignment}
+              onDeleteTask={deleteTaskAssignment}
               showToast={showToast}
             />
           )}

@@ -201,6 +201,9 @@ export interface TaskAssignment {
   agreedAccuracy: boolean;
   createdAt: string;
   status: 'pending_review' | 'confirmed' | 'payment_escrow' | 'in_progress' | 'completed';
+  price?: number | string;
+  pricingNotes?: string;
+  assignedVia?: 'website_modal' | 'ginny_ai';
 }
 
 export interface FeedbackSubmission {

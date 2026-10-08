@@ -15,9 +15,37 @@ export interface ChatMessage {
   timestamp: string;
   actions?: Array<{
     label: string;
-    actionType: 'navigate' | 'openAssignModal' | 'openApplyModal' | 'openWhatsApp' | 'callPhone';
+    actionType:
+      | 'navigate'
+      | 'openAssignModal'
+      | 'openApplyModal'
+      | 'openWhatsApp'
+      | 'callPhone'
+      | 'startInChatTask'
+      | 'selectTaskCategory'
+      | 'skipTaskDocument'
+      | 'openWhatsAppUrl';
     payload?: string;
   }>;
+}
+
+/**
+ * Automatically detects whether user query is in Bengali (Unicode/Banglish) or English.
+ */
+export function detectLanguage(text: string): ChatLanguage {
+  if (/[\u0980-\u09FF]/.test(text)) {
+    return 'bn';
+  }
+  const lower = text.toLowerCase();
+  const banglishWords = [
+    'kemon', 'achen', 'bhalo', 'tumi', 'apni', 'ami', 'kichu', 'korbo', 'parbo',
+    'lagbe', 'chai', 'bolo', 'dhaka', 'taka', 'koto', 'hobe', 'ki vabe', 'kivabe',
+    'service nite', 'kaj', 'dite', 'chai', 'haye', 'na', 'hobe', 'amar', 'tomar'
+  ];
+  if (banglishWords.some((w) => lower.includes(w))) {
+    return 'bn';
+  }
+  return 'en';
 }
 
 export interface LearnedMemory {
@@ -162,8 +190,13 @@ export function analyzeAndLearnFromMessage(userText: string, current: LearnedMem
 }
 
 export const GAENR_SYSTEM_PROMPT = `
-You are Gini (গিনি), the official virtual representative and smart assistant of GAENR (https://gaenr.com) located in Dhaka, Bangladesh.
-When greeting, say: "Hi, I'm Gini from Gaenr." (or in Bengali: "হ্যালো, আমি গেইনার থেকে গিনি (Gini)।").
+You are Ginny (গিনি), the official virtual assistant of GAENR (https://gaenr.com) located in Dhaka, Bangladesh.
+
+CORE CONVERSATIONAL RULES:
+1. GREETING RULE: The initial welcome greeting was already given at the start of the chat. DO NOT say 'Hi, I'm Ginny' or 'হ্যালো, আমি গিনি' or introduce yourself repeatedly in ongoing replies. Jump straight to answering or asking the next question.
+2. LANGUAGE ADAPTABILITY: Automatically reply in the same language the user uses: if user writes in Bengali (Bangla script or Banglish), reply in natural Bengali. If user writes in English, reply in English.
+3. CONCISE & SPECIFIC: Strictly 1 to 2 short sentences. No wordy preambles.
+4. ASSIGN TASK: If user wants to assign a task or hire, let them know Ginny can handle the whole process step-by-step in the chat, or open the form modal.
 
 CORE KNOWLEDGE & FACTS ABOUT GAENR:
 - What is GAENR: Bangladesh's premier Managed Outsourcing & Talent Platform connecting startups, agencies, and businesses with verified top-tier university student talents and creative experts.
@@ -194,10 +227,6 @@ You have direct control over the website! When a user asks or expresses desire t
 - User wants to view services: Append '[ACTION:NAVIGATE:/services]'
 - User wants to view contact info: Append '[ACTION:NAVIGATE:/contact]'
 - User wants to chat on WhatsApp: Append '[ACTION:OPEN_WHATSAPP]'
-
-STYLE & CONSTRAINTS:
-1. Short & Direct: Strictly 1 to 2 short sentences. Never write long essays or wordy preambles.
-2. Natural Language: In Bengali, use modern, conversational words ('পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক', 'অর্ডার'). Never use archaic words like 'সম্মানী'. In English, speak clear, friendly, and professional.
 `;
 
 /**
@@ -205,40 +234,50 @@ STYLE & CONSTRAINTS:
  */
 export function getLocalAIResponse(
   rawQuery: string,
-  language: ChatLanguage = 'en',
+  language?: ChatLanguage,
   memory?: LearnedMemory
 ): {
   text: string;
   actions?: Array<{
     label: string;
-    actionType: 'navigate' | 'openAssignModal' | 'openApplyModal' | 'openWhatsApp' | 'callPhone';
+    actionType:
+      | 'navigate'
+      | 'openAssignModal'
+      | 'openApplyModal'
+      | 'openWhatsApp'
+      | 'callPhone'
+      | 'startInChatTask'
+      | 'selectTaskCategory'
+      | 'skipTaskDocument'
+      | 'openWhatsAppUrl';
     payload?: string;
   }>;
 } {
+  const detectedLang = language || detectLanguage(rawQuery);
   const q = rawQuery.toLowerCase().trim();
-  const isEn = language === 'en';
+  const isEn = detectedLang === 'en';
 
   const userGreetingPrefix = memory?.userName
     ? (isEn ? `Hello ${memory.userName}! ` : `হ্যালো ${memory.userName}! `)
     : '';
 
-  // 1. Greetings
+  // 1. Greetings (Direct, does NOT repeat introductory "Hi, I am Ginny")
   if (/^(hi|hello|hey|salam|assalamu|kemon achen|halo|হাই|হ্যালো|সালাম|আসসালামু|কেমন আছেন)/i.test(q)) {
     if (isEn) {
       return {
-        text: `👋 ${userGreetingPrefix}Hi, I'm Gini from Gaenr. How can I help you today?`,
+        text: `👋 ${userGreetingPrefix}Hello! How can I help you today?`,
         actions: [
           { label: 'Explore Services', actionType: 'navigate', payload: '/services' },
-          { label: 'Assign a Task', actionType: 'openAssignModal' },
+          { label: 'Assign a Task', actionType: 'startInChatTask' },
           { label: 'Chat on WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
         ],
       };
     }
     return {
-      text: `👋 ${userGreetingPrefix}হ্যালো, আমি গেইনার থেকে গিনি (Gini)। কীভাবে সাহায্য করতে পারি বলুন?`,
+      text: `👋 ${userGreetingPrefix}জি বলুন, কীভাবে সাহায্য করতে পারি?`,
       actions: [
         { label: 'সার্ভিসসমূহ দেখুন', actionType: 'navigate', payload: '/services' },
-        { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
+        { label: 'টাস্ক দিন', actionType: 'startInChatTask' },
         { label: 'হোয়াটসঅ্যাপে চ্যাট', actionType: 'openWhatsApp', payload: '01608922800' },
       ],
     };
@@ -322,18 +361,18 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `💼 Opening the task assignment modal for you! Submit your project details to get matched with a verified expert. [ACTION:OPEN_ASSIGN_TASK]`,
+        text: `I can collect all your project details step-by-step right here in the chat, or open the form modal. How would you like to proceed?`,
         actions: [
-          { label: 'Assign a Task Now', actionType: 'openAssignModal' },
-          { label: 'WhatsApp Support', actionType: 'openWhatsApp', payload: '01608922800' },
+          { label: '🤖 Assign with Ginny', actionType: 'startInChatTask' },
+          { label: '📋 Open Task Form', actionType: 'openAssignModal' },
         ],
       };
     }
     return {
-      text: `💼 আমি এখনই আপনার জন্য টাস্ক অ্যাসাইন ফর্মটি ওপেন করে দিচ্ছি! প্রজেক্টের তথ্য জানালেই আমাদের টিম সেরা এক্সপার্টকে দিয়ে কাজ শুরু করবে। [ACTION:OPEN_ASSIGN_TASK]`,
+      text: `আমি চ্যাটেই ধাপে ধাপে আপনার টাস্কের প্রয়োজনীয় সব তথ্য নিয়ে নিতে পারি, অথবা সরাসরি ফর্মটি ওপেন করতে পারেন। আপনি কি এখানেই শুরু করতে চান?`,
       actions: [
-        { label: 'টাস্ক দিন', actionType: 'openAssignModal' },
-        { label: 'হোয়াটসঅ্যাপে হেল্প নিন', actionType: 'openWhatsApp', payload: '01608922800' },
+        { label: '🤖 চ্যাটেই শুরু করুন', actionType: 'startInChatTask' },
+        { label: '📋 ফর্ম ওপেন করুন', actionType: 'openAssignModal' },
       ],
     };
   }
@@ -583,17 +622,22 @@ export async function queryGeminiAPI(
 `
     : '';
 
+  const detectedLang = language || detectLanguage(userMessage);
+
   const languageDirective =
-    language === 'en'
-      ? 'CRITICAL: Answer strictly in Proper, fluent English. MUST BE 1-2 SHORT SENTENCES ONLY.'
-      : "CRITICAL: Answer strictly in natural conversational Bengali. MUST BE 1-2 SHORT SENTENCES ONLY. Always use 'পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক'. Never use 'সম্মানী'.";
+    detectedLang === 'en'
+      ? 'CRITICAL: The user is writing in English. Answer strictly in proper, fluent English. MUST BE 1-2 SHORT SENTENCES ONLY.'
+      : "CRITICAL: The user is writing in Bengali. Answer strictly in natural conversational Bengali. MUST BE 1-2 SHORT SENTENCES ONLY. Always use 'পেমেন্ট', 'ক্লায়েন্ট', 'টাস্ক'. Never use 'সম্মানী'.";
+
+  const greetingConstraint =
+    "CRITICAL GREETING RULE: Do NOT say 'Hi, I am Ginny' or introduce yourself repeatedly. The initial greeting was already shown. Jump straight into the answer without repeating your name or introduction.";
 
   const contents = [
     {
       role: 'user',
       parts: [
         {
-          text: `SYSTEM CONTEXT INSTRUCTIONS:\n${GAENR_SYSTEM_PROMPT}\n${memoryContext}\n${languageDirective}\n\nCRITICAL LENGTH CONSTRAINT: Strictly respond in 1 to 2 short sentences maximum. Be specific and direct to the point.`,
+          text: `SYSTEM CONTEXT INSTRUCTIONS:\n${GAENR_SYSTEM_PROMPT}\n${memoryContext}\n${languageDirective}\n${greetingConstraint}\n\nCRITICAL LENGTH CONSTRAINT: Strictly respond in 1 to 2 short sentences maximum. Be specific and direct to the point.`,
         },
       ],
     },
@@ -601,7 +645,7 @@ export async function queryGeminiAPI(
       role: 'model',
       parts: [
         {
-          text: `Understood! I am Gini, representing Gaenr. I will give direct, specific answers in 1 to 2 short sentences only.`,
+          text: `Understood! I will answer directly in 1 to 2 short sentences matching the user's language, and never repeat introductory greetings.`,
         },
       ],
     },
