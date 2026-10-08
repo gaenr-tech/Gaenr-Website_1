@@ -1,20 +1,3 @@
-/**
- * GAENR CLOUD STORAGE DIRECT UPLOADER SCRIPT (Google Apps Script)
- * 
- * Target Folder ID: 13TfzgSRtRCy2ubOU4fyFEg_NEGZLonDO
- * Direct Webhook for Zero Web Hosting Storage
- * 
- * Deployment Steps (1 minute):
- * 1. Go to https://script.google.com with the account owning the Google Drive folder.
- * 2. Click "New project", paste this entire code.
- * 3. Click "Deploy" > "New deployment".
- * 4. Select type: "Web app".
- * 5. Set "Execute as": "Me".
- * 6. Set "Who has access": "Anyone".
- * 7. Click "Deploy" and authorize permissions.
- * 8. Copy the Web App URL (ends with /exec) into VITE_GOOGLE_DRIVE_WEBHOOK_URL in .env.
- */
-
 var TARGET_FOLDER_ID = "13TfzgSRtRCy2ubOU4fyFEg_NEGZLonDO";
 
 function doPost(e) {
@@ -29,7 +12,6 @@ function doPost(e) {
     var blob = Utilities.newBlob(decoded, data.mimeType || "application/octet-stream", data.fileName || "deliverable");
     
     var file = folder.createFile(blob);
-    // Make file viewable with link
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
     
     var fileId = file.getId();
