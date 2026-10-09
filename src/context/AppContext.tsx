@@ -342,6 +342,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             }
           }
 
+          // If presentation slide specialist fl-ps-1 still has legacy drive link in cache, update to clean slide image asset
+          if (updatedFl.id === 'fl-ps-1' && (updatedFl.portfolioItems || []).some((p: any) => p.mediaUrl?.includes('drive.google.com'))) {
+            const initialMatch = INITIAL_FREELANCERS.find((f) => f.id === 'fl-ps-1');
+            if (initialMatch?.portfolioItems) {
+              updatedFl.portfolioItems = initialMatch.portfolioItems;
+              hasChanges = true;
+            }
+          }
+
           // Normalize bKash Personal to bKash
           if (updatedFl.paymentMethod === 'bKash Personal') {
             updatedFl.paymentMethod = 'bKash';

@@ -139,21 +139,15 @@ const ZoomableImageCard: React.FC<{
         ) : (
           <div className="flex flex-col items-center justify-center p-6 text-center text-slate-400 gap-2">
             <Layers className="w-8 h-8 text-slate-500" />
-            <span className="text-xs font-semibold text-slate-300">{title}</span>
+            <span className="text-xs font-semibold text-slate-300">Verified Deliverable</span>
           </div>
         )}
       </div>
       {/* Controls bar */}
-      <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-white/10 select-none" style={{ background: '#0c182c' }}>
-        <div className="min-w-0 pr-2">
-          <h4 className="font-bold text-white text-xs truncate">{title}</h4>
-          {tools && tools.length > 0 && (
-            <p className="text-[10px] text-white/50 truncate">{tools.join(' · ')}</p>
-          )}
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
+      <div className="flex items-center justify-between px-3.5 py-2 border-t border-white/10 select-none" style={{ background: '#0c182c' }}>
+        <div className="flex items-center gap-1.5">
           {hasMultiple && (
-            <div className="flex items-center gap-1 mr-1">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
@@ -174,6 +168,8 @@ const ZoomableImageCard: React.FC<{
               </button>
             </div>
           )}
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
 
           <button
             type="button"
@@ -272,16 +268,10 @@ const ZoomableEmbedCard: React.FC<{
       </div>
 
       {/* Controls bar */}
-      <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-white/10 shrink-0 select-none" style={{ background: '#0c182c' }}>
-        <div className="min-w-0 pr-2">
-          <h4 className="font-bold text-white text-xs truncate">{title}</h4>
-          {tools && tools.length > 0 && (
-            <p className="text-[10px] text-white/50 truncate">{tools.join(' · ')}</p>
-          )}
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
+      <div className="flex items-center justify-between px-3.5 py-2 border-t border-white/10 shrink-0 select-none" style={{ background: '#0c182c' }}>
+        <div className="flex items-center gap-1.5">
           {hasMultiple && (
-            <div className="flex items-center gap-1 mr-1">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
@@ -302,7 +292,8 @@ const ZoomableEmbedCard: React.FC<{
               </button>
             </div>
           )}
-
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
           <button
             type="button"
             onClick={shrink}
@@ -318,10 +309,6 @@ const ZoomableEmbedCard: React.FC<{
             className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
             title="Zoom in"
           >+</button>
-
-          <div className="px-2 py-0.5 rounded bg-white/10 text-white/80 font-mono text-[10px] font-semibold">
-            Read-Only
-          </div>
         </div>
       </div>
     </div>
@@ -392,9 +379,6 @@ const LiveWebsitePreviewCard: React.FC<{
               </button>
             </div>
           )}
-          <span className="text-[10px] font-mono text-slate-500 font-bold bg-slate-200 px-2 py-0.5 rounded">
-            Read-Only
-          </span>
         </div>
       </div>
 
@@ -414,7 +398,7 @@ const LiveWebsitePreviewCard: React.FC<{
           <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-3 bg-slate-50">
             <Globe className="w-10 h-10 text-slate-400" />
             <div className="space-y-1">
-              <h4 className="text-sm font-bold text-slate-800">{title}</h4>
+              <h4 className="text-sm font-bold text-slate-800">Verified WordPress Deliverable</h4>
               <p className="text-xs text-slate-500 max-w-xs">{cleanDisplayUrl}</p>
             </div>
             <div className="px-3 py-1 bg-slate-200 text-slate-700 rounded-xl text-xs font-bold inline-flex items-center gap-1.5">
@@ -426,9 +410,8 @@ const LiveWebsitePreviewCard: React.FC<{
 
       {/* Bottom Specs & Status Bar */}
       <div className="px-3.5 py-2 bg-slate-50 border-t border-slate-200/80 flex items-center justify-between text-[11px] font-mono text-slate-600 shrink-0">
-        <span className="truncate max-w-[200px] font-bold text-slate-800">{title}</span>
+        <span className="font-semibold text-slate-700">⚡ 98 Google PageSpeed · Verified Architecture</span>
         <div className="flex items-center gap-2 text-[10px]">
-          <span className="text-emerald-700 font-bold hidden sm:inline">⚡ 98 PageSpeed</span>
           {tools && tools.length > 0 && (
             <span className="text-slate-500">{tools.slice(0, 2).join(' · ')}</span>
           )}
@@ -439,8 +422,8 @@ const LiveWebsitePreviewCard: React.FC<{
 };
 
 // ── SecureDocumentViewer ────────────────────────────────────────────────────
-// Authentic 2-Page Read-Only Gaenr Editorial Whitepaper & Manuscript Reader
-// Strictly protected: No Google popouts, no text copying, full zoom & page switcher
+// Authentic Continuous Multi-Page Gaenr Editorial Whitepaper & Manuscript Reader
+// Strictly protected: No Google popouts, no text copying, continuous vertical scroll & +/- zoom
 const SecureDocumentViewer: React.FC<{
   title: string;
   expertCode: string;
@@ -449,8 +432,7 @@ const SecureDocumentViewer: React.FC<{
   onNext?: () => void;
   onPrev?: () => void;
   hasMultiple?: boolean;
-}> = ({ title, expertCode, tools, isExpanded, onNext, onPrev, hasMultiple }) => {
-  const [currentPage, setCurrentPage] = useState<1 | 2>(1);
+}> = ({ title: _title, expertCode, tools: _tools, isExpanded, onNext, onPrev, hasMultiple }) => {
   const [zoom, setZoom] = useState(1);
 
   const bump = (e: React.MouseEvent) => {
@@ -481,12 +463,12 @@ const SecureDocumentViewer: React.FC<{
       onCut={handleCopyAttempt}
       onContextMenu={handleCopyAttempt}
     >
-      {/* Document Viewport - Scrollable paper container */}
+      {/* Document Viewport - Continuous Vertical Scroll across all pages */}
       <div
-        className="relative flex-1 w-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 flex flex-col items-center bg-slate-900/90"
+        className="relative flex-1 w-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 flex flex-col items-center bg-slate-900/90 space-y-6 sm:space-y-8"
         style={{ userSelect: 'none' }}
       >
-        {/* Paper Sheet */}
+        {/* Paper Sheet 1 (Page 1) */}
         <div
           className="w-full max-w-2xl bg-white text-slate-900 rounded-lg shadow-2xl p-5 sm:p-9 transition-transform duration-150 origin-top border border-slate-200 relative select-none"
           style={{
@@ -499,175 +481,164 @@ const SecureDocumentViewer: React.FC<{
           {/* Subtle diagonal repeating watermark across paper */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden select-none opacity-[0.06] flex items-center justify-center">
             <div className="rotate-[-25deg] text-slate-900 font-mono font-black text-2xl tracking-widest text-center uppercase leading-loose">
-              GAENR VERIFIED DELIVERABLE · #{expertCode} · READ ONLY
+              GAENR VERIFIED DELIVERABLE · #{expertCode}
             </div>
           </div>
 
-          {currentPage === 1 ? (
-            /* ──────────────── PAGE 1 ──────────────── */
-            <div className="space-y-4 text-left select-none relative z-10">
-              {/* Header Rule */}
-              <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-bold text-[#006eff] pb-2 border-b border-slate-200">
-                <span>GAENR EDITORIAL REPOSITORY · STRATEGIC WHITEPAPER</span>
-                <span className="text-slate-400">DOC: GN-WP-2026-CW01</span>
-              </div>
+          {/* PAGE 1 CONTENT */}
+          <div className="space-y-4 text-left select-none relative z-10">
+            {/* Header Rule */}
+            <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-bold text-[#006eff] pb-2 border-b border-slate-200">
+              <span>GAENR EDITORIAL REPOSITORY · STRATEGIC WHITEPAPER</span>
+              <span className="text-slate-400">DOC: GN-WP-2026-CW01</span>
+            </div>
 
-              {/* Title & Subtitle */}
-              <div className="space-y-1.5 pt-1">
-                <h2 className="text-base sm:text-xl font-serif font-extrabold text-slate-900 tracking-tight leading-snug">
-                  Gaenr: The Strategic Architecture of Managed Outsourcing & Decentralized Talent Execution
-                </h2>
-                <p className="text-xs sm:text-sm font-sans text-slate-600 font-medium italic">
-                  An Empirical Blueprint for Verified Creative & Technical Delivery in South Asia
-                </p>
-                <div className="flex items-center gap-2 pt-1 text-[10px] font-mono text-slate-500">
-                  <span className="px-2 py-0.5 rounded bg-blue-50 text-[#006eff] font-bold">
-                    Specialist #{expertCode}
-                  </span>
-                  <span>· Editorial & Strategy</span>
-                  <span>· Verified Specimen</span>
-                </div>
-              </div>
-
-              {/* Section 1 */}
-              <div className="space-y-1 pt-2">
-                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
-                  1. Executive Summary & The Managed Marketplace Paradigm
-                </h3>
-                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
-                  Traditional freelance platforms operate on passive discovery, leaving clients burdened by unvetted bids, unreliable deliverables, and unpredictable turnaround times. Gaenr re-engineers this paradigm by introducing managed operational escrows, rigorous skill vetting, and structured milestone assurance. Instead of gambling on anonymous profiles, clients collaborate with high-caliber Bangladeshi creators backed by continuous performance oversight.
-                </p>
-              </div>
-
-              {/* Section 2 */}
-              <div className="space-y-1 pt-1">
-                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
-                  2. The Macro Dilemma: Fragmented Marketplaces vs. Managed Delivery
-                </h3>
-                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
-                  Over 68% of small-to-medium businesses report dissatisfaction with conventional gig marketplaces due to communication friction, inconsistent creative execution, and hidden platform fees. Gaenr eliminates these failure modes through an active management layer that guarantees project briefs are translated into production-grade outcomes.
-                </p>
-              </div>
-
-              {/* Section 3 */}
-              <div className="space-y-1 pt-1">
-                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
-                  3. Decentralization & Opportunity: The Bangladesh Advantage
-                </h3>
-                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
-                  Bangladesh possesses one of the world's most dynamic and cost-effective digital talent pools. By pairing university-educated, technologically adept specialists with enterprise clients across North America, Europe, and Asia, Gaenr provides premier services at transparent, flat-rate pricing without intermediary markups.
-                </p>
-              </div>
-
-              {/* Page 1 Footer */}
-              <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 pt-3 border-t border-slate-200">
-                <span>CONFIDENTIAL & PROPRIETARY · GAENR MANAGED ECOSYSTEM</span>
-                <span className="font-bold text-slate-700">PAGE 1 OF 2</span>
+            {/* Title & Subtitle */}
+            <div className="space-y-1.5 pt-1">
+              <h2 className="text-base sm:text-xl font-serif font-extrabold text-slate-900 tracking-tight leading-snug">
+                Gaenr: The Strategic Architecture of Managed Outsourcing & Decentralized Talent Execution
+              </h2>
+              <p className="text-xs sm:text-sm font-sans text-slate-600 font-medium italic">
+                An Empirical Blueprint for Verified Creative & Technical Delivery in South Asia
+              </p>
+              <div className="flex items-center gap-2 pt-1 text-[10px] font-mono text-slate-500">
+                <span className="px-2 py-0.5 rounded bg-blue-50 text-[#006eff] font-bold">
+                  Specialist #{expertCode}
+                </span>
+                <span>· Editorial & Strategy</span>
+                <span>· Verified Specimen</span>
               </div>
             </div>
-          ) : (
-            /* ──────────────── PAGE 2 ──────────────── */
-            <div className="space-y-4 text-left select-none relative z-10">
-              {/* Header Rule */}
-              <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-bold text-[#006eff] pb-2 border-b border-slate-200">
-                <span>GAENR EDITORIAL REPOSITORY · STRATEGIC WHITEPAPER</span>
-                <span className="text-slate-400">DOC: GN-WP-2026-CW01</span>
-              </div>
 
-              {/* Section 4 */}
-              <div className="space-y-1.5 pt-1">
-                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
-                  4. Multi-Tier Quality Assurance & Anti-Slop Discipline
-                </h3>
-                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
-                  In an era overwhelmed by careless generative automation, Gaenr enforces a strict anti-slop visual and editorial doctrine. Every project deliverable is evaluated across three non-negotiable vectors before client handoff:
+            {/* Section 1 */}
+            <div className="space-y-1 pt-2">
+              <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                1. Executive Summary & The Managed Marketplace Paradigm
+              </h3>
+              <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                Traditional freelance platforms operate on passive discovery, leaving clients burdened by unvetted bids, unreliable deliverables, and unpredictable turnaround times. Gaenr re-engineers this paradigm by introducing managed operational escrows, rigorous skill vetting, and structured milestone assurance. Instead of gambling on anonymous profiles, clients collaborate with high-caliber Bangladeshi creators backed by continuous performance oversight.
+              </p>
+            </div>
+
+            {/* Section 2 */}
+            <div className="space-y-1 pt-1">
+              <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                2. The Macro Dilemma: Fragmented Marketplaces vs. Managed Delivery
+              </h3>
+              <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                Over 68% of small-to-medium businesses report dissatisfaction with conventional gig marketplaces due to communication friction, inconsistent creative execution, and hidden platform fees. Gaenr eliminates these failure modes through an active management layer that guarantees project briefs are translated into production-grade outcomes.
+              </p>
+            </div>
+
+            {/* Section 3 */}
+            <div className="space-y-1 pt-1">
+              <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                3. Decentralization & Opportunity: The Bangladesh Advantage
+              </h3>
+              <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                Bangladesh possesses one of the world's most dynamic and cost-effective digital talent pools. By pairing university-educated, technologically adept specialists with enterprise clients across North America, Europe, and Asia, Gaenr provides premier services at transparent, flat-rate pricing without intermediary markups.
+              </p>
+            </div>
+
+            {/* Page 1 Footer */}
+            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 pt-3 border-t border-slate-200">
+              <span>CONFIDENTIAL & PROPRIETARY · GAENR MANAGED ECOSYSTEM</span>
+              <span className="font-bold text-slate-700">PAGE 1 OF 2</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Paper Sheet 2 (Page 2) */}
+        <div
+          className="w-full max-w-2xl bg-white text-slate-900 rounded-lg shadow-2xl p-5 sm:p-9 transition-transform duration-150 origin-top border border-slate-200 relative select-none"
+          style={{
+            transform: `scale(${zoom})`,
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+          }}
+          onCopy={handleCopyAttempt}
+        >
+          {/* Subtle diagonal repeating watermark across paper */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden select-none opacity-[0.06] flex items-center justify-center">
+            <div className="rotate-[-25deg] text-slate-900 font-mono font-black text-2xl tracking-widest text-center uppercase leading-loose">
+              GAENR VERIFIED DELIVERABLE · #{expertCode}
+            </div>
+          </div>
+
+          {/* PAGE 2 CONTENT */}
+          <div className="space-y-4 text-left select-none relative z-10">
+            {/* Header Rule */}
+            <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-bold text-[#006eff] pb-2 border-b border-slate-200">
+              <span>GAENR EDITORIAL REPOSITORY · STRATEGIC WHITEPAPER</span>
+              <span className="text-slate-400">DOC: GN-WP-2026-CW01</span>
+            </div>
+
+            {/* Section 4 */}
+            <div className="space-y-1.5 pt-1">
+              <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                4. Multi-Tier Quality Assurance & Anti-Slop Discipline
+              </h3>
+              <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                In an era overwhelmed by careless generative automation, Gaenr enforces a strict anti-slop visual and editorial doctrine. Every project deliverable is evaluated across three non-negotiable vectors before client handoff:
+              </p>
+              <div className="space-y-1 pl-2 text-[10.5px] sm:text-[11.5px] text-slate-700 font-sans">
+                <p className="leading-snug">
+                  <strong className="text-slate-900">· Conceptual Originality:</strong> Zero generic stock templates. Graphics, presentations, and copy are engineered from scratch with tailor-made typographical systems.
                 </p>
-                <div className="space-y-1 pl-2 text-[10.5px] sm:text-[11.5px] text-slate-700 font-sans">
-                  <p className="leading-snug">
-                    <strong className="text-slate-900">· Conceptual Originality:</strong> Zero generic stock templates. Graphics, presentations, and copy are engineered from scratch with tailor-made typographical systems.
-                  </p>
-                  <p className="leading-snug">
-                    <strong className="text-slate-900">· Technical Precision & Integrity:</strong> Vector source files maintain clean curve nodes, web builds hit Core Web Vitals 90+, and copy manuscripts pass native linguistic audits.
-                  </p>
-                  <p className="leading-snug">
-                    <strong className="text-slate-900">· Controlled Revisions:</strong> Every engagement includes structured revision cycles overseen by a Gaenr supervisor to guarantee client satisfaction.
-                  </p>
-                </div>
-              </div>
-
-              {/* Section 5 */}
-              <div className="space-y-1 pt-1">
-                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
-                  5. Enterprise Privacy & Cryptographic Deliverable Vaults
-                </h3>
-                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
-                  Client confidentiality and intellectual property rights are protected through isolated cryptographic upload portals. Each creator is provisioned with high-entropy upload tokens decoupled from public identifier codes. Work-in-progress deliverables remain encrypted and isolated from public access until official verification and final client settlement.
+                <p className="leading-snug">
+                  <strong className="text-slate-900">· Technical Precision & Integrity:</strong> Vector source files maintain clean curve nodes, web builds hit Core Web Vitals 90+, and copy manuscripts pass native linguistic audits.
                 </p>
-              </div>
-
-              {/* Section 6 */}
-              <div className="space-y-1 pt-1">
-                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
-                  6. Conclusion: The Gaenr Manifesto
-                </h3>
-                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
-                  We believe the future of outsourcing belongs to clarity, mutual accountability, and managed excellence. By uniting ambitious Bangladeshi talent with national and global businesses, Gaenr eliminates the friction of traditional freelancing and sets a new benchmark for professional execution.
+                <p className="leading-snug">
+                  <strong className="text-slate-900">· Controlled Revisions:</strong> Every engagement includes structured revision cycles overseen by a Gaenr supervisor to guarantee client satisfaction.
                 </p>
-              </div>
-
-              {/* Official Seal Callout Box */}
-              <div className="p-2.5 sm:p-3 rounded-lg bg-blue-50/80 border border-blue-200/90 text-left space-y-1">
-                <div className="flex items-center gap-1.5 text-[#006eff] text-[10px] sm:text-[11px] font-mono font-bold">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>OFFICIAL GAENR VERIFIED MANUSCRIPT · DELIVERABLE SPECIMEN</span>
-                </div>
-                <p className="text-[10px] sm:text-[10.5px] text-slate-700 font-sans leading-snug">
-                  Authored by Gaenr Verified Content Specialist (ID: {expertCode}). Protected under Gaenr Escrow Security Protocol · Authorized for client portfolio preview.
-                </p>
-              </div>
-
-              {/* Page 2 Footer */}
-              <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 pt-2 border-t border-slate-200">
-                <span>CONFIDENTIAL & PROPRIETARY · GAENR MANAGED ECOSYSTEM</span>
-                <span className="font-bold text-slate-700">PAGE 2 OF 2</span>
               </div>
             </div>
-          )}
+
+            {/* Section 5 */}
+            <div className="space-y-1 pt-1">
+              <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                5. Enterprise Privacy & Cryptographic Deliverable Vaults
+              </h3>
+              <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                Client confidentiality and intellectual property rights are protected through isolated cryptographic upload portals. Each creator is provisioned with high-entropy upload tokens decoupled from public identifier codes. Work-in-progress deliverables remain encrypted and isolated from public access until official verification and final client settlement.
+              </p>
+            </div>
+
+            {/* Section 6 */}
+            <div className="space-y-1 pt-1">
+              <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                6. Conclusion: The Gaenr Manifesto
+              </h3>
+              <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                We believe the future of outsourcing belongs to clarity, mutual accountability, and managed excellence. By uniting ambitious Bangladeshi talent with national and global businesses, Gaenr eliminates the friction of traditional freelancing and sets a new benchmark for professional execution.
+              </p>
+            </div>
+
+            {/* Official Seal Callout Box */}
+            <div className="p-2.5 sm:p-3 rounded-lg bg-blue-50/80 border border-blue-200/90 text-left space-y-1">
+              <div className="flex items-center gap-1.5 text-[#006eff] text-[10px] sm:text-[11px] font-mono font-bold">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>OFFICIAL GAENR VERIFIED MANUSCRIPT · DELIVERABLE SPECIMEN</span>
+              </div>
+              <p className="text-[10px] sm:text-[10.5px] text-slate-700 font-sans leading-snug">
+                Authored by Gaenr Verified Content Specialist (ID: {expertCode}). Protected under Gaenr Escrow Security Protocol · Authorized for client portfolio preview.
+              </p>
+            </div>
+
+            {/* Page 2 Footer */}
+            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 pt-2 border-t border-slate-200">
+              <span>CONFIDENTIAL & PROPRIETARY · GAENR MANAGED ECOSYSTEM</span>
+              <span className="font-bold text-slate-700">PAGE 2 OF 2</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Controls Bar */}
-      <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-white/10 shrink-0 select-none" style={{ background: '#0c182c' }}>
-        {/* Title & Page Switcher */}
-        <div className="flex items-center gap-2 min-w-0 pr-2">
-          <span className="font-bold text-white text-xs truncate hidden sm:inline">{title}</span>
-          {/* Page 1 / Page 2 Switcher */}
-          <div className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5 text-[11px] font-mono font-bold text-white">
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); setCurrentPage(1); }}
-              className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
-                currentPage === 1 ? 'bg-[#006eff] text-white shadow-xs' : 'text-white/70 hover:text-white'
-              }`}
-            >
-              Page 1
-            </button>
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); setCurrentPage(2); }}
-              className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
-                currentPage === 2 ? 'bg-[#006eff] text-white shadow-xs' : 'text-white/70 hover:text-white'
-              }`}
-            >
-              Page 2
-            </button>
-          </div>
-        </div>
-
-        {/* Project Next/Prev & Zoom Controls */}
-        <div className="flex items-center gap-1.5 shrink-0">
+      <div className="flex items-center justify-between px-3.5 py-2 border-t border-white/10 shrink-0 select-none" style={{ background: '#0c182c' }}>
+        <div className="flex items-center gap-1.5">
           {hasMultiple && (
-            <div className="flex items-center gap-1 mr-1">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
@@ -688,7 +659,10 @@ const SecureDocumentViewer: React.FC<{
               </button>
             </div>
           )}
+        </div>
 
+        {/* Zoom Controls */}
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
           <button
             type="button"
             onClick={shrink}
@@ -711,10 +685,6 @@ const SecureDocumentViewer: React.FC<{
             className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
             title="Zoom in"
           >+</button>
-
-          <div className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
-            Read-Only
-          </div>
         </div>
       </div>
     </div>
@@ -1102,7 +1072,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                   <div className="w-14 h-14 rounded-full bg-[#006eff] flex items-center justify-center shadow-lg">
                     <Play className="w-6 h-6 text-white ml-0.5" />
                   </div>
-                  <h4 className="text-sm font-bold text-white line-clamp-1">{item.title}</h4>
+                  <h4 className="text-sm font-bold text-white line-clamp-1">Verified Video Deliverable</h4>
                   <a
                     href={activeMedia}
                     target="_blank"
@@ -1117,7 +1087,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
               )}
             </div>
             <div className="px-3 py-2 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-white/60" style={{ background: '#0c182c' }}>
-              <span className="truncate max-w-[200px] text-white font-bold">{item.title}</span>
+              <span className="text-white/80 font-bold">Verified Video Deliverable</span>
               {item.tools && item.tools.length > 0 && (
                 <span className="truncate text-white/40">{item.tools.slice(0, 2).join(' · ')}</span>
               )}
@@ -1202,7 +1172,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
         }
       }
 
-      // ── Clean verified deliverable card (Strictly Read-Only, No outbound links) ──
+      // ── Clean verified deliverable card (Protected showcase) ──
       return (
         <div
           className={`w-full ${
@@ -1215,7 +1185,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
             </div>
             <div className="space-y-1.5">
               <h4 className={`font-bold text-slate-900 ${isExpanded ? 'text-base' : 'text-sm'} leading-snug`}>
-                {item.title}
+                Verified Deliverable Specimen
               </h4>
               {item.description && (
                 <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed max-w-xs mx-auto">
@@ -1224,7 +1194,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
               )}
             </div>
             <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-mono text-[11px] font-semibold">
-              Verified Deliverable Specimen · Read-Only
+              Verified Deliverable Specimen
             </span>
           </div>
           {item.tools && item.tools.length > 0 && (
@@ -2367,7 +2337,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                       />
                     );
                   }
-                  // ── WordPress website (Strictly Read-Only, full height) ────
+                  // ── WordPress website (Protected full height) ────
                   if (item.category === 'wordpress-website') {
                     return (
                       <div className="w-full max-w-6xl h-full flex flex-col min-h-0 flex-1" style={{ height: 'calc(100vh - 140px)' }}>
@@ -2378,7 +2348,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                           </div>
                           <div className="flex-1 max-w-md mx-3 bg-slate-700 rounded px-2.5 py-0.5 text-[10px] font-mono text-slate-300 truncate text-center">
-                            🔒 {activeMedia} (Read-Only Preview)
+                            🔒 {activeMedia.replace(/^https?:\/\//, '').replace(/\/$/, '')}
                           </div>
                           <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
                             VERIFIED LIVE
@@ -2390,15 +2360,16 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                       </div>
                     );
                   }
-                  // ── Embeddable platforms (Figma, Loom, Canva… Strictly Read-Only) ─
+                  // ── Embeddable platforms (Figma, Loom, Canva…) ─
                   const embedUrl = getEmbedUrl(activeMedia);
                   if (embedUrl) {
                     const isGoogleDrive = embedUrl.includes('drive.google.com') || activeMedia.includes('drive.google.com');
                     return (
                       <div className="w-full max-w-6xl h-full flex flex-col min-h-0 flex-1" style={{ height: 'calc(100vh - 140px)' }}>
                         <div className="shrink-0 pb-2 flex items-center justify-between">
-                          <h4 className="text-white font-bold text-sm truncate">{item.title}</h4>
-                          <span className="text-xs font-mono text-slate-400">Read-Only Showcase</span>
+                          <span className="font-mono text-xs font-bold uppercase tracking-wider text-slate-400">
+                            GAENR VERIFIED DELIVERABLE · {expert.code}
+                          </span>
                         </div>
                         <div className="flex-1 bg-slate-900 rounded-xl overflow-hidden min-h-0 relative">
                           <iframe
@@ -2434,11 +2405,11 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                         <ShieldCheck className="w-8 h-8" />
                       </div>
                       <div className="space-y-1.5">
-                        <h4 className="text-white font-bold text-lg">{item.title}</h4>
+                        <h4 className="text-white font-bold text-lg">Verified Deliverable Specimen</h4>
                         {item.description && <p className="text-slate-400 text-xs max-w-sm leading-relaxed">{item.description}</p>}
                       </div>
                       <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs">
-                        ✓ Gaenr Verified Deliverable Specimen · Read-Only
+                        ✓ Gaenr Verified Deliverable Specimen
                       </div>
                     </div>
                   );
