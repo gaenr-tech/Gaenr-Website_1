@@ -95,10 +95,8 @@ export const CategoriesManageView: React.FC<CategoriesManageViewProps> = ({
       if (result) {
         if (target === 'card') {
           setFormCardImageUrl(result);
-          showToast('Card photo loaded', 'info');
         } else {
           setFormCoverImageUrl(result);
-          showToast('Cover photo loaded', 'info');
         }
       }
     };

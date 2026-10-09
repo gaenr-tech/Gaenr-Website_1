@@ -222,9 +222,9 @@ const AppContent: React.FC = () => {
         {/* Global AI Chatbot */}
         <GaenrChatbot />
 
-        {/* Toast Notification Container */}
+        {/* Toast Notification Container - Strictly single notification */}
         <div className="fixed bottom-24 right-5 z-[110] flex flex-col gap-2 pointer-events-none">
-          {toasts.map((toast) => (
+          {toasts.slice(-1).map((toast) => (
             <div
               key={toast.id}
               className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border text-xs font-medium max-w-sm animate-in fade-in slide-in-from-bottom-2 ${
@@ -279,9 +279,9 @@ const AppContent: React.FC = () => {
       {/* Global AI Chatbot */}
       <GaenrChatbot />
 
-      {/* Toast Notification Container - Clean Auto-Dismissing, No Cross Button */}
+      {/* Toast Notification Container - Strictly single notification, clean auto-dismissing */}
       <div className="fixed bottom-24 right-5 z-[110] flex flex-col gap-2 pointer-events-none">
-        {toasts.map((toast) => (
+        {toasts.slice(-1).map((toast) => (
           <div
             key={toast.id}
             className={`pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg border text-xs font-medium max-w-sm animate-in fade-in slide-in-from-bottom-2 ${

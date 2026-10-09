@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
   ServiceSlug,
   ServiceCategory,
@@ -518,8 +518,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch {}
   }, [expertApplications]);
 
-  // Toasts
+  // Toasts - Strictly one single notification displayed at any moment
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // =====================================
   // GAENR OPERATIONS INTERNAL STATE
@@ -881,15 +882,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const showToast = (message: string, type: 'success' | 'info' | 'error' = 'info') => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
     const id = Date.now().toString() + Math.random().toString(36).substring(2, 6);
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
+    // Strictly single active toast: new notification immediately replaces any existing one
+    setToasts([{ id, message, type }]);
+    toastTimerRef.current = setTimeout(() => {
+      setToasts([]);
+      toastTimerRef.current = null;
     }, 3000);
   };
 
-  const dismissToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+  const dismissToast = (_id?: string) => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+    setToasts([]);
   };
 
   const openAssignTask = (expertCode?: string, categorySlug?: ServiceSlug) => {
@@ -1395,7 +1406,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       googleDriveAssetFolderUrl: GAENR_OFFICIAL_DRIVE_FOLDER_URL,
     };
     setExpertApplications((prev) => [newApp, ...prev]);
-    showToast('Application received! Status is set to Applied.', 'success');
   };
 
   const updateExpertApplicationStatus = (
@@ -1533,7 +1543,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           : a
       )
     );
-    showToast('Onboarding preferences saved successfully!', 'success');
+    showToast('Onboarding profile & payout preferences saved successfully!', 'success');
   };
 
   const addExpertPortfolioItem = (expertCode: string, item: PortfolioItem) => {

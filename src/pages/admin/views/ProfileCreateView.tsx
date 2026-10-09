@@ -91,7 +91,6 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           description: `Deliverable uploaded for ${generatedCode}`,
         },
       ]);
-      showToast(`Deliverable file "${file.name}" attached successfully!`, 'success');
     };
     reader.readAsDataURL(file);
   };

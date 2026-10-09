@@ -207,7 +207,6 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
     });
 
     setIsSubmitted(true);
-    showToast('Onboarding profile & payout details saved successfully!', 'success');
   };
 
   const skillTitle = application.otherSkill || application.skill.split('/')[0].trim();
