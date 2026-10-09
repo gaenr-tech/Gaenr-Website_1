@@ -22,7 +22,7 @@ import {
 } from '../types';
 import { INITIAL_FREELANCERS, INITIAL_AVATARS, SERVICE_CATEGORIES } from '../data/mockData';
 import { getCategoryAvatar, RAW_AVATAR_SPECS } from '../components/common/Avatars';
-import { generateSecureUploadToken } from '../utils/security';
+import { generateSecureUploadToken, generateUniqueExpertCode } from '../utils/security';
 import { sendExpertWelcomeEmail, sendExpertOnboardingInviteEmail } from '../utils/email';
 
 export const GAENR_OFFICIAL_DRIVE_FOLDER_URL =
@@ -241,34 +241,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (saved) {
         const parsed: FreelancerProfile[] = JSON.parse(saved);
 
-        const legacyCodeMap: Record<string, string> = {
-          GD26001: '8K2N9X4P',
-          GD26002: '7M3Q1W9Z',
-          VE26001: '9T3Y8L5V',
-          WP26001: '4H7P1X6Z',
-          UI26001: '6W9C3N8D',
-          CW26001: '7M4R2W9Q',
-          PS26001: '5B2K8M4T',
-          TS26001: '8K2N9X4P',
-          GD2602001: '7M3Q1W9Z',
-          CW2602001: '7M4R2W9Q',
-          VE2602001: '9T3Y8L5V',
-          WP2602001: '4H7P1X6Z',
-          UX2602001: '6W9C3N8D',
-          UI2602001: '6W9C3N8D',
-          SD2602001: '5B2K8M4T',
-          PS2602001: '5B2K8M4T',
-        };
-
         let hasChanges = false;
         const updated = parsed.map((fl) => {
           let updatedFl = { ...fl };
-
-          // Standardize legacy prefixes if needed
-          if (legacyCodeMap[fl.code]) {
-            updatedFl.code = legacyCodeMap[fl.code];
-            hasChanges = true;
-          }
 
           // Ensure valid avatar: preserve chosen avatar if valid in RAW_AVATAR_SPECS, else assign recommended student avatar
           const hasValidAvatar = RAW_AVATAR_SPECS.some((s) => s.id === fl.avatarId);
@@ -358,33 +333,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             hasChanges = true;
           }
 
-          // Normalize old codes to standard 8-character random alphanumeric format
-          const CODE_NORMALIZATION_MAP: Record<string, string> = {
-            GD26001: '8K2N9X4P',
-            GD26002: '7M3Q1W9Z',
-            VE26001: '9T3Y8L5V',
-            WP26001: '4H7P1X6Z',
-            UI26001: '6W9C3N8D',
-            CW26001: '7M4R2W9Q',
-            PS26001: '5B2K8M4T',
-            TS26001: '8K2N9X4P',
-            GD2602001: '7M3Q1W9Z',
-            VE2602001: '9T3Y8L5V',
-            WP2602001: '4H7P1X6Z',
-            UX2602001: '6W9C3N8D',
-            UI2602001: '6W9C3N8D',
-            CW2602001: '7M4R2W9Q',
-            SD2602001: '5B2K8M4T',
-            PS2602001: '5B2K8M4T',
-          };
-          if (CODE_NORMALIZATION_MAP[updatedFl.code]) {
-            updatedFl.code = CODE_NORMALIZATION_MAP[updatedFl.code];
-            hasChanges = true;
-          }
-
           // Ensure canonical skills and baseline profiles preserve user-uploaded portfolio items!
-          const initMatch = INITIAL_FREELANCERS.find((f) => f.id === updatedFl.id || f.code === updatedFl.code);
-          if (initMatch && updatedFl.id?.startsWith('fl-')) {
+          const initMatch = updatedFl.id?.startsWith('fl-')
+            ? INITIAL_FREELANCERS.find((f) => f.id === updatedFl.id)
+            : undefined;
+          if (initMatch) {
             updatedFl.code = initMatch.code;
             updatedFl.skills = initMatch.skills;
             updatedFl.keywords = initMatch.keywords;
@@ -1445,84 +1398,85 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!targetApp) return;
 
     if (newStatus === 'onboarded') {
+      const existingCodes = freelancers.map((f) => f.code);
       let generatedCode = targetApp.convertedExpertCode;
 
-      if (!generatedCode || !freelancers.some((f) => f.code === generatedCode)) {
-        const catMeta = mapSkillToCategory(targetApp.otherSkill || targetApp.skill);
-        const matchingPrefix = freelancers.filter((f) => f.code.startsWith(catMeta.codePrefix));
-        let seq = matchingPrefix.length + 1;
-        generatedCode = `${catMeta.codePrefix}26${seq.toString().padStart(3, '0')}`;
-
-        while (freelancers.some((f) => f.code === generatedCode)) {
-          seq++;
-          generatedCode = `${catMeta.codePrefix}26${seq.toString().padStart(3, '0')}`;
-        }
-
-        const chosenAvatar =
-          targetApp.onboardingData?.avatarId ||
-          (targetApp.gender.toLowerCase().includes('female') ? 'avatar-youth-f1' : 'avatar-youth-m1');
-
-        const chosenStatement =
-          targetApp.onboardingData?.statement ||
-          `Verified Gaenr Expert in ${catMeta.title}. Specialized in professional deliverables and timely delivery.`;
-
-        const newProfile: FreelancerProfile = {
-          id: `fl_${Date.now()}`,
-          code: generatedCode,
-          uploadToken: generateSecureUploadToken(),
-          name: targetApp.fullName,
-          gender: targetApp.gender.toLowerCase().includes('female') ? 'Female' : 'Male',
-          contactNumber: targetApp.whatsapp,
-          privateEmail: targetApp.email,
-          address: targetApp.otherAddress || targetApp.address,
-          category: catMeta.slug,
-          categoryTitle: catMeta.title,
-          avatarId: chosenAvatar,
-          rating: 5.0,
-          reviewsCount: 0,
-          completedProjects: 0,
-          statement: chosenStatement,
-          status: 'active',
-          isPublic: true,
-          satisfactionRate: { satisfied: 100, neutral: 0, unsatisfied: 0 },
-          reviews: [],
-          paymentMethod: targetApp.onboardingData?.payoutMethod === 'bank' ? 'Bank Transfer' : 'MFS',
-          paymentDetails:
-            targetApp.onboardingData?.payoutMethod === 'bank'
-              ? `${targetApp.onboardingData.bankName || 'Bank'} | A/C: ${targetApp.onboardingData.accountNumber || ''} | Holder: ${targetApp.onboardingData.accountHolderName || ''} | Branch: ${targetApp.onboardingData.branchName || ''} ${targetApp.onboardingData.routingNumber ? `(${targetApp.onboardingData.routingNumber})` : ''}`
-              : `${targetApp.onboardingData?.payoutMethod || 'MFS'}: ${targetApp.onboardingData?.mfsNumber || targetApp.whatsapp}`,
-          pricingTiers: targetApp.onboardingData?.pricingTiers || [
-            {
-              id: `tier_${Date.now()}`,
-              serviceName: 'Standard Project Deliverable',
-              price: targetApp.onboardingData?.pricingModel || '5,000 BDT',
-            },
-          ],
-          googleDriveFolderUrl: GAENR_OFFICIAL_DRIVE_FOLDER_URL,
-          portfolioItems: [], // Crucial Rule: Profile starts clean; application portfolio is NOT published to live profile.
-        };
-
-        setFreelancers((prev) => {
-          const updated = [newProfile, ...prev];
-          try {
-            localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
-          } catch {}
-          return updated;
-        });
-
-        // Trigger official welcome email in 100% English with ID card badge and upload portal link
-        if (targetApp.email) {
-          sendExpertWelcomeEmail(generatedCode, null, newProfile).catch((err) => {
-            console.warn('Welcome email dispatch note:', err);
-          });
-        }
-
-        showToast(`Expert profile ${generatedCode} (${targetApp.fullName}) is now live on Gaenr!`, 'success');
+      if (!generatedCode || generatedCode.length < 6 || existingCodes.includes(generatedCode)) {
+        generatedCode = generateUniqueExpertCode(existingCodes);
       }
 
+      const uploadToken = targetApp.uploadToken || generateSecureUploadToken();
+      const catMeta = mapSkillToCategory(targetApp.otherSkill || targetApp.skill);
+
+      const chosenAvatar =
+        targetApp.onboardingData?.avatarId ||
+        (targetApp.gender.toLowerCase().includes('female') ? 'avatar-youth-f1' : 'avatar-youth-m1');
+
+      const chosenStatement =
+        targetApp.onboardingData?.statement ||
+        `Verified Gaenr Expert in ${catMeta.title}. Specialized in professional deliverables and timely delivery.`;
+
+      const newProfile: FreelancerProfile = {
+        id: `fl_${Date.now()}_${Math.floor(100 + Math.random() * 900)}`,
+        code: generatedCode,
+        uploadToken: uploadToken,
+        name: targetApp.fullName,
+        gender: targetApp.gender.toLowerCase().includes('female') ? 'Female' : 'Male',
+        contactNumber: targetApp.whatsapp,
+        privateEmail: targetApp.email,
+        address: targetApp.otherAddress || targetApp.address,
+        category: catMeta.slug,
+        categoryTitle: catMeta.title,
+        avatarId: chosenAvatar,
+        rating: 5.0,
+        reviewsCount: 0,
+        completedProjects: 0,
+        statement: chosenStatement,
+        status: 'active',
+        isPublic: true,
+        satisfactionRate: { satisfied: 100, neutral: 0, unsatisfied: 0 },
+        reviews: [],
+        paymentMethod: targetApp.onboardingData?.payoutMethod === 'bank' ? 'Bank Transfer' : 'MFS',
+        paymentDetails:
+          targetApp.onboardingData?.payoutMethod === 'bank'
+            ? `${targetApp.onboardingData.bankName || 'Bank'} | A/C: ${targetApp.onboardingData.accountNumber || ''} | Holder: ${targetApp.onboardingData.accountHolderName || ''} | Branch: ${targetApp.onboardingData.branchName || ''} ${targetApp.onboardingData.routingNumber ? `(${targetApp.onboardingData.routingNumber})` : ''}`
+            : `${targetApp.onboardingData?.payoutMethod || 'MFS'}: ${targetApp.onboardingData?.mfsNumber || targetApp.whatsapp}`,
+        pricingTiers: targetApp.onboardingData?.pricingTiers || [
+          {
+            id: `tier_${Date.now()}`,
+            serviceName: 'Standard Project Deliverable',
+            price: targetApp.onboardingData?.pricingModel || '5,000 BDT',
+          },
+        ],
+        googleDriveFolderUrl: GAENR_OFFICIAL_DRIVE_FOLDER_URL,
+        portfolioItems: [], // Crucial Rule: Profile starts clean; application portfolio is NOT published to live profile.
+      };
+
+      setFreelancers((prev) => {
+        const cleanPrev = prev.filter((f) => f.code !== generatedCode && f.id !== newProfile.id);
+        const updated = [newProfile, ...cleanPrev];
+        try {
+          localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
+
       setExpertApplications((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, status: 'onboarded', convertedExpertCode: generatedCode } : a))
+        prev.map((a) =>
+          a.id === id
+            ? { ...a, status: 'onboarded', convertedExpertCode: generatedCode, uploadToken: uploadToken }
+            : a
+        )
       );
+
+      // Trigger official welcome email in 100% English with ID card badge and upload portal link
+      if (targetApp.email) {
+        sendExpertWelcomeEmail(generatedCode, null, newProfile).catch((err) => {
+          console.warn('Welcome email dispatch note:', err);
+        });
+      }
+
+      showToast(`Expert profile ${generatedCode} (${targetApp.fullName}) is now live on Gaenr!`, 'success');
       return;
     }
 

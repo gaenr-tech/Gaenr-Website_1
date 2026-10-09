@@ -61,3 +61,21 @@ export const ensureExpertUploadToken = (expert: FreelancerProfile): FreelancerPr
     uploadToken: generateSecureUploadToken(),
   };
 };
+
+/**
+ * Generates an unguessable, high-entropy 8-character uppercase alphanumeric expert code.
+ * Example format: "8K2N9X4P", "7M3Q1W9Z"
+ * Excludes ambiguous characters (0, O, 1, I).
+ */
+export const generateUniqueExpertCode = (existingCodes: string[] = []): string => {
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const taken = new Set(existingCodes.map((c) => (c || '').toUpperCase().trim()));
+  let code = '';
+  do {
+    code = '';
+    for (let i = 0; i < 8; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+  } while (taken.has(code));
+  return code;
+};

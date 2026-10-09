@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { generateIdCardPng } from './id-card.js';
 
 const SITE_URL = (process.env.SITE_URL || 'https://gaenr.com').replace(/\/$/, '');
 
@@ -17,19 +18,17 @@ const buildWelcomeEmail = (expert) => {
   const logoUrl = `${SITE_URL}/logo.svg`;
   const iconUrl = (name) => `${SITE_URL}/email-icons/${name}.svg`;
 
-  const subject = 'Welcome to Gaenr — your expert profile is live';
+  const subject = 'Your Gaenr Expert Profile is Live — ID Card & Portfolio Vault';
   const text = [
     `Hi ${name},`,
     '',
-    'Welcome to Gaenr! Your verified expert profile has been created and is now live.',
+    `Congratulations! Your verified expert profile in ${expert.categoryTitle || 'Specialized Services'} has been created and is now live on Gaenr.`,
     '',
-    'Since your verified profile is now officially created, you can now independently upload, manage, and showcase your project deliverables yourself anytime.',
+    `Official ID Card Number: ${expert.code}`,
+    `Your digital ID card has been generated and attached to this email as GAENR-ID-${expert.code}.png. Keep it safe for client verification.`,
     '',
-    `Upload Your Deliverables: ${uploadPortalUrl}`,
-    `View your live profile: ${profileUrl}`,
-    `Download your digital ID card: ${idCardDownloadUrl}`,
-    '',
-    'Keep your digital ID card safe. Clients and the Gaenr operations team use it to identify verified experts.',
+    `Open Portfolio Upload Vault: ${uploadPortalUrl}`,
+    `View Live Profile: ${profileUrl}`,
     '',
     'Team Gaenr',
     'Website: https://gaenr.com',
@@ -143,7 +142,7 @@ const buildWelcomeEmail = (expert) => {
           </tr>
           <tr>
             <td style="padding:10px 32px 0;font-size:14px;line-height:1.6;color:#475569;font-weight:400;">
-              We’re delighted to welcome you to the Gaenr ecosystem. Your verified expert profile has been created and is now live for clients worldwide.
+              We’re delighted to welcome you to the Gaenr ecosystem. Your verified expert profile in <strong>${escapeHtml(expert.categoryTitle || 'Specialized Services')}</strong> has been created and is now live for clients worldwide.
             </td>
           </tr>
 
@@ -163,7 +162,7 @@ const buildWelcomeEmail = (expert) => {
                       ${escapeHtml(expert.categoryTitle || 'Verified Expert')}
                     </div>
                     <div style="font-size:13px;color:#64748b;line-height:1.5;max-width:420px;margin:0 auto;">
-                      Your official digital ID Card badge is attached to this email as <strong>GAENR-ID-${escapeHtml(expert.code)}.png</strong>. Keep it safe for client verification.
+                      Your official digital ID Card is attached to this email as <strong>GAENR-ID-${escapeHtml(expert.code)}.png</strong>. Keep it safe for client verification.
                     </div>
                   </td>
                 </tr>
@@ -178,21 +177,18 @@ const buildWelcomeEmail = (expert) => {
                 <tr>
                   <td align="center">
                     <div style="font-size:11px;font-weight:700;color:#006eff;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">
-                      Private Deliverable Vault
+                      Portfolio Deliverable Vault
                     </div>
                     <div style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:8px;">
                       Upload &amp; Manage Your Portfolio Deliverables
                     </div>
-                    <div style="font-size:13px;color:#475569;line-height:1.6;max-width:440px;margin:0 auto 16px;">
-                      Your verified expert profile has been successfully activated! You can now start uploading and managing your official portfolio deliverables directly through your private portal link below:
+                    <div style="font-size:13px;color:#475569;line-height:1.6;max-width:440px;margin:0 auto 18px;">
+                      Your verified expert profile has been successfully activated. You can now independently upload, manage, and showcase your deliverables in your live profile anytime.
                     </div>
                     <div>
                       <a href="${uploadPortalUrl}" class="action-btn" target="_blank" style="display:inline-block;background-color:#006eff;color:#ffffff !important;text-decoration:none;font-weight:700;font-size:13px;padding:12px 34px;border-radius:9999px;box-shadow:0 4px 14px rgba(0, 110, 255, 0.25);">
-                        Open Portfolio Upload Portal →
+                        Open Portfolio Upload Vault →
                       </a>
-                    </div>
-                    <div style="margin-top:12px;font-size:12px;color:#64748b;">
-                      Or directly <a href="${uploadPortalUrl}" target="_blank" style="color:#006eff;font-weight:600;text-decoration:underline;">click here to start uploading and updating your portfolio</a>.
                     </div>
                   </td>
                 </tr>
@@ -200,17 +196,17 @@ const buildWelcomeEmail = (expert) => {
             </td>
           </tr>
 
-          <!-- Actions: Direct Download ID Card primary button + View Live Profile secondary button -->
+          <!-- Actions: View Live Profile & Download ID Card -->
           <tr>
-            <td style="padding:22px 32px 0;text-align:center;">
-              <div style="margin-bottom:12px;">
-                <a href="${idCardDownloadUrl}" class="secondary-btn" target="_blank" style="display:inline-block;background-color:#f1f5f9;color:#0f172a !important;border:1px solid #cbd5e1;text-decoration:none;font-weight:600;font-size:13px;padding:10px 30px;border-radius:9999px;">
-                  Download ID Card
+            <td style="padding:20px 32px 0;text-align:center;">
+              <div style="display:inline-block;margin:0 6px 8px;">
+                <a href="${profileUrl}" class="secondary-btn" target="_blank" style="display:inline-block;background-color:#f1f5f9;color:#0f172a !important;border:1px solid #cbd5e1;text-decoration:none;font-weight:600;font-size:13px;padding:10px 28px;border-radius:9999px;">
+                  View Live Profile →
                 </a>
               </div>
-              <div>
-                <a href="${profileUrl}" class="secondary-btn" target="_blank" style="display:inline-block;background-color:#f1f5f9;color:#0f172a !important;border:1px solid #cbd5e1;text-decoration:none;font-weight:600;font-size:13px;padding:10px 30px;border-radius:9999px;">
-                  View Live Profile →
+              <div style="display:inline-block;margin:0 6px 8px;">
+                <a href="${idCardDownloadUrl}" class="secondary-btn" target="_blank" style="display:inline-block;background-color:#f1f5f9;color:#0f172a !important;border:1px solid #cbd5e1;text-decoration:none;font-weight:600;font-size:13px;padding:10px 28px;border-radius:9999px;">
+                  Download ID Card
                 </a>
               </div>
             </td>
@@ -642,18 +638,43 @@ export default async function handler(req, res) {
         content: base64Data,
       });
     } else {
-      // 3b. Fallback: fetch rendered card from /api/id-card endpoint
+      // 3b. Generate directly on server via sharp without network loopbacks
       try {
-        const cardRes = await fetch(`${SITE_URL}/api/id-card?code=${encodeURIComponent(code)}`);
-        if (cardRes.ok) {
-          const cardBuffer = Buffer.from(await cardRes.arrayBuffer());
+        const cardBuffer = await generateIdCardPng(expert);
+        if (cardBuffer) {
+          const base64Data = cardBuffer.toString('base64');
+          try {
+            await sql`CREATE TABLE IF NOT EXISTS gaenr_id_cards (
+              code text PRIMARY KEY,
+              image_data text NOT NULL,
+              updated_at timestamptz NOT NULL DEFAULT now()
+            )`;
+            await sql`INSERT INTO gaenr_id_cards (code, image_data) VALUES (${code}, ${'data:image/png;base64,' + base64Data})
+              ON CONFLICT (code) DO UPDATE SET image_data = EXCLUDED.image_data, updated_at = now()`;
+          } catch (dbErr) {
+            console.warn('Could not cache generated card in DB:', dbErr);
+          }
+
           attachments.push({
             filename: `GAENR-ID-${code}.png`,
-            content: cardBuffer.toString('base64'),
+            content: base64Data,
           });
         }
       } catch (err) {
-        console.warn('Could not attach ID card image to email:', err);
+        console.warn('Could not generate ID card image directly:', err);
+        // Fallback: fetch rendered card from /api/id-card endpoint
+        try {
+          const cardRes = await fetch(`${SITE_URL}/api/id-card?code=${encodeURIComponent(code)}`);
+          if (cardRes.ok) {
+            const cardBuffer = Buffer.from(await cardRes.arrayBuffer());
+            attachments.push({
+              filename: `GAENR-ID-${code}.png`,
+              content: cardBuffer.toString('base64'),
+            });
+          }
+        } catch (fetchErr) {
+          console.warn('Fallback fetch card failed:', fetchErr);
+        }
       }
     }
 

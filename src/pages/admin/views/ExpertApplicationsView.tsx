@@ -316,23 +316,13 @@ WhatsApp: https://wa.me/8801608922800`;
                   const onboardingUrl = `${window.location.origin}/onboard/${app.id}`;
                   const matchedFl = app.convertedExpertCode
                     ? freelancers.find((f) => f.code === app.convertedExpertCode || f.id === app.convertedExpertCode)
-                    : undefined;
-                  const uploadUrl = matchedFl
-                    ? getExpertSecureUploadUrl(matchedFl)
-                    : app.convertedExpertCode
-                    ? `${window.location.origin}/u/${app.convertedExpertCode}`
-                    : '';
-                  const uploadPath = matchedFl?.uploadToken
-                    ? `/u/${matchedFl.uploadToken}`
-                    : app.convertedExpertCode
-                    ? `/u/${app.convertedExpertCode}`
-                    : '';
-                  const profileUrl = app.convertedExpertCode
-                    ? `${window.location.origin}/experts/${app.convertedExpertCode}`
-                    : '';
-                  const profilePath = app.convertedExpertCode
-                    ? `/experts/${app.convertedExpertCode}`
-                    : '';
+                    : freelancers.find((f) => f.id === `fl-${app.id}` || (f.privateEmail && f.privateEmail.toLowerCase() === app.email.toLowerCase()));
+                  const profileCode = matchedFl?.code || app.convertedExpertCode || '';
+                  const uploadToken = matchedFl?.uploadToken || app.uploadToken || profileCode;
+                  const uploadUrl = uploadToken ? `${window.location.origin}/u/${encodeURIComponent(uploadToken)}` : '';
+                  const uploadPath = uploadToken ? `/u/${encodeURIComponent(uploadToken)}` : '';
+                  const profileUrl = profileCode ? `${window.location.origin}/experts/${encodeURIComponent(profileCode)}` : '';
+                  const profilePath = profileCode ? `/experts/${encodeURIComponent(profileCode)}` : '';
 
                   return (
                     <tr key={app.id} className="hover:bg-slate-50/70 transition-colors">
@@ -346,11 +336,11 @@ WhatsApp: https://wa.me/8801608922800`;
                           <span>{app.gender.split('/')[0].trim()}</span>
                           <span>•</span>
                           <span>{app.otherOccupation || app.occupation.split('/')[0].trim()}</span>
-                          {app.convertedExpertCode && (
+                          {profileCode && (
                             <>
                               <span>•</span>
                               <span className="font-mono font-bold text-[#006eff]">
-                                {app.convertedExpertCode}
+                                {profileCode}
                               </span>
                             </>
                           )}
@@ -399,7 +389,7 @@ WhatsApp: https://wa.me/8801608922800`;
                               <span>Live on Website</span>
                             </span>
                             <div className="text-[10px] text-slate-500 font-mono">
-                              Code: <b className="text-slate-800">{app.convertedExpertCode}</b>
+                              Code: <b className="text-slate-800">{profileCode || app.convertedExpertCode}</b>
                             </div>
                           </div>
                         ) : status === 'approved' ? (
@@ -462,76 +452,57 @@ WhatsApp: https://wa.me/8801608922800`;
                             </button>
                           )}
 
-                          {/* 2. If approved -> Copy Link & Create Live Profile */}
-                          {status === 'approved' && (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => handleCopyLink(onboardingUrl, `onb-${app.id}`, 'Onboarding Form link')}
-                                className="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
-                                title={`Copy candidate onboarding questionnaire link (${onboardingUrl})`}
-                              >
-                                {copiedId === `onb-${app.id}` ? (
-                                  <>
-                                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                    <span>Copied!</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Copy className="w-3.5 h-3.5 text-amber-700" />
-                                    <span>Copy Link</span>
-                                  </>
-                                )}
-                              </button>
-
-                              {onUpdateStatus && (
-                                <button
-                                  type="button"
-                                  onClick={() => onUpdateStatus(app.id, 'onboarded')}
-                                  className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
-                                  title="Publish verified expert profile to live website and assign expert code"
-                                >
-                                  <Sparkles className="w-3.5 h-3.5" />
-                                  <span>Create Live Profile</span>
-                                </button>
-                              )}
-                            </>
+                          {/* 2. If approved -> Create Live Profile (Single sequential button) */}
+                          {status === 'approved' && onUpdateStatus && (
+                            <button
+                              type="button"
+                              onClick={() => onUpdateStatus(app.id, 'onboarded')}
+                              className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
+                              title="Publish verified expert profile to live website and assign expert code"
+                            >
+                              <Sparkles className="w-3.5 h-3.5" />
+                              <span>Create Live Profile</span>
+                            </button>
                           )}
 
                           {/* 3. If onboarded -> Upload Vault & Live Profile */}
-                          {status === 'onboarded' && app.convertedExpertCode && (
+                          {status === 'onboarded' && (profileCode || uploadToken) && (
                             <>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (navigate) {
-                                    navigate(uploadPath);
-                                  } else {
-                                    window.open(uploadUrl, '_blank');
-                                  }
-                                }}
-                                className="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
-                                title={`Open private deliverable upload vault (${uploadUrl})`}
-                              >
-                                <Upload className="w-3.5 h-3.5" />
-                                <span>Upload Vault</span>
-                              </button>
+                              {uploadToken && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (navigate) {
+                                      navigate(uploadPath);
+                                    } else {
+                                      window.open(uploadUrl, '_blank');
+                                    }
+                                  }}
+                                  className="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+                                  title={`Open private deliverable upload vault (${uploadUrl})`}
+                                >
+                                  <Upload className="w-3.5 h-3.5" />
+                                  <span>Upload Vault</span>
+                                </button>
+                              )}
 
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (navigate) {
-                                    navigate(profilePath);
-                                  } else {
-                                    window.open(profileUrl, '_blank');
-                                  }
-                                }}
-                                className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
-                                title={`View public verified expert profile (${profileUrl})`}
-                              >
-                                <ExternalLink className="w-3.5 h-3.5" />
-                                <span>Live Profile</span>
-                              </button>
+                              {profileCode && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (navigate) {
+                                      navigate(profilePath);
+                                    } else {
+                                      window.open(profileUrl, '_blank');
+                                    }
+                                  }}
+                                  className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+                                  title={`View public verified expert profile (${profileUrl})`}
+                                >
+                                  <ExternalLink className="w-3.5 h-3.5" />
+                                  <span>Live Profile</span>
+                                </button>
+                              )}
                             </>
                           )}
 
@@ -898,51 +869,56 @@ WhatsApp: https://wa.me/8801608922800`;
                   </>
                 )}
 
-                {selectedApp.status === 'onboarded' && selectedApp.convertedExpertCode && (() => {
+                {selectedApp.status === 'onboarded' && (() => {
                   const modalMatchedFl = freelancers.find(
-                    (f) => f.code === selectedApp.convertedExpertCode || f.id === selectedApp.convertedExpertCode
+                    (f) =>
+                      (selectedApp.convertedExpertCode && (f.code === selectedApp.convertedExpertCode || f.id === selectedApp.convertedExpertCode)) ||
+                      f.id === `fl-${selectedApp.id}` ||
+                      (f.privateEmail && f.privateEmail.toLowerCase() === selectedApp.email.toLowerCase())
                   );
-                  const modalUploadPath = modalMatchedFl?.uploadToken
-                    ? `/u/${modalMatchedFl.uploadToken}`
-                    : `/u/${selectedApp.convertedExpertCode}`;
-                  const modalUploadUrl = modalMatchedFl
-                    ? getExpertSecureUploadUrl(modalMatchedFl)
-                    : `${window.location.origin}/u/${selectedApp.convertedExpertCode}`;
-                  const modalProfilePath = `/experts/${selectedApp.convertedExpertCode}`;
-                  const modalProfileUrl = `${window.location.origin}/experts/${selectedApp.convertedExpertCode}`;
+                  const modalCode = modalMatchedFl?.code || selectedApp.convertedExpertCode || '';
+                  const modalUploadToken = modalMatchedFl?.uploadToken || selectedApp.uploadToken || modalCode;
+                  const modalUploadPath = modalUploadToken ? `/u/${encodeURIComponent(modalUploadToken)}` : '';
+                  const modalUploadUrl = modalUploadToken ? `${window.location.origin}/u/${encodeURIComponent(modalUploadToken)}` : '';
+                  const modalProfilePath = modalCode ? `/experts/${encodeURIComponent(modalCode)}` : '';
+                  const modalProfileUrl = modalCode ? `${window.location.origin}/experts/${encodeURIComponent(modalCode)}` : '';
 
                   return (
                     <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (navigate) {
-                            navigate(modalUploadPath);
-                          } else {
-                            window.open(modalUploadUrl, '_blank');
-                          }
-                          setSelectedApp(null);
-                        }}
-                        className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
-                      >
-                        <Upload className="w-3.5 h-3.5" />
-                        <span>Upload Vault</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (navigate) {
-                            navigate(modalProfilePath);
-                          } else {
-                            window.open(modalProfileUrl, '_blank');
-                          }
-                          setSelectedApp(null);
-                        }}
-                        className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        <span>Live Profile</span>
-                      </button>
+                      {modalUploadToken && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (navigate) {
+                              navigate(modalUploadPath);
+                            } else {
+                              window.open(modalUploadUrl, '_blank');
+                            }
+                            setSelectedApp(null);
+                          }}
+                          className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>Upload Vault</span>
+                        </button>
+                      )}
+                      {modalCode && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (navigate) {
+                              navigate(modalProfilePath);
+                            } else {
+                              window.open(modalProfileUrl, '_blank');
+                            }
+                            setSelectedApp(null);
+                          }}
+                          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>Live Profile</span>
+                        </button>
+                      )}
                     </>
                   );
                 })()}

@@ -137,7 +137,7 @@ const buildCardSvg = (expert) => {
 
     <!-- Discipline / Category Badge -->
     <rect x="150" y="586" width="380" height="50" rx="25" fill="#2563eb" fill-opacity=".18" stroke="#60a5fa" stroke-opacity=".4"/>
-    <text x="340" y="618" fill="#bfdbfe" class="dm-sans" font-size="20" font-weight="700" text-anchor="middle">${category}</text>
+    <text x="340" y="618" fill="#bfdbfe" class="dm-sans" font-size="19" font-weight="700" letter-spacing="0.5" text-anchor="middle">${category}</text>
     <line x1="86" y1="680" x2="594" y2="680" stroke="#ffffff" stroke-opacity=".14"/>
 
     <!-- Metrics Row -->
@@ -153,6 +153,34 @@ const buildCardSvg = (expert) => {
     <!-- Card Footer -->
     <text x="340" y="878" fill="#94a3b8" class="dm-sans" font-size="15" font-weight="700" text-anchor="middle">Verified Expert • Gaenr Ecosystem</text>
   </svg>`;
+};
+
+export const generateIdCardPng = async (expert) => {
+  const avatarRelPath = avatarMap[expert?.avatarId] || avatarMap['avatar-youth-m1'];
+  const avatarRawBuffer = await fetchAvatarBuffer(avatarRelPath);
+
+  const composites = [];
+  if (avatarRawBuffer) {
+    const avatarSize = 228;
+    const avatarCircleMask = Buffer.from(
+      `<svg width="${avatarSize}" height="${avatarSize}"><circle cx="${avatarSize / 2}" cy="${avatarSize / 2}" r="${avatarSize / 2}" fill="#fff"/></svg>`
+    );
+    const circularAvatar = await sharp(avatarRawBuffer)
+      .resize(avatarSize, avatarSize, { fit: 'cover' })
+      .composite([{ input: avatarCircleMask, blend: 'dest-in' }])
+      .png()
+      .toBuffer();
+
+    composites.push({ input: circularAvatar, top: 206, left: 226 });
+  }
+
+  const cardSvgString = buildCardSvg(expert);
+  const png = await sharp(Buffer.from(cardSvgString))
+    .composite(composites)
+    .png()
+    .toBuffer();
+
+  return png;
 };
 
 export default async function handler(req, res) {
@@ -208,29 +236,7 @@ export default async function handler(req, res) {
     const expert = experts.find((item) => item?.code === code);
     if (!expert) return sendError(res, 404, 'Expert not found');
 
-    const avatarRelPath = avatarMap[expert.avatarId] || avatarMap['avatar-youth-m1'];
-    const avatarRawBuffer = await fetchAvatarBuffer(avatarRelPath);
-
-    const composites = [];
-    if (avatarRawBuffer) {
-      const avatarSize = 228;
-      const avatarCircleMask = Buffer.from(
-        `<svg width="${avatarSize}" height="${avatarSize}"><circle cx="${avatarSize / 2}" cy="${avatarSize / 2}" r="${avatarSize / 2}" fill="#fff"/></svg>`
-      );
-      const circularAvatar = await sharp(avatarRawBuffer)
-        .resize(avatarSize, avatarSize, { fit: 'cover' })
-        .composite([{ input: avatarCircleMask, blend: 'dest-in' }])
-        .png()
-        .toBuffer();
-
-      composites.push({ input: circularAvatar, top: 206, left: 226 });
-    }
-
-    const cardSvgString = buildCardSvg(expert);
-    const png = await sharp(Buffer.from(cardSvgString))
-      .composite(composites)
-      .png()
-      .toBuffer();
+    const png = await generateIdCardPng(expert);
 
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');

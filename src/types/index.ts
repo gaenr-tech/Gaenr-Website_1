@@ -257,7 +257,8 @@ export interface ExpertApplication {
   createdAt: string;
   status: ExpertApplicationStatus;
   onboardingData?: ExpertOnboardingData;
-  convertedExpertCode?: string; // Code of generated expert profile (e.g. GD2603001)
+  convertedExpertCode?: string; // Code of generated expert profile (e.g. 8K2N9X4P)
+  uploadToken?: string; // High-entropy vault token for deliverables (zero correlation with expert ID)
   googleDriveAssetFolderUrl?: string; // Connected Google Drive Asset Folder
 }
 
