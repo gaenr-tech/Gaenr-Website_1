@@ -372,14 +372,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             hasChanges = true;
           }
 
-          // Ensure canonical skills and real portfolio items are updated for baseline profiles
+          // Ensure canonical skills and baseline profiles preserve user-uploaded portfolio items!
           const initMatch = INITIAL_FREELANCERS.find((f) => f.id === updatedFl.id || f.code === updatedFl.code);
           if (initMatch && updatedFl.id?.startsWith('fl-')) {
             updatedFl.code = initMatch.code;
             updatedFl.skills = initMatch.skills;
             updatedFl.keywords = initMatch.keywords;
-            if (initMatch.portfolioItems && initMatch.portfolioItems.length > 0) {
-              updatedFl.portfolioItems = initMatch.portfolioItems;
+
+            const existingItems = updatedFl.portfolioItems || [];
+            const initialIds = new Set((initMatch.portfolioItems || []).map((p) => p.id));
+            // Retain all user-uploaded items (items whose ID is not part of the initial static template)
+            const userUploadedItems = existingItems.filter((p) => !initialIds.has(p.id));
+
+            // Merge: User uploaded items stay at the front, followed by canonical template items
+            const mergedItems = [...userUploadedItems, ...(initMatch.portfolioItems || [])];
+            if (JSON.stringify(mergedItems) !== JSON.stringify(existingItems)) {
+              updatedFl.portfolioItems = mergedItems;
               hasChanges = true;
             }
           }
@@ -1562,7 +1570,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       } catch {}
       return updated;
     });
-    showToast(`Deliverable "${item.title}" published to Expert #${expertCode}!`, 'success');
   };
 
   const deleteExpertPortfolioItem = (expertCode: string, itemId: string) => {

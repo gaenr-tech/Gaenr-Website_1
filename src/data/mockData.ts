@@ -581,7 +581,7 @@ export const INITIAL_FREELANCERS: FreelancerProfile[] = [
         accentColor: '#006eff',
         aspectRatio: '16:9',
         clientIndustry: 'Strategy & Enterprise Editorial',
-        mediaUrl: 'https://drive.google.com/file/d/18vAA_zcMZEtH5eGmvqVT1gOcvMAqVHT-/preview',
+        mediaUrl: '/documents/gaenr-content-manifesto.pdf',
         imageUrl: '/documents/gaenr-content-manifesto.pdf',
       },
     ],

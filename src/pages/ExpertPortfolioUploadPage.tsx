@@ -198,13 +198,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
             finalMediaUrl = driveResult.previewUrl;
           } else if (driveResult.downloadUrl || driveResult.fileUrl) {
             if (!hasWebsiteLink) finalMediaUrl = driveResult.downloadUrl || driveResult.fileUrl || mediaPreview;
-            if (previewType === 'image') finalImageUrl = driveResult.directImageUrl || finalMediaUrl;
           }
-          showToast('✓ Successfully deposited in Google Drive & published!', 'success');
-        } else if (driveResult.error === 'NO_WEBHOOK_CONFIGURED') {
-          showToast('⚠️ Google Drive Webhook not set in .env! Saved locally.', 'error');
-        } else {
-          showToast(`⚠️ Cloud upload notice: ${driveResult.error || 'Failed'}`, 'error');
         }
       } catch (err: any) {
         console.warn('Direct upload error:', err);
@@ -229,7 +223,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
     setIsUploading(false);
     setUploadStatusMsg('');
     handleClearSelected();
-    showToast(`Published to ${expert.code}'s live profile!`, 'success');
+    showToast('Uploaded successfully!', 'success');
   };
 
   if (!expert) {

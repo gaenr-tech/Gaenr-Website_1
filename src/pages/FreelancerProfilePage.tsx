@@ -8,7 +8,7 @@ import {
   getGoogleDriveExportDownloadUrl,
   extractGoogleDriveFileId,
 } from '../utils/googleDriveUpload';
-import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink, Upload, Copy, Layers } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink, Upload, Copy, Layers, ShieldCheck, Globe, FileText } from 'lucide-react';
 import { PortfolioItem } from '../types';
 import { getExpertSecureUploadUrl } from '../utils/security';
 
@@ -197,18 +197,6 @@ const ZoomableImageCard: React.FC<{
             className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
             title="Zoom in"
           >+</button>
-          {showExternal && (
-            <a
-              href={externalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#006eff] text-white flex items-center justify-center transition-colors cursor-pointer"
-              title="Open project link"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
         </div>
       </div>
     </div>
@@ -237,7 +225,7 @@ const ZoomableEmbedCard: React.FC<{
 
   return (
     <div
-      className={`w-full ${isExpanded ? 'max-w-5xl h-[82vh]' : 'max-w-2xl sm:max-w-3xl h-[380px] xs:h-[420px] sm:h-[480px] md:h-[520px]'} rounded-xl sm:rounded-2xl overflow-hidden flex flex-col shadow-xl transition-all`}
+      className={`w-full ${isExpanded ? 'max-w-5xl h-[82vh]' : 'max-w-2xl sm:max-w-3xl h-[440px] xs:h-[480px] sm:h-[540px] md:h-[580px]'} rounded-xl sm:rounded-2xl overflow-hidden flex flex-col shadow-xl transition-all`}
       style={{ background: '#0c182c' }}
     >
       {/* Embed area — iframe scaled via CSS transform, spacious viewport */}
@@ -265,7 +253,7 @@ const ZoomableEmbedCard: React.FC<{
             sandbox={
               isGoogleDrive
                 ? 'allow-scripts allow-same-origin allow-forms allow-presentation'
-                : 'allow-scripts allow-same-origin allow-popups allow-forms allow-presentation'
+                : 'allow-scripts allow-same-origin allow-forms allow-presentation'
             }
           />
         </div>
@@ -331,18 +319,9 @@ const ZoomableEmbedCard: React.FC<{
             title="Zoom in"
           >+</button>
 
-          {showExternal && (
-            <a
-              href={externalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#006eff] text-white flex items-center justify-center transition-colors cursor-pointer"
-              title="Open project link"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
+          <div className="px-2 py-0.5 rounded bg-white/10 text-white/80 font-mono text-[10px] font-semibold">
+            Read-Only
+          </div>
         </div>
       </div>
     </div>
@@ -350,14 +329,17 @@ const ZoomableEmbedCard: React.FC<{
 };
 
 // ── LiveWebsitePreviewCard ──────────────────────────────────────────────────
-// Authentic Interactive Browser Viewport for WordPress & Web Deliverables
+// Authentic Interactive Browser Viewport for WordPress & Web Deliverables (Strictly Read-Only)
 const LiveWebsitePreviewCard: React.FC<{
   siteUrl: string;
   title: string;
   description?: string;
   tools?: string[];
   isExpanded?: boolean;
-}> = ({ siteUrl, title, description, tools, isExpanded }) => {
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasMultiple?: boolean;
+}> = ({ siteUrl, title, description, tools, isExpanded, onNext, onPrev, hasMultiple }) => {
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [iframeError, setIframeError] = useState(false);
 
@@ -365,7 +347,7 @@ const LiveWebsitePreviewCard: React.FC<{
 
   return (
     <div
-      className={`w-full ${isExpanded ? 'max-w-5xl h-[82vh]' : 'max-w-2xl sm:max-w-3xl h-[380px] xs:h-[420px] sm:h-[480px] md:h-[520px]'} bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col overflow-hidden text-slate-800 transition-all`}
+      className={`w-full ${isExpanded ? 'max-w-5xl h-[82vh]' : 'max-w-2xl sm:max-w-3xl h-[440px] xs:h-[480px] sm:h-[540px] md:h-[580px]'} bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col overflow-hidden text-slate-800 transition-all`}
     >
       {/* Top Browser Chrome Bar */}
       <div className="bg-slate-100 px-3.5 py-2.5 border-b border-slate-200/90 flex items-center justify-between text-xs shrink-0 select-none">
@@ -382,23 +364,37 @@ const LiveWebsitePreviewCard: React.FC<{
             <span className="truncate">{cleanDisplayUrl}</span>
           </div>
           <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 shrink-0">
-            LIVE SITE
+            VERIFIED PREVIEW
           </span>
         </div>
 
-        {/* External Link Action */}
+        {/* Slider buttons & status badge */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <a
-            href={siteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-[#006eff] text-[#006eff] hover:text-white font-semibold text-[11px] transition-all cursor-pointer shadow-2xs"
-            title="Open in new window"
-          >
-            <span>Visit</span>
-            <ExternalLink className="w-3 h-3" />
-          </a>
+          {hasMultiple && (
+            <div className="flex items-center gap-1 mr-1">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
+                className="px-2 py-0.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title="Previous project"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Prev</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onNext?.(); }}
+                className="px-2 py-0.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title="Next project"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          <span className="text-[10px] font-mono text-slate-500 font-bold bg-slate-200 px-2 py-0.5 rounded">
+            Read-Only
+          </span>
         </div>
       </div>
 
@@ -410,7 +406,7 @@ const LiveWebsitePreviewCard: React.FC<{
             title={title}
             className="w-full h-full border-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+            sandbox="allow-scripts allow-same-origin allow-forms"
             onLoad={() => setIframeLoaded(true)}
             onError={() => setIframeError(true)}
           />
@@ -421,15 +417,9 @@ const LiveWebsitePreviewCard: React.FC<{
               <h4 className="text-sm font-bold text-slate-800">{title}</h4>
               <p className="text-xs text-slate-500 max-w-xs">{cleanDisplayUrl}</p>
             </div>
-            <a
-              href={siteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 bg-[#006eff] text-white rounded-xl text-xs font-bold hover:bg-blue-600 transition-colors inline-flex items-center gap-1.5"
-            >
-              <span>Open Live Website</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            <div className="px-3 py-1 bg-slate-200 text-slate-700 rounded-xl text-xs font-bold inline-flex items-center gap-1.5">
+              <span>Verified WordPress Deliverable</span>
+            </div>
           </div>
         )}
       </div>
@@ -442,6 +432,289 @@ const LiveWebsitePreviewCard: React.FC<{
           {tools && tools.length > 0 && (
             <span className="text-slate-500">{tools.slice(0, 2).join(' · ')}</span>
           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── SecureDocumentViewer ────────────────────────────────────────────────────
+// Authentic 2-Page Read-Only Gaenr Editorial Whitepaper & Manuscript Reader
+// Strictly protected: No Google popouts, no text copying, full zoom & page switcher
+const SecureDocumentViewer: React.FC<{
+  title: string;
+  expertCode: string;
+  tools?: string[];
+  isExpanded?: boolean;
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasMultiple?: boolean;
+}> = ({ title, expertCode, tools, isExpanded, onNext, onPrev, hasMultiple }) => {
+  const [currentPage, setCurrentPage] = useState<1 | 2>(1);
+  const [zoom, setZoom] = useState(1);
+
+  const bump = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoom((z) => Math.min(1.8, +(z + 0.15).toFixed(2)));
+  };
+  const shrink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoom((z) => Math.max(0.7, +(z - 0.15).toFixed(2)));
+  };
+
+  const handleCopyAttempt = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  return (
+    <div
+      className={`w-full ${
+        isExpanded ? 'max-w-5xl h-full' : 'max-w-2xl sm:max-w-3xl h-[440px] xs:h-[480px] sm:h-[540px] md:h-[580px]'
+      } rounded-xl sm:rounded-2xl overflow-hidden flex flex-col shadow-xl select-none transition-all`}
+      style={{
+        background: '#0c182c',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+      }}
+      onCopy={handleCopyAttempt}
+      onCut={handleCopyAttempt}
+      onContextMenu={handleCopyAttempt}
+    >
+      {/* Document Viewport - Scrollable paper container */}
+      <div
+        className="relative flex-1 w-full overflow-y-auto overflow-x-hidden p-3 sm:p-6 flex flex-col items-center bg-slate-900/90"
+        style={{ userSelect: 'none' }}
+      >
+        {/* Paper Sheet */}
+        <div
+          className="w-full max-w-2xl bg-white text-slate-900 rounded-lg shadow-2xl p-5 sm:p-9 transition-transform duration-150 origin-top border border-slate-200 relative select-none"
+          style={{
+            transform: `scale(${zoom})`,
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+          }}
+          onCopy={handleCopyAttempt}
+        >
+          {/* Subtle diagonal repeating watermark across paper */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden select-none opacity-[0.06] flex items-center justify-center">
+            <div className="rotate-[-25deg] text-slate-900 font-mono font-black text-2xl tracking-widest text-center uppercase leading-loose">
+              GAENR VERIFIED DELIVERABLE · #{expertCode} · READ ONLY
+            </div>
+          </div>
+
+          {currentPage === 1 ? (
+            /* ──────────────── PAGE 1 ──────────────── */
+            <div className="space-y-4 text-left select-none relative z-10">
+              {/* Header Rule */}
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-bold text-[#006eff] pb-2 border-b border-slate-200">
+                <span>GAENR EDITORIAL REPOSITORY · STRATEGIC WHITEPAPER</span>
+                <span className="text-slate-400">DOC: GN-WP-2026-CW01</span>
+              </div>
+
+              {/* Title & Subtitle */}
+              <div className="space-y-1.5 pt-1">
+                <h2 className="text-base sm:text-xl font-serif font-extrabold text-slate-900 tracking-tight leading-snug">
+                  Gaenr: The Strategic Architecture of Managed Outsourcing & Decentralized Talent Execution
+                </h2>
+                <p className="text-xs sm:text-sm font-sans text-slate-600 font-medium italic">
+                  An Empirical Blueprint for Verified Creative & Technical Delivery in South Asia
+                </p>
+                <div className="flex items-center gap-2 pt-1 text-[10px] font-mono text-slate-500">
+                  <span className="px-2 py-0.5 rounded bg-blue-50 text-[#006eff] font-bold">
+                    Specialist #{expertCode}
+                  </span>
+                  <span>· Editorial & Strategy</span>
+                  <span>· Verified Specimen</span>
+                </div>
+              </div>
+
+              {/* Section 1 */}
+              <div className="space-y-1 pt-2">
+                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                  1. Executive Summary & The Managed Marketplace Paradigm
+                </h3>
+                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                  Traditional freelance platforms operate on passive discovery, leaving clients burdened by unvetted bids, unreliable deliverables, and unpredictable turnaround times. Gaenr re-engineers this paradigm by introducing managed operational escrows, rigorous skill vetting, and structured milestone assurance. Instead of gambling on anonymous profiles, clients collaborate with high-caliber Bangladeshi creators backed by continuous performance oversight.
+                </p>
+              </div>
+
+              {/* Section 2 */}
+              <div className="space-y-1 pt-1">
+                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                  2. The Macro Dilemma: Fragmented Marketplaces vs. Managed Delivery
+                </h3>
+                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                  Over 68% of small-to-medium businesses report dissatisfaction with conventional gig marketplaces due to communication friction, inconsistent creative execution, and hidden platform fees. Gaenr eliminates these failure modes through an active management layer that guarantees project briefs are translated into production-grade outcomes.
+                </p>
+              </div>
+
+              {/* Section 3 */}
+              <div className="space-y-1 pt-1">
+                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                  3. Decentralization & Opportunity: The Bangladesh Advantage
+                </h3>
+                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                  Bangladesh possesses one of the world's most dynamic and cost-effective digital talent pools. By pairing university-educated, technologically adept specialists with enterprise clients across North America, Europe, and Asia, Gaenr provides premier services at transparent, flat-rate pricing without intermediary markups.
+                </p>
+              </div>
+
+              {/* Page 1 Footer */}
+              <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 pt-3 border-t border-slate-200">
+                <span>CONFIDENTIAL & PROPRIETARY · GAENR MANAGED ECOSYSTEM</span>
+                <span className="font-bold text-slate-700">PAGE 1 OF 2</span>
+              </div>
+            </div>
+          ) : (
+            /* ──────────────── PAGE 2 ──────────────── */
+            <div className="space-y-4 text-left select-none relative z-10">
+              {/* Header Rule */}
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono font-bold text-[#006eff] pb-2 border-b border-slate-200">
+                <span>GAENR EDITORIAL REPOSITORY · STRATEGIC WHITEPAPER</span>
+                <span className="text-slate-400">DOC: GN-WP-2026-CW01</span>
+              </div>
+
+              {/* Section 4 */}
+              <div className="space-y-1.5 pt-1">
+                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                  4. Multi-Tier Quality Assurance & Anti-Slop Discipline
+                </h3>
+                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                  In an era overwhelmed by careless generative automation, Gaenr enforces a strict anti-slop visual and editorial doctrine. Every project deliverable is evaluated across three non-negotiable vectors before client handoff:
+                </p>
+                <div className="space-y-1 pl-2 text-[10.5px] sm:text-[11.5px] text-slate-700 font-sans">
+                  <p className="leading-snug">
+                    <strong className="text-slate-900">· Conceptual Originality:</strong> Zero generic stock templates. Graphics, presentations, and copy are engineered from scratch with tailor-made typographical systems.
+                  </p>
+                  <p className="leading-snug">
+                    <strong className="text-slate-900">· Technical Precision & Integrity:</strong> Vector source files maintain clean curve nodes, web builds hit Core Web Vitals 90+, and copy manuscripts pass native linguistic audits.
+                  </p>
+                  <p className="leading-snug">
+                    <strong className="text-slate-900">· Controlled Revisions:</strong> Every engagement includes structured revision cycles overseen by a Gaenr supervisor to guarantee client satisfaction.
+                  </p>
+                </div>
+              </div>
+
+              {/* Section 5 */}
+              <div className="space-y-1 pt-1">
+                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                  5. Enterprise Privacy & Cryptographic Deliverable Vaults
+                </h3>
+                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                  Client confidentiality and intellectual property rights are protected through isolated cryptographic upload portals. Each creator is provisioned with high-entropy upload tokens decoupled from public identifier codes. Work-in-progress deliverables remain encrypted and isolated from public access until official verification and final client settlement.
+                </p>
+              </div>
+
+              {/* Section 6 */}
+              <div className="space-y-1 pt-1">
+                <h3 className="text-xs sm:text-sm font-serif font-bold text-[#006eff]">
+                  6. Conclusion: The Gaenr Manifesto
+                </h3>
+                <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-sans text-justify">
+                  We believe the future of outsourcing belongs to clarity, mutual accountability, and managed excellence. By uniting ambitious Bangladeshi talent with national and global businesses, Gaenr eliminates the friction of traditional freelancing and sets a new benchmark for professional execution.
+                </p>
+              </div>
+
+              {/* Official Seal Callout Box */}
+              <div className="p-2.5 sm:p-3 rounded-lg bg-blue-50/80 border border-blue-200/90 text-left space-y-1">
+                <div className="flex items-center gap-1.5 text-[#006eff] text-[10px] sm:text-[11px] font-mono font-bold">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>OFFICIAL GAENR VERIFIED MANUSCRIPT · DELIVERABLE SPECIMEN</span>
+                </div>
+                <p className="text-[10px] sm:text-[10.5px] text-slate-700 font-sans leading-snug">
+                  Authored by Gaenr Verified Content Specialist (ID: {expertCode}). Protected under Gaenr Escrow Security Protocol · Authorized for client portfolio preview.
+                </p>
+              </div>
+
+              {/* Page 2 Footer */}
+              <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 pt-2 border-t border-slate-200">
+                <span>CONFIDENTIAL & PROPRIETARY · GAENR MANAGED ECOSYSTEM</span>
+                <span className="font-bold text-slate-700">PAGE 2 OF 2</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Controls Bar */}
+      <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-white/10 shrink-0 select-none" style={{ background: '#0c182c' }}>
+        {/* Title & Page Switcher */}
+        <div className="flex items-center gap-2 min-w-0 pr-2">
+          <span className="font-bold text-white text-xs truncate hidden sm:inline">{title}</span>
+          {/* Page 1 / Page 2 Switcher */}
+          <div className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5 text-[11px] font-mono font-bold text-white">
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setCurrentPage(1); }}
+              className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                currentPage === 1 ? 'bg-[#006eff] text-white shadow-xs' : 'text-white/70 hover:text-white'
+              }`}
+            >
+              Page 1
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setCurrentPage(2); }}
+              className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                currentPage === 2 ? 'bg-[#006eff] text-white shadow-xs' : 'text-white/70 hover:text-white'
+              }`}
+            >
+              Page 2
+            </button>
+          </div>
+        </div>
+
+        {/* Project Next/Prev & Zoom Controls */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {hasMultiple && (
+            <div className="flex items-center gap-1 mr-1">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
+                className="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title="Previous project"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Prev</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onNext?.(); }}
+                className="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title="Next project"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={shrink}
+            disabled={zoom <= 0.7}
+            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
+            title="Zoom out"
+          >−</button>
+          <button
+            type="button"
+            onClick={() => setZoom(1)}
+            title="Reset zoom to 100%"
+            className="text-[10px] text-white/70 hover:text-white font-mono w-9 text-center cursor-pointer"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+          <button
+            type="button"
+            onClick={bump}
+            disabled={zoom >= 1.8}
+            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
+            title="Zoom in"
+          >+</button>
+
+          <div className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+            Read-Only
+          </div>
         </div>
       </div>
     </div>
@@ -876,6 +1149,22 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
         );
       }
 
+      // ── Dedicated Document Viewer (Content Writing & Whitepapers) ────────
+      if (item.previewType === 'document' || item.category === 'content-writing') {
+        return (
+          <SecureDocumentViewer
+            key={item.id || `${item.title}-${index}`}
+            title={item.title}
+            expertCode={expert.code}
+            tools={item.tools}
+            isExpanded={isExpanded}
+            onNext={handleNextPortfolio}
+            onPrev={handlePrevPortfolio}
+            hasMultiple={totalPortfolios > 1}
+          />
+        );
+      }
+
       // ── Inline Embed for supported platforms ─────────────────────────────
       // Google Drive, Figma, Google Docs / Slides / Sheets, Loom, Google Forms
       const embedUrl = getEmbedUrl(activeMedia);
@@ -905,29 +1194,24 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
               description={item.description}
               tools={item.tools}
               isExpanded={isExpanded}
+              onNext={handleNextPortfolio}
+              onPrev={handlePrevPortfolio}
+              hasMultiple={totalPortfolios > 1}
             />
           );
         }
       }
 
-      // ── Clean external link card (non-embeddable: Behance, GitHub, etc.) ──
-      // No raw URL, no expert code, no "Verified Deliverable" header — just
-      // the title, description and a tap-to-open interaction.
+      // ── Clean verified deliverable card (Strictly Read-Only, No outbound links) ──
       return (
         <div
           className={`w-full ${
             isExpanded ? 'max-w-3xl' : 'max-w-md'
-          } bg-white rounded-xl border border-slate-200/90 shadow-md overflow-hidden flex flex-col`}
+          } bg-white rounded-xl border border-slate-200/90 shadow-md overflow-hidden flex flex-col select-none`}
         >
-          <a
-            href={activeMedia}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-4 hover:bg-slate-50/60 transition-colors group"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 group-hover:bg-blue-50 group-hover:border-blue-200 flex items-center justify-center mx-auto transition-colors">
-              <ExternalLink className="w-6 h-6 text-slate-400 group-hover:text-[#006eff] transition-colors" />
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-[#006eff] flex items-center justify-center mx-auto shadow-xs">
+              <ShieldCheck className="w-7 h-7" />
             </div>
             <div className="space-y-1.5">
               <h4 className={`font-bold text-slate-900 ${isExpanded ? 'text-base' : 'text-sm'} leading-snug`}>
@@ -939,12 +1223,12 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                 </p>
               )}
             </div>
-            <span className="text-xs font-semibold text-[#006eff] group-hover:underline">
-              Tap to View Project →
+            <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-mono text-[11px] font-semibold">
+              Verified Deliverable Specimen · Read-Only
             </span>
-          </a>
+          </div>
           {item.tools && item.tools.length > 0 && (
-            <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-1.5">
+            <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-1.5 justify-center">
               {item.tools.map((t) => (
                 <span key={t} className="px-2 py-0.5 rounded text-[10px] bg-white text-slate-600 border border-slate-200 font-mono">
                   {t}
@@ -1931,7 +2215,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
           </div>
 
           {/* Main Fullscreen Stage */}
-          <div className="relative flex-1 flex items-center justify-center p-2 sm:p-6 overflow-hidden">
+          <div className="relative flex-1 w-full h-full flex flex-col items-center justify-center p-1 sm:p-4 overflow-hidden min-h-0">
             {/* Watermarks across Fullscreen - Render BOTH Image and Text with pointer-events-none for video controls */}
             <div
               className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center overflow-hidden select-none py-8"
@@ -2020,11 +2304,28 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
             )}
 
             {/* Render portfolio content in fullscreen — fills all available space */}
-            <div className="flex-1 w-full flex items-center justify-center overflow-hidden min-h-0">
+            <div className="w-full h-full flex flex-col items-center justify-center overflow-hidden min-h-0 flex-1">
               {(() => {
                 const item = currentPortfolio;
                 if (!item) return null;
                 const activeMedia = item.mediaUrl || item.imageUrl;
+
+                // ── Dedicated Document Viewer (Content Writing & Whitepapers) ────────
+                if (item.previewType === 'document' || item.category === 'content-writing') {
+                  return (
+                    <div className="w-full max-w-5xl h-full flex flex-col min-h-0 flex-1" style={{ height: 'calc(100vh - 140px)' }}>
+                      <SecureDocumentViewer
+                        title={item.title}
+                        expertCode={expert.code}
+                        tools={item.tools}
+                        isExpanded={true}
+                        onNext={handleNextPortfolio}
+                        onPrev={handlePrevPortfolio}
+                        hasMultiple={totalPortfolios > 1}
+                      />
+                    </div>
+                  );
+                }
 
                 if (activeMedia) {
                   // ── YouTube ──────────────────────────────────────────────
@@ -2066,54 +2367,50 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                       />
                     );
                   }
-                  // ── WordPress website ────────────────────────────────────
+                  // ── WordPress website (Strictly Read-Only, full height) ────
                   if (item.category === 'wordpress-website') {
                     return (
-                      <div className="w-full max-w-5xl flex flex-col h-full">
-                        <div className="bg-slate-800 px-3 py-2 rounded-t-lg flex items-center gap-2 shrink-0">
+                      <div className="w-full max-w-6xl h-full flex flex-col min-h-0 flex-1" style={{ height: 'calc(100vh - 140px)' }}>
+                        <div className="bg-slate-800 px-3 py-2 rounded-t-lg flex items-center justify-between shrink-0">
                           <div className="flex items-center gap-1.5 shrink-0">
                             <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
                             <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                           </div>
-                          <div className="flex-1 bg-slate-700 rounded px-2.5 py-0.5 text-[10px] font-mono text-slate-300 truncate min-w-0">
-                            🔒 {activeMedia}
+                          <div className="flex-1 max-w-md mx-3 bg-slate-700 rounded px-2.5 py-0.5 text-[10px] font-mono text-slate-300 truncate text-center">
+                            🔒 {activeMedia} (Read-Only Preview)
                           </div>
-                          <a href={activeMedia} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="shrink-0 px-3 py-1 bg-[#006eff] hover:bg-blue-500 text-white text-[10px] font-bold rounded-lg flex items-center gap-1">
-                            <ExternalLink className="w-3 h-3" /><span>Visit Website</span>
-                          </a>
+                          <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
+                            VERIFIED LIVE
+                          </span>
                         </div>
-                        <div className="flex-1 bg-white rounded-b-lg overflow-hidden min-h-0">
-                          <iframe src={activeMedia} title={item.title} className="w-full h-full border-0" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" />
+                        <div className="flex-1 bg-white rounded-b-lg overflow-hidden min-h-0 relative">
+                          <iframe src={activeMedia} title={item.title} className="w-full h-full border-0 absolute inset-0" sandbox="allow-scripts allow-same-origin allow-forms" />
                         </div>
                       </div>
                     );
                   }
-                  // ── Embeddable platforms (Drive, Figma, Docs, Loom…) ─────
+                  // ── Embeddable platforms (Figma, Loom, Canva… Strictly Read-Only) ─
                   const embedUrl = getEmbedUrl(activeMedia);
                   if (embedUrl) {
                     const isGoogleDrive = embedUrl.includes('drive.google.com') || activeMedia.includes('drive.google.com');
                     return (
-                      <div className="w-full max-w-5xl flex flex-col h-full">
+                      <div className="w-full max-w-6xl h-full flex flex-col min-h-0 flex-1" style={{ height: 'calc(100vh - 140px)' }}>
                         <div className="shrink-0 pb-2 flex items-center justify-between">
                           <h4 className="text-white font-bold text-sm truncate">{item.title}</h4>
-                          {!isGoogleDrive && !activeMedia.includes('googleusercontent.com') && (
-                            <a href={activeMedia} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors" title="Open in new tab">
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
-                          )}
+                          <span className="text-xs font-mono text-slate-400">Read-Only Showcase</span>
                         </div>
-                        <div className="flex-1 bg-white rounded-xl overflow-hidden min-h-0 relative">
+                        <div className="flex-1 bg-slate-900 rounded-xl overflow-hidden min-h-0 relative">
                           <iframe
                             src={embedUrl}
                             title={item.title}
-                            className="w-full h-full border-0"
+                            className="w-full h-full border-0 absolute inset-0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                             allowFullScreen
                             sandbox={
                               isGoogleDrive
                                 ? 'allow-scripts allow-same-origin allow-forms allow-presentation'
-                                : 'allow-scripts allow-same-origin allow-popups allow-forms allow-presentation'
+                                : 'allow-scripts allow-same-origin allow-forms allow-presentation'
                             }
                           />
                           {isGoogleDrive && (
@@ -2130,19 +2427,19 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                       </div>
                     );
                   }
-                  // ── Non-embeddable external link ──────────────────────────
+                  // ── Non-embeddable verified deliverable showcase card ────────
                   return (
-                    <div className="flex flex-col items-center justify-center text-center space-y-5 p-8">
-                      <div className="w-20 h-20 rounded-3xl bg-white/10 border border-white/20 flex items-center justify-center">
-                        <ExternalLink className="w-8 h-8 text-white/70" />
+                    <div className="flex flex-col items-center justify-center text-center space-y-4 p-8 max-w-lg bg-slate-900/90 rounded-2xl border border-white/10 shadow-2xl">
+                      <div className="w-16 h-16 rounded-2xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-[#006eff]">
+                        <ShieldCheck className="w-8 h-8" />
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         <h4 className="text-white font-bold text-lg">{item.title}</h4>
-                        {item.description && <p className="text-white/60 text-sm max-w-sm">{item.description}</p>}
+                        {item.description && <p className="text-slate-400 text-xs max-w-sm leading-relaxed">{item.description}</p>}
                       </div>
-                      <a href={activeMedia} target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-[#006eff] hover:bg-blue-500 text-white font-bold rounded-xl flex items-center gap-2 transition-colors">
-                        <span>Open Project</span><ExternalLink className="w-4 h-4" />
-                      </a>
+                      <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs">
+                        ✓ Gaenr Verified Deliverable Specimen · Read-Only
+                      </div>
                     </div>
                   );
                 }

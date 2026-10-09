@@ -280,10 +280,8 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           }
         }
 
-        sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile).then((result) => {
-          if (result.status === 'sent') showToast(`Welcome email sent to ${newProfile.privateEmail}`, 'success');
-          else if (result.status === 'failed') showToast(`Expert saved, but the welcome email failed: ${result.message}`, 'error');
-          else if (result.status === 'skipped' && result.reason === 'not-configured') showToast('Expert saved. Email service is not set up yet, so no email was sent.', 'info');
+        sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile).catch((e) => {
+          console.warn('Background welcome email note:', e);
         });
       }
       navigate('/manage/profiles');
