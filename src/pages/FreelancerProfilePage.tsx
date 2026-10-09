@@ -64,7 +64,10 @@ const ZoomableImageCard: React.FC<{
   tools?: string[];
   externalUrl?: string;
   isExpanded?: boolean;
-}> = ({ src, alt, title, tools, externalUrl, isExpanded }) => {
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasMultiple?: boolean;
+}> = ({ src, alt, title, tools, externalUrl, isExpanded, onNext, onPrev, hasMultiple }) => {
   const [zoom, setZoom] = useState(1);
   const [fallbackStep, setFallbackStep] = useState(0);
 
@@ -105,7 +108,7 @@ const ZoomableImageCard: React.FC<{
     }
   };
 
-  const showExternal = externalUrl && !externalUrl.includes('drive.google.com');
+  const showExternal = !isDrive && !!externalUrl && !externalUrl.includes('drive.google.com') && !externalUrl.includes('googleusercontent.com');
 
   return (
     <div
@@ -141,7 +144,7 @@ const ZoomableImageCard: React.FC<{
         )}
       </div>
       {/* Controls bar */}
-      <div className="flex items-center justify-between px-3 py-2 border-t border-white/10" style={{ background: '#0c182c' }}>
+      <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-white/10 select-none" style={{ background: '#0c182c' }}>
         <div className="min-w-0 pr-2">
           <h4 className="font-bold text-white text-xs truncate">{title}</h4>
           {tools && tools.length > 0 && (
@@ -149,6 +152,29 @@ const ZoomableImageCard: React.FC<{
           )}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
+          {hasMultiple && (
+            <div className="flex items-center gap-1 mr-1">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
+                className="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title="Previous project"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Prev</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onNext?.(); }}
+                className="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title="Next project"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={shrink}
@@ -177,7 +203,7 @@ const ZoomableImageCard: React.FC<{
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#006eff] text-white flex items-center justify-center transition-colors"
+              className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#006eff] text-white flex items-center justify-center transition-colors cursor-pointer"
               title="Open project link"
             >
               <ExternalLink className="w-3.5 h-3.5" />
@@ -193,14 +219,21 @@ const ZoomableImageCard: React.FC<{
 // Figma / Drive Presentations / PDF Decks with generous responsive dimensions and +/- zoom
 const ZoomableEmbedCard: React.FC<{
   embedUrl: string;
-  externalUrl: string;
+  externalUrl?: string;
   title: string;
   tools?: string[];
   isExpanded?: boolean;
-}> = ({ embedUrl, externalUrl, title, tools, isExpanded }) => {
+  onNext?: () => void;
+  onPrev?: () => void;
+  hasMultiple?: boolean;
+}> = ({ embedUrl, externalUrl, title, tools, isExpanded, onNext, onPrev, hasMultiple }) => {
   const [zoom, setZoom] = useState(1);
   const bump = (e: React.MouseEvent) => { e.stopPropagation(); setZoom(z => Math.min(3, +(z + 0.5).toFixed(1))); };
   const shrink = (e: React.MouseEvent) => { e.stopPropagation(); setZoom(z => Math.max(1, +(z - 0.5).toFixed(1))); };
+
+  const isGoogleDrive = embedUrl.includes('drive.google.com') || (externalUrl ? externalUrl.includes('drive.google.com') : false);
+  const isFigma = embedUrl.includes('figma.com');
+  const showExternal = !isGoogleDrive && !!externalUrl && !externalUrl.includes('drive.google.com') && !externalUrl.includes('googleusercontent.com');
 
   return (
     <div
@@ -229,12 +262,29 @@ const ZoomableEmbedCard: React.FC<{
             className="w-full h-full border-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
             allowFullScreen
-            sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-presentation"
+            sandbox={
+              isGoogleDrive
+                ? 'allow-scripts allow-same-origin allow-forms allow-presentation'
+                : 'allow-scripts allow-same-origin allow-popups allow-forms allow-presentation'
+            }
           />
         </div>
+
+        {/* Protection overlay: Intercept Google Drive top-right pop-out icon so user cannot pop out to Drive */}
+        {isGoogleDrive && (
+          <div
+            className="absolute top-0 right-0 w-24 h-16 z-30 pointer-events-auto bg-transparent select-none cursor-default"
+            title="Protected Deliverable Vault"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          />
+        )}
       </div>
+
       {/* Controls bar */}
-      <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-white/10 shrink-0" style={{ background: '#0c182c' }}>
+      <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-white/10 shrink-0 select-none" style={{ background: '#0c182c' }}>
         <div className="min-w-0 pr-2">
           <h4 className="font-bold text-white text-xs truncate">{title}</h4>
           {tools && tools.length > 0 && (
@@ -242,6 +292,29 @@ const ZoomableEmbedCard: React.FC<{
           )}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
+          {hasMultiple && (
+            <div className="flex items-center gap-1 mr-1">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
+                className="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title="Previous project"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Prev</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onNext?.(); }}
+                className="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title="Next project"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={shrink}
@@ -257,16 +330,19 @@ const ZoomableEmbedCard: React.FC<{
             className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
             title="Zoom in"
           >+</button>
-          <a
-            href={externalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#006eff] text-white flex items-center justify-center transition-colors cursor-pointer"
-            title="Open in new tab"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+
+          {showExternal && (
+            <a
+              href={externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#006eff] text-white flex items-center justify-center transition-colors cursor-pointer"
+              title="Open project link"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
         </div>
       </div>
     </div>
@@ -673,8 +749,10 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
 
     // Figma (file, proto, design, board)
     if (cleanUrl.includes('figma.com/file/') || cleanUrl.includes('figma.com/proto/') ||
-        cleanUrl.includes('figma.com/design/') || cleanUrl.includes('figma.com/board/'))
-      return `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(cleanUrl)}`;
+        cleanUrl.includes('figma.com/design/') || cleanUrl.includes('figma.com/board/')) {
+      const baseFigmaUrl = cleanUrl.replace(/[?&]node-id=[^&]+/g, '').replace(/[?&]t=[^&]+/g, '').replace(/\?$/, '');
+      return `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(baseFigmaUrl)}`;
+    }
 
     // Canva Presentations & Designs
     const canva = cleanUrl.match(/canva\.com\/design\/([a-zA-Z0-9_-]+)/);
@@ -791,6 +869,9 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
             tools={item.tools}
             externalUrl={item.externalUrl}
             isExpanded={isExpanded}
+            onNext={handleNextPortfolio}
+            onPrev={handlePrevPortfolio}
+            hasMultiple={totalPortfolios > 1}
           />
         );
       }
@@ -806,6 +887,9 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
             title={item.title}
             tools={item.tools}
             isExpanded={isExpanded}
+            onNext={handleNextPortfolio}
+            onPrev={handlePrevPortfolio}
+            hasMultiple={totalPortfolios > 1}
           />
         );
       }
@@ -2008,16 +2092,40 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                   // ── Embeddable platforms (Drive, Figma, Docs, Loom…) ─────
                   const embedUrl = getEmbedUrl(activeMedia);
                   if (embedUrl) {
+                    const isGoogleDrive = embedUrl.includes('drive.google.com') || activeMedia.includes('drive.google.com');
                     return (
                       <div className="w-full max-w-5xl flex flex-col h-full">
                         <div className="shrink-0 pb-2 flex items-center justify-between">
                           <h4 className="text-white font-bold text-sm truncate">{item.title}</h4>
-                          <a href={activeMedia} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors" title="Open in new tab">
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
+                          {!isGoogleDrive && !activeMedia.includes('googleusercontent.com') && (
+                            <a href={activeMedia} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors" title="Open in new tab">
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          )}
                         </div>
-                        <div className="flex-1 bg-white rounded-xl overflow-hidden min-h-0">
-                          <iframe src={embedUrl} title={item.title} className="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-presentation" />
+                        <div className="flex-1 bg-white rounded-xl overflow-hidden min-h-0 relative">
+                          <iframe
+                            src={embedUrl}
+                            title={item.title}
+                            className="w-full h-full border-0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                            allowFullScreen
+                            sandbox={
+                              isGoogleDrive
+                                ? 'allow-scripts allow-same-origin allow-forms allow-presentation'
+                                : 'allow-scripts allow-same-origin allow-popups allow-forms allow-presentation'
+                            }
+                          />
+                          {isGoogleDrive && (
+                            <div
+                              className="absolute top-0 right-0 w-24 h-16 z-30 pointer-events-auto bg-transparent select-none cursor-default"
+                              title="Protected Deliverable Vault"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                              }}
+                            />
+                          )}
                         </div>
                       </div>
                     );
