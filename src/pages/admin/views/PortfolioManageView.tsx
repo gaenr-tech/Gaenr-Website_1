@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FreelancerProfile, PortfolioItem, DELIVERABLE_TYPE_OPTIONS } from '../../../types';
 import { AvatarGraphic } from '../../../components/common/Avatars';
 import { useBranding } from '../../../context/BrandingContext';
+import { getExpertSecureUploadUrl } from '../../../utils/security';
 import {
   Upload,
   Plus,
@@ -357,9 +358,9 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
                 This is the private portal where <b className="text-slate-900">{selectedFreelancer.code}</b> uploads project deliverables, connects Google Drive assets, and tests the client card in real time.
               </p>
               <div className="flex items-center gap-2 pt-1 flex-wrap">
-                <span className="text-[10px] text-slate-500 font-mono">Portal URL:</span>
+                <span className="text-[10px] text-slate-500 font-mono">Private Vault URL:</span>
                 <span className="font-mono text-xs text-[#006eff] font-bold bg-white/90 px-2.5 py-0.5 rounded-lg border border-blue-200/80 select-all">
-                  {`${window.location.origin}/expert-portfolio-upload/${selectedFreelancer.code}`}
+                  {getExpertSecureUploadUrl(selectedFreelancer)}
                 </span>
               </div>
             </div>
@@ -369,9 +370,9 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
                 type="button"
                 onClick={() => {
                   navigator.clipboard.writeText(
-                    `${window.location.origin}/expert-portfolio-upload/${selectedFreelancer.code}`
+                    getExpertSecureUploadUrl(selectedFreelancer)
                   );
-                  showToast(`Copied portal link for ${selectedFreelancer.code}`, 'success');
+                  showToast(`Copied secure upload link for ${selectedFreelancer.code}`, 'success');
                 }}
                 className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
               >
@@ -381,7 +382,7 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
 
               <button
                 type="button"
-                onClick={() => navigate(`/expert-portfolio-upload/${selectedFreelancer.code}`)}
+                onClick={() => navigate(`/p-upload/${selectedFreelancer.uploadToken || selectedFreelancer.code}`)}
                 className="px-4 py-2 rounded-xl bg-[#006eff] hover:bg-[#005cd4] text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md shadow-blue-500/20"
               >
                 <Upload className="w-3.5 h-3.5" />

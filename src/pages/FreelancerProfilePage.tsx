@@ -10,6 +10,7 @@ import {
 } from '../utils/googleDriveUpload';
 import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink, Upload, Copy, Layers } from 'lucide-react';
 import { PortfolioItem } from '../types';
+import { getExpertSecureUploadUrl } from '../utils/security';
 
 const defaultPricingByCategory: Record<string, { serviceName: string; price: string }[]> = {
   'graphics-design': [
@@ -1107,7 +1108,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                 </span>
               </div>
               <div className="text-[11px] text-slate-400 font-mono">
-                Dedicated Portal: /expert-portfolio-upload/{expert.code}
+                Private Vault: /p-upload/{expert.uploadToken ? '••••••••' : expert.code}
               </div>
             </div>
           </div>
@@ -1115,16 +1116,16 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
             <button
               type="button"
               onClick={() => {
-                navigator.clipboard.writeText(`${window.location.origin}/expert-portfolio-upload/${expert.code}`);
+                navigator.clipboard.writeText(getExpertSecureUploadUrl(expert));
               }}
               className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Copy className="w-3.5 h-3.5 text-slate-300" />
-              <span>Copy Portal Link</span>
+              <span>Copy Private Link</span>
             </button>
             <button
               type="button"
-              onClick={() => navigate(`/expert-portfolio-upload/${expert.code}`)}
+              onClick={() => navigate(`/p-upload/${expert.uploadToken || expert.code}`)}
               className="px-3 py-1.5 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Upload className="w-3.5 h-3.5" />

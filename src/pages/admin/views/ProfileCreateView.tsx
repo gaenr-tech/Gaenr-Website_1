@@ -3,6 +3,7 @@ import { useApp } from '../../../context/AppContext';
 import { sendExpertWelcomeEmail } from '../../../utils/email';
 import { ExpertIdCard } from '../../../components/common/ExpertIdCard';
 import { captureIdCardDataUrl } from '../../../utils/downloadIdCardImage';
+import { generateSecureUploadToken } from '../../../utils/security';
 import { FreelancerProfile, ServiceCategory, AvatarAsset, ServiceSlug, ExpertPricingTier, PortfolioItem, DeliverableType, DELIVERABLE_TYPE_OPTIONS } from '../../../types';
 import { AvatarGraphic, getOfficialAvatarUrl, getCategoryAvatar, RAW_AVATAR_SPECS, CategoryAvatarMeta } from '../../../components/common/Avatars';
 import {
@@ -234,6 +235,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
       const newProfile: FreelancerProfile = {
         id: `fl-${Date.now()}`,
         code: generatedCode,
+        uploadToken: generateSecureUploadToken(),
         category,
         categoryTitle: catObj?.title || 'Creative Discipline',
         avatarId: activeAvatar.id,
@@ -563,9 +565,9 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           <div className="p-3 bg-blue-50/50 border border-blue-200/60 rounded-xl text-xs text-slate-600 flex items-start gap-2.5">
             <Sparkles className="w-4 h-4 text-[#006eff] shrink-0 mt-0.5" />
             <div className="space-y-0.5">
-              <span className="font-bold text-slate-900 block">Dedicated Creator Upload Portal</span>
+              <span className="font-bold text-slate-900 block">Private Creator Deliverable Vault</span>
               <p className="text-[11px] text-slate-500 leading-relaxed">
-                Deliverables can be uploaded directly here or added anytime via the expert's dedicated Creator Upload Portal (<code className="font-mono text-[#006eff] bg-white px-1.5 py-0.5 rounded border border-blue-100">/expert-portfolio-upload/{generatedCode}</code>). No manual cloud drive folder setup is required.
+                Deliverables can be uploaded directly here or added anytime by the expert using their private cryptographic upload link (generated automatically without exposing their public ID). No manual cloud drive folder setup is required.
               </p>
             </div>
           </div>

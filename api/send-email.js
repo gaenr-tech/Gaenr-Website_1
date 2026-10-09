@@ -12,6 +12,8 @@ const buildWelcomeEmail = (expert) => {
   const profileUrl = `${SITE_URL}/experts/${encodeURIComponent(expert.code)}`;
   const idCardUrl = `${SITE_URL}/api/id-card?code=${encodeURIComponent(expert.code)}`;
   const idCardDownloadUrl = `${idCardUrl}&download=1`;
+  const uploadToken = expert.uploadToken || expert.code;
+  const uploadPortalUrl = `${SITE_URL}/p-upload/${encodeURIComponent(uploadToken)}`;
   const logoUrl = `${SITE_URL}/logo.svg`;
   const iconUrl = (name) => `${SITE_URL}/email-icons/${name}.svg`;
 
@@ -21,9 +23,11 @@ const buildWelcomeEmail = (expert) => {
     '',
     'Welcome to Gaenr! Your verified expert profile has been created and is now live.',
     '',
-    'Your digital Gaenr ID card is ready:',
-    idCardDownloadUrl,
-    `View your profile: ${profileUrl}`,
+    'Since your verified profile is now officially created, you can now independently upload, manage, and showcase your project deliverables yourself anytime.',
+    '',
+    `Upload Your Deliverables: ${uploadPortalUrl}`,
+    `View your live profile: ${profileUrl}`,
+    `Download your digital ID card: ${idCardDownloadUrl}`,
     '',
     'Keep your digital ID card safe. Clients and the Gaenr operations team use it to identify verified experts.',
     '',
@@ -167,16 +171,45 @@ const buildWelcomeEmail = (expert) => {
             </td>
           </tr>
 
+          <!-- Creator Deliverable Upload Section (Self-service portfolio management) -->
+          <tr>
+            <td style="padding:20px 32px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:18px;padding:22px 20px;text-align:center;">
+                <tr>
+                  <td align="center">
+                    <div style="font-size:11px;font-weight:700;color:#006eff;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">
+                      Private Deliverable Vault
+                    </div>
+                    <div style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:8px;">
+                      Upload &amp; Manage Your Portfolio Deliverables
+                    </div>
+                    <div style="font-size:13px;color:#475569;line-height:1.6;max-width:440px;margin:0 auto 16px;">
+                      আপনার ভেরিফাইড প্রোফাইল সফলভাবে তৈরি হয়ে গেছে। এখন থেকে আপনি নিজেই নিচের লিঙ্কে প্রবেশ করে যেকোনো সময় আপনার নতুন পোর্টফোলিও ও প্রজেক্ট ডেলিভারেবলস সরাসরি আপলোড ও পরিচালনা করতে পারবেন:
+                    </div>
+                    <div>
+                      <a href="${uploadPortalUrl}" class="action-btn" target="_blank" style="display:inline-block;background-color:#006eff;color:#ffffff !important;text-decoration:none;font-weight:700;font-size:13px;padding:12px 34px;border-radius:9999px;box-shadow:0 4px 14px rgba(0, 110, 255, 0.25);">
+                        পোর্টফোলিও আপলোড পোর্টাল খুলুন →
+                      </a>
+                    </div>
+                    <div style="margin-top:12px;font-size:12px;color:#64748b;">
+                      অথবা সরাসরি <a href="${uploadPortalUrl}" target="_blank" style="color:#006eff;font-weight:600;text-decoration:underline;">এখানে ক্লিক করে আপনার পোর্টফোলিও আপলোড করুন</a>।
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
           <!-- Actions: Direct Download ID Card primary button + View Live Profile secondary button -->
           <tr>
-            <td style="padding:24px 32px 0;text-align:center;">
+            <td style="padding:22px 32px 0;text-align:center;">
               <div style="margin-bottom:12px;">
-                <a href="${idCardDownloadUrl}" class="action-btn" target="_blank" style="display:inline-block;background-color:#006eff;color:#ffffff !important;text-decoration:none;font-weight:700;font-size:14px;padding:13px 36px;border-radius:9999px;box-shadow:0 4px 14px rgba(0, 110, 255, 0.25);">
+                <a href="${idCardDownloadUrl}" class="secondary-btn" target="_blank" style="display:inline-block;background-color:#f1f5f9;color:#0f172a !important;border:1px solid #cbd5e1;text-decoration:none;font-weight:600;font-size:13px;padding:10px 30px;border-radius:9999px;">
                   Download ID Card
                 </a>
               </div>
               <div>
-                <a href="${profileUrl}" class="secondary-btn" target="_blank" style="display:inline-block;background-color:#f1f5f9;color:#0f172a !important;border:1px solid #cbd5e1;text-decoration:none;font-weight:600;font-size:13px;padding:10px 28px;border-radius:9999px;">
+                <a href="${profileUrl}" class="secondary-btn" target="_blank" style="display:inline-block;background-color:#f1f5f9;color:#0f172a !important;border:1px solid #cbd5e1;text-decoration:none;font-weight:600;font-size:13px;padding:10px 30px;border-radius:9999px;">
                   View Live Profile →
                 </a>
               </div>

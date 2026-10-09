@@ -27,6 +27,7 @@ import {
 import { CustomSelect } from '../../../components/common/CustomSelect';
 import { downloadIdCardBadge } from '../../../utils/downloadIdCardImage';
 import { ExpertIdCard } from '../../../components/common/ExpertIdCard';
+import { getExpertSecureUploadUrl } from '../../../utils/security';
 
 interface ProfilesListViewProps {
   freelancers: FreelancerProfile[];
@@ -657,16 +658,16 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
 
               <div className="flex items-center gap-2">
                 <div className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs text-slate-800 truncate select-all">
-                  {`${window.location.origin}/expert-portfolio-upload/${selectedPortalExpert.code}`}
+                  {getExpertSecureUploadUrl(selectedPortalExpert)}
                 </div>
                 <button
                   type="button"
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      `${window.location.origin}/expert-portfolio-upload/${selectedPortalExpert.code}`
+                      getExpertSecureUploadUrl(selectedPortalExpert)
                     );
                     setPortalCopied(true);
-                    showToast?.(`Portfolio Portal link copied for ${selectedPortalExpert.code}`, 'success');
+                    showToast?.(`Private Upload Portal link copied for ${selectedPortalExpert.code}`, 'success');
                     setTimeout(() => setPortalCopied(false), 2500);
                   }}
                   className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 shrink-0 ${
@@ -695,10 +696,10 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
               <div className="space-y-0.5">
                 <div className="font-bold text-emerald-950 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Cloud Storage Vault</span>
+                  <span>Private Creator Vault</span>
                 </div>
                 <p className="text-[11px] text-emerald-800">
-                  Deliverables uploaded via this portal are automatically backed up and synced to the secure team cloud vault.
+                  Protected with high-entropy cryptographic token. Only the creator holding this private link can upload deliverables.
                 </p>
               </div>
             </div>
@@ -708,7 +709,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  navigate(`/expert-portfolio-upload/${selectedPortalExpert.code}`);
+                  navigate(`/p-upload/${selectedPortalExpert.uploadToken || selectedPortalExpert.code}`);
                   setSelectedPortalExpert(null);
                 }}
                 className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shadow-2xs"

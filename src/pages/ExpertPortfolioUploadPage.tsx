@@ -25,15 +25,18 @@ import {
 } from 'lucide-react';
 
 interface ExpertPortfolioUploadPageProps {
+  tokenOrCode?: string;
   expertCode?: string;
 }
 
 export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps> = ({
+  tokenOrCode,
   expertCode,
 }) => {
   const {
     currentRoute,
     freelancers,
+    isAdminLoggedIn,
     addExpertPortfolioItem,
     deleteExpertPortfolioItem,
     navigate,
@@ -41,13 +44,25 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
   } = useApp();
   const { branding } = useBranding();
 
-  // Extract expert code from props or route: /expert-portfolio-upload/:expertCode
-  const resolvedCode =
+  // Extract secure token or code from route: /p-upload/:token or /expert-portfolio-upload/:tokenOrCode
+  const resolvedIdentifier = (
+    tokenOrCode ||
     expertCode ||
-    currentRoute.split('#')[0].split('?')[0].replace('/expert-portfolio-upload/', '').trim();
+    currentRoute
+      .split('#')[0]
+      .split('?')[0]
+      .replace('/p-upload/', '')
+      .replace('/expert-portfolio-upload/', '')
+      .trim()
+  );
 
+  // Secure resolution:
+  // 1. By high-entropy uploadToken (zero correlation with expert ID)
+  // 2. Or if Operations staff is logged in, allow resolving by public code
   const expert = freelancers.find(
-    (fl) => fl.code.toLowerCase() === resolvedCode.toLowerCase()
+    (fl) =>
+      fl.uploadToken === resolvedIdentifier ||
+      (isAdminLoggedIn && fl.code.toLowerCase() === resolvedIdentifier.toLowerCase())
   );
 
   // Direct File Upload State
@@ -208,17 +223,17 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
             <Info className="w-8 h-8" />
           </div>
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-slate-900">Expert Profile Not Found</h2>
-            <p className="text-xs text-slate-500">
-              No expert matches code{' '}
-              <span className="font-mono font-bold text-slate-800">{resolvedCode || 'None'}</span>.
+            <h2 className="text-xl font-bold text-slate-900">Private Portal Access Required</h2>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              This deliverable upload vault requires an authentic, personalized invitation link.
+              Please verify the secure upload link provided in your welcome email or contact Gaenr Operations.
             </p>
           </div>
           <button
-            onClick={() => navigate('/experts')}
+            onClick={() => navigate('/')}
             className="w-full py-2.5 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
           >
-            Go to Experts Directory
+            Return to Homepage
           </button>
         </div>
       </div>

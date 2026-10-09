@@ -119,10 +119,16 @@ const AppContent: React.FC = () => {
       return <ExpertOnboardingPage applicationId={applicationId} />;
     }
 
-    // Expert Portfolio Upload portal match: /expert-portfolio-upload/:expertCode
+    // Secure Creator Deliverable Upload portal match: /p-upload/:token
+    if (cleanRoute.startsWith('/p-upload/')) {
+      const token = cleanRoute.replace('/p-upload/', '');
+      return <ExpertPortfolioUploadPage tokenOrCode={token} />;
+    }
+
+    // Expert Portfolio Upload portal match: /expert-portfolio-upload/:tokenOrCode
     if (cleanRoute.startsWith('/expert-portfolio-upload/')) {
-      const expertCode = cleanRoute.replace('/expert-portfolio-upload/', '');
-      return <ExpertPortfolioUploadPage expertCode={expertCode} />;
+      const tokenOrCode = cleanRoute.replace('/expert-portfolio-upload/', '');
+      return <ExpertPortfolioUploadPage tokenOrCode={tokenOrCode} />;
     }
 
     // Client Review route match: /review/:expertCode

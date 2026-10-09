@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { useApp } from '../../../context/AppContext';
 import { ExpertApplication, ExpertApplicationStatus } from '../../../types';
+import { getExpertSecureUploadUrl } from '../../../utils/security';
 import { RAW_AVATAR_SPECS, AvatarGraphic, VerifiedBadge3D } from '../../../components/common/Avatars';
 import {
   Users,
@@ -42,6 +44,7 @@ export const ExpertApplicationsView: React.FC<ExpertApplicationsViewProps> = ({
   showToast,
   navigate,
 }) => {
+  const { freelancers } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSkill, setFilterSkill] = useState('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -318,8 +321,18 @@ https://gaenr.com`;
                 {filteredApps.map((app) => {
                   const status = app.status || 'applied';
                   const onboardingUrl = `${window.location.origin}/expert-onboarding/${app.id}`;
-                  const uploadUrl = app.convertedExpertCode
-                    ? `${window.location.origin}/expert-portfolio-upload/${app.convertedExpertCode}`
+                  const matchedFl = app.convertedExpertCode
+                    ? freelancers.find((f) => f.code === app.convertedExpertCode || f.id === app.convertedExpertCode)
+                    : undefined;
+                  const uploadUrl = matchedFl
+                    ? getExpertSecureUploadUrl(matchedFl)
+                    : app.convertedExpertCode
+                    ? `${window.location.origin}/p-upload/${app.convertedExpertCode}`
+                    : '';
+                  const uploadPath = matchedFl?.uploadToken
+                    ? `/p-upload/${matchedFl.uploadToken}`
+                    : app.convertedExpertCode
+                    ? `/p-upload/${app.convertedExpertCode}`
                     : '';
 
                   return (
@@ -493,7 +506,7 @@ https://gaenr.com`;
                                 type="button"
                                 onClick={() => {
                                   if (navigate) {
-                                    navigate(`/expert-portfolio-upload/${app.convertedExpertCode}`);
+                                    navigate(uploadPath);
                                   } else {
                                     window.open(uploadUrl, '_blank');
                                   }
@@ -864,26 +877,35 @@ https://gaenr.com`;
                   </button>
                 )}
 
-                {selectedApp.status === 'onboarded' && selectedApp.convertedExpertCode && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (navigate) {
-                        navigate(`/expert-portfolio-upload/${selectedApp.convertedExpertCode}`);
-                      } else {
-                        window.open(
-                          `/expert-portfolio-upload/${selectedApp.convertedExpertCode}`,
-                          '_blank'
-                        );
-                      }
-                      setSelectedApp(null);
-                    }}
-                    className="px-4 py-2 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Open Portfolio Upload Portal</span>
-                  </button>
-                )}
+                {selectedApp.status === 'onboarded' && selectedApp.convertedExpertCode && (() => {
+                  const modalMatchedFl = freelancers.find(
+                    (f) => f.code === selectedApp.convertedExpertCode || f.id === selectedApp.convertedExpertCode
+                  );
+                  const modalUploadPath = modalMatchedFl?.uploadToken
+                    ? `/p-upload/${modalMatchedFl.uploadToken}`
+                    : `/p-upload/${selectedApp.convertedExpertCode}`;
+                  const modalUploadUrl = modalMatchedFl
+                    ? getExpertSecureUploadUrl(modalMatchedFl)
+                    : `${window.location.origin}/p-upload/${selectedApp.convertedExpertCode}`;
+
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (navigate) {
+                          navigate(modalUploadPath);
+                        } else {
+                          window.open(modalUploadUrl, '_blank');
+                        }
+                        setSelectedApp(null);
+                      }}
+                      className="px-4 py-2 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Open Portfolio Upload Portal</span>
+                    </button>
+                  );
+                })()}
               </div>
             </div>
           </div>

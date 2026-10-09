@@ -22,6 +22,7 @@ import {
 } from '../types';
 import { INITIAL_FREELANCERS, INITIAL_AVATARS, SERVICE_CATEGORIES } from '../data/mockData';
 import { getCategoryAvatar, RAW_AVATAR_SPECS } from '../components/common/Avatars';
+import { generateSecureUploadToken } from '../utils/security';
 
 export const GAENR_OFFICIAL_DRIVE_FOLDER_URL =
   'https://drive.google.com/drive/folders/13TfzgSRtRCy2ubOU4fyFEg_NEGZLonDO?usp=sharing';
@@ -337,14 +338,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             hasChanges = true;
           }
 
+          // Ensure secure high-entropy uploadToken exists (privacy from public expert IDs)
+          if (!updatedFl.uploadToken) {
+            updatedFl.uploadToken = generateSecureUploadToken();
+            hasChanges = true;
+          }
+
           return updatedFl;
         });
 
         if (parsed.length === 0) {
+          const initialWithTokens = INITIAL_FREELANCERS.map((f) => ({
+            ...f,
+            uploadToken: f.uploadToken || generateSecureUploadToken(),
+          }));
           try {
-            localStorage.setItem('gaenr_freelancers', JSON.stringify(INITIAL_FREELANCERS));
+            localStorage.setItem('gaenr_freelancers', JSON.stringify(initialWithTokens));
           } catch {}
-          return INITIAL_FREELANCERS;
+          return initialWithTokens;
+        }
+
+        // Ensure any profile from INITIAL_FREELANCERS that is missing in saved state is merged
+        for (const initFl of INITIAL_FREELANCERS) {
+          if (!updated.some((f) => f.id === initFl.id || f.code === initFl.code)) {
+            updated.unshift({
+              ...initFl,
+              uploadToken: initFl.uploadToken || generateSecureUploadToken(),
+            });
+            hasChanges = true;
+          }
         }
 
         if (hasChanges) {
@@ -354,12 +376,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
         return updated;
       }
+      const initialWithTokens = INITIAL_FREELANCERS.map((f) => ({
+        ...f,
+        uploadToken: f.uploadToken || generateSecureUploadToken(),
+      }));
       try {
-        localStorage.setItem('gaenr_freelancers', JSON.stringify(INITIAL_FREELANCERS));
+        localStorage.setItem('gaenr_freelancers', JSON.stringify(initialWithTokens));
       } catch {}
-      return INITIAL_FREELANCERS;
+      return initialWithTokens;
     } catch {
-      return INITIAL_FREELANCERS;
+      return INITIAL_FREELANCERS.map((f) => ({
+        ...f,
+        uploadToken: f.uploadToken || generateSecureUploadToken(),
+      }));
     }
   });
 
@@ -885,8 +914,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addFreelancer = (newFl: FreelancerProfile) => {
+    const safeFl: FreelancerProfile = {
+      ...newFl,
+      uploadToken: newFl.uploadToken || generateSecureUploadToken(),
+    };
     setFreelancers((prev) => {
-      const updated = [newFl, ...prev];
+      const updated = [safeFl, ...prev];
       try {
         localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
       } catch {}
@@ -1372,6 +1405,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const newProfile: FreelancerProfile = {
           id: `fl_${Date.now()}`,
           code: generatedCode,
+          uploadToken: generateSecureUploadToken(),
           name: targetApp.fullName,
           gender: targetApp.gender.toLowerCase().includes('female') ? 'Female' : 'Male',
           contactNumber: targetApp.whatsapp,

@@ -114,6 +114,7 @@ export interface PortfolioItem {
 export interface FreelancerProfile {
   id: string;
   code: string; // e.g. GD2602001
+  uploadToken?: string; // Private unguessable token for deliverable uploads (zero correlation with expert ID)
   category: ServiceSlug;
   categoryTitle: string;
   avatarId: string;
