@@ -86,35 +86,28 @@ export const ExpertApplicationsView: React.FC<ExpertApplicationsViewProps> = ({
   };
 
   const handleCopyWelcomeEmail = (app: ExpertApplication) => {
-    const onboardingUrl = `${window.location.origin}/expert-onboarding/${app.id}`;
+    const onboardingUrl = `${window.location.origin}/onboard/${app.id}`;
     const skillName = app.otherSkill || app.skill.split('/')[0].trim();
-    const emailBody = `Subject: Congratulations! You have been selected as a Gaenr Expert
+    const emailBody = `Subject: Congratulations! Your Gaenr Expert Application is Approved
 
-Dear ${app.fullName},
+Hi ${app.fullName},
 
-Congratulations! We are pleased to inform you that following the review of your portfolio and experience, you have been officially selected to join Gaenr as a Verified Expert in ${skillName}.
+Congratulations! We are pleased to inform you that your application has been reviewed and officially approved as a Verified Expert in ${skillName}.
 
-To activate your verified creator profile, choose your official 3D Youth Avatar, and submit your payout bank/MFS account details, please complete your private onboarding setup using your secure invitation link below:
+Please complete the expert onboarding form below to finalize your profile setup for further process:
 
-👉 Complete Your Onboarding: ${onboardingUrl}
+Complete Onboarding Form: ${onboardingUrl}
 
-During onboarding, you will:
-1. Select your official 3D Youth Avatar identity
-2. Set your deliverable pricing packages
-3. Provide your professional bio statement
-4. Enter your secure Bank / bKash / Nagad payout account (direct 0% commission payouts)
-
-Once submitted, your live creator profile and deliverable upload portal will be activated immediately.
-
-Welcome to the Gaenr family!
-
-Warm regards,
-Gaenr Operations & Talent Acquisition Team
-https://gaenr.com`;
+Best regards,
+Team Gaenr
+Website: https://gaenr.com
+Email: contact@gaenr.com
+Phone: 09647 922 800
+WhatsApp: https://wa.me/8801608922800`;
 
     navigator.clipboard.writeText(emailBody);
     setCopiedId(`email-${app.id}`);
-    showToast('Official Welcome & Selection Email copied to clipboard!', 'success');
+    showToast('Official Approval Email text copied!', 'success');
     setTimeout(() => setCopiedId(null), 2500);
   };
 
@@ -320,7 +313,7 @@ https://gaenr.com`;
               <tbody className="divide-y divide-slate-100">
                 {filteredApps.map((app) => {
                   const status = app.status || 'applied';
-                  const onboardingUrl = `${window.location.origin}/expert-onboarding/${app.id}`;
+                  const onboardingUrl = `${window.location.origin}/onboard/${app.id}`;
                   const matchedFl = app.convertedExpertCode
                     ? freelancers.find((f) => f.code === app.convertedExpertCode || f.id === app.convertedExpertCode)
                     : undefined;
@@ -333,6 +326,12 @@ https://gaenr.com`;
                     ? `/u/${matchedFl.uploadToken}`
                     : app.convertedExpertCode
                     ? `/u/${app.convertedExpertCode}`
+                    : '';
+                  const profileUrl = app.convertedExpertCode
+                    ? `${window.location.origin}/experts/${app.convertedExpertCode}`
+                    : '';
+                  const profilePath = app.convertedExpertCode
+                    ? `/experts/${app.convertedExpertCode}`
                     : '';
 
                   return (
@@ -411,14 +410,14 @@ https://gaenr.com`;
                                 <span>Onboarding Submitted</span>
                               </span>
                               <div className="text-[10px] text-slate-500 font-mono">
-                                Ready to convert to Live
+                                Ready to create live profile
                               </div>
                             </div>
                           ) : (
                             <div className="space-y-1">
                               <span className="text-[11px] font-semibold text-amber-700 flex items-center gap-1">
                                 <Clock className="w-3.5 h-3.5 text-amber-600" />
-                                <span>Link Sent / Pending</span>
+                                <span>Invite Sent / Pending</span>
                               </span>
                               <div className="text-[10px] text-slate-400 font-mono">
                                 Awaiting candidate form
@@ -449,38 +448,38 @@ https://gaenr.com`;
 
                       {/* Workflow Actions */}
                       <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                          {/* 1. If applied -> Approve & Generate Onboarding */}
+                        <div className="flex items-center justify-end gap-1.5 flex-nowrap">
+                          {/* 1. If applied -> Approve & Send Invite */}
                           {status === 'applied' && onUpdateStatus && (
                             <button
                               type="button"
                               onClick={() => onUpdateStatus(app.id, 'approved')}
-                              className="px-2.5 py-1 bg-[#006eff] hover:bg-blue-600 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
-                              title="Approve applicant and generate private onboarding link"
+                              className="px-2.5 py-1.5 bg-[#006eff] hover:bg-blue-600 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
+                              title="Approve applicant and dispatch onboarding invite email"
                             >
-                              <UserCheck className="w-3 h-3" />
-                              <span>Approve</span>
+                              <UserCheck className="w-3.5 h-3.5" />
+                              <span>Approve &amp; Invite</span>
                             </button>
                           )}
 
-                          {/* 2. If approved -> Copy Onboarding Link & Convert */}
+                          {/* 2. If approved -> Copy Link & Create Live Profile */}
                           {status === 'approved' && (
                             <>
                               <button
                                 type="button"
                                 onClick={() => handleCopyLink(onboardingUrl, `onb-${app.id}`, 'Onboarding Form link')}
-                                className="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                                title="Copy candidate onboarding questionnaire link"
+                                className="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+                                title={`Copy candidate onboarding questionnaire link (${onboardingUrl})`}
                               >
                                 {copiedId === `onb-${app.id}` ? (
                                   <>
-                                    <Check className="w-3 h-3 text-emerald-600" />
+                                    <Check className="w-3.5 h-3.5 text-emerald-600" />
                                     <span>Copied!</span>
                                   </>
                                 ) : (
                                   <>
-                                    <Copy className="w-3 h-3 text-amber-700" />
-                                    <span>Copy Form Link</span>
+                                    <Copy className="w-3.5 h-3.5 text-amber-700" />
+                                    <span>Copy Link</span>
                                   </>
                                 )}
                               </button>
@@ -489,17 +488,17 @@ https://gaenr.com`;
                                 <button
                                   type="button"
                                   onClick={() => onUpdateStatus(app.id, 'onboarded')}
-                                  className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
-                                  title="Auto-create expert profile and generate unique expert code"
+                                  className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
+                                  title="Publish verified expert profile to live website and assign expert code"
                                 >
-                                  <Sparkles className="w-3 h-3" />
-                                  <span>Convert to Live</span>
+                                  <Sparkles className="w-3.5 h-3.5" />
+                                  <span>Create Live Profile</span>
                                 </button>
                               )}
                             </>
                           )}
 
-                          {/* 3. If onboarded -> Open Profile & Upload Portal */}
+                          {/* 3. If onboarded -> Upload Vault & Live Profile */}
                           {status === 'onboarded' && app.convertedExpertCode && (
                             <>
                               <button
@@ -511,26 +510,27 @@ https://gaenr.com`;
                                     window.open(uploadUrl, '_blank');
                                   }
                                 }}
-                                className="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                                title="Open Dedicated Portfolio Upload Portal"
+                                className="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+                                title={`Open private deliverable upload vault (${uploadUrl})`}
                               >
-                                <Upload className="w-3 h-3" />
-                                <span>Portfolio Portal</span>
+                                <Upload className="w-3.5 h-3.5" />
+                                <span>Upload Vault</span>
                               </button>
 
                               <button
                                 type="button"
                                 onClick={() => {
                                   if (navigate) {
-                                    navigate(`/profile/${app.convertedExpertCode}`);
+                                    navigate(profilePath);
                                   } else {
-                                    window.open(`/profile/${app.convertedExpertCode}`, '_blank');
+                                    window.open(profileUrl, '_blank');
                                   }
                                 }}
-                                className="p-1.5 text-slate-500 hover:text-[#006eff] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-                                title="View public profile"
+                                className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+                                title={`View public verified expert profile (${profileUrl})`}
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
+                                <span>Live Profile</span>
                               </button>
                             </>
                           )}
@@ -857,7 +857,7 @@ https://gaenr.com`;
                 Close
               </button>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {selectedApp.status === 'applied' && onUpdateStatus && (
                   <button
                     type="button"
@@ -865,24 +865,37 @@ https://gaenr.com`;
                       onUpdateStatus(selectedApp.id, 'approved');
                       setSelectedApp({ ...selectedApp, status: 'approved' });
                     }}
-                    className="px-4 py-2 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                    className="px-4 py-2 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
                   >
-                    Approve &amp; Send Onboarding
+                    <UserCheck className="w-3.5 h-3.5" />
+                    <span>Approve &amp; Send Invite</span>
                   </button>
                 )}
 
-                {selectedApp.status === 'approved' && onUpdateStatus && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onUpdateStatus(selectedApp.id, 'onboarded');
-                      setSelectedApp({ ...selectedApp, status: 'onboarded' });
-                    }}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Auto-Convert to Live Expert</span>
-                  </button>
+                {selectedApp.status === 'approved' && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyLink(`${window.location.origin}/onboard/${selectedApp.id}`, `modal-onb-${selectedApp.id}`, 'Onboarding Form link')}
+                      className="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Copy className="w-3.5 h-3.5 text-amber-700" />
+                      <span>Copy Form Link</span>
+                    </button>
+                    {onUpdateStatus && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onUpdateStatus(selectedApp.id, 'onboarded');
+                          setSelectedApp({ ...selectedApp, status: 'onboarded' });
+                        }}
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Create Live Profile</span>
+                      </button>
+                    )}
+                  </>
                 )}
 
                 {selectedApp.status === 'onboarded' && selectedApp.convertedExpertCode && (() => {
@@ -895,23 +908,42 @@ https://gaenr.com`;
                   const modalUploadUrl = modalMatchedFl
                     ? getExpertSecureUploadUrl(modalMatchedFl)
                     : `${window.location.origin}/u/${selectedApp.convertedExpertCode}`;
+                  const modalProfilePath = `/experts/${selectedApp.convertedExpertCode}`;
+                  const modalProfileUrl = `${window.location.origin}/experts/${selectedApp.convertedExpertCode}`;
 
                   return (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (navigate) {
-                          navigate(modalUploadPath);
-                        } else {
-                          window.open(modalUploadUrl, '_blank');
-                        }
-                        setSelectedApp(null);
-                      }}
-                      className="px-4 py-2 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
-                    >
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>Open Portfolio Upload Portal</span>
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (navigate) {
+                            navigate(modalUploadPath);
+                          } else {
+                            window.open(modalUploadUrl, '_blank');
+                          }
+                          setSelectedApp(null);
+                        }}
+                        className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload Vault</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (navigate) {
+                            navigate(modalProfilePath);
+                          } else {
+                            window.open(modalProfileUrl, '_blank');
+                          }
+                          setSelectedApp(null);
+                        }}
+                        className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Live Profile</span>
+                      </button>
+                    </>
                   );
                 })()}
               </div>

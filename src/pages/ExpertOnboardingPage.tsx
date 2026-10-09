@@ -30,10 +30,15 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
   const { currentRoute, expertApplications, saveExpertOnboardingResponse, navigate, showToast } = useApp();
   const { branding } = useBranding();
 
-  // Resolve applicationId from props or route: /expert-onboarding/:id
+  // Resolve applicationId from props or route: /onboard/:id or /expert-onboarding/:id
+  const cleanPath = currentRoute.split('#')[0].split('?')[0];
   const resolvedId =
     applicationId ||
-    currentRoute.split('#')[0].split('?')[0].replace('/expert-onboarding/', '').trim();
+    cleanPath
+      .replace('/expert-onboarding/', '')
+      .replace('/onboard/', '')
+      .replace('/o/', '')
+      .trim();
 
   const application = expertApplications.find((a) => a.id === resolvedId);
 

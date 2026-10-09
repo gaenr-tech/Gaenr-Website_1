@@ -113,7 +113,15 @@ const AppContent: React.FC = () => {
       return <FreelancerProfilePage code={code} />;
     }
 
-    // Expert Onboarding private route match: /expert-onboarding/:id
+    // Expert Onboarding private route match: /onboard/:id or /o/:id or /expert-onboarding/:id
+    if (cleanRoute.startsWith('/onboard/')) {
+      const applicationId = cleanRoute.replace('/onboard/', '');
+      return <ExpertOnboardingPage applicationId={applicationId} />;
+    }
+    if (cleanRoute.startsWith('/o/')) {
+      const applicationId = cleanRoute.replace('/o/', '');
+      return <ExpertOnboardingPage applicationId={applicationId} />;
+    }
     if (cleanRoute.startsWith('/expert-onboarding/')) {
       const applicationId = cleanRoute.replace('/expert-onboarding/', '');
       return <ExpertOnboardingPage applicationId={applicationId} />;

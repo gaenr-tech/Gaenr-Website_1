@@ -285,37 +285,61 @@ const buildWelcomeEmail = (expert) => {
   return { subject, text, html };
 };
 
+const sanitizeToEnglishSkill = (raw = '') => {
+  const str = String(raw || '').trim();
+  const lower = str.toLowerCase();
+  if (lower.includes('video') || str.includes('ভিডিও')) {
+    return 'Video Editing';
+  }
+  if (lower.includes('word') || lower.includes('web') || str.includes('সাইট') || str.includes('ওয়ার্ডপ্রেস')) {
+    return 'WordPress Website Design';
+  }
+  if (lower.includes('content') || lower.includes('write') || str.includes('কন্টেন্ট') || str.includes('লেখা') || str.includes('রাইটিং')) {
+    return 'Content Writing';
+  }
+  if (lower.includes('slide') || lower.includes('presentation') || str.includes('স্লাইড')) {
+    return 'Presentation Slide Design';
+  }
+  if (lower.includes('ui') || lower.includes('ux') || lower.includes('figma') || str.includes('ইউআই') || str.includes('ইউএক্স')) {
+    return 'UX / UI Design';
+  }
+  if (lower.includes('ad') || lower.includes('campaign') || str.includes('বিজ্ঞাপন') || str.includes('মার্কেটিং')) {
+    return 'Ad Campaign Setup';
+  }
+  if (lower.includes('graphic') || str.includes('গ্রাফিক্স')) {
+    return 'Graphics Design';
+  }
+  const stripped = str
+    .replace(/\([^)]*[\u0980-\u09FF][^)]*\)/g, '')
+    .replace(/\([^)]*\)/g, '')
+    .replace(/[\u0980-\u09FF]/g, '')
+    .replace(/^[\s\/\-]+|[\s\/\-]+$/g, '')
+    .trim();
+  return stripped || 'Graphics Design';
+};
+
 const buildOnboardingInviteEmail = ({ name, skill, applicationId }) => {
   const safeName = (name || '').trim() || 'there';
-  const safeSkill = (skill || '').trim() || 'Digital Creator';
-  const onboardingUrl = `${SITE_URL}/expert-onboarding/${encodeURIComponent(applicationId)}`;
+  const safeSkill = sanitizeToEnglishSkill(skill);
+  const onboardingUrl = `${SITE_URL}/onboard/${encodeURIComponent(applicationId)}`;
   const logoUrl = `${SITE_URL}/logo.svg`;
   const iconUrl = (name) => `${SITE_URL}/email-icons/${name}.svg`;
 
-  const subject = 'Congratulations! Action Required: Complete Your Gaenr Expert Onboarding';
+  const subject = 'Congratulations! Your Gaenr Expert Application is Approved';
   const text = [
-    `Dear ${safeName},`,
+    `Hi ${safeName},`,
     '',
-    `Congratulations! Following our review of your portfolio and background, you have been officially selected to join Gaenr as a Verified Expert in ${safeSkill}.`,
+    `Congratulations! We are pleased to inform you that your application has been reviewed and officially approved as a Verified Expert in ${safeSkill}.`,
     '',
-    'To activate your verified creator profile, choose your official 3D Youth Avatar, set your deliverable pricing, and submit your payout bank or MFS account details, please complete your private onboarding setup using your secure invitation link below:',
+    'Please complete the expert onboarding form below to finalize your profile setup for further process:',
     '',
-    `Complete Your Onboarding: ${onboardingUrl}`,
+    `Complete Onboarding Form: ${onboardingUrl}`,
     '',
-    'During onboarding, you will configure:',
-    '1. Official 3D Youth Avatar Identity',
-    '2. Standard Deliverable Pricing Packages (BDT)',
-    '3. Professional Bio & Statement',
-    '4. Payout Account Details (Bank Transfer or MFS: bKash / Nagad / Rocket with 0% platform deductions)',
-    '',
-    'Once submitted, our operations team will finalize your profile activation and provide your verified Gaenr Expert ID badge and portfolio management portal.',
-    '',
-    'Welcome to the Gaenr family!',
-    '',
-    'Warm regards,',
-    'Gaenr Operations & Talent Acquisition Team',
+    'Best regards,',
+    'Team Gaenr',
     'Website: https://gaenr.com',
     'Email: contact@gaenr.com',
+    'Phone: 09647 922 800',
     'WhatsApp: https://wa.me/8801608922800',
   ].join('\n');
 
@@ -355,7 +379,7 @@ const buildOnboardingInviteEmail = ({ name, skill, applicationId }) => {
       text-decoration: none;
       font-weight: 700;
       font-size: 14px;
-      padding: 13px 36px;
+      padding: 14px 40px;
       border-radius: 9999px;
       box-shadow: 0 4px 14px rgba(0, 110, 255, 0.25);
       transition: all 0.2s ease;
@@ -398,82 +422,48 @@ const buildOnboardingInviteEmail = ({ name, skill, applicationId }) => {
             </td>
           </tr>
 
-          <!-- Welcome Greeting -->
+          <!-- Welcome & Congratulations Greeting -->
           <tr>
-            <td style="padding:24px 32px 0;font-size:18px;font-weight:700;color:#1e293b;">
+            <td style="padding:28px 32px 0;font-size:18px;font-weight:700;color:#1e293b;">
               Congratulations, <span style="color:#006eff;">${escapeHtml(safeName)}</span>!
             </td>
           </tr>
           <tr>
+            <td style="padding:12px 32px 0;font-size:14px;line-height:1.6;color:#475569;">
+              We are pleased to inform you that your application has been reviewed and officially approved as a <strong>Verified Expert in ${escapeHtml(safeSkill)}</strong>.
+            </td>
+          </tr>
+          <tr>
             <td style="padding:10px 32px 0;font-size:14px;line-height:1.6;color:#475569;">
-              Following our review of your portfolio and background, you have been officially selected to join Gaenr as a Verified Expert in <strong>${escapeHtml(safeSkill)}</strong>.
+              Please complete the expert onboarding form below to finalize your profile setup for further process:
             </td>
           </tr>
 
-          <!-- Action Box -->
+          <!-- Single Action Button (No redundant text link) -->
           <tr>
-            <td style="padding:22px 32px 0;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:18px;padding:24px 20px;text-align:center;">
-                <tr>
-                  <td align="center">
-                    <div style="font-size:11px;font-weight:700;color:#006eff;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">
-                      Private Setup Portal
-                    </div>
-                    <div style="font-size:18px;font-weight:800;color:#0f172a;margin-bottom:8px;">
-                      Complete Your Expert Onboarding
-                    </div>
-                    <div style="font-size:13px;color:#475569;line-height:1.6;max-width:440px;margin:0 auto 18px;">
-                      Please complete your private onboarding setup to select your official 3D Youth Avatar identity, set your deliverable pricing, and connect your payout account:
-                    </div>
-                    <div>
-                      <a href="${onboardingUrl}" class="action-btn" target="_blank" style="display:inline-block;background-color:#006eff;color:#ffffff !important;text-decoration:none;font-weight:700;font-size:14px;padding:13px 36px;border-radius:9999px;box-shadow:0 4px 14px rgba(0, 110, 255, 0.25);">
-                        Complete Onboarding Form →
-                      </a>
-                    </div>
-                    <div style="margin-top:14px;font-size:12px;color:#64748b;">
-                      Or directly <a href="${onboardingUrl}" target="_blank" style="color:#006eff;font-weight:600;text-decoration:underline;">click here to open your onboarding form</a>.
-                    </div>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-          <!-- Onboarding Checklist -->
-          <tr>
-            <td style="padding:20px 32px 0;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px 20px;">
-                <tr>
-                  <td>
-                    <div style="font-size:12px;font-weight:700;color:#0f172a;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">
-                      What You Will Configure:
-                    </div>
-                    <div style="font-size:13px;color:#475569;line-height:1.8;">
-                      ✓ <strong>Official 3D Youth Avatar Identity</strong><br/>
-                      ✓ <strong>Standardized Deliverable Pricing Packages (BDT)</strong><br/>
-                      ✓ <strong>Professional Bio Statement &amp; Value Proposition</strong><br/>
-                      ✓ <strong>Payout Account (Bank Transfer or MFS: bKash / Nagad / Rocket)</strong>
-                    </div>
-                  </td>
-                </tr>
-              </table>
+            <td align="center" style="padding:28px 32px 20px;">
+              <a href="${onboardingUrl}" class="action-btn" target="_blank" style="display:inline-block;background-color:#006eff;color:#ffffff !important;text-decoration:none;font-weight:700;font-size:14px;padding:14px 40px;border-radius:9999px;box-shadow:0 4px 14px rgba(0, 110, 255, 0.25);">
+                Complete Onboarding Form →
+              </a>
             </td>
           </tr>
 
           <!-- Divider -->
           <tr>
-            <td style="padding:24px 32px 0;">
+            <td style="padding:12px 32px 0;">
               <div style="height:1px;background:#e2e8f0;"></div>
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- Footer with Contact & Social Media Icons -->
           <tr>
             <td style="padding:20px 32px 26px;text-align:center;background:#f8fafc;border-top:1px solid #edf2f7;">
               <div style="margin-bottom:12px;">
                 <img src="${logoUrl}" width="22" height="22" alt="Gaenr" style="display:inline-block;width:22px;height:22px;vertical-align:middle;margin-right:6px;" />
                 <span style="color:#0f172a;vertical-align:middle;font-size:13px;font-weight:700;">Team Gaenr</span>
               </div>
+
+              <!-- Contact Icons -->
               <div style="margin-bottom:12px;white-space:nowrap;">
                 <a href="https://gaenr.com" class="footer-icon-btn" title="Gaenr Website" target="_blank">
                   <img src="${iconUrl('globe')}" width="18" height="18" alt="Website" style="vertical-align:middle;display:inline-block;border:0;" />
@@ -488,6 +478,29 @@ const buildOnboardingInviteEmail = ({ name, skill, applicationId }) => {
                   <img src="${iconUrl('whatsapp')}" width="18" height="18" alt="WhatsApp" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
               </div>
+
+              <!-- Social Media Icons -->
+              <div style="margin-bottom:12px;white-space:nowrap;">
+                <a href="https://www.facebook.com/gaenrglobal/" class="footer-icon-btn" title="Gaenr on Facebook" target="_blank">
+                  <img src="${iconUrl('facebook')}" width="16" height="16" alt="Facebook" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://www.linkedin.com/company/gaenrglobal/" class="footer-icon-btn" title="Gaenr on LinkedIn" target="_blank">
+                  <img src="${iconUrl('linkedin')}" width="16" height="16" alt="LinkedIn" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://www.instagram.com/gaenr_global/" class="footer-icon-btn" title="Gaenr on Instagram" target="_blank">
+                  <img src="${iconUrl('instagram')}" width="16" height="16" alt="Instagram" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://x.com/gaenr_global" class="footer-icon-btn" title="Gaenr on X" target="_blank">
+                  <img src="${iconUrl('x')}" width="16" height="16" alt="X" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://www.threads.com/@gaenr_global" class="footer-icon-btn" title="Gaenr on Threads" target="_blank">
+                  <img src="${iconUrl('threads')}" width="16" height="16" alt="Threads" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://www.tiktok.com/@gaenr_global" class="footer-icon-btn" title="Gaenr on TikTok" target="_blank">
+                  <img src="${iconUrl('tiktok')}" width="16" height="16" alt="TikTok" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+              </div>
+
               <div>
                 <a href="https://gaenr.com" style="color:#006eff;text-decoration:none;font-weight:600;font-size:13px;" target="_blank">gaenr.com</a>
               </div>
