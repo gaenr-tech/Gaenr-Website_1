@@ -23,11 +23,96 @@ import {
   User,
   Trash2,
   Upload,
+  Sparkles,
 } from 'lucide-react';
 import { CustomSelect } from '../../../components/common/CustomSelect';
 import { downloadIdCardBadge } from '../../../utils/downloadIdCardImage';
 import { ExpertIdCard } from '../../../components/common/ExpertIdCard';
 import { getExpertSecureUploadUrl } from '../../../utils/security';
+
+export const SKILL_SUGGESTIONS_BY_CATEGORY: Record<string, string[]> = {
+  'wordpress-website': [
+    'Custom WordPress Theme',
+    'Elementor Pro',
+    'WooCommerce Setup',
+    'bKash Gateway Integration',
+    'Nagad Gateway Integration',
+    'Page Speed (90+)',
+    'Responsive Mobile Layout',
+    'Security Hardening',
+    'Database Migration',
+    'Yoast / RankMath SEO',
+    'Custom CSS & Tailwind',
+    'ACF (Advanced Custom Fields)',
+  ],
+  'graphics-design': [
+    'Logo Design',
+    'Brand Identity & Guidelines',
+    'Social Media Banners',
+    'Adobe Photoshop',
+    'Adobe Illustrator',
+    'Packaging & Die-Cut',
+    'Print & Stationery',
+    'Vector Art',
+    'T-Shirt & Apparel Merch',
+    'Brochure & Editorial Catalog',
+    'Bengali Typography',
+    'Billboard Design',
+  ],
+  'content-writing': [
+    'SEO Article Writing',
+    'High-Conversion Sales Copy',
+    'Website UX Copy',
+    'Technical Documentation',
+    'YouTube Scriptwriting',
+    'Product Descriptions',
+    'Email Newsletters',
+    'Proofreading & Line Editing',
+    'Press Releases',
+    'Brand Storytelling',
+    'Social Media Captions',
+  ],
+  'video-editing': [
+    'Adobe Premiere Pro',
+    'After Effects VFX',
+    'DaVinci Resolve Color Grading',
+    'Short-form Reels & Shorts',
+    'YouTube Long-form Cuts',
+    'Kinetic Typography',
+    'Sound Design & Audio Mastering',
+    'Automated Subtitles & Visual Hooks',
+    'Podcast Multicam Editing',
+    'Green Screen Keying',
+  ],
+  'presentation-slide-design': [
+    'Investor Pitch Decks',
+    'PowerPoint (PPTX) Templates',
+    'Google Slides Cloud Decks',
+    'Apple Keynote Executive Slides',
+    'Financial Charts & Infographics',
+    'Corporate Boardroom Reports',
+    'Sales Proposal Decks',
+    'Slide Redesign & Visual Pacing',
+  ],
+  'ux-ui-design': [
+    'Figma Design Systems',
+    'Mobile App UI (iOS & Android)',
+    'Web Dashboard & SaaS UI',
+    'Interactive Clickable Prototypes',
+    'Wireframing & User Flows',
+    'Usability Testing & Audits',
+    'Micro-interactions',
+  ],
+  'ad-running': [
+    'Meta Ads Manager (Facebook & IG)',
+    'Google Search & Display Ads',
+    'Audience Retargeting & Lookalike',
+    'A/B Creative Split Testing',
+    'Meta Pixel & Conversion API',
+    'Campaign Analytics & ROAS Optimization',
+    'Lead Generation Funnels',
+  ],
+};
 
 interface ProfilesListViewProps {
   freelancers: FreelancerProfile[];
@@ -76,6 +161,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
 
   // Edit Expert Profile Modal State
   const [editingExpert, setEditingExpert] = useState<FreelancerProfile | null>(null);
+  const [editName, setEditName] = useState('');
   const [editCategory, setEditCategory] = useState<ServiceSlug>('graphics-design');
   const [editCategoryTitle, setEditCategoryTitle] = useState('');
   const [editAvatarId, setEditAvatarId] = useState('');
@@ -89,9 +175,13 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
   const [editPrivateEmail, setEditPrivateEmail] = useState('');
   const [editContactNumber, setEditContactNumber] = useState('');
   const [editAddress, setEditAddress] = useState('');
+  const [editPaymentMethod, setEditPaymentMethod] = useState('');
+  const [editPaymentDetails, setEditPaymentDetails] = useState('');
+  const [editGoogleDriveFolderUrl, setEditGoogleDriveFolderUrl] = useState('');
 
   const handleOpenEdit = (fl: FreelancerProfile) => {
     setEditingExpert(fl);
+    setEditName(fl.name || '');
     setEditCategory(fl.category);
     setEditCategoryTitle(fl.categoryTitle);
     setEditAvatarId(
@@ -116,6 +206,9 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
     setEditPrivateEmail(fl.privateEmail || '');
     setEditContactNumber(fl.contactNumber || '');
     setEditAddress(fl.address || '');
+    setEditPaymentMethod(fl.paymentMethod || 'Bank Transfer');
+    setEditPaymentDetails(fl.paymentDetails || '');
+    setEditGoogleDriveFolderUrl(fl.googleDriveFolderUrl || '');
   };
 
   const handleAddSkill = () => {
@@ -151,6 +244,11 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
     e.preventDefault();
     if (!editingExpert) return;
 
+    if (!editName.trim()) {
+      showToast?.('Full Legal Name cannot be empty', 'error');
+      return;
+    }
+
     if (!editCategoryTitle.trim()) {
       showToast?.('Expert Specialty Title cannot be empty', 'error');
       return;
@@ -163,6 +261,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
 
     const updates: Partial<FreelancerProfile> = {
       // NOTE: Expert ID (code), Rating, and Completed Projects are strictly auto-tracked / read-only
+      name: editName.trim(),
       category: editCategory,
       categoryTitle: editCategoryTitle.trim(),
       avatarId:
@@ -181,6 +280,9 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
       privateEmail: editPrivateEmail.trim(),
       contactNumber: editContactNumber.trim(),
       address: editAddress.trim(),
+      paymentMethod: editPaymentMethod.trim() || undefined,
+      paymentDetails: editPaymentDetails.trim() || undefined,
+      googleDriveFolderUrl: editGoogleDriveFolderUrl.trim() || undefined,
     };
 
     onUpdateFreelancer?.(editingExpert.code, updates);
@@ -830,7 +932,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <span>Edit Expert Profile</span>
+                    <span>{editName || editingExpert.name || 'Edit Expert Profile'}</span>
                     <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-[#006eff] border border-blue-200">
                       {editingExpert.code}
                     </span>
@@ -879,6 +981,21 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                     The Expert ID is strictly permanent and cannot be modified to maintain contract tracking and review integrity.
                   </p>
                 </div>
+              </div>
+
+              {/* Expert Full Legal Name */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Full Legal Name <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="e.g. Hasan Mahmud"
+                  required
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 focus:border-[#006eff] rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-medium"
+                />
               </div>
 
               {/* Section 2: Service Category & Title */}
@@ -1048,6 +1165,49 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                       </span>
                     ))
                   )}
+                </div>
+
+                {/* Category Skill Suggestions */}
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-600 uppercase font-mono tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-[#006eff]" />
+                      <span>
+                        Recommended for {categories.find((c) => c.slug === editCategory)?.title || editCategoryTitle || 'Category'}
+                      </span>
+                    </span>
+                    <span className="text-[10px] text-slate-400">Click to add/remove</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(SKILL_SUGGESTIONS_BY_CATEGORY[editCategory] || SKILL_SUGGESTIONS_BY_CATEGORY['graphics-design'] || []).map((sug) => {
+                      const isAdded = editSkills.includes(sug);
+                      return (
+                        <button
+                          key={sug}
+                          type="button"
+                          onClick={() => {
+                            if (isAdded) {
+                              handleRemoveSkill(sug);
+                            } else {
+                              setEditSkills([...editSkills, sug]);
+                            }
+                          }}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer ${
+                            isAdded
+                              ? 'bg-blue-50 text-[#006eff] border border-blue-200 font-bold shadow-2xs'
+                              : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+                          }`}
+                        >
+                          {isAdded ? (
+                            <Check className="w-3 h-3 text-[#006eff]" />
+                          ) : (
+                            <Plus className="w-3 h-3 text-slate-400" />
+                          )}
+                          <span>{sug}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -1281,6 +1441,54 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                     onChange={(e) => setEditAddress(e.target.value)}
                     placeholder="City, Country"
                     className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff]"
+                  />
+                </div>
+
+                {/* Financial Payout Details */}
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-[#006eff]" />
+                    <span className="text-xs font-bold text-slate-800 uppercase font-mono tracking-wider">
+                      Payout &amp; Banking Details
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-1">Payout Method</label>
+                      <CustomSelect
+                        value={editPaymentMethod}
+                        onChange={(val) => setEditPaymentMethod(val as string)}
+                        options={[
+                          { value: 'Bank Transfer', label: 'Bank Transfer' },
+                          { value: 'bKash', label: 'bKash' },
+                          { value: 'Nagad', label: 'Nagad' },
+                          { value: 'MFS', label: 'MFS' },
+                        ]}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-1">Account &amp; Number Details</label>
+                      <input
+                        type="text"
+                        value={editPaymentDetails}
+                        onChange={(e) => setEditPaymentDetails(e.target.value)}
+                        placeholder="e.g. Bank: City Bank | A/C: 12345... or bKash: 017..."
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff] font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Google Drive Asset Folder */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 mb-1">Google Drive Asset Folder URL</label>
+                  <input
+                    type="url"
+                    value={editGoogleDriveFolderUrl}
+                    onChange={(e) => setEditGoogleDriveFolderUrl(e.target.value)}
+                    placeholder="https://drive.google.com/..."
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff] font-mono"
                   />
                 </div>
               </div>

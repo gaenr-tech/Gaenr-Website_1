@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FreelancerProfile, ServiceCategory } from '../../../types';
-import { AvatarGraphic } from '../../../components/common/Avatars';
+import { AvatarGraphic, VerifiedBadge3D } from '../../../components/common/Avatars';
 import {
   Download,
   Search,
@@ -16,6 +16,10 @@ import {
   Mail,
   Phone,
   FileText,
+  Star,
+  ExternalLink,
+  Copy,
+  Sparkles,
 } from 'lucide-react';
 import { CustomSelect } from '../../../components/common/CustomSelect';
 
@@ -371,111 +375,366 @@ export const DirectoryManageView: React.FC<DirectoryManageViewProps> = ({
         </div>
       </div>
 
-      {/* Private Dossier Modal */}
+      {/* Private Dossier Modal - Complete Executive Profile Popup */}
       {selectedExpertDossier && (
         <div
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedExpertDossier(null);
           }}
-          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in cursor-pointer overflow-y-auto"
         >
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
-                  <AvatarGraphic id={selectedExpertDossier.avatarId} size={48} />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 my-6 max-h-[92vh] overflow-y-auto cursor-default"
+          >
+            {/* Header: Avatar, Name, Verified, Status, and Close */}
+            <div className="flex items-start justify-between pb-4 border-b border-slate-100 gap-3">
+              <div className="flex items-center gap-3.5">
+                <div className="w-16 h-16 rounded-full bg-slate-900 border-2 border-[#006eff] p-0.5 overflow-hidden shrink-0 shadow-md relative flex items-center justify-center">
+                  <AvatarGraphic
+                    id={selectedExpertDossier.avatarId}
+                    size="100%"
+                    shape="circle"
+                    className="w-full h-full rounded-full object-cover"
+                  />
                 </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <span>{selectedExpertDossier.name || 'Verified Expert'}</span>
-                    <span className="font-mono text-xs px-2 py-0.5 bg-blue-50 text-[#006eff] rounded-md border border-blue-200">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-lg font-bold text-slate-900">
+                      {selectedExpertDossier.name || 'Verified Expert'}
+                    </h3>
+                    <VerifiedBadge3D size={20} />
+                    <span className="font-mono text-xs font-bold px-2 py-0.5 bg-blue-50 text-[#006eff] rounded-md border border-blue-200">
                       {selectedExpertDossier.code}
                     </span>
-                  </h3>
-                  <p className="text-xs text-slate-500">{selectedExpertDossier.categoryTitle}</p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap text-xs">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold text-[11px]">
+                      {selectedExpertDossier.categoryTitle}
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                        selectedExpertDossier.isPublic !== false
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-slate-100 text-slate-600 border border-slate-200'
+                      }`}
+                    >
+                      {selectedExpertDossier.isPublic !== false ? 'PUBLIC (LIVE)' : 'DRAFT'}
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold font-mono ${
+                        selectedExpertDossier.status === 'active' || !selectedExpertDossier.status
+                          ? 'bg-blue-50 text-[#006eff] border border-blue-200'
+                          : selectedExpertDossier.status === 'in_review'
+                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                          : 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {(selectedExpertDossier.status || 'ACTIVE').toUpperCase()}
+                    </span>
+                  </div>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedExpertDossier(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs">
-              {/* My Statement preview */}
-              <div className="p-3.5 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-1">
-                <span className="font-bold text-[#006eff] uppercase text-[10px] tracking-wider block flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5" />
-                  My Statement (Public Profile)
+            {/* Performance Metrics Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block">Rating</span>
+                <div className="flex items-center justify-center gap-1 mt-0.5">
+                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                  <span className="font-bold text-slate-900 text-sm">
+                    {selectedExpertDossier.reviewsCount > 0 ? selectedExpertDossier.rating.toFixed(1) : '0.0'}
+                  </span>
+                </div>
+                <span className="text-[9px] text-slate-400">
+                  {selectedExpertDossier.reviewsCount || 0} reviews
                 </span>
-                <p className="text-slate-700 leading-relaxed italic">
-                  "{selectedExpertDossier.statement || 'No custom statement entered yet.'}"
-                </p>
               </div>
 
-              {/* Private contact details */}
-              <div className="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block">Deliveries</span>
+                <span className="font-bold text-slate-900 text-sm block mt-0.5">
+                  {selectedExpertDossier.completedProjects || 0}
+                </span>
+                <span className="text-[9px] text-slate-400">Projects Done</span>
+              </div>
+
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block">Satisfaction</span>
+                <span className="font-bold text-emerald-700 text-sm block mt-0.5">
+                  {selectedExpertDossier.satisfactionRate?.satisfied ?? 100}%
+                </span>
+                <span className="text-[9px] text-slate-400">Positive Feedback</span>
+              </div>
+
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                <span className="text-[10px] uppercase font-mono font-bold text-slate-400 block">Portfolio</span>
+                <span className="font-bold text-[#006eff] text-sm block mt-0.5">
+                  {selectedExpertDossier.portfolioItems?.length || 0}
+                </span>
+                <span className="text-[9px] text-slate-400">Items Showcase</span>
+              </div>
+            </div>
+
+            {/* Personal & Contact Dossier */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
+                <User className="w-3.5 h-3.5 text-[#006eff]" />
+                <span>Personal &amp; Contact Information</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Contact Phone</span>
-                  <span className="font-mono font-bold text-slate-800">{selectedExpertDossier.contactNumber || 'None'}</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Full Legal Name</span>
+                  <span className="font-bold text-slate-900 text-sm">
+                    {selectedExpertDossier.name || 'Verified Expert'}
+                  </span>
                 </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Private Email</span>
-                  <span className="font-mono font-bold text-slate-800 truncate block">{selectedExpertDossier.privateEmail || 'None'}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block">District / Address</span>
-                  <span className="text-slate-800 font-semibold">{selectedExpertDossier.address || 'Dhaka'}</span>
-                </div>
+
                 <div>
                   <span className="text-[10px] text-slate-400 uppercase font-mono block">Gender</span>
-                  <span className="text-slate-800 font-semibold">{selectedExpertDossier.gender || 'Not specified'}</span>
+                  <span className="font-semibold text-slate-800">
+                    {selectedExpertDossier.gender || 'Not specified'}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block">WhatsApp / Phone</span>
+                  {selectedExpertDossier.contactNumber ? (
+                    <a
+                      href={`https://wa.me/${selectedExpertDossier.contactNumber.replace(/[^0-9]/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono font-bold text-emerald-700 hover:underline inline-flex items-center gap-1"
+                    >
+                      <Phone className="w-3 h-3 text-emerald-600" />
+                      <span>{selectedExpertDossier.contactNumber}</span>
+                    </a>
+                  ) : (
+                    <span className="text-slate-400 font-mono italic">Not provided</span>
+                  )}
+                </div>
+
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Private Email</span>
+                  {selectedExpertDossier.privateEmail ? (
+                    <a
+                      href={`mailto:${selectedExpertDossier.privateEmail}`}
+                      className="font-mono font-bold text-[#006eff] hover:underline truncate block inline-flex items-center gap-1"
+                    >
+                      <Mail className="w-3 h-3 text-[#006eff]" />
+                      <span className="truncate">{selectedExpertDossier.privateEmail}</span>
+                    </a>
+                  ) : (
+                    <span className="text-slate-400 font-mono italic">Not provided</span>
+                  )}
+                </div>
+
+                <div className="sm:col-span-2">
+                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Location / Address</span>
+                  <span className="text-slate-800 font-semibold flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-slate-400" />
+                    <span>{selectedExpertDossier.address || 'Dhaka, Bangladesh'}</span>
+                  </span>
                 </div>
               </div>
+            </div>
 
-              {/* Payout banking details */}
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
-                <span className="text-[10px] text-slate-400 uppercase font-mono block flex items-center gap-1">
-                  <CreditCard className="w-3.5 h-3.5 text-slate-500" />
-                  Payout Method &amp; Account
-                </span>
+            {/* Financial Payout Account */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
+                <CreditCard className="w-3.5 h-3.5 text-[#006eff]" />
+                <span>Financial Payout Account</span>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5">
+                <div className="flex items-center justify-between font-bold pb-1 border-b border-slate-200">
+                  <span className="text-slate-500">Method</span>
+                  <span className="text-[#006eff] font-mono font-bold uppercase">
+                    {selectedExpertDossier.paymentMethod || 'Bank Transfer'}
+                  </span>
+                </div>
+                <div className="flex items-start justify-between gap-3 pt-0.5">
+                  <span className="text-slate-500 shrink-0">Account Details:</span>
+                  <span className="font-mono font-bold text-slate-900 text-right">
+                    {selectedExpertDossier.paymentDetails || 'N/A'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Service Pricing Packages */}
+            {selectedExpertDossier.pricingTiers && selectedExpertDossier.pricingTiers.length > 0 && (
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-900">{selectedExpertDossier.paymentMethod || 'bKash'}</span>
-                  <span className="font-mono font-bold text-[#006eff]">{selectedExpertDossier.paymentDetails || 'N/A'}</span>
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
+                    Service Pricing Packages
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    {selectedExpertDossier.pricingTiers.length} Packages
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  {selectedExpertDossier.pricingTiers.map((tier) => (
+                    <div
+                      key={tier.id}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs"
+                    >
+                      <span className="font-medium text-slate-800">{tier.serviceName}</span>
+                      <span className="font-mono font-bold text-emerald-700">
+                        {tier.price} BDT
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
+            )}
 
-              {/* Skills */}
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-mono block mb-1.5">Skills &amp; Sub-skills</span>
+            {/* My Statement */}
+            {selectedExpertDossier.statement && (
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono block">
+                  My Statement (Public Profile)
+                </span>
+                <div className="p-3.5 rounded-2xl bg-blue-50/50 border border-blue-100 text-slate-700 text-xs leading-relaxed italic">
+                  "{selectedExpertDossier.statement}"
+                </div>
+              </div>
+            )}
+
+            {/* Skills & Sub-skills */}
+            {selectedExpertDossier.skills && selectedExpertDossier.skills.length > 0 && (
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono block">
+                  Assigned Skills &amp; Competencies
+                </span>
                 <div className="flex flex-wrap gap-1.5">
-                  {(selectedExpertDossier.skills || []).map((sk, idx) => (
-                    <span key={idx} className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-[11px] font-medium">
+                  {selectedExpertDossier.skills.map((sk, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-medium border border-slate-200"
+                    >
                       {sk}
                     </span>
                   ))}
                 </div>
               </div>
+            )}
 
-              {/* Internal Notes */}
-              {selectedExpertDossier.additionalNote && (
-                <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block mb-1">Internal Notes</span>
-                  <p className="p-3 bg-amber-50/60 border border-amber-200/80 rounded-xl text-amber-900 text-[11px]">
-                    {selectedExpertDossier.additionalNote}
-                  </p>
+            {/* Direct Links (Live Profile & Upload Portal) */}
+            <div className="space-y-2 pt-2 border-t border-slate-100">
+              <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono block">
+                System Portals &amp; Live Links
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                {/* Live Public Profile Link */}
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-slate-400 block font-mono">Public Profile</span>
+                    <span className="font-mono text-slate-700 truncate block text-[11px]">
+                      /experts/{selectedExpertDossier.code}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = `${window.location.origin}/experts/${selectedExpertDossier.code}`;
+                        navigator.clipboard.writeText(url);
+                        showToast('Live profile link copied', 'success');
+                      }}
+                      className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors cursor-pointer"
+                      title="Copy public URL"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                    <a
+                      href={`${window.location.origin}/experts/${selectedExpertDossier.code}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 hover:bg-slate-200 rounded-lg text-[#006eff] transition-colors cursor-pointer"
+                      title="Visit public profile"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Upload Portal Link */}
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2">
+                  <div className="truncate">
+                    <span className="text-[10px] text-slate-400 block font-mono">Upload Portal</span>
+                    <span className="font-mono text-slate-700 truncate block text-[11px]">
+                      /u/{selectedExpertDossier.uploadToken ? '••••••••' : selectedExpertDossier.code}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const token = selectedExpertDossier.uploadToken || selectedExpertDossier.code;
+                        const url = `${window.location.origin}/u/${encodeURIComponent(token)}`;
+                        navigator.clipboard.writeText(url);
+                        showToast('Upload portal link copied', 'success');
+                      }}
+                      className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors cursor-pointer"
+                      title="Copy upload portal link"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                    <a
+                      href={`${window.location.origin}/u/${encodeURIComponent(selectedExpertDossier.uploadToken || selectedExpertDossier.code)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 hover:bg-slate-200 rounded-lg text-emerald-600 transition-colors cursor-pointer"
+                      title="Open upload portal"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Google Drive Link if exists */}
+              {selectedExpertDossier.googleDriveFolderUrl && (
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2 text-xs">
+                  <div className="truncate">
+                    <span className="text-[10px] text-slate-400 block font-mono">Google Drive Asset Folder</span>
+                    <span className="font-mono text-slate-700 truncate block text-[11px]">
+                      {selectedExpertDossier.googleDriveFolderUrl}
+                    </span>
+                  </div>
+                  <a
+                    href={selectedExpertDossier.googleDriveFolderUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+                  >
+                    <span>Drive</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
               )}
             </div>
 
-            <div className="pt-2 flex justify-end">
+            {/* Modal Bottom Actions */}
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
               <button
+                type="button"
                 onClick={() => setSelectedExpertDossier(null)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold cursor-pointer transition-colors"
               >
-                Close Dossier
+                Close Profile
               </button>
             </div>
           </div>

@@ -783,16 +783,6 @@ WhatsApp: https://wa.me/8801608922800`;
                       </div>
                     )}
 
-                    {/* Pricing Model */}
-                    <div>
-                      <span className="text-[10px] text-slate-400 font-mono uppercase block">
-                        Base Pricing Structure
-                      </span>
-                      <span className="font-bold text-slate-900 text-sm">
-                        {selectedApp.onboardingData.pricingModel}
-                      </span>
-                    </div>
-
                     {/* Pricing Tiers Table */}
                     {selectedApp.onboardingData.pricingTiers &&
                       selectedApp.onboardingData.pricingTiers.length > 0 && (

@@ -267,7 +267,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                 Onboarding Details Saved Successfully!
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Your 3D avatar, pricing structure, bio statement, and payout account have been linked to your Gaenr Expert record. Gaenr Operations is finalizing your profile activation.
+                Your avatar identity, pricing structure, statement, and payout account have been linked to your Gaenr Expert record. Gaenr Operations is finalizing your profile activation.
               </p>
             </div>
 
@@ -318,10 +318,11 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
             <div className="pt-2">
               <button
                 type="button"
-                onClick={() => setIsSubmitted(false)}
-                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                onClick={() => navigate('/')}
+                className="px-6 py-3 bg-[#006eff] hover:bg-blue-600 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-500/20 cursor-pointer inline-flex items-center gap-2 active:scale-98"
               >
-                Edit My Responses
+                <span>Back to GAENR</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
