@@ -271,14 +271,37 @@ export const FreelancerDirectoryPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {visibleFreelancers.map((expert) => {
               const keywords = getExpertKeywords(expert);
+              const personaTitle = (() => {
+                switch (expert.category) {
+                  case 'graphics-design':
+                    return 'Graphics Designer';
+                  case 'presentation-slide-design':
+                    return 'Presentation Slide Designer';
+                  case 'ux-ui-design':
+                    return 'UX / UI Designer';
+                  case 'wordpress-website':
+                    return 'WordPress Website Designer';
+                  case 'video-editing':
+                    return 'Video Editor';
+                  case 'content-writing':
+                    return 'Content Writer & Copywriter';
+                  case 'ad-running':
+                    return 'Ad Running Specialist';
+                  default:
+                    if (expert.categoryTitle && expert.categoryTitle.endsWith(' Design')) {
+                      return expert.categoryTitle.replace(/ Design$/, ' Designer');
+                    }
+                    return expert.categoryTitle || 'Verified Specialist';
+                }
+              })();
 
               return (
                 <div
                   key={expert.code}
-                  className="group relative bg-white rounded-[26px] sm:rounded-[30px] p-6 sm:p-7 shadow-[0_4px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_40px_rgba(0,110,255,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-5 text-center"
+                  className="group relative bg-white rounded-[26px] sm:rounded-[30px] p-6 sm:p-7 shadow-[0_4px_24px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_40px_rgba(0,110,255,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between text-center min-h-[410px]"
                 >
-                  {/* Top Row: Star Rating on Left, Status Pill in Center, Share Button on Right */}
-                  <div className="flex items-center justify-between w-full">
+                  {/* Top Row: Star Rating on Left, Share Button on Right */}
+                  <div className="flex items-center justify-between w-full h-8">
                     <div
                       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full shadow-2xs font-mono font-bold text-xs sm:text-sm ${
                         expert.reviewsCount > 0
@@ -300,16 +323,16 @@ export const FreelancerDirectoryPage: React.FC = () => {
                       type="button"
                       onClick={() => handleShare(expert.code)}
                       title="Share profile link"
-                      className="w-9 h-9 rounded-full bg-slate-50 hover:bg-slate-100 hover:text-[#006eff] text-slate-500 flex items-center justify-center transition-all shadow-2xs active:scale-95 cursor-pointer"
+                      className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 hover:text-[#006eff] text-slate-500 flex items-center justify-center transition-all shadow-2xs active:scale-95 cursor-pointer"
                     >
-                      <Share2 className="w-4 h-4" />
+                      <Share2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
-                  {/* Middle Section: Centered Borderless Avatar, ID & Keywords */}
-                  <div className="flex flex-col items-center text-center space-y-3 pt-1">
-                    {/* Circular Avatar with Halfway Inside/Outside Verified Badge */}
-                    <div className="relative transition-transform duration-300 group-hover:scale-105">
+                  {/* Middle Section: Centered Borderless Avatar, ID, Persona Title & Subcategories */}
+                  <div className="flex flex-col items-center text-center space-y-2.5 pt-1">
+                    {/* 1. Circular Avatar with Verified Badge: Fixed height container */}
+                    <div className="h-24 flex items-center justify-center relative transition-transform duration-300 group-hover:scale-105">
                       <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-slate-100">
                         <AvatarGraphic id={expert.avatarId} size={84} className="rounded-full" />
                       </div>
@@ -318,35 +341,37 @@ export const FreelancerDirectoryPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* ID & Role */}
-                    <div className="space-y-0.5">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-snug group-hover:text-[#002f6c] transition-colors">
-                          {expert.code}
-                        </h3>
-                      </div>
-                      <p className="text-xs sm:text-sm font-medium text-slate-500">
-                        {expert.categoryTitle}
+                    {/* 2. Expert ID: Exactly aligned horizontally across all cards */}
+                    <div className="h-7 flex items-center justify-center w-full">
+                      <h3 className="font-mono font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-none group-hover:text-[#002f6c] transition-colors">
+                        {expert.code}
+                      </h3>
+                    </div>
+
+                    {/* 3. Persona Title: Single line strictly ("ডিজাইনার", "এক লাইনে থাকবে") */}
+                    <div className="h-5 flex items-center justify-center w-full px-2">
+                      <p className="text-xs sm:text-sm font-semibold text-slate-600 truncate whitespace-nowrap max-w-full">
+                        {personaTitle}
                       </p>
                     </div>
 
-                    {/* Centered Backend Keywords Pills (only if real skills exist) */}
-                    {keywords.length > 0 && (
-                      <div className="flex flex-wrap items-center justify-center gap-1.5 pt-0.5">
+                    {/* 4. Sub-Categories / Skills: Exactly same layer height across all cards */}
+                    <div className="h-14 flex items-center justify-center w-full px-1">
+                      <div className="flex flex-wrap items-center justify-center gap-1.5 max-h-14 overflow-hidden">
                         {keywords.map((kw, kIdx) => (
                           <span
                             key={kIdx}
-                            className="px-2.5 py-1 rounded-full bg-slate-50 text-[11px] font-medium text-slate-600 shadow-2xs group-hover:text-slate-900 transition-colors"
+                            className="px-2.5 py-1 rounded-full bg-slate-50 text-[11px] font-medium text-slate-600 shadow-2xs group-hover:text-slate-900 transition-colors whitespace-nowrap"
                           >
                             {kw}
                           </span>
                         ))}
                       </div>
-                    )}
+                    </div>
                   </div>
 
-                  {/* Bottom Action: Full-width 'View Portfolio' button with GAENR CTA button styling */}
-                  <div className="pt-2">
+                  {/* Bottom Action: Full-width 'View Portfolio' button pinned to the bottom */}
+                  <div className="mt-auto pt-3 w-full">
                     <button
                       type="button"
                       onClick={() => navigate(`/experts/${expert.code}`)}

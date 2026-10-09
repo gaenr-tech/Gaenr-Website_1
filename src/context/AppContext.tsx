@@ -338,6 +338,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             hasChanges = true;
           }
 
+          // Normalize old elongated codes to standard format
+          const CODE_NORMALIZATION_MAP: Record<string, string> = {
+            TS26001: 'GD26001',
+            GD2602001: 'GD26002',
+            VE2602001: 'VE26001',
+            WP2602001: 'WP26001',
+            UI2602001: 'UI26001',
+            CW2602001: 'CW26001',
+            PS2602001: 'PS26001',
+          };
+          if (CODE_NORMALIZATION_MAP[updatedFl.code]) {
+            updatedFl.code = CODE_NORMALIZATION_MAP[updatedFl.code];
+            hasChanges = true;
+          }
+
+          // Ensure canonical skills and real portfolio items are updated for baseline profiles
+          const initMatch = INITIAL_FREELANCERS.find((f) => f.id === updatedFl.id || f.code === updatedFl.code);
+          if (initMatch && updatedFl.id?.startsWith('fl-')) {
+            updatedFl.skills = initMatch.skills;
+            updatedFl.keywords = initMatch.keywords;
+            if (initMatch.portfolioItems && initMatch.portfolioItems.length > 0) {
+              updatedFl.portfolioItems = initMatch.portfolioItems;
+              hasChanges = true;
+            }
+          }
+
           // Ensure secure high-entropy uploadToken exists (privacy from public expert IDs)
           if (!updatedFl.uploadToken) {
             updatedFl.uploadToken = generateSecureUploadToken();

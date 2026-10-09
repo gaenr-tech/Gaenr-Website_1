@@ -22,6 +22,8 @@ import {
   FileUp,
   Video,
   Image as ImageIcon,
+  Globe,
+  Link2,
 } from 'lucide-react';
 
 interface ExpertPortfolioUploadPageProps {
@@ -68,6 +70,8 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
   // Direct File Upload State
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string>('');
+  const [websiteUrl, setWebsiteUrl] = useState<string>('');
+  const [deliverableTitle, setDeliverableTitle] = useState<string>('');
   const [fileName, setFileName] = useState<string>('');
   const [fileSizeStr, setFileSizeStr] = useState<string>('');
   const [previewType, setPreviewType] = useState<DeliverableType>('image');
@@ -138,6 +142,8 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
     setMediaPreview('');
     setFileName('');
     setFileSizeStr('');
+    setWebsiteUrl('');
+    setDeliverableTitle('');
     setZoomLevel(1);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -150,38 +156,48 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
       return;
     }
 
-    if (!mediaPreview) {
-      showToast('Please select a file to upload', 'error');
+    const hasWebsiteLink = !!websiteUrl.trim();
+    if (!mediaPreview && !hasWebsiteLink) {
+      showToast(
+        previewType === 'website'
+          ? 'Please enter a website link or upload a file'
+          : 'Please select a file to upload',
+        'error'
+      );
       return;
     }
 
     setIsUploading(true);
     setUploadStatusMsg('Storing and verifying deliverable...');
 
-    const cleanTitle = fileName
+    const cleanTitle = deliverableTitle.trim()
+      ? deliverableTitle.trim()
+      : fileName
       ? fileName.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ')
+      : hasWebsiteLink
+      ? websiteUrl.replace(/^https?:\/\//, '').replace(/\/.*$/, '') || 'Live Web Deliverable'
       : `Deliverable #${(expert.portfolioItems?.length || 0) + 1}`;
 
     const formattedTitle =
       cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1);
 
-    let finalMediaUrl = mediaPreview;
+    let finalMediaUrl = mediaPreview || websiteUrl.trim();
     let finalImageUrl: string | undefined = previewType === 'image' ? mediaPreview : undefined;
-    let externalDriveUrl: string | undefined = undefined;
+    let externalDriveUrl: string | undefined = hasWebsiteLink ? websiteUrl.trim() : undefined;
 
     if (selectedFile) {
       try {
         const driveResult = await uploadFileToGoogleDrive(selectedFile, expert.code);
         if (driveResult.success) {
-          externalDriveUrl = driveResult.fileUrl;
+          if (!hasWebsiteLink) externalDriveUrl = driveResult.fileUrl;
           if (previewType === 'image' && driveResult.directImageUrl) {
             finalMediaUrl = driveResult.directImageUrl;
             finalImageUrl = driveResult.directImageUrl;
           } else if ((previewType === 'video' || previewType === 'document') && driveResult.previewUrl) {
             finalMediaUrl = driveResult.previewUrl;
           } else if (driveResult.downloadUrl || driveResult.fileUrl) {
-            finalMediaUrl = driveResult.downloadUrl || driveResult.fileUrl || mediaPreview;
-            if (previewType === 'image') finalImageUrl = finalMediaUrl;
+            if (!hasWebsiteLink) finalMediaUrl = driveResult.downloadUrl || driveResult.fileUrl || mediaPreview;
+            if (previewType === 'image') finalImageUrl = driveResult.directImageUrl || finalMediaUrl;
           }
           showToast('✓ Successfully deposited in Google Drive & published!', 'success');
         } else if (driveResult.error === 'NO_WEBHOOK_CONFIGURED') {
@@ -200,7 +216,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
       category: expert.category,
       description: `Verified project deliverable by ${expert.code}.`,
       tools: [expert.categoryTitle],
-      previewType,
+      previewType: hasWebsiteLink ? 'website' : previewType,
       accentColor: '#006eff',
       aspectRatio: aspectRatio === '9:16' ? '16:9' : (aspectRatio as '16:9' | '4:3' | '1:1'),
       mediaUrl: finalMediaUrl,
@@ -351,13 +367,81 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
               </div>
             </div>
 
-            <form onSubmit={handleUploadAndPublish} className="space-y-5">
+            <form onSubmit={handleUploadAndPublish} className="space-y-4">
+              {/* Optional Custom Deliverable Title */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">Project / Deliverable Title (Optional)</label>
+                <input
+                  type="text"
+                  value={deliverableTitle}
+                  onChange={(e) => setDeliverableTitle(e.target.value)}
+                  placeholder="e.g. Modern E-commerce Store Architecture"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#006eff]"
+                />
+              </div>
+
+              {/* Minimal Options: Format & Aspect Ratio */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700">Display Format</label>
+                  <select
+                    value={previewType}
+                    onChange={(e) => setPreviewType(e.target.value as DeliverableType)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff] cursor-pointer"
+                  >
+                    <option value="image">Image Showcase / Artwork</option>
+                    <option value="video">Video Showcase / Reel (MP4)</option>
+                    <option value="document">PDF / Presentation Deck</option>
+                    <option value="website">Web / Interactive Mockup</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700">Aspect Ratio</label>
+                  <select
+                    value={aspectRatio}
+                    onChange={(e) => setAspectRatio(e.target.value as any)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff] cursor-pointer"
+                  >
+                    <option value="16:9">16:9 (Landscape / Video)</option>
+                    <option value="4:3">4:3 (Presentation / Standard)</option>
+                    <option value="1:1">1:1 (Square / Social Creative)</option>
+                    <option value="9:16">9:16 (Vertical / Mobile Reel)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Dedicated Website / Interactive Mockup Link Input */}
+              {previewType === 'website' && (
+                <div className="space-y-2 p-4 bg-blue-50/80 border border-blue-200 rounded-2xl transition-all">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <Globe className="w-4 h-4 text-[#006eff]" />
+                      <span>Live Website / Interactive Mockup URL</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-[#006eff] bg-blue-100 px-2 py-0.5 rounded-full font-bold">
+                      Direct Link Mode
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                    আপনার তৈরি করা লাইভ ওয়েবসাইট, ওয়ার্ডপ্রেস পোর্টাল বা ফিগমা প্রোটোটাইপ লিঙ্ক এখানে পেস্ট করুন। লিঙ্ক দিলে কোনো ফাইল আপলোড করার প্রয়োজন নেই (যেকোনো একটা দিলেই হবে)।
+                  </p>
+                  <input
+                    type="url"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    placeholder="https://your-wordpress-site.com or https://figma.com/proto/..."
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#006eff] focus:ring-1 focus:ring-[#006eff]"
+                  />
+                </div>
+              )}
+
               {/* Drag and Drop File Upload Area */}
               <div
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onClick={() => fileInputRef.current?.click()}
-                className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${
+                className={`relative border-2 border-dashed rounded-2xl p-7 sm:p-8 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-2.5 ${
                   mediaPreview
                     ? 'border-emerald-400 bg-emerald-50/20'
                     : 'border-slate-300 hover:border-[#006eff] bg-slate-50/60 hover:bg-blue-50/30'
@@ -401,70 +485,43 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
                   </div>
                 ) : (
                   <>
-                    <div className="w-14 h-14 rounded-2xl bg-blue-50 text-[#006eff] flex items-center justify-center shadow-2xs">
-                      <FileUp className="w-7 h-7" />
+                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#006eff] flex items-center justify-center shadow-2xs">
+                      <FileUp className="w-6 h-6" />
                     </div>
                     <div className="space-y-1">
                       <p className="text-xs font-bold text-slate-800">
-                        Click to browse or drag and drop your file here
+                        {previewType === 'website'
+                          ? 'Optional: Upload cover screenshot or mockup file'
+                          : 'Click to browse or drag and drop your file here'}
                       </p>
                       <p className="text-[11px] text-slate-400">
-                        Supports Images (PNG, JPG, WebP), Videos (MP4) &amp; Presentations (PDF)
+                        {previewType === 'website'
+                          ? 'লিঙ্ক দিয়েছেন? তাহলে ফাইল আপলোড ঐচ্ছিক (যেকোনো একটা দিলেই হবে)।'
+                          : 'Supports Images (PNG, JPG, WebP), Videos (MP4) & Presentations (PDF)'}
                       </p>
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 text-[10px] font-mono font-bold shadow-2xs mt-1">
+                    <span className="px-3 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 text-[10px] font-mono font-bold shadow-2xs mt-0.5">
                       Max file size: 50MB
                     </span>
                   </>
                 )}
               </div>
 
-              {/* Minimal Options: Format & Aspect Ratio */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Display Format</label>
-                  <select
-                    value={previewType}
-                    onChange={(e) => setPreviewType(e.target.value as DeliverableType)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff] cursor-pointer"
-                  >
-                    <option value="image">Image Showcase / Artwork</option>
-                    <option value="video">Video Showcase / Reel (MP4)</option>
-                    <option value="document">PDF / Presentation Deck</option>
-                    <option value="website">Web / Interactive Mockup</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Aspect Ratio</label>
-                  <select
-                    value={aspectRatio}
-                    onChange={(e) => setAspectRatio(e.target.value as any)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff] cursor-pointer"
-                  >
-                    <option value="16:9">16:9 (Landscape / Video)</option>
-                    <option value="4:3">4:3 (Presentation / Standard)</option>
-                    <option value="1:1">1:1 (Square / Social Creative)</option>
-                    <option value="9:16">9:16 (Vertical / Mobile Reel)</option>
-                  </select>
-                </div>
-              </div>
-
               {/* Upload & Publish Button */}
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
-                {mediaPreview && (
+                {(mediaPreview || websiteUrl.trim()) && (
                   <button
                     type="button"
                     onClick={handleClearSelected}
                     className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold transition-colors cursor-pointer"
                   >
-                    Cancel
+                    Clear
                   </button>
                 )}
 
                 <button
                   type="submit"
-                  disabled={!mediaPreview || isUploading}
+                  disabled={(!mediaPreview && !websiteUrl.trim()) || isUploading}
                   className="flex-1 py-3 px-6 bg-[#006eff] hover:bg-[#005cd4] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 transition-all cursor-pointer active:scale-95"
                 >
                   <Sparkles className="w-4 h-4" />
@@ -497,7 +554,57 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
 
               {/* Render Card matching Profile Page design */}
               <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#0c182c]">
-                {mediaPreview ? (
+                {websiteUrl.trim() && !mediaPreview ? (
+                  /* Live Website Browser Frame Mockup */
+                  <div
+                    className="w-full bg-[#070e1c] flex flex-col justify-between p-4 sm:p-6"
+                    style={{ aspectRatio: '16/9' }}
+                  >
+                    {/* Browser top navigation bar */}
+                    <div className="flex items-center gap-2 pb-2.5 border-b border-white/10">
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                      </div>
+                      <div className="flex-1 bg-slate-900 border border-slate-800 rounded-md px-2.5 py-1 text-[9px] sm:text-[10px] font-mono text-cyan-300 truncate flex items-center gap-1.5">
+                        <span className="text-slate-500">https://</span>
+                        <span className="truncate">{websiteUrl.replace(/^https?:\/\//, '')}</span>
+                      </div>
+                      <span className="px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-mono font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-800/50">
+                        LIVE WEB
+                      </span>
+                    </div>
+
+                    {/* Website Center View */}
+                    <div className="flex flex-col items-center justify-center text-center space-y-2 py-6">
+                      <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shadow-lg">
+                        <Globe className="w-6 h-6" />
+                      </div>
+                      <h4 className="text-white font-extrabold text-sm sm:text-base tracking-tight line-clamp-1 px-2">
+                        {deliverableTitle || websiteUrl.replace(/^https?:\/\//, '').replace(/\/.*$/, '')}
+                      </h4>
+                      <p className="text-[11px] text-slate-400 max-w-sm px-2">
+                        Verified Live Web Deliverable &amp; Interactive Preview
+                      </p>
+                    </div>
+
+                    {/* Browser footer */}
+                    <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                      <span>CORE WEB VITALS: 95+</span>
+                      <a
+                        href={websiteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-cyan-400 hover:underline flex items-center gap-1 font-semibold"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span>Open Live Website</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                ) : mediaPreview ? (
                   isVideoMedia ? (
                     <div
                       className="w-full relative bg-black flex items-center justify-center overflow-hidden"
@@ -565,7 +672,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
                     <Layers className="w-10 h-10 text-slate-600 stroke-[1.5]" />
                     <p className="text-xs font-semibold text-slate-300">No Asset Selected</p>
                     <p className="text-[10px] text-slate-500 max-w-xs">
-                      Select or drop a file on the left to see the instant preview here.
+                      Enter a website URL or select/drop a file on the left to see the instant preview here.
                     </p>
                   </div>
                 )}
@@ -574,7 +681,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
                 <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-white/10 bg-[#081120]">
                   <div className="min-w-0 pr-2">
                     <h4 className="font-bold text-white text-xs truncate">
-                      {fileName || 'Deliverable Preview'}
+                      {deliverableTitle || fileName || (websiteUrl ? websiteUrl.replace(/^https?:\/\//, '').replace(/\/.*$/, '') : 'Deliverable Preview')}
                     </h4>
                     <span className="text-[10px] text-slate-400 font-mono">
                       {expert.categoryTitle}
