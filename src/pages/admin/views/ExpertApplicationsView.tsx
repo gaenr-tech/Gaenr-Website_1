@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useApp } from '../../../context/AppContext';
-import { ExpertApplication, ExpertApplicationStatus } from '../../../types';
-import { getExpertSecureUploadUrl } from '../../../utils/security';
+import React, { useState, useRef } from 'react';
+import { useApp, mapSkillToCategory } from '../../../context/AppContext';
+import { ExpertApplication, ExpertApplicationStatus, FreelancerProfile } from '../../../types';
+import { getExpertSecureUploadUrl, generateUniqueExpertCode, generateSecureUploadToken } from '../../../utils/security';
 import { RAW_AVATAR_SPECS, AvatarGraphic, VerifiedBadge3D } from '../../../components/common/Avatars';
+import { ExpertIdCard } from '../../../components/common/ExpertIdCard';
+import { captureIdCardDataUrl } from '../../../utils/downloadIdCardImage';
 import {
   Users,
   Search,
@@ -32,7 +34,12 @@ import {
 interface ExpertApplicationsViewProps {
   applications: ExpertApplication[];
   onDeleteApplication: (id: string) => void;
-  onUpdateStatus?: (id: string, status: ExpertApplicationStatus) => void;
+  onUpdateStatus?: (
+    id: string,
+    status: ExpertApplicationStatus,
+    cardImage?: string | null,
+    customCode?: string
+  ) => void;
   showToast: (msg: string, type?: 'success' | 'error' | 'info') => void;
   navigate?: (route: string) => void;
 }
@@ -50,6 +57,80 @@ export const ExpertApplicationsView: React.FC<ExpertApplicationsViewProps> = ({
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedApp, setSelectedApp] = useState<ExpertApplication | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [convertingAppId, setConvertingAppId] = useState<string | null>(null);
+  const [profileToCapture, setProfileToCapture] = useState<FreelancerProfile | null>(null);
+  const cardCaptureRef = useRef<HTMLDivElement>(null);
+
+  const handleConvertLive = async (app: ExpertApplication) => {
+    if (!app.onboardingData) {
+      showToast('Cannot convert to Live: Expert has not submitted the onboarding questionnaire yet.', 'error');
+      return;
+    }
+    if (!onUpdateStatus) return;
+
+    setConvertingAppId(app.id);
+
+    try {
+      const existingCodes = freelancers.map((f) => f.code);
+      const CODE_REGEX = /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/;
+      let assignedCode = app.convertedExpertCode;
+      if (!assignedCode || !CODE_REGEX.test(assignedCode) || existingCodes.includes(assignedCode)) {
+        assignedCode = generateUniqueExpertCode(existingCodes);
+      }
+
+      const catMeta = mapSkillToCategory(app.otherSkill || app.skill);
+      const chosenAvatar =
+        app.onboardingData?.avatarId ||
+        (app.gender.toLowerCase().includes('female') ? 'avatar-youth-f1' : 'avatar-youth-m1');
+      const chosenStatement =
+        app.onboardingData?.statement ||
+        `Verified Gaenr Expert in ${catMeta.title}. Specialized in professional deliverables and timely delivery.`;
+
+      const tempProfile: FreelancerProfile = {
+        id: `fl_${Date.now()}`,
+        code: assignedCode,
+        uploadToken: app.uploadToken || generateSecureUploadToken(),
+        name: app.fullName,
+        gender: app.gender.toLowerCase().includes('female') ? 'Female' : 'Male',
+        contactNumber: app.whatsapp,
+        privateEmail: app.email,
+        address: app.otherAddress || app.address,
+        category: catMeta.slug,
+        categoryTitle: catMeta.title,
+        avatarId: chosenAvatar,
+        rating: 5.0,
+        reviewsCount: 0,
+        completedProjects: 0,
+        statement: chosenStatement,
+        status: 'active',
+        isPublic: true,
+        satisfactionRate: { satisfied: 100, neutral: 0, unsatisfied: 0 },
+        reviews: [],
+        pricingTiers: app.onboardingData?.pricingTiers || [],
+      };
+
+      setProfileToCapture(tempProfile);
+      // Wait for React to render offscreen card into the DOM
+      await new Promise((r) => setTimeout(r, 200));
+
+      let cardImage: string | null = null;
+      if (cardCaptureRef.current) {
+        try {
+          cardImage = await captureIdCardDataUrl(cardCaptureRef.current);
+        } catch (captureErr) {
+          console.warn('ID Card capture error in ExpertApplicationsView:', captureErr);
+        }
+      }
+
+      onUpdateStatus(app.id, 'onboarded', cardImage, assignedCode);
+    } catch (err) {
+      console.error('Conversion error:', err);
+      showToast('Error converting application to live profile', 'error');
+    } finally {
+      setConvertingAppId(null);
+      setProfileToCapture(null);
+    }
+  };
 
   const filteredApps = applications.filter((app) => {
     const q = searchTerm.toLowerCase();
@@ -452,20 +533,31 @@ WhatsApp: https://wa.me/8801608922800`;
                             </button>
                           )}
 
-                          {/* 2. If approved -> Create Live Profile (Single sequential button) */}
+                          {/* 2. If approved -> Create Live Profile (requires onboarding questionnaire) */}
                           {status === 'approved' && onUpdateStatus && (
-                            <button
-                              type="button"
-                              onClick={() => onUpdateStatus(app.id, 'onboarded')}
-                              className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
-                              title="Publish verified expert profile to live website and assign expert code"
-                            >
-                              <Sparkles className="w-3.5 h-3.5" />
-                              <span>Create Live Profile</span>
-                            </button>
+                            app.onboardingData ? (
+                              <button
+                                type="button"
+                                onClick={() => handleConvertLive(app)}
+                                disabled={convertingAppId === app.id}
+                                className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
+                                title="Publish verified expert profile to live website and assign expert code"
+                              >
+                                <Sparkles className={`w-3.5 h-3.5 ${convertingAppId === app.id ? 'animate-spin' : ''}`} />
+                                <span>{convertingAppId === app.id ? 'Creating...' : 'Create Live Profile'}</span>
+                              </button>
+                            ) : (
+                              <span
+                                className="px-2.5 py-1.5 bg-slate-100 text-slate-500 border border-slate-200 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap"
+                                title="Waiting for candidate to submit the onboarding questionnaire"
+                              >
+                                <Clock className="w-3.5 h-3.5 text-amber-500" />
+                                <span>Awaiting Form</span>
+                              </span>
+                            )
                           )}
 
-                          {/* 3. If onboarded -> Upload Vault & Live Profile */}
+                          {/* 3. If onboarded -> Upload Portal & Live Profile */}
                           {status === 'onboarded' && (profileCode || uploadToken) && (
                             <>
                               {uploadToken && (
@@ -479,10 +571,10 @@ WhatsApp: https://wa.me/8801608922800`;
                                     }
                                   }}
                                   className="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
-                                  title={`Open private deliverable upload vault (${uploadUrl})`}
+                                  title={`Open private deliverable upload portal (${uploadUrl})`}
                                 >
                                   <Upload className="w-3.5 h-3.5" />
-                                  <span>Upload Vault</span>
+                                  <span>Upload Portal</span>
                                 </button>
                               )}
 
@@ -854,17 +946,28 @@ WhatsApp: https://wa.me/8801608922800`;
                       <span>Copy Form Link</span>
                     </button>
                     {onUpdateStatus && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onUpdateStatus(selectedApp.id, 'onboarded');
-                          setSelectedApp({ ...selectedApp, status: 'onboarded' });
-                        }}
-                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
-                      >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Create Live Profile</span>
-                      </button>
+                      selectedApp.onboardingData ? (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            await handleConvertLive(selectedApp);
+                            setSelectedApp({ ...selectedApp, status: 'onboarded' });
+                          }}
+                          disabled={convertingAppId === selectedApp.id}
+                          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Sparkles className={`w-3.5 h-3.5 ${convertingAppId === selectedApp.id ? 'animate-spin' : ''}`} />
+                          <span>{convertingAppId === selectedApp.id ? 'Creating...' : 'Create Live Profile'}</span>
+                        </button>
+                      ) : (
+                        <span
+                          className="px-3 py-2 bg-slate-100 text-slate-500 border border-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+                          title="Waiting for candidate to submit the onboarding questionnaire"
+                        >
+                          <Clock className="w-3.5 h-3.5 text-amber-500" />
+                          <span>Awaiting Form</span>
+                        </span>
+                      )
                     )}
                   </>
                 )}
@@ -899,7 +1002,7 @@ WhatsApp: https://wa.me/8801608922800`;
                           className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
                         >
                           <Upload className="w-3.5 h-3.5" />
-                          <span>Upload Vault</span>
+                          <span>Upload Portal</span>
                         </button>
                       )}
                       {modalCode && (
@@ -925,6 +1028,24 @@ WhatsApp: https://wa.me/8801608922800`;
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Off-screen ID Card Container for High-Resolution PNG Snapshot Capture */}
+      {profileToCapture && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '340px',
+            opacity: 0.001,
+            pointerEvents: 'none',
+            zIndex: -9999,
+          }}
+          aria-hidden="true"
+        >
+          <ExpertIdCard ref={cardCaptureRef} freelancer={profileToCapture} />
         </div>
       )}
     </div>

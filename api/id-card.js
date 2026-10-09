@@ -67,7 +67,6 @@ const ensureFontOnDisk = () => {
 };
 
 const buildCardSvg = (expert) => {
-  const localFontPath = ensureFontOnDisk();
   const code = escapeXml(expert.code || 'GAENR');
   const category = escapeXml(expert.categoryTitle || 'Verified Expert');
   const deliveries = expert.completedProjects || 0;
@@ -80,15 +79,8 @@ const buildCardSvg = (expert) => {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
     <defs>
       <style>
-        @font-face {
-          font-family: 'DM Sans';
-          src: url('${localFontPath}') format('truetype'),
-               url('file://${localFontPath}') format('truetype');
-          font-weight: 700;
-          font-style: normal;
-        }
-        .dm-sans {
-          font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        .card-text {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
       </style>
       <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
@@ -118,7 +110,7 @@ const buildCardSvg = (expert) => {
     <g transform="translate(230, 96) scale(0.04)">
       ${gaenrLogoPaths}
     </g>
-    <text x="360" y="132" fill="#ffffff" class="dm-sans" font-size="28" font-weight="900" letter-spacing="5" text-anchor="middle">GAENR</text>
+    <text x="360" y="132" fill="#ffffff" class="card-text" font-size="28" font-weight="900" letter-spacing="5" text-anchor="middle">GAENR</text>
     <line x1="86" y1="168" x2="594" y2="168" stroke="#ffffff" stroke-opacity=".14"/>
 
     <!-- Avatar Glow Rings -->
@@ -133,25 +125,22 @@ const buildCardSvg = (expert) => {
 
     <!-- Expert Code Badge -->
     <rect x="160" y="486" width="360" height="76" rx="20" fill="#ffffff" fill-opacity=".06" stroke="#ffffff" stroke-opacity=".15"/>
-    <text x="340" y="536" fill="#ffffff" class="dm-sans" font-size="34" font-weight="900" letter-spacing="5" text-anchor="middle">${code}</text>
+    <text x="340" y="538" fill="#ffffff" class="card-text" font-size="34" font-weight="900" letter-spacing="5" text-anchor="middle">${code}</text>
 
     <!-- Discipline / Category Badge -->
     <rect x="150" y="586" width="380" height="50" rx="25" fill="#2563eb" fill-opacity=".18" stroke="#60a5fa" stroke-opacity=".4"/>
-    <text x="340" y="618" fill="#bfdbfe" class="dm-sans" font-size="19" font-weight="700" letter-spacing="0.5" text-anchor="middle">${category}</text>
+    <text x="340" y="618" fill="#bfdbfe" class="card-text" font-size="19" font-weight="700" letter-spacing="0.5" text-anchor="middle">${category}</text>
     <line x1="86" y1="680" x2="594" y2="680" stroke="#ffffff" stroke-opacity=".14"/>
 
     <!-- Metrics Row -->
-    <text x="170" y="744" fill="#ffffff" class="dm-sans" font-size="28" font-weight="900" text-anchor="middle">${deliveries}</text>
-    <text x="170" y="774" fill="#94a3b8" class="dm-sans" font-size="13" font-weight="700" letter-spacing="1" text-anchor="middle">DELIVERIES</text>
+    <text x="170" y="744" fill="#ffffff" class="card-text" font-size="28" font-weight="900" text-anchor="middle">${deliveries}</text>
+    <text x="170" y="774" fill="#94a3b8" class="card-text" font-size="13" font-weight="700" letter-spacing="1" text-anchor="middle">DELIVERIES</text>
 
-    <text x="340" y="744" fill="#fbbf24" class="dm-sans" font-size="28" font-weight="900" text-anchor="middle">${rating}</text>
-    <text x="340" y="774" fill="#94a3b8" class="dm-sans" font-size="13" font-weight="700" letter-spacing="1" text-anchor="middle">RATING</text>
+    <text x="340" y="744" fill="#fbbf24" class="card-text" font-size="28" font-weight="900" text-anchor="middle">${rating}</text>
+    <text x="340" y="774" fill="#94a3b8" class="card-text" font-size="13" font-weight="700" letter-spacing="1" text-anchor="middle">RATING (${expert.reviewsCount || 0})</text>
 
-    <text x="510" y="744" fill="#34d399" class="dm-sans" font-size="28" font-weight="900" text-anchor="middle">${satisfaction}</text>
-    <text x="510" y="774" fill="#94a3b8" class="dm-sans" font-size="13" font-weight="700" letter-spacing="1" text-anchor="middle">SATISFACTION</text>
-
-    <!-- Card Footer -->
-    <text x="340" y="878" fill="#94a3b8" class="dm-sans" font-size="15" font-weight="700" text-anchor="middle">Verified Expert • Gaenr Ecosystem</text>
+    <text x="510" y="744" fill="#34d399" class="card-text" font-size="28" font-weight="900" text-anchor="middle">${satisfaction}</text>
+    <text x="510" y="774" fill="#94a3b8" class="card-text" font-size="13" font-weight="700" letter-spacing="1" text-anchor="middle">SATISFACTION</text>
   </svg>`;
 };
 

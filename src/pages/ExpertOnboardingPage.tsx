@@ -42,9 +42,9 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
 
   const application = expertApplications.find((a) => a.id === resolvedId);
 
-  // Form State initialized from existing onboardingData if present
+  // Form State initialized from existing onboardingData if previously submitted, otherwise completely blank
   const [pricingModel, setPricingModel] = useState(
-    application?.onboardingData?.pricingModel || '5,000 BDT / Deliverable'
+    application?.onboardingData?.pricingModel || ''
   );
 
   const [pricingTiers, setPricingTiers] = useState<ExpertPricingTier[]>(
@@ -54,12 +54,11 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
           price: t.price.replace(/\s*BDT\s*/gi, '').trim(),
         }))
       : [
-          { id: 'tier-1', serviceName: 'Standard Package', price: '5,000' },
-          { id: 'tier-2', serviceName: 'Pro / Extended Deliverables', price: '10,000' },
+          { id: 'tier-1', serviceName: '', price: '' },
         ]
   );
 
-  // Default avatar selection (smart default matching gender)
+  // Default avatar selection (matching gender if available, or first avatar)
   const defaultAvatar = application?.gender.toLowerCase().includes('female')
     ? 'avatar-youth-f1'
     : 'avatar-youth-m1';
@@ -69,10 +68,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
   );
 
   const [statement, setStatement] = useState(
-    application?.onboardingData?.statement ||
-      `Dedicated Gaenr Expert specializing in ${
-        application?.otherSkill || application?.skill?.split('/')[0].trim() || 'creative digital work'
-      }. Committed to delivering exceptional quality with verified precision.`
+    application?.onboardingData?.statement || ''
   );
 
   // Payout Details: Strictly TWO options (Bank Account vs MFS)
@@ -80,25 +76,24 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
     application?.onboardingData?.payoutMethod === 'bank' ? 'bank' : 'mfs'
   );
 
-  // Bank Account fields
+  // Bank Account fields (Starts blank)
   const [bankName, setBankName] = useState(application?.onboardingData?.bankName || '');
   const [accountHolderName, setAccountHolderName] = useState(
-    application?.onboardingData?.accountHolderName || application?.fullName || ''
+    application?.onboardingData?.accountHolderName || ''
   );
   const [accountNumber, setAccountNumber] = useState(application?.onboardingData?.accountNumber || '');
   const [branchName, setBranchName] = useState(application?.onboardingData?.branchName || '');
   const [routingNumber, setRoutingNumber] = useState(application?.onboardingData?.routingNumber || '');
 
-  // MFS fields (Provider: bKash/Nagad/Rocket, Account Holder Name, Mobile Number, Account Type: Personal/Agent/Merchant)
+  // MFS fields (Starts blank)
   const [mfsProvider, setMfsProvider] = useState<'bKash' | 'Nagad' | 'Rocket'>(
-    application?.onboardingData?.mfsProvider ||
-    (application?.onboardingData?.payoutMethod === 'nagad' ? 'Nagad' : 'bKash')
+    application?.onboardingData?.mfsProvider || 'bKash'
   );
   const [mfsAccountHolderName, setMfsAccountHolderName] = useState(
-    application?.onboardingData?.accountHolderName || application?.fullName || ''
+    application?.onboardingData?.accountHolderName || ''
   );
   const [mfsNumber, setMfsNumber] = useState(
-    application?.onboardingData?.mfsNumber || application?.whatsapp || ''
+    application?.onboardingData?.mfsNumber || ''
   );
   const [mfsAccountType, setMfsAccountType] = useState<'Personal' | 'Agent' | 'Merchant'>(
     application?.onboardingData?.mfsAccountType || 'Personal'
@@ -137,15 +132,15 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
   const handleAddPricingTier = () => {
     const newTier: ExpertPricingTier = {
       id: `tier_${Date.now()}`,
-      serviceName: 'Custom Deliverable',
-      price: '8,000',
+      serviceName: '',
+      price: '',
     };
     setPricingTiers([...pricingTiers, newTier]);
   };
 
   const handleRemovePricingTier = (id: string) => {
     if (pricingTiers.length <= 1) {
-      showToast('At least one pricing tier is required', 'info');
+      showToast('At least one pricing package is required', 'info');
       return;
     }
     setPricingTiers(pricingTiers.filter((t) => t.id !== id));
@@ -159,18 +154,28 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!statement.trim()) {
-      showToast('Please provide your statement / bio.', 'error');
+
+    // 1. Mandatory Pricing validation
+    const emptyTiers = pricingTiers.filter((t) => !t.serviceName.trim() || !t.price.trim());
+    if (pricingTiers.length === 0 || emptyTiers.length > 0) {
+      showToast('Please provide both service name and price for all pricing packages.', 'error');
       return;
     }
 
+    // 2. Mandatory Statement validation
+    if (!statement.trim()) {
+      showToast('Please provide your statement.', 'error');
+      return;
+    }
+
+    // 3. Mandatory Payout validation
     if (payoutMethod === 'bank') {
       if (!bankName.trim() || !accountHolderName.trim() || !accountNumber.trim()) {
         showToast('Please provide your Bank Name, Account Holder Name, and Account Number.', 'error');
         return;
       }
     } else {
-      if (!mfsNumber.trim() || !mfsAccountHolderName.trim()) {
+      if (!mfsAccountHolderName.trim() || !mfsNumber.trim()) {
         showToast(`Please enter your ${mfsProvider} account holder name and mobile number.`, 'error');
         return;
       }
@@ -236,29 +241,17 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
         <div className="bg-gradient-to-br from-[#0c182c] to-[#050d1a] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden mb-8 border border-slate-800">
           <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-2.5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
-                <Sparkles className="w-3.5 h-3.5 text-blue-300" />
-                <span>Gaenr Expert Selection &amp; Profile Setup</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Congratulations, {application.fullName}!
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-                You have been officially selected as a Gaenr Expert! Please complete your 3D youth avatar selection, pricing model, bio statement, and bank payout details below to activate your verified creator profile.
-              </p>
+          <div className="relative z-10 space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-blue-300" />
+              <span>Gaenr Expert Selection &amp; Profile Setup</span>
             </div>
-
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs text-xs space-y-1.5 shrink-0 min-w-[220px]">
-              <div className="text-[10px] text-slate-400 uppercase font-mono font-bold flex items-center justify-between">
-                <span>Selected Candidate</span>
-                <span className="text-emerald-400 font-bold">APPROVED</span>
-              </div>
-              <div className="font-bold text-white text-sm">{application.fullName}</div>
-              <div className="text-blue-300 font-semibold">{skillTitle}</div>
-              <div className="text-slate-400 text-[11px] truncate">{application.email}</div>
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              Congratulations, {application.fullName}!
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              You have been officially selected as a Gaenr Expert in <strong className="text-blue-300">{skillTitle}</strong>. Please complete your avatar selection, service rates, statement, and payout details below to activate your verified profile.
+            </p>
           </div>
         </div>
 
@@ -343,11 +336,8 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                 </span>
                 <div>
                   <h2 className="text-lg font-bold text-slate-900 tracking-tight">
-                    Choose Your 3D Youth Avatar
+                    Choose Your Avatar
                   </h2>
-                  <p className="text-xs text-slate-500">
-                    To maintain professional consistency and complete privacy on Gaenr, select one of the 10 official 3D student avatars.
-                  </p>
                 </div>
               </div>
 
@@ -469,11 +459,8 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                 </span>
                 <div>
                   <h2 className="text-lg font-bold text-slate-900 tracking-tight">
-                    My Statement &amp; Value Proposition
+                    My Statement
                   </h2>
-                  <p className="text-xs text-slate-500">
-                    Write a compelling statement that highlights your core skill, approach to client work, and reliability.
-                  </p>
                 </div>
               </div>
 
@@ -716,7 +703,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                 type="submit"
                 className="px-8 py-3.5 bg-[#006eff] hover:bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95"
               >
-                <span>Save &amp; Submit Onboarding Details</span>
+                <span>Submit</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

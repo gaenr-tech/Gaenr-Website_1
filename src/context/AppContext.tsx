@@ -131,7 +131,12 @@ interface AppContextType {
 
   expertApplications: ExpertApplication[];
   submitExpertApplication: (app: Omit<ExpertApplication, 'id' | 'createdAt' | 'status'>) => void;
-  updateExpertApplicationStatus: (id: string, newStatus: ExpertApplicationStatus) => void;
+  updateExpertApplicationStatus: (
+    id: string,
+    newStatus: ExpertApplicationStatus,
+    cardImage?: string | null,
+    customCode?: string
+  ) => void;
   saveExpertOnboardingResponse: (applicationId: string, data: ExpertOnboardingData) => void;
   deleteExpertApplication: (id: string) => void;
 
@@ -1393,15 +1398,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('Application received! Status is set to Applied.', 'success');
   };
 
-  const updateExpertApplicationStatus = (id: string, newStatus: ExpertApplicationStatus) => {
+  const updateExpertApplicationStatus = (
+    id: string,
+    newStatus: ExpertApplicationStatus,
+    cardImage?: string | null,
+    customCode?: string
+  ) => {
     const targetApp = expertApplications.find((a) => a.id === id);
     if (!targetApp) return;
 
     if (newStatus === 'onboarded') {
-      const existingCodes = freelancers.map((f) => f.code);
-      let generatedCode = targetApp.convertedExpertCode;
+      // Must enforce: Cannot convert to live if onboardingData is missing!
+      if (!targetApp.onboardingData) {
+        showToast('Cannot convert to Live: Candidate has not submitted the onboarding questionnaire yet.', 'error');
+        return;
+      }
 
-      if (!generatedCode || generatedCode.length < 6 || existingCodes.includes(generatedCode)) {
+      const existingCodes = freelancers.map((f) => f.code);
+      const CODE_REGEX = /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/;
+      let generatedCode = customCode || targetApp.convertedExpertCode;
+
+      if (!generatedCode || !CODE_REGEX.test(generatedCode) || existingCodes.includes(generatedCode)) {
         generatedCode = generateUniqueExpertCode(existingCodes);
       }
 
@@ -1471,7 +1488,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       // Trigger official welcome email in 100% English with ID card badge and upload portal link
       if (targetApp.email) {
-        sendExpertWelcomeEmail(generatedCode, null, newProfile).catch((err) => {
+        sendExpertWelcomeEmail(generatedCode, cardImage || null, newProfile).catch((err) => {
           console.warn('Welcome email dispatch note:', err);
         });
       }

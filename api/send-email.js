@@ -18,7 +18,7 @@ const buildWelcomeEmail = (expert) => {
   const logoUrl = `${SITE_URL}/logo.svg`;
   const iconUrl = (name) => `${SITE_URL}/email-icons/${name}.svg`;
 
-  const subject = 'Your Gaenr Expert Profile is Live — ID Card & Portfolio Vault';
+  const subject = 'Your GAENR Expert Profile is Live';
   const text = [
     `Hi ${name},`,
     '',
@@ -27,7 +27,7 @@ const buildWelcomeEmail = (expert) => {
     `Official ID Card Number: ${expert.code}`,
     `Your digital ID card has been generated and attached to this email as GAENR-ID-${expert.code}.png. Keep it safe for client verification.`,
     '',
-    `Open Portfolio Upload Vault: ${uploadPortalUrl}`,
+    `Open Portfolio Upload Portal: ${uploadPortalUrl}`,
     `View Live Profile: ${profileUrl}`,
     '',
     'Team Gaenr',
@@ -177,7 +177,7 @@ const buildWelcomeEmail = (expert) => {
                 <tr>
                   <td align="center">
                     <div style="font-size:11px;font-weight:700;color:#006eff;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">
-                      Portfolio Deliverable Vault
+                      Portfolio Deliverables Portal
                     </div>
                     <div style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:8px;">
                       Upload &amp; Manage Your Portfolio Deliverables
@@ -187,7 +187,7 @@ const buildWelcomeEmail = (expert) => {
                     </div>
                     <div>
                       <a href="${uploadPortalUrl}" class="action-btn" target="_blank" style="display:inline-block;background-color:#006eff;color:#ffffff !important;text-decoration:none;font-weight:700;font-size:13px;padding:12px 34px;border-radius:9999px;box-shadow:0 4px 14px rgba(0, 110, 255, 0.25);">
-                        Open Portfolio Upload Vault →
+                        Open Portfolio Upload Portal →
                       </a>
                     </div>
                   </td>
