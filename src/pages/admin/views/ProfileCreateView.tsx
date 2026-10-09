@@ -267,7 +267,6 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
       };
 
       addFreelancer(newProfile);
-      showToast(`Expert Profile ${generatedCode} created successfully!`, 'success');
 
       // Email the expert at the address entered in "Private Email" (runs in the background)
       if (newProfile.privateEmail) {

@@ -227,12 +227,14 @@ export interface ExpertOnboardingData {
   avatarId?: string; // e.g. avatar-youth-m1 to avatar-youth-f5
   statement?: string; // My Statement / Bio for client profile
   // Bank / Payout Details
-  payoutMethod?: 'bank' | 'bkash' | 'nagad';
+  payoutMethod?: 'bank' | 'mfs' | 'bkash' | 'nagad';
   bankName?: string;
   accountHolderName?: string;
   accountNumber?: string;
   branchName?: string;
   routingNumber?: string;
+  mfsProvider?: 'bKash' | 'Nagad' | 'Rocket';
+  mfsAccountType?: 'Personal' | 'Agent' | 'Merchant';
   mfsNumber?: string;
   submittedAt?: string;
   notes?: string;

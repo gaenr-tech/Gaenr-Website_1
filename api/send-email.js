@@ -184,15 +184,15 @@ const buildWelcomeEmail = (expert) => {
                       Upload &amp; Manage Your Portfolio Deliverables
                     </div>
                     <div style="font-size:13px;color:#475569;line-height:1.6;max-width:440px;margin:0 auto 16px;">
-                      আপনার ভেরিফাইড প্রোফাইল সফলভাবে তৈরি হয়ে গেছে। এখন থেকে আপনি নিজেই নিচের লিঙ্কে প্রবেশ করে যেকোনো সময় আপনার নতুন পোর্টফোলিও ও প্রজেক্ট ডেলিভারেবলস সরাসরি আপলোড ও পরিচালনা করতে পারবেন:
+                      Your verified expert profile has been successfully activated! You can now start uploading and managing your official portfolio deliverables directly through your private portal link below:
                     </div>
                     <div>
                       <a href="${uploadPortalUrl}" class="action-btn" target="_blank" style="display:inline-block;background-color:#006eff;color:#ffffff !important;text-decoration:none;font-weight:700;font-size:13px;padding:12px 34px;border-radius:9999px;box-shadow:0 4px 14px rgba(0, 110, 255, 0.25);">
-                        পোর্টফোলিও আপলোড পোর্টাল খুলুন →
+                        Open Portfolio Upload Portal →
                       </a>
                     </div>
                     <div style="margin-top:12px;font-size:12px;color:#64748b;">
-                      অথবা সরাসরি <a href="${uploadPortalUrl}" target="_blank" style="color:#006eff;font-weight:600;text-decoration:underline;">এখানে ক্লিক করে আপনার পোর্টফোলিও আপলোড করুন</a>।
+                      Or directly <a href="${uploadPortalUrl}" target="_blank" style="color:#006eff;font-weight:600;text-decoration:underline;">click here to start uploading and updating your portfolio</a>.
                     </div>
                   </td>
                 </tr>
@@ -285,6 +285,225 @@ const buildWelcomeEmail = (expert) => {
   return { subject, text, html };
 };
 
+const buildOnboardingInviteEmail = ({ name, skill, applicationId }) => {
+  const safeName = (name || '').trim() || 'there';
+  const safeSkill = (skill || '').trim() || 'Digital Creator';
+  const onboardingUrl = `${SITE_URL}/expert-onboarding/${encodeURIComponent(applicationId)}`;
+  const logoUrl = `${SITE_URL}/logo.svg`;
+  const iconUrl = (name) => `${SITE_URL}/email-icons/${name}.svg`;
+
+  const subject = 'Congratulations! Action Required: Complete Your Gaenr Expert Onboarding';
+  const text = [
+    `Dear ${safeName},`,
+    '',
+    `Congratulations! Following our review of your portfolio and background, you have been officially selected to join Gaenr as a Verified Expert in ${safeSkill}.`,
+    '',
+    'To activate your verified creator profile, choose your official 3D Youth Avatar, set your deliverable pricing, and submit your payout bank or MFS account details, please complete your private onboarding setup using your secure invitation link below:',
+    '',
+    `Complete Your Onboarding: ${onboardingUrl}`,
+    '',
+    'During onboarding, you will configure:',
+    '1. Official 3D Youth Avatar Identity',
+    '2. Standard Deliverable Pricing Packages (BDT)',
+    '3. Professional Bio & Statement',
+    '4. Payout Account Details (Bank Transfer or MFS: bKash / Nagad / Rocket with 0% platform deductions)',
+    '',
+    'Once submitted, our operations team will finalize your profile activation and provide your verified Gaenr Expert ID badge and portfolio management portal.',
+    '',
+    'Welcome to the Gaenr family!',
+    '',
+    'Warm regards,',
+    'Gaenr Operations & Talent Acquisition Team',
+    'Website: https://gaenr.com',
+    'Email: contact@gaenr.com',
+    'WhatsApp: https://wa.me/8801608922800',
+  ].join('\n');
+
+  const html = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+    * {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f1f5f9;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+    }
+    .brand-title {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #006eff;
+      text-align: center;
+    }
+    .action-btn {
+      display: inline-block;
+      background-color: #006eff;
+      color: #ffffff !important;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 13px 36px;
+      border-radius: 9999px;
+      box-shadow: 0 4px 14px rgba(0, 110, 255, 0.25);
+      transition: all 0.2s ease;
+    }
+    .action-btn:hover {
+      background-color: #0056cc !important;
+      box-shadow: 0 6px 20px rgba(0, 110, 255, 0.35) !important;
+    }
+    .footer-icon-btn {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      text-align: center;
+      border-radius: 50%;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      margin: 0 3px;
+      vertical-align: middle;
+      text-decoration: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .footer-icon-btn:hover {
+      border-color: #cbd5e1 !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:'DM Sans',Arial,Helvetica,sans-serif;color:#1e293b">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:22px;border:1px solid #e2e8f0;font-family:'DM Sans',Arial,Helvetica,sans-serif;box-shadow:0 8px 30px rgba(15,23,42,0.04);overflow:hidden;">
+          
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding:24px 32px 18px;background:#f8fafc;border-bottom:1px solid #edf2f7;">
+              <img src="${logoUrl}" width="40" height="40" alt="Gaenr logo" style="display:block;width:40px;height:40px;margin:0 auto 8px;" />
+              <div class="brand-title">GAENR</div>
+            </td>
+          </tr>
+
+          <!-- Welcome Greeting -->
+          <tr>
+            <td style="padding:24px 32px 0;font-size:18px;font-weight:700;color:#1e293b;">
+              Congratulations, <span style="color:#006eff;">${escapeHtml(safeName)}</span>!
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:10px 32px 0;font-size:14px;line-height:1.6;color:#475569;">
+              Following our review of your portfolio and background, you have been officially selected to join Gaenr as a Verified Expert in <strong>${escapeHtml(safeSkill)}</strong>.
+            </td>
+          </tr>
+
+          <!-- Action Box -->
+          <tr>
+            <td style="padding:22px 32px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:18px;padding:24px 20px;text-align:center;">
+                <tr>
+                  <td align="center">
+                    <div style="font-size:11px;font-weight:700;color:#006eff;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">
+                      Private Setup Portal
+                    </div>
+                    <div style="font-size:18px;font-weight:800;color:#0f172a;margin-bottom:8px;">
+                      Complete Your Expert Onboarding
+                    </div>
+                    <div style="font-size:13px;color:#475569;line-height:1.6;max-width:440px;margin:0 auto 18px;">
+                      Please complete your private onboarding setup to select your official 3D Youth Avatar identity, set your deliverable pricing, and connect your payout account:
+                    </div>
+                    <div>
+                      <a href="${onboardingUrl}" class="action-btn" target="_blank" style="display:inline-block;background-color:#006eff;color:#ffffff !important;text-decoration:none;font-weight:700;font-size:14px;padding:13px 36px;border-radius:9999px;box-shadow:0 4px 14px rgba(0, 110, 255, 0.25);">
+                        Complete Onboarding Form →
+                      </a>
+                    </div>
+                    <div style="margin-top:14px;font-size:12px;color:#64748b;">
+                      Or directly <a href="${onboardingUrl}" target="_blank" style="color:#006eff;font-weight:600;text-decoration:underline;">click here to open your onboarding form</a>.
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Onboarding Checklist -->
+          <tr>
+            <td style="padding:20px 32px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px 20px;">
+                <tr>
+                  <td>
+                    <div style="font-size:12px;font-weight:700;color:#0f172a;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;">
+                      What You Will Configure:
+                    </div>
+                    <div style="font-size:13px;color:#475569;line-height:1.8;">
+                      ✓ <strong>Official 3D Youth Avatar Identity</strong><br/>
+                      ✓ <strong>Standardized Deliverable Pricing Packages (BDT)</strong><br/>
+                      ✓ <strong>Professional Bio Statement &amp; Value Proposition</strong><br/>
+                      ✓ <strong>Payout Account (Bank Transfer or MFS: bKash / Nagad / Rocket)</strong>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:24px 32px 0;">
+              <div style="height:1px;background:#e2e8f0;"></div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px 26px;text-align:center;background:#f8fafc;border-top:1px solid #edf2f7;">
+              <div style="margin-bottom:12px;">
+                <img src="${logoUrl}" width="22" height="22" alt="Gaenr" style="display:inline-block;width:22px;height:22px;vertical-align:middle;margin-right:6px;" />
+                <span style="color:#0f172a;vertical-align:middle;font-size:13px;font-weight:700;">Team Gaenr</span>
+              </div>
+              <div style="margin-bottom:12px;white-space:nowrap;">
+                <a href="https://gaenr.com" class="footer-icon-btn" title="Gaenr Website" target="_blank">
+                  <img src="${iconUrl('globe')}" width="18" height="18" alt="Website" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="mailto:contact@gaenr.com" class="footer-icon-btn" title="Email Gaenr">
+                  <img src="${iconUrl('mail')}" width="18" height="18" alt="Email" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="tel:09647922800" class="footer-icon-btn" title="Call Gaenr">
+                  <img src="${iconUrl('phone')}" width="18" height="18" alt="Phone" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://wa.me/8801608922800" class="footer-icon-btn" title="WhatsApp Gaenr" target="_blank">
+                  <img src="${iconUrl('whatsapp')}" width="18" height="18" alt="WhatsApp" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+              </div>
+              <div>
+                <a href="https://gaenr.com" style="color:#006eff;text-decoration:none;font-weight:600;font-size:13px;" target="_blank">gaenr.com</a>
+              </div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  return { subject, text, html };
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error: 'Method not allowed' });
 
@@ -294,10 +513,56 @@ export default async function handler(req, res) {
   if (!apiKey || !from) return send(res, 503, { error: 'Email service is not configured', code: 'EMAIL_NOT_CONFIGURED' });
   if (!connectionString) return send(res, 503, { error: 'Database is not configured' });
 
+  const type = req.body?.type || 'welcome';
+  const sql = neon(connectionString);
+
+  // Handle Onboarding Invitation Email for Approved Applicants
+  if (type === 'onboarding_invite') {
+    const applicationId = typeof req.body?.applicationId === 'string' ? req.body.applicationId.trim() : '';
+    const to = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
+    const fullName = typeof req.body?.fullName === 'string' ? req.body.fullName.trim() : '';
+    const skill = typeof req.body?.skill === 'string' ? req.body.skill.trim() : '';
+
+    if (!applicationId || !to) {
+      return send(res, 400, { error: 'Application ID and email are required' });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+      return send(res, 422, { error: 'Invalid applicant email', code: 'NO_EMAIL' });
+    }
+
+    try {
+      await sql`CREATE TABLE IF NOT EXISTS gaenr_email_log (
+        code text NOT NULL, kind text NOT NULL, sent_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY (code, kind)
+      )`;
+      const claim = await sql`INSERT INTO gaenr_email_log (code, kind) VALUES (${applicationId}, 'onboarding_invite') ON CONFLICT DO NOTHING RETURNING code`;
+      if (!claim[0]) return send(res, 200, { ok: true, alreadySent: true });
+
+      const { subject, text, html } = buildOnboardingInviteEmail({ name: fullName, skill, applicationId });
+      const emailPayload = { from, to: [to], subject, text, html };
+
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailPayload),
+      });
+
+      if (!response.ok) {
+        await sql`DELETE FROM gaenr_email_log WHERE code = ${applicationId} AND kind = 'onboarding_invite'`;
+        const detail = await response.text().catch(() => '');
+        console.error('Resend onboarding email error:', response.status, detail);
+        return send(res, 502, { error: 'Email provider rejected the message', code: 'PROVIDER_ERROR', detail: detail.slice(0, 300) });
+      }
+
+      return send(res, 200, { ok: true });
+    } catch (err) {
+      console.error('onboarding_invite error:', err);
+      return send(res, 500, { error: 'Failed to send onboarding email' });
+    }
+  }
+
+  // Welcome email flow
   const code = typeof req.body?.code === 'string' ? req.body.code.trim() : '';
   if (!/^[A-Za-z0-9]{4,20}$/.test(code)) return send(res, 400, { error: 'Invalid expert code' });
-
-  const sql = neon(connectionString);
 
   try {
     // 1. Resolve expert: prioritize client-provided new profile payload to eliminate race conditions

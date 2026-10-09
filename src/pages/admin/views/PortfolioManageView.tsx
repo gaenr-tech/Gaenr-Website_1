@@ -108,7 +108,6 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
           const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
           setMediaTitle(cleanName.charAt(0).toUpperCase() + cleanName.slice(1));
         }
-        showToast('File loaded for portfolio preview!', 'success');
       }
     };
     reader.readAsDataURL(file);

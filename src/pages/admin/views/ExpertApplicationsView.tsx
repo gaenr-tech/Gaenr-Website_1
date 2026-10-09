@@ -571,8 +571,14 @@ https://gaenr.com`;
 
       {/* Details & Onboarding Modal */}
       {selectedApp && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150 my-8 max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer"
+          onClick={() => setSelectedApp(null)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150 my-8 max-h-[90vh] overflow-y-auto cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="space-y-0.5">
@@ -796,44 +802,46 @@ https://gaenr.com`;
                               )}
                             </>
                           ) : (
-                            <div className="flex items-center justify-between">
-                              <span className="text-slate-500">Personal Mobile No:</span>
-                              <span className="font-mono font-bold text-slate-900">{selectedApp.onboardingData.mfsNumber}</span>
-                            </div>
+                            <>
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-500">MFS Provider:</span>
+                                <span className="font-bold text-slate-800">
+                                  {selectedApp.onboardingData.mfsProvider ||
+                                    (selectedApp.onboardingData.payoutMethod === 'nagad' ? 'Nagad' : 'bKash')}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-500">Account Holder:</span>
+                                <span className="font-semibold text-slate-800">
+                                  {selectedApp.onboardingData.accountHolderName || selectedApp.fullName}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-500">Mobile Number:</span>
+                                <span className="font-mono font-bold text-slate-900">
+                                  {selectedApp.onboardingData.mfsNumber}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-slate-500">Account Type:</span>
+                                <span className="font-mono text-xs text-slate-700">
+                                  {selectedApp.onboardingData.mfsAccountType || 'Personal'}
+                                </span>
+                              </div>
+                            </>
                           )}
                         </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 text-center space-y-2.5">
-                    <p className="text-xs text-amber-800">
-                      The applicant has not yet filled out their onboarding questionnaire.
+                  <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200/80 text-center space-y-1">
+                    <p className="text-xs font-semibold text-amber-800">
+                      The applicant has not yet submitted their onboarding details.
                     </p>
-                    <div className="flex items-center justify-center gap-2 flex-wrap">
-                      <button
-                        type="button"
-                        onClick={() => handleCopyWelcomeEmail(selectedApp)}
-                        className="px-3.5 py-1.5 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
-                      >
-                        <Mail className="w-3.5 h-3.5" />
-                        <span>Copy Welcome &amp; Selection Email</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleCopyLink(
-                            `${window.location.origin}/expert-onboarding/${selectedApp.id}`,
-                            `modal-${selectedApp.id}`,
-                            'Onboarding Link'
-                          )
-                        }
-                        className="px-3 py-1.5 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Copy className="w-3 h-3" />
-                        <span>Copy Link Only</span>
-                      </button>
-                    </div>
+                    <p className="text-[11px] text-amber-700">
+                      The secure onboarding form link is automatically dispatched via email once the applicant is approved.
+                    </p>
                   </div>
                 )}
               </div>

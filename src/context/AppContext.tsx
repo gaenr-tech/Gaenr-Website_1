@@ -23,6 +23,7 @@ import {
 import { INITIAL_FREELANCERS, INITIAL_AVATARS, SERVICE_CATEGORIES } from '../data/mockData';
 import { getCategoryAvatar, RAW_AVATAR_SPECS } from '../components/common/Avatars';
 import { generateSecureUploadToken } from '../utils/security';
+import { sendExpertWelcomeEmail, sendExpertOnboardingInviteEmail } from '../utils/email';
 
 export const GAENR_OFFICIAL_DRIVE_FOLDER_URL =
   'https://drive.google.com/drive/folders/13TfzgSRtRCy2ubOU4fyFEg_NEGZLonDO?usp=sharing';
@@ -1498,21 +1499,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             },
           ],
           googleDriveFolderUrl: GAENR_OFFICIAL_DRIVE_FOLDER_URL,
-          portfolioItems: targetApp.portfolioUrl
-            ? [
-                {
-                  id: `port_${Date.now()}`,
-                  title: `${catMeta.title} Verified Showcase`,
-                  category: catMeta.slug,
-                  description: 'Verified deliverable reviewed during Gaenr application vetting.',
-                  tools: [catMeta.title],
-                  previewType: 'drive',
-                  accentColor: '#006eff',
-                  aspectRatio: '16:9',
-                  mediaUrl: targetApp.portfolioUrl,
-                },
-              ]
-            : [],
+          portfolioItems: [], // Crucial Rule: Profile starts clean; application portfolio is NOT published to live profile.
         };
 
         setFreelancers((prev) => {
@@ -1523,7 +1510,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           return updated;
         });
 
-        showToast(`🎉 Expert #${generatedCode} (${targetApp.fullName}) is now live on Gaenr!`, 'success');
+        // Trigger official welcome email in 100% English with ID card badge and upload portal link
+        if (targetApp.email) {
+          sendExpertWelcomeEmail(generatedCode, null, newProfile).catch((err) => {
+            console.warn('Welcome email dispatch note:', err);
+          });
+        }
+
+        showToast(`Expert profile ${generatedCode} (${targetApp.fullName}) is now live on Gaenr!`, 'success');
       }
 
       setExpertApplications((prev) =>
@@ -1536,7 +1530,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setExpertApplications((prev) =>
         prev.map((a) => (a.id === id ? { ...a, status: 'approved' } : a))
       );
-      showToast(`Application approved! Onboarding link ready for ${targetApp.fullName}`, 'success');
+
+      // Trigger automated onboarding invitation email directly to applicant
+      if (targetApp.email) {
+        sendExpertOnboardingInviteEmail(targetApp).catch((err) => {
+          console.warn('Onboarding invite email dispatch note:', err);
+        });
+      }
+
+      showToast(`Application approved! Onboarding invitation sent to ${targetApp.fullName}`, 'success');
       return;
     }
 

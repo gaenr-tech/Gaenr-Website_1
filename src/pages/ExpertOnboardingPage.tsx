@@ -44,10 +44,13 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
 
   const [pricingTiers, setPricingTiers] = useState<ExpertPricingTier[]>(
     application?.onboardingData?.pricingTiers && application.onboardingData.pricingTiers.length > 0
-      ? application.onboardingData.pricingTiers
+      ? application.onboardingData.pricingTiers.map((t) => ({
+          ...t,
+          price: t.price.replace(/\s*BDT\s*/gi, '').trim(),
+        }))
       : [
-          { id: 'tier-1', serviceName: 'Standard Package', price: '5,000 BDT' },
-          { id: 'tier-2', serviceName: 'Pro / Extended Deliverables', price: '10,000 BDT' },
+          { id: 'tier-1', serviceName: 'Standard Package', price: '5,000' },
+          { id: 'tier-2', serviceName: 'Pro / Extended Deliverables', price: '10,000' },
         ]
   );
 
@@ -67,10 +70,12 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       }. Committed to delivering exceptional quality with verified precision.`
   );
 
-  // Payout & Banking Details
-  const [payoutMethod, setPayoutMethod] = useState<'bank' | 'bkash' | 'nagad'>(
-    application?.onboardingData?.payoutMethod || 'bank'
+  // Payout Details: Strictly TWO options (Bank Account vs MFS)
+  const [payoutMethod, setPayoutMethod] = useState<'bank' | 'mfs'>(
+    application?.onboardingData?.payoutMethod === 'bank' ? 'bank' : 'mfs'
   );
+
+  // Bank Account fields
   const [bankName, setBankName] = useState(application?.onboardingData?.bankName || '');
   const [accountHolderName, setAccountHolderName] = useState(
     application?.onboardingData?.accountHolderName || application?.fullName || ''
@@ -78,8 +83,20 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
   const [accountNumber, setAccountNumber] = useState(application?.onboardingData?.accountNumber || '');
   const [branchName, setBranchName] = useState(application?.onboardingData?.branchName || '');
   const [routingNumber, setRoutingNumber] = useState(application?.onboardingData?.routingNumber || '');
+
+  // MFS fields (Provider: bKash/Nagad/Rocket, Account Holder Name, Mobile Number, Account Type: Personal/Agent/Merchant)
+  const [mfsProvider, setMfsProvider] = useState<'bKash' | 'Nagad' | 'Rocket'>(
+    application?.onboardingData?.mfsProvider ||
+    (application?.onboardingData?.payoutMethod === 'nagad' ? 'Nagad' : 'bKash')
+  );
+  const [mfsAccountHolderName, setMfsAccountHolderName] = useState(
+    application?.onboardingData?.accountHolderName || application?.fullName || ''
+  );
   const [mfsNumber, setMfsNumber] = useState(
     application?.onboardingData?.mfsNumber || application?.whatsapp || ''
+  );
+  const [mfsAccountType, setMfsAccountType] = useState<'Personal' | 'Agent' | 'Merchant'>(
+    application?.onboardingData?.mfsAccountType || 'Personal'
   );
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -116,7 +133,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
     const newTier: ExpertPricingTier = {
       id: `tier_${Date.now()}`,
       serviceName: 'Custom Deliverable',
-      price: '8,000 BDT',
+      price: '8,000',
     };
     setPricingTiers([...pricingTiers, newTier]);
   };
@@ -142,28 +159,41 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       return;
     }
 
-    if (payoutMethod === 'bank' && (!bankName.trim() || !accountNumber.trim())) {
-      showToast('Please provide your Bank Name and Account Number.', 'error');
-      return;
+    if (payoutMethod === 'bank') {
+      if (!bankName.trim() || !accountHolderName.trim() || !accountNumber.trim()) {
+        showToast('Please provide your Bank Name, Account Holder Name, and Account Number.', 'error');
+        return;
+      }
+    } else {
+      if (!mfsNumber.trim() || !mfsAccountHolderName.trim()) {
+        showToast(`Please enter your ${mfsProvider} account holder name and mobile number.`, 'error');
+        return;
+      }
     }
 
-    if ((payoutMethod === 'bkash' || payoutMethod === 'nagad') && !mfsNumber.trim()) {
-      showToast(`Please enter your ${payoutMethod === 'bkash' ? 'bKash' : 'Nagad'} personal number.`, 'error');
-      return;
-    }
+    const cleanedTiers = pricingTiers.map((t) => ({
+      ...t,
+      price: t.price.replace(/\s*BDT\s*/gi, '').trim(),
+    }));
+
+    const calculatedBaseRate = cleanedTiers[0]?.price
+      ? `${cleanedTiers[0].price} BDT / Deliverable`
+      : pricingModel;
 
     saveExpertOnboardingResponse(application.id, {
-      pricingModel,
-      pricingTiers,
+      pricingModel: calculatedBaseRate,
+      pricingTiers: cleanedTiers,
       avatarId: selectedAvatarId,
       statement: statement.trim(),
       payoutMethod,
-      bankName: bankName.trim(),
-      accountHolderName: accountHolderName.trim(),
-      accountNumber: accountNumber.trim(),
-      branchName: branchName.trim(),
-      routingNumber: routingNumber.trim(),
-      mfsNumber: mfsNumber.trim(),
+      bankName: payoutMethod === 'bank' ? bankName.trim() : undefined,
+      accountHolderName: payoutMethod === 'bank' ? accountHolderName.trim() : mfsAccountHolderName.trim(),
+      accountNumber: payoutMethod === 'bank' ? accountNumber.trim() : undefined,
+      branchName: payoutMethod === 'bank' ? branchName.trim() : undefined,
+      routingNumber: payoutMethod === 'bank' ? routingNumber.trim() : undefined,
+      mfsProvider: payoutMethod === 'mfs' ? mfsProvider : undefined,
+      mfsAccountType: payoutMethod === 'mfs' ? mfsAccountType : undefined,
+      mfsNumber: payoutMethod === 'mfs' ? mfsNumber.trim() : undefined,
     });
 
     setIsSubmitted(true);
@@ -261,8 +291,15 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
               </div>
 
               <div>
-                <span className="text-[10px] text-slate-400 uppercase font-mono block">Pricing Model</span>
-                <span className="font-bold text-slate-800 text-xs">{pricingModel}</span>
+                <span className="text-[10px] text-slate-400 uppercase font-mono block">Pricing Packages</span>
+                <div className="space-y-1 mt-1">
+                  {pricingTiers.map((t) => (
+                    <div key={t.id} className="flex items-center justify-between text-xs">
+                      <span className="text-slate-600">{t.serviceName}</span>
+                      <span className="font-mono font-bold text-[#006eff]">{t.price} BDT</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div>
@@ -270,7 +307,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                 <span className="font-bold text-slate-800 text-xs uppercase">
                   {payoutMethod === 'bank'
                     ? `${bankName || 'Bank'} (${accountNumber ? `•••• ${accountNumber.slice(-4)}` : 'Active'})`
-                    : `${payoutMethod} (${mfsNumber})`}
+                    : `${mfsProvider} (${mfsAccountType}) • ${mfsNumber}`}
                 </span>
               </div>
 
@@ -345,83 +382,77 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
 
             {/* Step 2: Pricing Model & Packages */}
             <section className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] font-bold text-xs flex items-center justify-center font-mono">
-                  2
-                </span>
-                <div>
-                  <h2 className="text-lg font-bold text-slate-900 tracking-tight">
-                    Pricing Model &amp; Rates
-                  </h2>
-                  <p className="text-xs text-slate-500">
-                    Set your expected deliverable rates. Gaenr maintains transparent pricing for clients with 0% client platform charge.
-                  </p>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] font-bold text-xs flex items-center justify-center font-mono">
+                    2
+                  </span>
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+                      Service Pricing &amp; Deliverable Rates
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      Define standardized deliverable pricing for clients to view transparent service costs with 0% platform charges.
+                    </p>
+                  </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddPricingTier}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#006eff] rounded-xl text-xs font-bold transition-all cursor-pointer border border-blue-200/70 shadow-2xs active:scale-95 self-start sm:self-auto"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Service Rate</span>
+                </button>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    Standard Pricing Model / Base Rate
-                  </label>
-                  <input
-                    type="text"
-                    value={pricingModel}
-                    onChange={(e) => setPricingModel(e.target.value)}
-                    placeholder="e.g. 5,000 BDT / Deliverable or Hourly Rate"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-[#006eff] transition-colors"
-                  />
-                  <span className="text-[11px] text-slate-400 mt-1 block">
-                    Clients will see this base estimate when exploring your talent profile.
-                  </span>
-                </div>
+              {/* Pricing Tiers Table matching Create Expert Profile */}
+              <div className="space-y-3 pt-1">
+                {pricingTiers.map((tier, idx) => (
+                  <div
+                    key={tier.id}
+                    className="flex flex-col md:flex-row items-stretch md:items-center gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs"
+                  >
+                    <div className="flex items-center gap-2 md:w-1/2">
+                      <span className="text-[10px] font-mono font-bold text-slate-400 w-5 text-center shrink-0">
+                        #{idx + 1}
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Service / Deliverable (e.g. Logo Design, Landing Page, Slide Deck)"
+                        value={tier.serviceName}
+                        onChange={(e) => handleUpdateTier(tier.id, 'serviceName', e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-[#006eff]"
+                      />
+                    </div>
 
-                {/* Pricing Tiers Table */}
-                <div className="space-y-3 pt-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-800">Custom Package Tiers</span>
-                    <button
-                      type="button"
-                      onClick={handleAddPricingTier}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-[#006eff] text-xs font-bold rounded-lg transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Tier</span>
-                    </button>
-                  </div>
-
-                  <div className="space-y-2.5">
-                    {pricingTiers.map((tier) => (
-                      <div
-                        key={tier.id}
-                        className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200/80 rounded-xl"
-                      >
+                    <div className="flex items-center gap-2 flex-1">
+                      <div className="flex items-center flex-1 bg-white border border-slate-200 rounded-xl overflow-hidden focus-within:border-[#006eff] transition-colors">
+                        <span className="px-2.5 py-2 text-[10px] font-bold font-mono text-[#006eff] bg-blue-50 border-r border-slate-200 shrink-0 select-none">
+                          BDT
+                        </span>
                         <input
                           type="text"
-                          value={tier.serviceName}
-                          onChange={(e) => handleUpdateTier(tier.id, 'serviceName', e.target.value)}
-                          placeholder="Package Deliverable (e.g. Standard Logo Design)"
-                          className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#006eff]"
-                        />
-                        <input
-                          type="text"
+                          placeholder="e.g. 5,000 or 3,500 - 7,500"
                           value={tier.price}
-                          onChange={(e) => handleUpdateTier(tier.id, 'price', e.target.value)}
-                          placeholder="Price (e.g. 6,000 BDT)"
-                          className="w-36 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#006eff] font-mono font-bold"
+                          onChange={(e) => handleUpdateTier(tier.id, 'price', e.target.value.replace(/\s*BDT\s*/gi, ''))}
+                          className="w-full px-3 py-2 bg-transparent text-xs text-slate-900 focus:outline-none font-mono font-bold"
                         />
+                      </div>
+                      {pricingTiers.length > 1 && (
                         <button
                           type="button"
                           onClick={() => handleRemovePricingTier(tier.id)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer shrink-0"
                           title="Remove tier"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
-                      </div>
-                    ))}
+                      )}
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             </section>
 
@@ -464,63 +495,65 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                 </span>
                 <div>
                   <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                    <span>Bank &amp; Payment Payout Details</span>
+                    <span>Payment Payout Options</span>
                     <Lock className="w-4 h-4 text-emerald-600" />
                   </h2>
                   <p className="text-xs text-slate-500">
-                    Provide your preferred payout account to receive direct client project earnings and milestone fees with 0% platform deductions.
+                    Select your preferred payout channel to receive direct project earnings with 0% platform deductions.
                   </p>
                 </div>
               </div>
 
-              {/* Method Selection Tabs */}
-              <div className="grid grid-cols-3 gap-3">
+              {/* Strictly TWO Payment Options */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <button
                   type="button"
                   onClick={() => setPayoutMethod('bank')}
-                  className={`p-3.5 rounded-2xl border-2 flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
+                  className={`p-4 rounded-2xl border-2 flex items-center gap-3.5 transition-all cursor-pointer text-left ${
                     payoutMethod === 'bank'
-                      ? 'border-[#006eff] bg-blue-50/60 text-[#006eff] font-bold shadow-xs'
-                      : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                      ? 'border-[#006eff] bg-blue-50/50 shadow-xs ring-2 ring-[#006eff]/20'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
                 >
-                  <Building2 className="w-5 h-5" />
-                  <span className="text-xs font-bold">Bank Account</span>
-                  <span className="text-[10px] text-slate-400 font-mono">EFT / NPSB / RTGS</span>
+                  <div
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                      payoutMethod === 'bank' ? 'bg-[#006eff] text-white' : 'bg-slate-100 text-slate-500'
+                    }`}
+                  >
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">1. Bank Account</div>
+                    <div className="text-[11px] text-slate-500 font-mono">EFT / NPSB / RTGS / Online Transfer</div>
+                  </div>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setPayoutMethod('bkash')}
-                  className={`p-3.5 rounded-2xl border-2 flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
-                    payoutMethod === 'bkash'
-                      ? 'border-[#006eff] bg-blue-50/60 text-[#006eff] font-bold shadow-xs'
-                      : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                  onClick={() => setPayoutMethod('mfs')}
+                  className={`p-4 rounded-2xl border-2 flex items-center gap-3.5 transition-all cursor-pointer text-left ${
+                    payoutMethod === 'mfs'
+                      ? 'border-[#006eff] bg-blue-50/50 shadow-xs ring-2 ring-[#006eff]/20'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
                 >
-                  <Smartphone className="w-5 h-5 text-rose-500" />
-                  <span className="text-xs font-bold">bKash</span>
-                  <span className="text-[10px] text-slate-400 font-mono">Personal Account</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPayoutMethod('nagad')}
-                  className={`p-3.5 rounded-2xl border-2 flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
-                    payoutMethod === 'nagad'
-                      ? 'border-[#006eff] bg-blue-50/60 text-[#006eff] font-bold shadow-xs'
-                      : 'border-slate-200 hover:border-slate-300 text-slate-600'
-                  }`}
-                >
-                  <Wallet className="w-5 h-5 text-amber-500" />
-                  <span className="text-xs font-bold">Nagad</span>
-                  <span className="text-[10px] text-slate-400 font-mono">Personal Account</span>
+                  <div
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                      payoutMethod === 'mfs' ? 'bg-[#006eff] text-white' : 'bg-slate-100 text-slate-500'
+                    }`}
+                  >
+                    <Smartphone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">2. MFS (Mobile Financial Services)</div>
+                    <div className="text-[11px] text-slate-500 font-mono">bKash / Nagad / Rocket</div>
+                  </div>
                 </button>
               </div>
 
               {/* Conditional Inputs */}
               {payoutMethod === 'bank' ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1.5">
                       Bank Name <span className="text-rose-500">*</span>
@@ -529,7 +562,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                       type="text"
                       value={bankName}
                       onChange={(e) => setBankName(e.target.value)}
-                      placeholder="e.g. Dutch-Bangla Bank, BRAC Bank, City Bank"
+                      placeholder="e.g. Dutch-Bangla Bank, BRAC Bank, City Bank, Eastern Bank"
                       className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-[#006eff]"
                     />
                   </div>
@@ -542,7 +575,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                       type="text"
                       value={accountHolderName}
                       onChange={(e) => setAccountHolderName(e.target.value)}
-                      placeholder="Exact name as in bank record"
+                      placeholder="Exact name registered with your bank"
                       className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-[#006eff]"
                     />
                   </div>
@@ -583,21 +616,83 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                   </div>
                 </div>
               ) : (
-                <div className="pt-1 space-y-3">
+                <div className="pt-2 border-t border-slate-100 space-y-4">
+                  {/* MFS Provider Selection */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-2">
+                      MFS Provider <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="grid grid-cols-3 gap-2.5">
+                      {(['bKash', 'Nagad', 'Rocket'] as const).map((prov) => (
+                        <button
+                          key={prov}
+                          type="button"
+                          onClick={() => setMfsProvider(prov)}
+                          className={`py-2.5 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                            mfsProvider === prov
+                              ? prov === 'bKash'
+                                ? 'bg-pink-50 border-pink-400 text-pink-700 ring-2 ring-pink-500/20'
+                                : prov === 'Nagad'
+                                ? 'bg-amber-50 border-amber-400 text-amber-700 ring-2 ring-amber-500/20'
+                                : 'bg-purple-50 border-purple-400 text-purple-700 ring-2 ring-purple-500/20'
+                              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                          }`}
+                        >
+                          <span>{prov}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                        Account Holder Name <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={mfsAccountHolderName}
+                        onChange={(e) => setMfsAccountHolderName(e.target.value)}
+                        placeholder="e.g. Tanvir Hasan (Registered under NID)"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-[#006eff]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                        {mfsProvider} Mobile Number <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        value={mfsNumber}
+                        onChange={(e) => setMfsNumber(e.target.value)}
+                        placeholder="01XXXXXXXXX"
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#006eff]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Account Type Selection */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                      {payoutMethod === 'bkash' ? 'bKash' : 'Nagad'} Personal Mobile Number <span className="text-rose-500">*</span>
+                      Account Type <span className="text-rose-500">*</span>
                     </label>
-                    <input
-                      type="tel"
-                      value={mfsNumber}
-                      onChange={(e) => setMfsNumber(e.target.value)}
-                      placeholder="01XXXXXXXXX"
-                      className="w-full max-w-md px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 font-mono focus:bg-white focus:outline-none focus:border-[#006eff]"
-                    />
-                    <span className="text-[11px] text-slate-400 mt-1 block">
-                      Must be a personal wallet registered under your verified NID.
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {(['Personal', 'Agent', 'Merchant'] as const).map((accType) => (
+                        <button
+                          key={accType}
+                          type="button"
+                          onClick={() => setMfsAccountType(accType)}
+                          className={`px-3.5 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                            mfsAccountType === accType
+                              ? 'bg-blue-50 border-blue-400 text-[#006eff] ring-1 ring-blue-500/20'
+                              : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                          }`}
+                        >
+                          {accType}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
@@ -605,7 +700,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5 text-slate-500 text-[11px]">
                 <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>
-                  Payout details are securely encrypted and accessed only by Gaenr Finance for processing your project payments.
+                  Payout details are securely encrypted and accessed only by Gaenr Finance for processing your project payments with 0% platform deductions.
                 </span>
               </div>
             </section>
