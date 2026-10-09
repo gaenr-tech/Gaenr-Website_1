@@ -709,7 +709,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  navigate(`/p-upload/${selectedPortalExpert.uploadToken || selectedPortalExpert.code}`);
+                  navigate(`/u/${selectedPortalExpert.uploadToken || selectedPortalExpert.code}`);
                   setSelectedPortalExpert(null);
                 }}
                 className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shadow-2xs"

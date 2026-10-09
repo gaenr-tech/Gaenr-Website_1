@@ -327,12 +327,12 @@ https://gaenr.com`;
                   const uploadUrl = matchedFl
                     ? getExpertSecureUploadUrl(matchedFl)
                     : app.convertedExpertCode
-                    ? `${window.location.origin}/p-upload/${app.convertedExpertCode}`
+                    ? `${window.location.origin}/u/${app.convertedExpertCode}`
                     : '';
                   const uploadPath = matchedFl?.uploadToken
-                    ? `/p-upload/${matchedFl.uploadToken}`
+                    ? `/u/${matchedFl.uploadToken}`
                     : app.convertedExpertCode
-                    ? `/p-upload/${app.convertedExpertCode}`
+                    ? `/u/${app.convertedExpertCode}`
                     : '';
 
                   return (
@@ -882,11 +882,11 @@ https://gaenr.com`;
                     (f) => f.code === selectedApp.convertedExpertCode || f.id === selectedApp.convertedExpertCode
                   );
                   const modalUploadPath = modalMatchedFl?.uploadToken
-                    ? `/p-upload/${modalMatchedFl.uploadToken}`
-                    : `/p-upload/${selectedApp.convertedExpertCode}`;
+                    ? `/u/${modalMatchedFl.uploadToken}`
+                    : `/u/${selectedApp.convertedExpertCode}`;
                   const modalUploadUrl = modalMatchedFl
                     ? getExpertSecureUploadUrl(modalMatchedFl)
-                    : `${window.location.origin}/p-upload/${selectedApp.convertedExpertCode}`;
+                    : `${window.location.origin}/u/${selectedApp.convertedExpertCode}`;
 
                   return (
                     <button

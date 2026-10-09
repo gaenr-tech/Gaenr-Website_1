@@ -46,13 +46,14 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
   } = useApp();
   const { branding } = useBranding();
 
-  // Extract secure token or code from route: /p-upload/:token or /expert-portfolio-upload/:tokenOrCode
+  // Extract secure token or code from route: /u/:token, /p-upload/:token or /expert-portfolio-upload/:tokenOrCode
   const resolvedIdentifier = (
     tokenOrCode ||
     expertCode ||
     currentRoute
       .split('#')[0]
       .split('?')[0]
+      .replace('/u/', '')
       .replace('/p-upload/', '')
       .replace('/expert-portfolio-upload/', '')
       .trim()

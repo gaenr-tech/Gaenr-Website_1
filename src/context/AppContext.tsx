@@ -241,12 +241,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const parsed: FreelancerProfile[] = JSON.parse(saved);
 
         const legacyCodeMap: Record<string, string> = {
-          GD2602001: '8K2N9X4P',
+          GD26001: '8K2N9X4P',
+          GD26002: '7M3Q1W9Z',
+          VE26001: '9T3Y8L5V',
+          WP26001: '4H7P1X6Z',
+          UI26001: '6W9C3N8D',
+          CW26001: '7M4R2W9Q',
+          PS26001: '5B2K8M4T',
+          TS26001: '8K2N9X4P',
+          GD2602001: '7M3Q1W9Z',
           CW2602001: '7M4R2W9Q',
           VE2602001: '9T3Y8L5V',
           WP2602001: '4H7P1X6Z',
           UX2602001: '6W9C3N8D',
+          UI2602001: '6W9C3N8D',
           SD2602001: '5B2K8M4T',
+          PS2602001: '5B2K8M4T',
         };
 
         let hasChanges = false;
@@ -338,15 +348,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             hasChanges = true;
           }
 
-          // Normalize old elongated codes to standard format
+          // Normalize old codes to standard 8-character random alphanumeric format
           const CODE_NORMALIZATION_MAP: Record<string, string> = {
-            TS26001: 'GD26001',
-            GD2602001: 'GD26002',
-            VE2602001: 'VE26001',
-            WP2602001: 'WP26001',
-            UI2602001: 'UI26001',
-            CW2602001: 'CW26001',
-            PS2602001: 'PS26001',
+            GD26001: '8K2N9X4P',
+            GD26002: '7M3Q1W9Z',
+            VE26001: '9T3Y8L5V',
+            WP26001: '4H7P1X6Z',
+            UI26001: '6W9C3N8D',
+            CW26001: '7M4R2W9Q',
+            PS26001: '5B2K8M4T',
+            TS26001: '8K2N9X4P',
+            GD2602001: '7M3Q1W9Z',
+            VE2602001: '9T3Y8L5V',
+            WP2602001: '4H7P1X6Z',
+            UX2602001: '6W9C3N8D',
+            UI2602001: '6W9C3N8D',
+            CW2602001: '7M4R2W9Q',
+            SD2602001: '5B2K8M4T',
+            PS2602001: '5B2K8M4T',
           };
           if (CODE_NORMALIZATION_MAP[updatedFl.code]) {
             updatedFl.code = CODE_NORMALIZATION_MAP[updatedFl.code];
@@ -356,6 +375,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           // Ensure canonical skills and real portfolio items are updated for baseline profiles
           const initMatch = INITIAL_FREELANCERS.find((f) => f.id === updatedFl.id || f.code === updatedFl.code);
           if (initMatch && updatedFl.id?.startsWith('fl-')) {
+            updatedFl.code = initMatch.code;
             updatedFl.skills = initMatch.skills;
             updatedFl.keywords = initMatch.keywords;
             if (initMatch.portfolioItems && initMatch.portfolioItems.length > 0) {

@@ -13,7 +13,7 @@ const buildWelcomeEmail = (expert) => {
   const idCardUrl = `${SITE_URL}/api/id-card?code=${encodeURIComponent(expert.code)}`;
   const idCardDownloadUrl = `${idCardUrl}&download=1`;
   const uploadToken = expert.uploadToken || expert.code;
-  const uploadPortalUrl = `${SITE_URL}/p-upload/${encodeURIComponent(uploadToken)}`;
+  const uploadPortalUrl = `${SITE_URL}/u/${encodeURIComponent(uploadToken)}`;
   const logoUrl = `${SITE_URL}/logo.svg`;
   const iconUrl = (name) => `${SITE_URL}/email-icons/${name}.svg`;
 

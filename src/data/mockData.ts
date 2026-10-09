@@ -266,7 +266,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
 export const INITIAL_FREELANCERS: FreelancerProfile[] = [
   {
     id: 'fl-gd-1',
-    code: 'GD26001',
+    code: '8K2N9X4P',
     uploadToken: 'u_k9m4w2x7b1c5z8h3v0j6t9p2q5y8a3',
     name: 'Tanvir Ahmed',
     category: 'graphics-design',
@@ -323,7 +323,7 @@ export const INITIAL_FREELANCERS: FreelancerProfile[] = [
   },
   {
     id: 'fl-gd-2',
-    code: 'GD26002',
+    code: '7M3Q1W9Z',
     category: 'graphics-design',
     categoryTitle: 'Graphics Design',
     avatarId: 'avatar-youth-m4',
@@ -371,7 +371,7 @@ export const INITIAL_FREELANCERS: FreelancerProfile[] = [
   },
   {
     id: 'fl-ve-1',
-    code: 'VE26001',
+    code: '9T3Y8L5V',
     category: 'video-editing',
     categoryTitle: 'Video Editing',
     avatarId: 'avatar-youth-m2',
@@ -418,7 +418,7 @@ export const INITIAL_FREELANCERS: FreelancerProfile[] = [
   },
   {
     id: 'fl-wp-1',
-    code: 'WP26001',
+    code: '4H7P1X6Z',
     category: 'wordpress-website',
     categoryTitle: 'WordPress Website Design',
     avatarId: 'avatar-youth-f1',
@@ -467,7 +467,7 @@ export const INITIAL_FREELANCERS: FreelancerProfile[] = [
   },
   {
     id: 'fl-ui-1',
-    code: 'UI26001',
+    code: '6W9C3N8D',
     category: 'ux-ui-design',
     categoryTitle: 'UX / UI Design',
     avatarId: 'avatar-youth-m3',
@@ -500,23 +500,23 @@ export const INITIAL_FREELANCERS: FreelancerProfile[] = [
     portfolioItems: [
       {
         id: 'port-ui-1',
-        title: 'Multi-Tenant SaaS Merchant Analytics Dashboard',
+        title: 'Gaenr 1.0 Master Interface & Design System',
         category: 'ux-ui-design',
-        description: 'Complete interactive interface with Figma design tokens, auto-layout components, data visualizations, and dark/light modes deposited in Google Drive Vault.',
+        description: 'Complete interactive interface design in Figma with responsive auto-layout components, tokens, typography guidelines, and design specs.',
         tools: ['Figma', 'Auto-Layout', 'Design Tokens'],
         previewType: 'website',
         accentColor: '#006eff',
         aspectRatio: '16:9',
-        clientIndustry: 'B2B Fintech',
-        mediaUrl: 'https://www.figma.com/community/file/1261314979147575237',
-        externalUrl: 'https://www.figma.com/community/file/1261314979147575237',
+        clientIndustry: 'Technology & Digital Platforms',
+        mediaUrl: 'https://www.figma.com/design/61R0GRdEDVKuP0KWMWo4Jg/Gaenr-1.0?node-id=1-2&t=nam7qtNgzarTqr2b-0',
+        externalUrl: 'https://www.figma.com/design/61R0GRdEDVKuP0KWMWo4Jg/Gaenr-1.0?node-id=1-2&t=nam7qtNgzarTqr2b-0',
         imageUrl: 'https://lh3.googleusercontent.com/d/1tG6DCk4llPFQ2pqA-IiTq5JoNV3qAxAr',
       },
     ],
   },
   {
     id: 'fl-cw-1',
-    code: 'CW26001',
+    code: '7M4R2W9Q',
     category: 'content-writing',
     categoryTitle: 'Content Writing & Copywriting',
     avatarId: 'avatar-youth-f2',
@@ -562,7 +562,7 @@ export const INITIAL_FREELANCERS: FreelancerProfile[] = [
   },
   {
     id: 'fl-ps-1',
-    code: 'PS26001',
+    code: '5B2K8M4T',
     category: 'presentation-slide-design',
     categoryTitle: 'Presentation Slide Design',
     avatarId: 'avatar-youth-f4',

@@ -382,7 +382,7 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
 
               <button
                 type="button"
-                onClick={() => navigate(`/p-upload/${selectedFreelancer.uploadToken || selectedFreelancer.code}`)}
+                onClick={() => navigate(`/u/${selectedFreelancer.uploadToken || selectedFreelancer.code}`)}
                 className="px-4 py-2 rounded-xl bg-[#006eff] hover:bg-[#005cd4] text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md shadow-blue-500/20"
               >
                 <Upload className="w-3.5 h-3.5" />

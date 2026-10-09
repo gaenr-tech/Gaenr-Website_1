@@ -46,7 +46,7 @@ export const getExpertSecureUploadUrl = (
       : 'https://gaenr.com');
 
   const token = expert.uploadToken || expert.code;
-  return `${baseOrigin.replace(/\/$/, '')}/p-upload/${token}`;
+  return `${baseOrigin.replace(/\/$/, '')}/u/${token}`;
 };
 
 /**

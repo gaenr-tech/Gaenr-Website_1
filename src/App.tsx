@@ -119,6 +119,12 @@ const AppContent: React.FC = () => {
       return <ExpertOnboardingPage applicationId={applicationId} />;
     }
 
+    // Ultra-short compressed upload portal match: /u/:token
+    if (cleanRoute.startsWith('/u/')) {
+      const token = cleanRoute.replace('/u/', '');
+      return <ExpertPortfolioUploadPage tokenOrCode={token} />;
+    }
+
     // Secure Creator Deliverable Upload portal match: /p-upload/:token
     if (cleanRoute.startsWith('/p-upload/')) {
       const token = cleanRoute.replace('/p-upload/', '');

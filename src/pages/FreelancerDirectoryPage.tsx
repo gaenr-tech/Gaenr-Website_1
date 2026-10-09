@@ -331,21 +331,21 @@ export const FreelancerDirectoryPage: React.FC = () => {
 
                   {/* Middle Section: Centered Borderless Avatar, ID, Persona Title & Subcategories */}
                   <div className="flex flex-col items-center text-center space-y-2.5 pt-1">
-                    {/* 1. Circular Avatar with Verified Badge: Fixed height container */}
+                    {/* 1. Circular Avatar: Fixed height container */}
                     <div className="h-24 flex items-center justify-center relative transition-transform duration-300 group-hover:scale-105">
                       <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-slate-100">
                         <AvatarGraphic id={expert.avatarId} size={84} className="rounded-full" />
                       </div>
-                      <div className="absolute bottom-[2px] right-[2px] z-10" title="Verified Expert">
-                        <VerifiedBadge3D size={22} className="drop-shadow-[0_0_8px_rgba(0,110,255,0.7)]" />
-                      </div>
                     </div>
 
-                    {/* 2. Expert ID: Exactly aligned horizontally across all cards */}
+                    {/* 2. Expert ID with Verified Badge: Exactly aligned horizontally across all cards */}
                     <div className="h-7 flex items-center justify-center w-full">
-                      <h3 className="font-mono font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-none group-hover:text-[#002f6c] transition-colors">
-                        {expert.code}
-                      </h3>
+                      <div className="inline-flex items-center justify-center gap-1.5">
+                        <h3 className="font-mono font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-none group-hover:text-[#002f6c] transition-colors">
+                          {expert.code}
+                        </h3>
+                        <VerifiedBadge3D size={20} className="shrink-0 inline-block align-middle" title="Gaenr Verified Expert" />
+                      </div>
                     </div>
 
                     {/* 3. Persona Title: Single line strictly ("ডিজাইনার", "এক লাইনে থাকবে") */}

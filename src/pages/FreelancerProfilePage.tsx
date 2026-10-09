@@ -190,7 +190,7 @@ const ZoomableImageCard: React.FC<{
 };
 
 // ── ZoomableEmbedCard ────────────────────────────────────────────────────────
-// Figma / Drive / Docs / Loom embed with working +/- zoom (scales iframe via CSS transform)
+// Figma / Drive Presentations / PDF Decks with generous responsive dimensions and +/- zoom
 const ZoomableEmbedCard: React.FC<{
   embedUrl: string;
   externalUrl: string;
@@ -204,13 +204,13 @@ const ZoomableEmbedCard: React.FC<{
 
   return (
     <div
-      className={`w-full ${isExpanded ? 'max-w-3xl' : 'max-w-md'} rounded-xl overflow-hidden flex flex-col shadow-xl`}
+      className={`w-full ${isExpanded ? 'max-w-5xl h-[82vh]' : 'max-w-2xl sm:max-w-3xl h-[380px] xs:h-[420px] sm:h-[480px] md:h-[520px]'} rounded-xl sm:rounded-2xl overflow-hidden flex flex-col shadow-xl transition-all`}
       style={{ background: '#0c182c' }}
     >
-      {/* Embed area — iframe scaled via CSS transform */}
+      {/* Embed area — iframe scaled via CSS transform, spacious viewport */}
       <div
-        className="relative w-full overflow-hidden"
-        style={{ aspectRatio: '16/9', background: '#111827' }}
+        className="relative flex-1 w-full overflow-hidden"
+        style={{ background: '#111827' }}
       >
         <div
           style={{
@@ -234,7 +234,7 @@ const ZoomableEmbedCard: React.FC<{
         </div>
       </div>
       {/* Controls bar */}
-      <div className="flex items-center justify-between px-3 py-2 border-t border-white/10" style={{ background: '#0c182c' }}>
+      <div className="flex items-center justify-between px-3.5 py-2.5 border-t border-white/10 shrink-0" style={{ background: '#0c182c' }}>
         <div className="min-w-0 pr-2">
           <h4 className="font-bold text-white text-xs truncate">{title}</h4>
           {tools && tools.length > 0 && (
@@ -246,7 +246,7 @@ const ZoomableEmbedCard: React.FC<{
             type="button"
             onClick={shrink}
             disabled={zoom <= 1}
-            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none"
+            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
             title="Zoom out"
           >−</button>
           <span className="text-[10px] text-white/60 font-mono w-9 text-center">{Math.round(zoom * 100)}%</span>
@@ -254,7 +254,7 @@ const ZoomableEmbedCard: React.FC<{
             type="button"
             onClick={bump}
             disabled={zoom >= 3}
-            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none"
+            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-base font-bold disabled:opacity-30 disabled:cursor-not-allowed transition-colors select-none cursor-pointer"
             title="Zoom in"
           >+</button>
           <a
@@ -262,11 +262,110 @@ const ZoomableEmbedCard: React.FC<{
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#006eff] text-white flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-lg bg-white/10 hover:bg-[#006eff] text-white flex items-center justify-center transition-colors cursor-pointer"
             title="Open in new tab"
           >
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── LiveWebsitePreviewCard ──────────────────────────────────────────────────
+// Authentic Interactive Browser Viewport for WordPress & Web Deliverables
+const LiveWebsitePreviewCard: React.FC<{
+  siteUrl: string;
+  title: string;
+  description?: string;
+  tools?: string[];
+  isExpanded?: boolean;
+}> = ({ siteUrl, title, description, tools, isExpanded }) => {
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [iframeError, setIframeError] = useState(false);
+
+  const cleanDisplayUrl = siteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+  return (
+    <div
+      className={`w-full ${isExpanded ? 'max-w-5xl h-[82vh]' : 'max-w-2xl sm:max-w-3xl h-[380px] xs:h-[420px] sm:h-[480px] md:h-[520px]'} bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col overflow-hidden text-slate-800 transition-all`}
+    >
+      {/* Top Browser Chrome Bar */}
+      <div className="bg-slate-100 px-3.5 py-2.5 border-b border-slate-200/90 flex items-center justify-between text-xs shrink-0 select-none">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-rose-400 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block" />
+        </div>
+
+        {/* Address Bar */}
+        <div className="flex-1 max-w-xs sm:max-w-md mx-2 px-3 py-1 rounded-lg bg-white border border-slate-200 shadow-2xs text-[11px] font-mono text-slate-700 flex items-center justify-between gap-1.5 truncate">
+          <div className="flex items-center gap-1.5 truncate">
+            <span className="text-emerald-600 font-bold">🔒</span>
+            <span className="truncate">{cleanDisplayUrl}</span>
+          </div>
+          <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 shrink-0">
+            LIVE SITE
+          </span>
+        </div>
+
+        {/* External Link Action */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <a
+            href={siteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-[#006eff] text-[#006eff] hover:text-white font-semibold text-[11px] transition-all cursor-pointer shadow-2xs"
+            title="Open in new window"
+          >
+            <span>Visit</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
+      </div>
+
+      {/* Main Browser Viewport: Live Iframe */}
+      <div className="relative flex-1 w-full bg-white overflow-hidden">
+        {!iframeError ? (
+          <iframe
+            src={siteUrl}
+            title={title}
+            className="w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+            onLoad={() => setIframeLoaded(true)}
+            onError={() => setIframeError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-3 bg-slate-50">
+            <Globe className="w-10 h-10 text-slate-400" />
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold text-slate-800">{title}</h4>
+              <p className="text-xs text-slate-500 max-w-xs">{cleanDisplayUrl}</p>
+            </div>
+            <a
+              href={siteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-[#006eff] text-white rounded-xl text-xs font-bold hover:bg-blue-600 transition-colors inline-flex items-center gap-1.5"
+            >
+              <span>Open Live Website</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Specs & Status Bar */}
+      <div className="px-3.5 py-2 bg-slate-50 border-t border-slate-200/80 flex items-center justify-between text-[11px] font-mono text-slate-600 shrink-0">
+        <span className="truncate max-w-[200px] font-bold text-slate-800">{title}</span>
+        <div className="flex items-center gap-2 text-[10px]">
+          <span className="text-emerald-700 font-bold hidden sm:inline">⚡ 98 PageSpeed</span>
+          {tools && tools.length > 0 && (
+            <span className="text-slate-500">{tools.slice(0, 2).join(' · ')}</span>
+          )}
         </div>
       </div>
     </div>
@@ -339,6 +438,9 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
   const [portfolioIndex, setPortfolioIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fsZoom, setFsZoom] = useState(1);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [dragStartX, setDragStartX] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [remoteExpert, setRemoteExpert] = useState<FreelancerProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -422,6 +524,33 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
       handlePrevPortfolio();
     }
     setTouchStartX(null);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a') || target.closest('iframe')) {
+      return;
+    }
+    setDragStartX(e.clientX);
+    setIsDragging(true);
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isDragging || dragStartX === null) return;
+    const diff = dragStartX - e.clientX;
+    if (diff > 45) {
+      handleNextPortfolio();
+    } else if (diff < -45) {
+      handlePrevPortfolio();
+    }
+    setDragStartX(null);
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
+    setDragStartX(null);
+    setIsDragging(false);
   };
 
   // Keyboard navigation & body scroll lock for Fullscreen mode
@@ -681,6 +810,22 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
         );
       }
 
+      // ── Live Website Preview for WordPress & Web Deliverables ───────────────
+      if (item.previewType === 'website' || item.category === 'wordpress-website') {
+        const siteUrl = item.mediaUrl || item.externalUrl || activeMedia;
+        if (siteUrl && siteUrl.startsWith('http')) {
+          return (
+            <LiveWebsitePreviewCard
+              siteUrl={siteUrl}
+              title={item.title}
+              description={item.description}
+              tools={item.tools}
+              isExpanded={isExpanded}
+            />
+          );
+        }
+      }
+
       // ── Clean external link card (non-embeddable: Behance, GitHub, etc.) ──
       // No raw URL, no expert code, no "Verified Deliverable" header — just
       // the title, description and a tap-to-open interaction.
@@ -727,9 +872,19 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
       );
     }
 
-
     if (item.category === 'wordpress-website') {
       const siteUrl = item.mediaUrl || item.externalUrl;
+      if (siteUrl && siteUrl.startsWith('http')) {
+        return (
+          <LiveWebsitePreviewCard
+            siteUrl={siteUrl}
+            title={item.title}
+            description={item.description}
+            tools={item.tools}
+            isExpanded={isExpanded}
+          />
+        );
+      }
 
       // Both with-URL and no-URL use the same mockup card design
       // When URL exists, the whole card is a clickable link to the website
@@ -1108,7 +1263,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                 </span>
               </div>
               <div className="text-[11px] text-slate-400 font-mono">
-                Private Vault: /p-upload/{expert.uploadToken ? '••••••••' : expert.code}
+                Private Vault: /u/{expert.uploadToken ? '••••••••' : expert.code}
               </div>
             </div>
           </div>
@@ -1125,7 +1280,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
             </button>
             <button
               type="button"
-              onClick={() => navigate(`/p-upload/${expert.uploadToken || expert.code}`)}
+              onClick={() => navigate(`/u/${expert.uploadToken || expert.code}`)}
               className="px-3 py-1.5 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Upload className="w-3.5 h-3.5" />
@@ -1154,8 +1309,8 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
 
         {/* Profile Hero Block: Centered Picture, ID, Category */}
         <div className="flex flex-col items-center justify-center space-y-2.5 pt-1">
-          {/* Centered Avatar: Circular boundary filled with portrait */}
-          <div className="relative">
+          {/* Centered Avatar: Clean circular boundary filled with portrait */}
+          <div>
             <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#006eff] to-cyan-400 p-[2.5px] shadow-lg shadow-blue-500/15 overflow-hidden">
               <div className="w-full h-full rounded-full bg-[#eef2f6] overflow-hidden flex items-center justify-center">
                 <AvatarGraphic
@@ -1167,19 +1322,15 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                 />
               </div>
             </div>
-            {/* Halfway inside, halfway outside avatar circular perimeter */}
-            <div className="absolute bottom-[2px] right-[2px] sm:bottom-[3px] sm:right-[3px] z-10" title="Verified Expert">
-              <VerifiedBadge3D size={26} className="drop-shadow-[0_0_8px_rgba(0,110,255,0.85)]" />
-            </div>
           </div>
 
           {/* ID Code, Role & Star Rating */}
           <div className="space-y-1">
             <div className="flex items-center justify-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-mono font-extrabold text-slate-900 tracking-tight leading-none">
+              <h1 className="text-xl sm:text-2xl font-mono font-extrabold text-slate-900 tracking-tight leading-none inline-flex items-center">
                 {expert.code}
               </h1>
-              <VerifiedBadge3D size={20} title="Gaenr Verified Expert" />
+              <VerifiedBadge3D size={24} className="shrink-0 inline-block align-middle" title="Gaenr Verified Expert" />
             </div>
             <div className="flex items-center justify-center gap-2 pt-0.5">
               <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-50 text-[#006eff] font-semibold text-[11px] sm:text-xs border border-blue-100">
@@ -1417,10 +1568,15 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
         <div className="rounded-xl sm:rounded-2xl bg-white border border-slate-200/80 shadow-2xs overflow-hidden">
           {/* Main Visual Stage on Soft Light Backdrop */}
           <div
-            className="relative w-full min-h-[300px] sm:min-h-[340px] bg-gradient-to-b from-slate-50 via-slate-50/70 to-slate-100/50 flex items-center justify-center select-none overflow-hidden group"
+            className={`relative w-full min-h-[380px] xs:min-h-[420px] sm:min-h-[480px] md:min-h-[520px] bg-gradient-to-b from-slate-50 via-slate-50/70 to-slate-100/50 flex items-center justify-center select-none overflow-hidden group ${
+              totalPortfolios > 1 ? 'cursor-grab active:cursor-grabbing' : ''
+            }`}
             onContextMenu={(e) => e.preventDefault()}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
           >
             {/* Top-Right Fullscreen Button */}
             <button
@@ -1629,6 +1785,9 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
           onContextMenu={(e) => e.preventDefault()}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
         >
           {/* Top Fullscreen Header */}
           <div className="flex items-center justify-between py-2 px-2 text-white">
