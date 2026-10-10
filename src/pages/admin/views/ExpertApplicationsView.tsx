@@ -166,8 +166,21 @@ export const ExpertApplicationsView: React.FC<ExpertApplicationsViewProps> = ({
     setTimeout(() => setCopiedId(null), 2500);
   };
 
+  const getOnboardingUrl = (app: ExpertApplication) => {
+    const base = `${window.location.origin}/onboard/${app.id}`;
+    const params = new URLSearchParams();
+    if (app.fullName) params.set('name', app.fullName.trim());
+    if (app.email) params.set('email', app.email.trim());
+    const skillName = (app.otherSkill || app.skill || '').split('/')[0].trim();
+    if (skillName) params.set('skill', skillName);
+    if (app.gender) params.set('gender', app.gender.toLowerCase().includes('female') ? 'Female' : 'Male');
+    if (app.whatsapp) params.set('wa', app.whatsapp.trim());
+    const qs = params.toString();
+    return qs ? `${base}?${qs}` : base;
+  };
+
   const handleCopyWelcomeEmail = (app: ExpertApplication) => {
-    const onboardingUrl = `${window.location.origin}/onboard/${app.id}`;
+    const onboardingUrl = getOnboardingUrl(app);
     const skillName = app.otherSkill || app.skill.split('/')[0].trim();
     const emailBody = `Subject: Congratulations! Your Gaenr Expert Application is Approved
 
@@ -394,7 +407,7 @@ WhatsApp: https://wa.me/8801608922800`;
               <tbody className="divide-y divide-slate-100">
                 {filteredApps.map((app) => {
                   const status = app.status || 'applied';
-                  const onboardingUrl = `${window.location.origin}/onboard/${app.id}`;
+                  const onboardingUrl = getOnboardingUrl(app);
                   const matchedFl = app.convertedExpertCode
                     ? freelancers.find((f) => f.code === app.convertedExpertCode || f.id === app.convertedExpertCode)
                     : freelancers.find((f) => f.id === `fl-${app.id}` || (f.privateEmail && f.privateEmail.toLowerCase() === app.email.toLowerCase()));
@@ -929,7 +942,7 @@ WhatsApp: https://wa.me/8801608922800`;
                   <>
                     <button
                       type="button"
-                      onClick={() => handleCopyLink(`${window.location.origin}/onboard/${selectedApp.id}`, `modal-onb-${selectedApp.id}`, 'Onboarding Form link')}
+                      onClick={() => handleCopyLink(getOnboardingUrl(selectedApp), `modal-onb-${selectedApp.id}`, 'Onboarding Form link')}
                       className="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
                     >
                       <Copy className="w-3.5 h-3.5 text-amber-700" />

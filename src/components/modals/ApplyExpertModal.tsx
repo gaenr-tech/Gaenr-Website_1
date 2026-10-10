@@ -18,6 +18,7 @@ import {
   Users,
   Check,
 } from 'lucide-react';
+import { sendApplicantReceivedEmail } from '../../utils/email';
 
 export const ApplyExpertModal: React.FC = () => {
   const { isApplyExpertOpen, closeApplyExpert, showToast, submitExpertApplication } = useApp();
@@ -91,6 +92,15 @@ export const ApplyExpertModal: React.FC = () => {
       otherSkill: otherSkill.trim() || undefined,
       experience,
       portfolioUrl: portfolioUrl.trim(),
+    });
+
+    sendApplicantReceivedEmail({
+      fullName: fullName.trim(),
+      email: email.trim(),
+      skill: otherSkill.trim() || skill,
+      whatsapp: whatsapp.trim(),
+    }).catch((err) => {
+      console.warn('Applicant received email note:', err);
     });
 
     setIsSubmitted(true);

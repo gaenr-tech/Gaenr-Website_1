@@ -2,6 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readState, persistState, mergeState, handleSendEmail } from './serverApi.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 8787);
@@ -10,42 +11,22 @@ const dataDir = path.join(__dirname, 'data');
 const stateFile = path.join(dataDir, 'gaenr-state.json');
 const distDir = path.join(__dirname, 'dist');
 const maxBodyBytes = 8 * 1024 * 1024;
-let writeQueue = Promise.resolve();
 
 const corsOrigin = process.env.CORS_ORIGIN || '*';
 
 const send = (res, status, body, contentType = 'application/json; charset=utf-8') => {
   res.writeHead(status, {
     'Content-Type': contentType,
-    'Cache-Control': 'no-store',
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
     'Access-Control-Allow-Origin': corsOrigin,
-    'Access-Control-Allow-Methods': 'GET,PUT,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cache-Control',
   });
   if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
     res.end(body);
   } else {
     res.end(typeof body === 'string' ? body : JSON.stringify(body));
   }
-};
-
-const readState = async () => {
-  try {
-    return JSON.parse(await fs.readFile(stateFile, 'utf8'));
-  } catch (error) {
-    if (error.code !== 'ENOENT') throw error;
-    return { version: 1, updatedAt: new Date().toISOString(), state: {} };
-  }
-};
-
-const persistState = (state) => {
-  writeQueue = writeQueue.then(async () => {
-    await fs.mkdir(dataDir, { recursive: true });
-    const temporaryFile = `${stateFile}.tmp`;
-    await fs.writeFile(temporaryFile, JSON.stringify(state, null, 2), 'utf8');
-    await fs.rename(temporaryFile, stateFile);
-  });
-  return writeQueue;
 };
 
 const readBody = (req) => new Promise((resolve, reject) => {
@@ -80,7 +61,13 @@ const serveStatic = async (req, res) => {
     const stat = await fs.stat(safePath);
     if (stat.isFile()) {
       const extension = path.extname(safePath);
-      const contentTypes = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json; charset=utf-8' };
+      const contentTypes = {
+        '.html': 'text/html; charset=utf-8',
+        '.js': 'text/javascript; charset=utf-8',
+        '.css': 'text/css; charset=utf-8',
+        '.svg': 'image/svg+xml',
+        '.json': 'application/json; charset=utf-8',
+      };
       send(res, 200, await fs.readFile(safePath), contentTypes[extension] || 'application/octet-stream');
       return;
     }
@@ -100,6 +87,7 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true, service: 'gaenr-api', timestamp: new Date().toISOString() });
   }
 
+  // State sync endpoint
   if (requestUrl.pathname === '/api/state') {
     try {
       if (req.method === 'GET') {
@@ -108,16 +96,47 @@ const server = http.createServer(async (req, res) => {
       }
       if (req.method === 'PUT') {
         const payload = await readBody(req);
-        if (!payload || typeof payload.state !== 'object' || Array.isArray(payload.state)) {
-          return send(res, 400, { error: 'Expected an object property named state' });
-        }
-        const next = { version: 1, updatedAt: new Date().toISOString(), state: payload.state };
+        const currentDb = await readState();
+        const merged = mergeState(currentDb.state || {}, payload);
+        const next = { version: 1, updatedAt: new Date().toISOString(), state: merged };
         await persistState(next);
         return send(res, 200, next);
       }
       return send(res, 405, { error: 'Method not allowed' });
     } catch (error) {
       return send(res, error.statusCode || 500, { error: error.message || 'Server error' });
+    }
+  }
+
+  // Application lookup endpoint (allows guest browser to fetch specific application immediately)
+  if (requestUrl.pathname === '/api/application' && req.method === 'GET') {
+    try {
+      const id = requestUrl.searchParams.get('id');
+      if (!id) return send(res, 400, { error: 'Missing application id parameter' });
+      const currentDb = await readState();
+      const rawApps = currentDb.state?.['gaenr_expert_applications'];
+      let apps = [];
+      if (typeof rawApps === 'string') {
+        try { apps = JSON.parse(rawApps); } catch {}
+      } else if (Array.isArray(rawApps)) {
+        apps = rawApps;
+      }
+      const found = apps.find((a) => a.id === id);
+      if (!found) return send(res, 404, { error: 'Application record not found' });
+      return send(res, 200, found);
+    } catch (err) {
+      return send(res, 500, { error: err.message });
+    }
+  }
+
+  // Email dispatch endpoint
+  if (requestUrl.pathname === '/api/send-email' && req.method === 'POST') {
+    try {
+      const payload = await readBody(req);
+      const result = await handleSendEmail(payload);
+      return send(res, 200, result);
+    } catch (error) {
+      return send(res, 500, { error: error.message || 'Failed to dispatch email' });
     }
   }
 

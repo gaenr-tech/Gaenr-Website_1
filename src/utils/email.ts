@@ -83,3 +83,41 @@ export const sendExpertOnboardingInviteEmail = async (application: {
     return { status: 'failed', message: err?.message || 'Network request failed' };
   }
 };
+
+/**
+ * Dispatch an applicant confirmation email when they apply as an expert.
+ */
+export const sendApplicantReceivedEmail = async (applicant: {
+  id?: string;
+  fullName: string;
+  email: string;
+  skill?: string;
+  otherSkill?: string;
+  whatsapp?: string;
+}): Promise<WelcomeEmailResult> => {
+  try {
+    const response = await fetch(`${apiBase()}/api/send-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'applicant_received',
+        applicationId: applicant.id,
+        fullName: applicant.fullName,
+        email: applicant.email,
+        skill: applicant.otherSkill || applicant.skill || 'Digital Creator',
+        whatsapp: applicant.whatsapp,
+      }),
+    });
+    const data = (await response.json().catch(() => ({}))) as {
+      alreadySent?: boolean;
+      error?: string;
+      code?: string;
+    };
+
+    if (response.ok) return data.alreadySent ? { status: 'already-sent' } : { status: 'sent' };
+    if (data.code === 'NO_EMAIL') return { status: 'skipped', reason: 'no-email' };
+    return { status: 'failed', message: data.error || `HTTP ${response.status}` };
+  } catch (err: any) {
+    return { status: 'failed', message: err?.message || 'Network request failed' };
+  }
+};

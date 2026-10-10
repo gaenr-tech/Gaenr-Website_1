@@ -5,6 +5,36 @@ function doPost(e) {
     var contents = e.postData.contents;
     var data = JSON.parse(contents);
     
+    // 1. Email Dispatch Action (Automated Email Delivery)
+    if (data.action === "send_email" || data.type === "send_email") {
+      var recipient = data.to;
+      var subject = data.subject || "GAENR Notification";
+      var htmlBody = data.html || data.text || "";
+      var plainText = data.text || htmlBody.replace(/<[^>]*>/g, "");
+      
+      if (!recipient) {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          message: "Recipient 'to' email address is required."
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+      
+      MailApp.sendEmail({
+        to: recipient,
+        subject: subject,
+        body: plainText,
+        htmlBody: htmlBody,
+        name: "GAENR Operations"
+      });
+      
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        success: true,
+        message: "Email sent successfully to " + recipient
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // 2. Google Drive Cloud Storage Upload Action
     var folderId = data.folderId || TARGET_FOLDER_ID;
     var folder = DriveApp.getFolderById(folderId);
     
@@ -53,11 +83,11 @@ function doPost(e) {
 function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({
     status: "active",
-    message: "Gaenr Cloud Direct Storage Endpoint is online."
+    message: "Gaenr Cloud Direct Storage & Email Endpoint is online."
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
-// একবার চালান (Run) বাটনে চাপ দিয়ে ড্রাইভ পারমিশন Authorize করুন
+// একবার চালান (Run) বাটনে চাপ দিয়ে ড্রাইভ ও মেইল পারমিশন Authorize করুন
 function testDriveAccess() {
   var folder = DriveApp.getFolderById(TARGET_FOLDER_ID);
   Logger.log("Drive connected successfully: " + folder.getName());

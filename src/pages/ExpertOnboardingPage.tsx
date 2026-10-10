@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { useBranding } from '../context/BrandingContext';
 import { GaenrLogo } from '../components/common/GaenrLogo';
 import { RAW_AVATAR_SPECS, AvatarGraphic, VerifiedBadge3D } from '../components/common/Avatars';
-import { ExpertPricingTier } from '../types';
+import { ExpertPricingTier, ExpertApplication } from '../types';
 import {
   CheckCircle,
   Sparkles,
@@ -20,6 +20,7 @@ import {
   Building2,
   Smartphone,
   Wallet,
+  Loader2,
 } from 'lucide-react';
 
 interface ExpertOnboardingPageProps {
@@ -30,7 +31,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
   const { currentRoute, expertApplications, saveExpertOnboardingResponse, navigate, showToast } = useApp();
   const { branding } = useBranding();
 
-  // Resolve applicationId from props or route: /onboard/:id or /expert-onboarding/:id
+  // 1. Resolve applicationId from props or route: /onboard/:id or /expert-onboarding/:id
   const cleanPath = currentRoute.split('#')[0].split('?')[0];
   const resolvedId =
     applicationId ||
@@ -40,7 +41,87 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       .replace('/o/', '')
       .trim();
 
-  const application = expertApplications.find((a) => a.id === resolvedId);
+  // 2. Extract fallback metadata from URL query parameters (for guest browsers)
+  const searchStr = typeof window !== 'undefined'
+    ? (window.location.search || (currentRoute.includes('?') ? `?${currentRoute.split('?')[1]}` : ''))
+    : '';
+  const searchParams = new URLSearchParams(searchStr);
+  const qName = searchParams.get('name') || '';
+  const qEmail = searchParams.get('email') || '';
+  const qSkill = searchParams.get('skill') || '';
+  const qGender = searchParams.get('gender') || 'Male';
+  const qWa = searchParams.get('wa') || '';
+
+  const memoryApp = expertApplications.find((a) => a.id === resolvedId);
+  const [serverApp, setServerApp] = useState<ExpertApplication | null>(null);
+  const [isVerifying, setIsVerifying] = useState<boolean>(!memoryApp && !qName);
+
+  // 3. Fallback record constructed from URL parameters
+  const fallbackApp: ExpertApplication | null = (qName || qEmail) ? {
+    id: resolvedId,
+    fullName: qName || 'Verified Expert',
+    email: qEmail,
+    whatsapp: qWa,
+    gender: qGender.toLowerCase().includes('female') ? 'Female' : 'Male',
+    skill: qSkill || 'Verified Skill',
+    status: 'approved',
+    createdAt: new Date().toISOString(),
+    experience: 'Verified',
+    occupation: 'Freelance Expert',
+    address: 'Bangladesh',
+    portfolioUrl: '',
+    googleDriveAssetFolderUrl: '',
+  } : null;
+
+  const application = memoryApp || serverApp || fallbackApp;
+
+  // 4. Async Server Fetch Fallback if application is missing from memory and URL query
+  useEffect(() => {
+    if (memoryApp || qName) {
+      setIsVerifying(false);
+      return;
+    }
+
+    let isMounted = true;
+    const loadFromApi = async () => {
+      try {
+        const res = await fetch(`/api/application?id=${encodeURIComponent(resolvedId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.id === resolvedId && isMounted) {
+            setServerApp(data);
+            setIsVerifying(false);
+            return;
+          }
+        }
+
+        const stateRes = await fetch(`/api/state?_t=${Date.now()}`);
+        if (stateRes.ok) {
+          const stateData = await stateRes.json();
+          const rawApps = stateData?.state?.['gaenr_expert_applications'];
+          let apps = [];
+          if (typeof rawApps === 'string') {
+            try { apps = JSON.parse(rawApps); } catch {}
+          } else if (Array.isArray(rawApps)) {
+            apps = rawApps;
+          }
+          const found = apps.find((a: any) => a.id === resolvedId);
+          if (found && isMounted) {
+            setServerApp(found);
+            setIsVerifying(false);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('Server verification note:', e);
+      } finally {
+        if (isMounted) setIsVerifying(false);
+      }
+    };
+
+    loadFromApi();
+    return () => { isMounted = false; };
+  }, [resolvedId, memoryApp, qName]);
 
   // Form State initialized from existing onboardingData if previously submitted, otherwise completely blank
   const [pricingModel, setPricingModel] = useState(
@@ -100,6 +181,61 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
   );
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Synchronize form states whenever application resolves asynchronously
+  useEffect(() => {
+    if (application) {
+      if (application.onboardingData?.avatarId) {
+        setSelectedAvatarId(application.onboardingData.avatarId);
+      } else {
+        const def = application.gender.toLowerCase().includes('female')
+          ? 'avatar-youth-f1'
+          : 'avatar-youth-m1';
+        setSelectedAvatarId(def);
+      }
+
+      if (application.onboardingData?.statement) {
+        setStatement(application.onboardingData.statement);
+      }
+
+      if (application.onboardingData?.pricingTiers && application.onboardingData.pricingTiers.length > 0) {
+        setPricingTiers(application.onboardingData.pricingTiers.map((t) => ({
+          ...t,
+          price: t.price.replace(/\s*BDT\s*/gi, '').trim(),
+        })));
+      }
+
+      if (application.onboardingData?.payoutMethod) {
+        setPayoutMethod(application.onboardingData.payoutMethod);
+      }
+      if (application.onboardingData?.bankName) setBankName(application.onboardingData.bankName);
+      if (application.onboardingData?.accountHolderName) {
+        setAccountHolderName(application.onboardingData.accountHolderName);
+        setMfsAccountHolderName(application.onboardingData.accountHolderName);
+      }
+      if (application.onboardingData?.accountNumber) setAccountNumber(application.onboardingData.accountNumber);
+      if (application.onboardingData?.branchName) setBranchName(application.onboardingData.branchName);
+      if (application.onboardingData?.routingNumber) setRoutingNumber(application.onboardingData.routingNumber);
+      if (application.onboardingData?.mfsProvider) setMfsProvider(application.onboardingData.mfsProvider as any);
+      if (application.onboardingData?.mfsNumber) setMfsNumber(application.onboardingData.mfsNumber);
+      if (application.onboardingData?.mfsAccountType) setMfsAccountType(application.onboardingData.mfsAccountType as any);
+    }
+  }, [application?.id, application?.onboardingData]);
+
+  // Loading state while verifying credentials
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-3xl p-8 border border-slate-200/90 shadow-xl text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#006eff] flex items-center justify-center mx-auto">
+            <Loader2 className="w-6 h-6 animate-spin" />
+          </div>
+          <h2 className="text-lg font-bold text-slate-900">Verifying Invitation Record...</h2>
+          <p className="text-xs text-slate-500">Connecting to GAENR Operations database. Please wait a moment.</p>
+        </div>
+      </div>
+    );
+  }
 
   // If application not found
   if (!application) {
@@ -204,7 +340,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       mfsProvider: payoutMethod === 'mfs' ? mfsProvider : undefined,
       mfsAccountType: payoutMethod === 'mfs' ? mfsAccountType : undefined,
       mfsNumber: payoutMethod === 'mfs' ? mfsNumber.trim() : undefined,
-    });
+    }, application);
 
     setIsSubmitted(true);
   };

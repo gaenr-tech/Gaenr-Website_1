@@ -137,7 +137,11 @@ interface AppContextType {
     cardImage?: string | null,
     customCode?: string
   ) => void;
-  saveExpertOnboardingResponse: (applicationId: string, data: ExpertOnboardingData) => void;
+  saveExpertOnboardingResponse: (
+    applicationId: string,
+    data: ExpertOnboardingData,
+    baseApp?: Partial<ExpertApplication>
+  ) => void;
   deleteExpertApplication: (id: string) => void;
 
   // Dedicated Portfolio Management for specific expert
@@ -1529,9 +1533,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast(`Status updated to ${newStatus}`, 'info');
   };
 
-  const saveExpertOnboardingResponse = (applicationId: string, data: ExpertOnboardingData) => {
-    setExpertApplications((prev) =>
-      prev.map((a) =>
+  const saveExpertOnboardingResponse = (
+    applicationId: string,
+    data: ExpertOnboardingData,
+    baseApp?: Partial<ExpertApplication>
+  ) => {
+    setExpertApplications((prev) => {
+      const exists = prev.some((a) => a.id === applicationId);
+      if (!exists && baseApp) {
+        const fullNewApp: ExpertApplication = {
+          id: applicationId,
+          fullName: baseApp.fullName || 'Verified Expert',
+          email: baseApp.email || '',
+          whatsapp: baseApp.whatsapp || '',
+          gender: baseApp.gender || 'Male',
+          skill: baseApp.skill || 'Verified Skill',
+          otherSkill: baseApp.otherSkill,
+          status: 'approved',
+          createdAt: baseApp.createdAt || new Date().toISOString(),
+          occupation: baseApp.occupation || 'Freelance Expert',
+          address: baseApp.address || 'Bangladesh',
+          experience: baseApp.experience || 'Verified',
+          portfolioUrl: baseApp.portfolioUrl || '',
+          googleDriveAssetFolderUrl: '',
+          onboardingData: {
+            ...data,
+            submittedAt: new Date().toISOString(),
+          },
+        };
+        const updated = [fullNewApp, ...prev];
+        try {
+          localStorage.setItem('gaenr_expert_applications', JSON.stringify(updated));
+        } catch {}
+        return updated;
+      }
+
+      const updated = prev.map((a) =>
         a.id === applicationId
           ? {
               ...a,
@@ -1541,8 +1578,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               },
             }
           : a
-      )
-    );
+      );
+      try {
+        localStorage.setItem('gaenr_expert_applications', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
     showToast('Onboarding profile & payout preferences saved successfully!', 'success');
   };
 
