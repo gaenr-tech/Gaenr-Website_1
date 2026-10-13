@@ -14,78 +14,116 @@ export async function onRequestOptions() {
 
 function getEmailHeader(siteUrl) {
   return `
-  <div style="background:#f8fafc;padding:26px 20px;text-align:center;border-bottom:1px solid #e2e8f0;">
-    <a href="${siteUrl}" target="_blank" style="display:inline-block;text-decoration:none;">
-      <img src="${siteUrl}/images/gaenr-logo.png" alt="GAENR" width="170" style="display:inline-block;max-width:170px;height:auto;border:0;outline:none;" />
-    </a>
-  </div>`;
+  <a href="${siteUrl}" target="_blank" style="display:inline-block;text-decoration:none;">
+    <img src="${siteUrl}/images/gaenr-logo.png" alt="GAENR" width="170" style="display:inline-block;max-width:170px;height:auto;border:0;outline:none;" />
+  </a>`;
 }
 
 function getEmailFooter(siteUrl) {
   return `
-  <div style="background:#f8fafc;padding:26px 20px;text-align:center;border-top:1px solid #e2e8f0;">
-    <div style="font-size:14px;font-weight:900;color:#0f172a;letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;">
-      TEAM <span style="color:#006eff;">GAENR</span>
-    </div>
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;border-collapse:collapse;">
-      <tr>
-        <!-- 1. Website -->
-        <td style="padding:0 5px;" align="center">
-          <a href="${siteUrl}" target="_blank" title="Website" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/globe.png" alt="Website" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
-          </a>
-        </td>
-        <!-- 2. Phone -->
-        <td style="padding:0 5px;" align="center">
-          <a href="tel:+8809647922800" title="Phone: 09647 922 800" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/phone.png" alt="Phone" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
-          </a>
-        </td>
-        <!-- 3. Email -->
-        <td style="padding:0 5px;" align="center">
-          <a href="mailto:contact@gaenr.com" title="Email: contact@gaenr.com" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/mail.png" alt="Email" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
-          </a>
-        </td>
-        <!-- 4. WhatsApp -->
-        <td style="padding:0 5px;" align="center">
-          <a href="https://wa.me/8801608922800" target="_blank" title="WhatsApp: +8801608922800" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/whatsapp.png" alt="WhatsApp" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
-          </a>
-        </td>
-        <!-- 5. Facebook -->
-        <td style="padding:0 5px;" align="center">
-          <a href="https://www.facebook.com/gaenrglobal/" target="_blank" title="Facebook" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/facebook.png" alt="Facebook" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
-          </a>
-        </td>
-        <!-- 6. LinkedIn -->
-        <td style="padding:0 5px;" align="center">
-          <a href="https://www.linkedin.com/company/gaenrglobal/" target="_blank" title="LinkedIn" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/linkedin.png" alt="LinkedIn" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
-          </a>
-        </td>
-        <!-- 7. Instagram -->
-        <td style="padding:0 5px;" align="center">
-          <a href="https://www.instagram.com/gaenr_global/" target="_blank" title="Instagram" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/instagram.png" alt="Instagram" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
-          </a>
-        </td>
-        <!-- 8. X / Twitter -->
-        <td style="padding:0 5px;" align="center">
-          <a href="https://x.com/gaenr_global" target="_blank" title="X" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/x.png" alt="X" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
-          </a>
-        </td>
-        <!-- 9. Threads -->
-        <td style="padding:0 5px;" align="center">
-          <a href="https://www.threads.com/@gaenr_global" target="_blank" title="Threads" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/threads.png" alt="Threads" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
-          </a>
-        </td>
-      </tr>
-    </table>
-  </div>`;
+  <div style="font-size:14px;font-weight:900;color:#0f172a;letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;">
+    TEAM <span style="color:#006eff;">GAENR</span>
+  </div>
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;border-collapse:collapse;">
+    <tr>
+      <!-- 1. Website -->
+      <td style="padding:0 5px;" align="center">
+        <a href="${siteUrl}" target="_blank" title="Website" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/globe.png" alt="Website" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+        </a>
+      </td>
+      <!-- 2. Phone -->
+      <td style="padding:0 5px;" align="center">
+        <a href="tel:+8809647922800" title="Phone: 09647 922 800" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/phone.png" alt="Phone" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+        </a>
+      </td>
+      <!-- 3. Email -->
+      <td style="padding:0 5px;" align="center">
+        <a href="mailto:contact@gaenr.com" title="Email: contact@gaenr.com" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/mail.png" alt="Email" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+        </a>
+      </td>
+      <!-- 4. WhatsApp -->
+      <td style="padding:0 5px;" align="center">
+        <a href="https://wa.me/8801608922800" target="_blank" title="WhatsApp: +8801608922800" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/whatsapp.png" alt="WhatsApp" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+        </a>
+      </td>
+      <!-- 5. Facebook -->
+      <td style="padding:0 5px;" align="center">
+        <a href="https://www.facebook.com/gaenrglobal/" target="_blank" title="Facebook" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/facebook.png" alt="Facebook" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+        </a>
+      </td>
+      <!-- 6. LinkedIn -->
+      <td style="padding:0 5px;" align="center">
+        <a href="https://www.linkedin.com/company/gaenrglobal/" target="_blank" title="LinkedIn" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/linkedin.png" alt="LinkedIn" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+        </a>
+      </td>
+      <!-- 7. Instagram -->
+      <td style="padding:0 5px;" align="center">
+        <a href="https://www.instagram.com/gaenr_global/" target="_blank" title="Instagram" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/instagram.png" alt="Instagram" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+        </a>
+      </td>
+      <!-- 8. X / Twitter -->
+      <td style="padding:0 5px;" align="center">
+        <a href="https://x.com/gaenr_global" target="_blank" title="X" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/x.png" alt="X" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+        </a>
+      </td>
+      <!-- 9. Threads -->
+      <td style="padding:0 5px;" align="center">
+        <a href="https://www.threads.com/@gaenr_global" target="_blank" title="Threads" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/threads.png" alt="Threads" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+        </a>
+      </td>
+    </tr>
+  </table>`;
+}
+
+function buildFullEmailHtml({ siteUrl, bodyHtml }) {
+  const headerInner = getEmailHeader(siteUrl);
+  const footerInner = getEmailFooter(siteUrl);
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GAENR</title>
+</head>
+<body style="font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background-color:#edf2f7;color:#1e293b;padding:24px 10px;margin:0;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color:#edf2f7;width:100%;margin:0;padding:0;">
+    <tr>
+      <td align="center" style="padding:10px 0;">
+        <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background-color:#ffffff;border-radius:22px;border:1px solid #cbd5e1;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);margin:0 auto;">
+          <!-- 1. Distinct Off-White Header -->
+          <tr>
+            <td align="center" style="background-color:#f8fafc;padding:28px 20px;border-bottom:1px solid #e2e8f0;">
+              ${headerInner}
+            </td>
+          </tr>
+          <!-- 2. Pure White Card Body -->
+          <tr>
+            <td style="background-color:#ffffff;padding:36px 30px;">
+              ${bodyHtml}
+            </td>
+          </tr>
+          <!-- 3. Distinct Off-White Footer -->
+          <tr>
+            <td align="center" style="background-color:#f8fafc;padding:28px 20px;border-top:1px solid #e2e8f0;">
+              ${footerInner}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 }
 
 export async function onRequestPost({ request, env }) {
@@ -107,56 +145,41 @@ export async function onRequestPost({ request, env }) {
     let html = '';
     let text = '';
 
-    const headerHtml = getEmailHeader(siteUrl);
-    const footerHtml = getEmailFooter(siteUrl);
-
     if (type === 'onboarding_invite') {
       recipient = (payload.email || '').trim();
       const name = (payload.fullName || 'there').trim();
       const skill = (payload.skill || 'Digital Creator').trim();
       const onboardingUrl = `${siteUrl}/onboard/${payload.applicationId}?name=${encodeURIComponent(name)}&email=${encodeURIComponent(recipient)}&skill=${encodeURIComponent(skill)}`;
-      subject = 'Congratulations! Your Gaenr Expert Application is Approved';
+      
+      subject = 'Congratulations! Your GAENR Expert Application is Approved';
       text = `Hi ${name},\n\nCongratulations! We are pleased to inform you that your application has been reviewed and approved as a Verified Expert in ${skill}.\n\nPlease complete the expert onboarding form below to finalize your profile:\n\nComplete Onboarding Form: ${onboardingUrl}\n\nTeam GAENR`;
-      html = `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><style>body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:24px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);} .body{padding:32px 28px;background:#ffffff;} .btn{display:inline-block;background:#006eff;color:#ffffff !important;padding:14px 36px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:14px;box-shadow:0 4px 14px rgba(0,110,255,0.25);}</style></head>
-<body>
-  <div class="card">
-    ${headerHtml}
-    <div class="body">
+      
+      const bodyHtml = `
       <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin-top:0;">Congratulations, <span style="color:#006eff;">${name}</span>!</h2>
       <p style="font-size:14px;line-height:1.6;color:#475569;">We are pleased to inform you that your application has been reviewed and officially approved as a <strong>Verified Expert in ${skill}</strong>.</p>
       <p style="font-size:14px;line-height:1.6;color:#475569;">Please complete your expert avatar selection, service rates, statement, and payout details below to activate your verified profile:</p>
       <div style="text-align:center;margin:32px 0;">
-        <a href="${onboardingUrl}" class="btn" target="_blank">Complete Expert Onboarding &rarr;</a>
+        <a href="${onboardingUrl}" style="display:inline-block;background:#006eff;color:#ffffff !important;padding:14px 36px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:14px;box-shadow:0 4px 14px rgba(0,110,255,0.25);" target="_blank">Complete Expert Onboarding &rarr;</a>
       </div>
-      <p style="font-size:12px;color:#94a3b8;line-height:1.5;text-align:center;">This onboarding form is strictly single-use. Once submitted, your profile will be locked for review and final activation.</p>
-    </div>
-    ${footerHtml}
-  </div>
-</body>
-</html>`;
+      <p style="font-size:12px;color:#94a3b8;line-height:1.5;text-align:center;margin-bottom:0;">This onboarding form is strictly single-use. Once submitted, your profile will be locked for review and final activation.</p>`;
+
+      html = buildFullEmailHtml({ siteUrl, bodyHtml });
+
     } else if (type === 'applicant_received') {
       recipient = (payload.email || '').trim();
       const name = (payload.fullName || 'there').trim();
       const skill = (payload.skill || 'Digital Creator').trim();
-      subject = 'Gaenr Expert Application Received';
+
+      subject = 'GAENR Expert Application Received';
       text = `Hi ${name},\n\nThank you for applying to join Gaenr as an Expert in ${skill}!\n\nWe have successfully received your application. Our vetting team is actively reviewing your credentials.\n\nBest regards,\nTeam GAENR`;
-      html = `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><style>body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:24px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);} .body{padding:32px 28px;background:#ffffff;}</style></head>
-<body>
-  <div class="card">
-    ${headerHtml}
-    <div class="body">
+
+      const bodyHtml = `
       <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin-top:0;">Application Received, <span style="color:#006eff;">${name}</span>!</h2>
       <p style="font-size:14px;line-height:1.6;color:#475569;">Thank you for applying to join Gaenr as a Verified Expert in <strong>${skill}</strong>. We have received your portfolio and application details.</p>
-      <p style="font-size:14px;line-height:1.6;color:#475569;">Our talent vetting operations team is actively reviewing your submission. You will receive an official update as soon as the review is complete.</p>
-    </div>
-    ${footerHtml}
-  </div>
-</body>
-</html>`;
+      <p style="font-size:14px;line-height:1.6;color:#475569;margin-bottom:0;">Our talent vetting operations team is actively reviewing your submission. You will receive an official update as soon as the review is complete.</p>`;
+
+      html = buildFullEmailHtml({ siteUrl, bodyHtml });
+
     } else {
       // Welcome email
       recipient = (payload.expert?.privateEmail || payload.email || '').trim();
@@ -167,21 +190,15 @@ export async function onRequestPost({ request, env }) {
       const uploadPortalUrl = `${siteUrl}/u/${encodeURIComponent(uploadToken)}`;
       const idCardDownloadUrl = `${siteUrl}/api/id-card?code=${encodeURIComponent(code)}`;
 
-      subject = `Welcome to GAENR! Your Expert Profile is Now Active (ID: ${code})`;
-      text = `Hi ${name},\n\nWelcome to GAENR! Your verified expert profile (${code}) is now active and live.\n\nDownload ID Card: ${idCardDownloadUrl}\nUpload Portfolios: ${uploadPortalUrl}\nView Profile: ${profileUrl}\n\nTeam GAENR`;
+      subject = 'Your GAENR Expert Profile is Live';
+      text = `Hi ${name},\n\nCongratulations! Your verified expert profile (${code}) is now active and live on Gaenr.\n\nDownload ID Card: ${idCardDownloadUrl}\nUpload Portfolios: ${uploadPortalUrl}\nView Profile: ${profileUrl}\n\nTeam GAENR`;
 
-      html = `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><style>body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:24px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);} .body{padding:32px 28px;background:#ffffff;} .btn-dl{display:inline-block;background:#006eff;color:#ffffff !important;padding:12px 28px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;box-shadow:0 4px 14px rgba(0,110,255,0.25);} .btn-primary{display:inline-block;background:#0f172a;color:#ffffff !important;padding:11px 24px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;margin:4px;} .btn-secondary{display:inline-block;background:#ffffff;color:#0f172a !important;padding:11px 24px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;border:1px solid #cbd5e1;margin:4px;}</style></head>
-<body>
-  <div class="card">
-    ${headerHtml}
-    <div class="body">
+      const bodyHtml = `
       <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin-top:0;">Welcome to GAENR, <span style="color:#006eff;">${name}</span>!</h2>
       <p style="font-size:14px;line-height:1.6;color:#475569;">Congratulations! Your verified expert profile (Official ID: <strong style="font-family:monospace;color:#006eff;font-size:15px;letter-spacing:1px;">${code}</strong>) is now active and live on Gaenr.</p>
       
       <!-- ID Card Announcement & Direct Download Action -->
-      <div style="background:#f0f7ff;border:1px solid #bae6fd;border-radius:18px;padding:20px;margin:24px 0;text-align:center;">
+      <div style="background:#f0f7ff;border:1px solid #bae6fd;border-radius:18px;padding:22px 20px;margin:24px 0;text-align:center;">
         <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#0369a1;text-transform:uppercase;margin-bottom:6px;">
           Official Verified Digital ID Card
         </div>
@@ -190,7 +207,7 @@ export async function onRequestPost({ request, env }) {
         </div>
         <p style="font-size:12px;color:#475569;margin:0 0 16px 0;line-height:1.5;">Your official digital ID card image has been attached to this email. You can also download it directly at anytime using the button below:</p>
         <div style="text-align:center;">
-          <a href="${idCardDownloadUrl}" class="btn-dl" target="_blank">Download Official ID Card</a>
+          <a href="${idCardDownloadUrl}" style="display:inline-block;background:#006eff;color:#ffffff !important;padding:12px 28px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;box-shadow:0 4px 14px rgba(0,110,255,0.25);" target="_blank">Download Official ID Card</a>
         </div>
       </div>
 
@@ -199,17 +216,14 @@ export async function onRequestPost({ request, env }) {
         <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin:0 0 8px 0;">Now you can start uploading your portfolios</h3>
         <p style="font-size:13px;color:#475569;margin:0 0 18px 0;line-height:1.6;">You can now start uploading your portfolio deliverables, case studies, and work samples directly into your verified Gaenr showcase.</p>
         <div style="text-align:center;">
-          <a href="${uploadPortalUrl}" class="btn-primary" target="_blank">Upload Your Portfolio</a>
-          <a href="${profileUrl}" class="btn-secondary" target="_blank">View Live Profile</a>
+          <a href="${uploadPortalUrl}" style="display:inline-block;background:#0f172a;color:#ffffff !important;padding:11px 24px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;margin:4px;" target="_blank">Upload Your Portfolio</a>
+          <a href="${profileUrl}" style="display:inline-block;background:#ffffff;color:#0f172a !important;padding:11px 24px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;border:1px solid #cbd5e1;margin:4px;" target="_blank">View Live Profile</a>
         </div>
       </div>
 
-      <p style="font-size:12px;color:#94a3b8;line-height:1.5;text-align:center;margin-top:20px;">Please keep your official ID card safe for client authentication and verification.</p>
-    </div>
-    ${footerHtml}
-  </div>
-</body>
-</html>`;
+      <p style="font-size:12px;color:#94a3b8;line-height:1.5;text-align:center;margin-top:20px;margin-bottom:0;">Please keep your official ID card safe for client authentication and verification.</p>`;
+
+      html = buildFullEmailHtml({ siteUrl, bodyHtml });
     }
 
     // Process attachments and store card image if provided
@@ -307,6 +321,7 @@ export async function onRequestPost({ request, env }) {
         sent,
         provider,
         recipient,
+        subject,
         timestamp: new Date().toISOString(),
       }),
       { status: 200, headers: corsHeaders }
