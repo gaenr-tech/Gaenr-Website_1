@@ -162,8 +162,39 @@ ${data.userRole ? `👤 User Role: ${data.userRole}\n` : ''}${data.contextNotes 
 };
 
 /**
+ * Direct automated WhatsApp notification dispatch via Meta WhatsApp Cloud API
+ * Sends from Meta Cloud Test Number (+1 555-662-7228) directly to Gaenr Desk (+880 1608 922 800) with loud sound & alert!
+ */
+export const sendDirectMetaCloudNotification = async (messageText: string): Promise<boolean> => {
+  try {
+    const metaToken = import.meta.env.VITE_META_WHATSAPP_TOKEN || 'EAAZAXOZCz9pG8BSpiWZB3mhGdo2PeskWoMFmGcXjYDV6VujKwTaMHfpiM0dNIN4ZCZAPxUrBodZCI5EExtQDZC9QmzvdCMxbvoSN0PunSt5cj5WzqfchI3gunFpvmOSqSZA6fg6t4sFCWCbsQrPnZCycjdiv2zWBzo7CZB7aLmQNkCvzw8EmT9TaZAwdZAkwx8KPGtT8viMBMHyuMnZAN2Oqw1UaFCD5zAe41ivoZBSBJgZCMZC4Yx1N8f2ToBh3TMQFr2L0jnkWZAFiSnOax58PQzssmHE5KQGKnXQZDZD';
+    const metaPhoneId = import.meta.env.VITE_META_PHONE_ID || '1436780476182860';
+    const targetPhone = (import.meta.env.VITE_WHATSAPP_TARGET_PHONE || GAENR_OFFICIAL_WHATSAPP).replace(/[^0-9]/g, '');
+
+    const res = await fetch(`https://graph.facebook.com/v20.0/${metaPhoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${metaToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: targetPhone,
+        type: 'text',
+        text: { preview_url: false, body: messageText },
+      }),
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn('Direct Meta Cloud dispatch note:', err);
+    return false;
+  }
+};
+
+/**
  * Direct automated WhatsApp notification dispatch via Green-API (green-api.com)
- * Sends directly to Gaenr Desk (+880 1608 922 800) automatically with 0 latency
+ * Fallback gateway if Meta Cloud has limitations
  */
 export const sendDirectGreenApiNotification = async (messageText: string): Promise<boolean> => {
   try {
@@ -193,7 +224,7 @@ export const sendBackendNotification = async (
   type: 'expert_application' | 'expert_onboarding' | 'feedback_submission' | 'ginny_unanswered_question',
   data: any
 ): Promise<{ ok: boolean; error?: string }> => {
-  // 1. Automatic direct WhatsApp alert to Gaenr Desk via Green-API
+  // 1. Automatic direct WhatsApp alert to Gaenr Desk (Primary: Meta Cloud API, Fallback: Green-API)
   try {
     let messageText = '';
     if (type === 'expert_application') {
@@ -206,7 +237,13 @@ export const sendBackendNotification = async (
       messageText = buildGinnyEscalationNotification(data);
     }
     if (messageText) {
-      sendDirectGreenApiNotification(messageText).catch(() => {});
+      sendDirectMetaCloudNotification(messageText).then((ok) => {
+        if (!ok) {
+          sendDirectGreenApiNotification(messageText).catch(() => {});
+        }
+      }).catch(() => {
+        sendDirectGreenApiNotification(messageText).catch(() => {});
+      });
     }
   } catch (directErr) {
     console.warn('Direct WhatsApp notification note:', directErr);

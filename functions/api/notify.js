@@ -289,9 +289,12 @@ export async function onRequestPost({ request, env }) {
       }
     }
 
-    // 4B. Meta WhatsApp Business Cloud API Dispatch
-    const metaToken = env?.WHATSAPP_TOKEN || env?.META_WHATSAPP_TOKEN;
-    const metaPhoneId = env?.WHATSAPP_PHONE_ID || env?.META_PHONE_ID;
+    // 4B. Meta WhatsApp Business Cloud API Dispatch (Primary: sends from +1 555 number with loud ringtone)
+    const metaToken =
+      env?.WHATSAPP_TOKEN ||
+      env?.META_WHATSAPP_TOKEN ||
+      'EAAZAXOZCz9pG8BSpiWZB3mhGdo2PeskWoMFmGcXjYDV6VujKwTaMHfpiM0dNIN4ZCZAPxUrBodZCI5EExtQDZC9QmzvdCMxbvoSN0PunSt5cj5WzqfchI3gunFpvmOSqSZA6fg6t4sFCWCbsQrPnZCycjdiv2zWBzo7CZB7aLmQNkCvzw8EmT9TaZAwdZAkwx8KPGtT8viMBMHyuMnZAN2Oqw1UaFCD5zAe41ivoZBSBJgZCMZC4Yx1N8f2ToBh3TMQFr2L0jnkWZAFiSnOax58PQzssmHE5KQGKnXQZDZD';
+    const metaPhoneId = env?.WHATSAPP_PHONE_ID || env?.META_PHONE_ID || '1436780476182860';
     if (metaToken && metaPhoneId) {
       try {
         const metaRes = await fetch(`https://graph.facebook.com/v20.0/${metaPhoneId}/messages`, {
@@ -314,12 +317,12 @@ export async function onRequestPost({ request, env }) {
       }
     }
 
-    // 4C. Green-API Native WhatsApp Dispatch (green-api.com)
+    // 4C. Green-API Native WhatsApp Dispatch (Fallback only if Meta Cloud did not dispatch)
     const greenApiInstance = env?.GREEN_API_INSTANCE_ID || '710722763907';
     const greenApiToken = env?.GREEN_API_TOKEN || '94c8624adafa427c8528cd7760d200c5c2b3b049349b4bc2a9';
     let greenApiDispatched = false;
 
-    if (greenApiInstance && greenApiToken) {
+    if (!metaCloudDispatched && greenApiInstance && greenApiToken) {
       try {
         const greenUrl = `https://api.green-api.com/waInstance${greenApiInstance}/sendMessage/${greenApiToken}`;
         const greenRes = await fetch(greenUrl, {
