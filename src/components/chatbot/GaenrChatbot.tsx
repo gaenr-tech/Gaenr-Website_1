@@ -502,38 +502,67 @@ ${taskData.description.trim()}`;
 
     // Step 1: Client Full Name
     if (taskFlow.step === 'name') {
-      const fullName = cleanText;
-      setTaskFlow((prev) => ({ ...prev, fullName, step: 'whatsapp' }));
+      const trimmed = cleanText.trim();
+      const isBadName =
+        trimmed.length < 2 ||
+        trimmed.length > 60 ||
+        /^\d+$/.test(trimmed) ||
+        /^(asdf|qwerty|test|abc|xyz|na|none)$/i.test(trimmed);
+
+      if (isBadName) {
+        return {
+          text: isBn
+            ? 'নামটা ঠিকমতো বুঝতে পারলাম না। যেমন "রাফি আহমেদ" বা "Rafi Ahmed" — আপনার নামটা কী লিখবেন?'
+            : "I couldn't quite read that as a name. For example 'Rafi Ahmed' — could you please share your name?",
+        };
+      }
+
+      setTaskFlow((prev) => ({ ...prev, fullName: trimmed, step: 'whatsapp' }));
       return {
         text: isBn
-          ? `ধন্যবাদ **${fullName}**! এবার আপনার WhatsApp নম্বরটি দিন (যেমন: 01700000000):`
-          : `Thank you **${fullName}**! What is your WhatsApp number? (e.g. 01700000000):`,
+          ? `ধন্যবাদ **${trimmed}**! এবার আপনার WhatsApp নম্বরটি দিন (যেমন: 01712345678):`
+          : `Thank you **${trimmed}**! What is your WhatsApp number? (e.g. 01712345678):`,
       };
     }
 
     // Step 2: WhatsApp Number specifically
     if (taskFlow.step === 'whatsapp') {
-      const phoneMatch = cleanText.match(/(?:\+?88)?01[3-9]\d{8}/) || cleanText.match(/\d{10,13}/);
-      const whatsapp = phoneMatch ? phoneMatch[0] : cleanText;
+      const phoneDigits = cleanText.replace(/[\s-]/g, '');
+      const isBDMobile = /(?:\+?88)?01[3-9]\d{8}/.test(phoneDigits);
+      const isIntlPhone = /^\+[1-9]\d{6,14}$/.test(phoneDigits);
+
+      if (!isBDMobile && !isIntlPhone) {
+        return {
+          text: isBn
+            ? 'নম্বরটা ঠিক মনে হচ্ছে না। বাংলাদেশি নম্বর হলে ১১ ডিজিটের হতে হবে, যেমন 01712345678। আরেকবার দেবেন?'
+            : 'The number looks invalid. Bangladeshi numbers should have 11 digits, e.g. 01712345678. Please try again:',
+        };
+      }
+
+      const phoneMatch = phoneDigits.match(/(?:\+?88)?01[3-9]\d{8}/) || phoneDigits.match(/\+[1-9]\d{6,14}/);
+      const whatsapp = phoneMatch ? phoneMatch[0] : phoneDigits;
       setTaskFlow((prev) => ({ ...prev, whatsapp, step: 'email' }));
       return {
         text: isBn
-          ? `আপনার ইমেইল অ্যাড্রেসটি দিন (প্রজেক্ট ডেলিভারি ও রসিদের জন্য):`
-          : `Please provide your Email address (for final delivery & receipt):`,
-        actions: [
-          {
-            label: isBn ? '⏩ Skip (পরে দেব)' : '⏩ Skip / Use Default',
-            actionType: 'skipTaskEmail',
-          },
-        ],
+          ? 'আপনার ইমেইল অ্যাড্রেসটি দিন (অফিসিয়াল ফাইল ডেলিভারি ও রসিদের জন্য):'
+          : 'Please provide your Email address (for official delivery & receipts):',
       };
     }
 
-    // Step 3: Email specifically
+    // Step 3: Email specifically (MANDATORY & NON-SKIPPABLE per Playbook)
     if (taskFlow.step === 'email') {
       const emailMatch = cleanText.match(/[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}/);
-      const isSkip = /^(skip|no|নেই|না|পরে|default)$/i.test(cleanText);
-      const email = emailMatch ? emailMatch[0] : isSkip ? 'client@gaenr.com' : cleanText;
+      const isTryingSkip = /^(skip|no|নেই|না|পরে|default|স্কিপ)$/i.test(cleanText);
+
+      if (!emailMatch || isTryingSkip) {
+        return {
+          text: isBn
+            ? 'ইমেইল স্কিপ করা যাবে না, কারণ ফাইনাল ডেলিভারি আর দরকারি আপডেট ইমেইলে পাঠানো হয়। একটা ইমেইল দিন প্লিজ (যেমন: name@gmail.com):'
+            : 'Email cannot be skipped because final deliverables and key updates are sent via email. Please provide a valid email (e.g. name@gmail.com):',
+        };
+      }
+
+      const email = emailMatch[0];
       setTaskFlow((prev) => ({ ...prev, email, step: 'category' }));
       return {
         text: isBn
@@ -796,11 +825,11 @@ ${taskData.description.trim()}`;
           timestamp: getRealtimeClock(),
           actions: [
             {
-              label: isBn ? '🤖 গিনির সাথেই চ্যাটে করুন' : '🤖 Assign with Ginny',
+              label: isBn ? '🤖 গিনির সহায়তায় শুরু করুন' : '🤖 Let Ginny guide me',
               actionType: 'startInChatTask',
             },
             {
-              label: isBn ? '📋 সরাসরি ফর্ম ওপেন করুন' : '📋 Open Task Form',
+              label: isBn ? '📋 নিজে ফর্ম পূরণ করুন' : '📋 Fill form myself',
               actionType: 'openAssignModal',
             },
           ],
@@ -898,11 +927,11 @@ ${taskData.description.trim()}`;
           timestamp: getRealtimeClock(),
           actions: [
             {
-              label: isBn ? '🤖 গিনির সাথেই চ্যাটে করুন' : '🤖 Assign with Ginny',
+              label: isBn ? '🤖 গিনির সহায়তায় শুরু করুন' : '🤖 Let Ginny guide me',
               actionType: 'startInChatTask',
             },
             {
-              label: isBn ? '📋 সরাসরি ফর্ম ওপেন করুন' : '📋 Open Task Form',
+              label: isBn ? '📋 নিজে ফর্ম পূরণ করুন' : '📋 Fill form myself',
               actionType: 'openAssignModal',
             },
           ],
