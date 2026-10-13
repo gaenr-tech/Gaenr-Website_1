@@ -1,47 +1,47 @@
 function formatWhatsAppMessage(type, data) {
   if (type === 'expert_application') {
     const skill = (data?.otherSkill || data?.skill || 'Digital Creator').split('/')[0].replace(/[\u0980-\u09FF]/g, '').trim();
-    return `🚀 [GAENR ALERT] নতুন এক্সপার্ট আবেদন জমা পড়েছে!
+    return `🚀 [GAENR ALERT] New Expert Application Received!
 ━━━━━━━━━━━━━━━━━━━━
-👤 নাম: ${data?.fullName || 'N/A'}
-💼 স্কিল: ${skill}
-📞 হোয়াটসঅ্যাপ: ${data?.whatsapp || 'N/A'}
-✉️ ইমেইল: ${data?.email || 'N/A'}
-⏳ অভিজ্ঞতা: ${data?.experience || 'Verified'}
-🔗 পোর্টফোলিও: ${data?.portfolioUrl || 'None provided'}
+👤 Name: ${data?.fullName || 'N/A'}
+💼 Skill: ${skill}
+📞 WhatsApp: ${data?.whatsapp || 'N/A'}
+✉️ Email: ${data?.email || 'N/A'}
+⏳ Experience: ${data?.experience || 'Verified'}
+🔗 Portfolio: ${data?.portfolioUrl || 'None provided'}
 ━━━━━━━━━━━━━━━━━━━━
-📌 gaenr.com/admin থেকে যাচাই করে Approve করুন।`;
+📌 Action: Review and approve via gaenr.com/admin`;
   }
   if (type === 'expert_onboarding') {
     const skill = (data?.skill || 'Verified Expert').split('/')[0].replace(/[\u0980-\u09FF]/g, '').trim();
-    return `🎉 [GAENR ALERT] এক্সপার্ট অনবোর্ডিং ফর্ম সম্পূর্ণ হয়েছে!
+    return `🎉 [GAENR ALERT] Expert Onboarding Completed!
 ━━━━━━━━━━━━━━━━━━━━
-👤 নাম: ${data?.fullName || 'N/A'}
-💼 স্কিল: ${skill}
-📞 হোয়াটসঅ্যাপ: ${data?.whatsapp || 'Registered in Admin'}
-🎨 অবতার: ${data?.avatarName || 'Standard'}
-🏦 পে-আউট: ${data?.payoutMethod === 'bank' ? `Bank (${data?.bankName || 'Bank'} - Acc: ${data?.accountNumber || 'Provided'})` : `MFS (${data?.mfsProvider || 'bKash'} - ${data?.mfsNumber || 'Provided'})`}
+👤 Name: ${data?.fullName || 'N/A'}
+💼 Skill: ${skill}
+📞 WhatsApp: ${data?.whatsapp || 'Registered in Admin'}
+🎨 Avatar: ${data?.avatarName || 'Standard'}
+🏦 Payout: ${data?.payoutMethod === 'bank' ? `Bank (${data?.bankName || 'Bank'} - Acc: ${data?.accountNumber || 'Provided'})` : `MFS (${data?.mfsProvider || 'bKash'} - ${data?.mfsNumber || 'Provided'})`}
 ━━━━━━━━━━━━━━━━━━━━
-⚡ gaenr.com/admin থেকে একাউন্ট লাইভ করুন!`;
+⚡ Next Step: Activate verified profile live via gaenr.com/admin`;
   }
   if (type === 'feedback_submission') {
-    return `💬 [GAENR FEEDBACK] নতুন প্ল্যাটফর্ম ফিডব্যাক জমা হয়েছে!
+    return `💬 [GAENR FEEDBACK] New Platform Feedback Received!
 ━━━━━━━━━━━━━━━━━━━━
-👤 প্রেরক: ${data?.name || 'Anonymous'} (${data?.userType || 'Visitor'})
-📌 বিষয়: ${data?.category || 'General'}
-📝 বার্তা: "${data?.message || ''}"
+👤 Sender: ${data?.name || 'Anonymous'} (${data?.userType || 'Visitor'})
+📌 Category: ${data?.category || 'General'}
+📝 Message: "${data?.message || ''}"
 ━━━━━━━━━━━━━━━━━━━━
 🌐 Gaenr Quality & Experience Team`;
   }
   if (type === 'ginny_unanswered_question') {
-    return `🤖 [GINNY ESCALATION] ব্যবহারকারীর অজানা প্রশ্ন!
+    return `🤖 [GINNY ESCALATION] Unanswered Client Question!
 ━━━━━━━━━━━━━━━━━━━━
-❓ প্রশ্ন: "${data?.userQuestion || ''}"
-💡 গিনির বার্তা: টিম গেইনার, এই প্রশ্নটি পর্যালোচনা করে নলেজ ব্যাংকে যোগ করুন।
+❓ Question: "${data?.userQuestion || ''}"
+💡 Ginny's Note: Team Gaenr, please review this query and update my knowledge base.
 ━━━━━━━━━━━━━━━━━━━━
 📲 Gaenr AI Intelligence Core`;
   }
-  return `🔔 [GAENR ALERT] প্ল্যাটফর্ম ইভেন্ট: ${type}`;
+  return `🔔 [GAENR ALERT] Platform Event: ${type}`;
 }
 
 export async function onRequestOptions() {

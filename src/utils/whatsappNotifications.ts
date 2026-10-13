@@ -41,20 +41,20 @@ export const buildExpertApplicationNotification = (data: ExpertApplicationNotify
   const occupationName = data.otherOccupation || data.occupation || 'N/A';
   const addressName = data.otherAddress || data.address || 'Bangladesh';
 
-  return `🚀 [GAENR ALERT] নতুন এক্সপার্ট আবেদন জমা পড়েছে!
+  return `🚀 [GAENR ALERT] New Expert Application Received!
 ━━━━━━━━━━━━━━━━━━━━
-👤 নাম: ${data.fullName}
-💼 স্কিল: ${skillName}
-📞 হোয়াটসঅ্যাপ: ${data.whatsapp}
-✉️ ইমেইল: ${data.email}
-⚧ লিঙ্গ: ${data.gender || 'Not specified'}
-💼 পেশা: ${occupationName}
-📍 ঠিকানা: ${addressName}
-⏳ অভিজ্ঞতা: ${data.experience || 'Verified'}
-🔗 পোর্টফোলিও লিংক:
+👤 Name: ${data.fullName}
+💼 Skill: ${skillName}
+📞 WhatsApp: ${data.whatsapp}
+✉️ Email: ${data.email}
+⚧ Gender: ${data.gender || 'Not specified'}
+💼 Occupation: ${occupationName}
+📍 Address: ${addressName}
+⏳ Experience: ${data.experience || 'Verified'}
+🔗 Portfolio Link:
 ${data.portfolioUrl || 'None provided'}
 ━━━━━━━━━━━━━━━━━━━━
-📌 পরবর্তী পদক্ষেপ: পোর্টফোলিও যাচাই করে প্রার্থীর সাথে ওভার-কল কথা বলুন এবং gaenr.com/admin থেকে Approve করুন।
+📌 Action: Review portfolio and approve via gaenr.com/admin
 🌐 Gaenr Operations Platform`;
 };
 
@@ -85,28 +85,28 @@ export const buildExpertOnboardingNotification = (data: ExpertOnboardingNotifyDa
 
   let payoutSummary = 'N/A';
   if (data.payoutMethod === 'bank') {
-    payoutSummary = `ব্যাংক: ${data.bankName || 'Bank'} (Acc: ${data.accountNumber || 'Provided'})`;
+    payoutSummary = `Bank: ${data.bankName || 'Bank'} (Acc: ${data.accountNumber || 'Provided'})`;
   } else if (data.payoutMethod === 'mfs') {
     payoutSummary = `MFS (${data.mfsProvider || 'bKash'} - ${data.mfsAccountType || 'Personal'}): ${data.mfsNumber || 'Provided'}`;
   }
 
-  return `🎉 [GAENR ALERT] এক্সপার্ট অনবোর্ডিং ফর্ম সম্পূর্ণ হয়েছে!
+  return `🎉 [GAENR ALERT] Expert Onboarding Completed!
 ━━━━━━━━━━━━━━━━━━━━
-👤 নাম: ${data.fullName}
-💼 স্কিল: ${data.skill || 'Verified Expert'}
-📞 হোয়াটসঅ্যাপ: ${data.whatsapp || 'Registered in Admin'}
-✉️ ইমেইল: ${data.email || 'Registered in Admin'}
-🎨 নির্বাচিত অবতার: ${data.avatarName || 'Standard Verified Avatar'}
-🏦 পে-আউট মেথড: ${payoutSummary}
+👤 Name: ${data.fullName}
+💼 Skill: ${data.skill || 'Verified Expert'}
+📞 WhatsApp: ${data.whatsapp || 'Registered in Admin'}
+✉️ Email: ${data.email || 'Registered in Admin'}
+🎨 Selected Avatar: ${data.avatarName || 'Standard Verified Avatar'}
+🏦 Payout Channel: ${payoutSummary}
 
-💰 নির্ধারিত প্যাকেজসমূহ:
+💰 Pricing Packages:
 ${tiersSummary}
 
-📝 এক্সপার্ট স্টেটমেন্ট:
+📝 Expert Statement:
 "${data.statement || 'Ready to deliver quality work.'}"
 ━━━━━━━━━━━━━━━━━━━━
-⚡ তাৎক্ষণিক অ্যাকশন: Gaenr Operations প্যানেলে চেক করে প্রোফাইলটি Live & Verified করে দিন!
-🔗 অ্যাডমিন ড্যাশবোর্ড: https://gaenr.com/admin
+⚡ Next Step: Review in Gaenr Admin and activate verified profile live!
+🔗 Admin Dashboard: https://gaenr.com/admin
 🌐 Gaenr Talent Network`;
 };
 
@@ -122,14 +122,14 @@ export interface FeedbackNotifyData {
 }
 
 export const buildFeedbackNotification = (data: FeedbackNotifyData): string => {
-  return `💬 [GAENR FEEDBACK] নতুন প্ল্যাটফর্ম ফিডব্যাক জমা হয়েছে!
+  return `💬 [GAENR FEEDBACK] New Platform Feedback Received!
 ━━━━━━━━━━━━━━━━━━━━
-👤 প্রেরক: ${data.name?.trim() || 'নাম প্রকাশে অনিচ্ছুক (Anonymous)'}
-🏷️ ভূমিকা: ${data.userType}
-📌 ক্যাটাগরি: ${data.category}
-✉️ ইমেইল: ${data.email?.trim() || 'প্রদান করা হয়নি'}
+👤 From: ${data.name?.trim() || 'Anonymous'}
+🏷️ Role: ${data.userType}
+📌 Category: ${data.category}
+✉️ Email: ${data.email?.trim() || 'Not provided'}
 
-📝 মতামত / বার্তা:
+📝 Message:
 "${data.message}"
 ━━━━━━━━━━━━━━━━━━━━
 🌐 Gaenr Quality & Experience Team`;
@@ -146,17 +146,17 @@ export interface GinnyEscalationNotifyData {
 }
 
 export const buildGinnyEscalationNotification = (data: GinnyEscalationNotifyData): string => {
-  const langLabel = data.detectedLanguage === 'en' ? 'English' : 'বাংলা (Bangla)';
-  return `🤖 [GINNY ESCALATION] ব্যবহারকারীর অজানা প্রশ্ন ও নলেজ রিকুয়েস্ট
+  const langLabel = data.detectedLanguage === 'en' ? 'English' : 'Bangla';
+  return `🤖 [GINNY ESCALATION] Unanswered Client Question
 ━━━━━━━━━━━━━━━━━━━━
-❓ ক্লায়েন্ট / ইউজারের প্রশ্ন:
+❓ Client Question:
 "${data.userQuestion}"
 
-🗣️ ভাষা: ${langLabel}
-⏰ সময়: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' })} BST
-${data.userRole ? `👤 ইউজার ভূমিকা: ${data.userRole}\n` : ''}${data.contextNotes ? `📌 নোট: ${data.contextNotes}\n` : ''}
-💡 গিনির বার্তা:
-"টিম গেইনার, এই প্রশ্নের সঠিক সমাধান দিলে আমি ক্লায়েন্টকে সহায়তা করতে পারব এবং পরবর্তীতে আমার নলেজ ব্যাংকে এই তথ্য যুক্ত করে আমি আরও উন্নত হতে পারব।"
+🗣️ Language: ${langLabel}
+⏰ Time: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' })} BST
+${data.userRole ? `👤 User Role: ${data.userRole}\n` : ''}${data.contextNotes ? `📌 Notes: ${data.contextNotes}\n` : ''}
+💡 Ginny's Message:
+"Team Gaenr, please review this query so I can answer future clients and enrich my knowledge base."
 ━━━━━━━━━━━━━━━━━━━━
 📲 Gaenr AI Intelligence Core`;
 };
