@@ -47,17 +47,16 @@ export const FeedbackPage: React.FC = () => {
       message: message.trim(),
     };
 
-    submitFeedback(fbPayload);
-
     // Automated backend notification (dispatches to Meta Cloud API WhatsApp & Ops Email)
     try {
       await sendBackendNotification('feedback_submission', fbPayload);
     } catch (err) {
       console.warn('Feedback notification dispatch notice:', err);
-    } finally {
-      setIsSubmitting(false);
-      setSubmitted(true);
     }
+
+    submitFeedback(fbPayload);
+    setIsSubmitting(false);
+    setSubmitted(true);
   };
 
   const handleReset = () => {

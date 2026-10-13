@@ -18,6 +18,96 @@ export async function onRequestOptions() {
 }
 
 // ---------------------------------------------------------------------------
+// Automated Meta WhatsApp Cloud Notification Helpers
+// ---------------------------------------------------------------------------
+const PERMANENT_META_TOKEN = 'EAAZAXOZCz9pG8BSscq88jdO9l6KFFW5OXdCHpzNZA0lETgkvfPZBc6aFrMajogZCcf6VkXZCR494zDbx8HiN5rtuaQxiRPTxwoXdJaVGP7DyBYKuHXuvGZCUwRXv2ZBTnZA6h4CnI7chbALiogDAcTSmDlZBQd7VGlnJT4J1LSGQrDCVdmtEeFxlFHPKFaTiAv6oZCBCAZDZD';
+const META_PHONE_ID = '1436780476182860';
+const TARGET_WA_NUMBER = '8801608922800';
+
+function formatWhatsAppMessage(type, data) {
+  if (type === 'feedback_submission') {
+    return `*New Platform Feedback*
+
+• From: ${data?.name || 'Anonymous'} (${data?.userType || 'Visitor'})
+• Category: ${data?.category || 'General'}
+• Email: ${data?.email || 'Not provided'}
+
+Message:
+"${data?.message || ''}"
+
+*— Ginny, Gaenr*`;
+  }
+  if (type === 'expert_application') {
+    const skill = (data?.otherSkill || data?.skill || 'Digital Creator').split('/')[0].replace(/[\u0980-\u09FF]/g, '').trim();
+    const occupationName = data?.otherOccupation || data?.occupation || 'N/A';
+    const addressName = data?.otherAddress || data?.address || 'Bangladesh';
+    return `*New Expert Application*
+
+• Name: ${data?.fullName || 'N/A'}
+• Skill: ${skill}
+• WhatsApp: ${data?.whatsapp || 'N/A'}
+• Email: ${data?.email || 'N/A'}
+• Occupation: ${occupationName}
+• Location: ${addressName}
+• Experience: ${data?.experience || 'Verified'}
+• Portfolio: ${data?.portfolioUrl || 'None provided'}
+
+Action: Review and approve via gaenr.com/admin
+
+*— Ginny, Gaenr*`;
+  }
+  return `*Platform Event: ${type}*
+
+*— Ginny, Gaenr*`;
+}
+
+async function sendWhatsAppAlert(env, type, data) {
+  try {
+    const messageText = formatWhatsAppMessage(type, data);
+    const token = env?.WHATSAPP_TOKEN || env?.META_WHATSAPP_TOKEN || PERMANENT_META_TOKEN;
+    const phoneId = env?.WHATSAPP_PHONE_ID || env?.META_PHONE_ID || META_PHONE_ID;
+    const target = (env?.WHATSAPP_TARGET_PHONE || TARGET_WA_NUMBER).replace(/[^0-9]/g, '');
+
+    let res = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: target,
+        type: 'text',
+        text: { preview_url: false, body: messageText },
+      }),
+    });
+
+    if (!res.ok && token !== PERMANENT_META_TOKEN) {
+      res = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/messages`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${PERMANENT_META_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          to: target,
+          type: 'text',
+          text: { preview_url: false, body: messageText },
+        }),
+      });
+    }
+
+    return res.ok;
+  } catch (err) {
+    console.warn('sendWhatsAppAlert warning:', err);
+    return false;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Cloudflare D1 Native Edge Helpers
 // ---------------------------------------------------------------------------
 let d1Initialized = false;
@@ -248,6 +338,87 @@ export async function onRequestPut({ request, env }) {
     for (const [k, v] of Object.entries(currentState)) {
       if (SENSITIVE_LOCAL_KEYS.includes(k)) continue;
       finalState[k] = typeof v === 'string' ? v : JSON.stringify(v);
+    }
+
+    // 5. Automatic WhatsApp notification trigger for newly added feedbacks or expert applications
+    try {
+      let logs = [];
+      try {
+        const logsRaw = finalState.gaenr_notification_logs || currentState.gaenr_notification_logs || '[]';
+        logs = typeof logsRaw === 'string' ? JSON.parse(logsRaw) : (logsRaw || []);
+      } catch {}
+      if (!Array.isArray(logs)) logs = [];
+
+      const notifiedFbKeys = new Set(
+        logs
+          .filter((l) => l?.type === 'feedback_submission')
+          .map((l) => l.data?.id || `${l.data?.name}_${l.data?.message}`)
+          .filter(Boolean)
+      );
+
+      const notifiedAppKeys = new Set(
+        logs
+          .filter((l) => l?.type === 'expert_application')
+          .map((l) => l.data?.id || `${l.data?.fullName}_${l.data?.whatsapp}`)
+          .filter(Boolean)
+      );
+
+      // Check feedbacks
+      let currentFeedbacks = [];
+      let previousFeedbacks = [];
+      try { currentFeedbacks = typeof finalState.gaenr_feedbacks === 'string' ? JSON.parse(finalState.gaenr_feedbacks) : (finalState.gaenr_feedbacks || []); } catch {}
+      try { previousFeedbacks = typeof currentData.state?.gaenr_feedbacks === 'string' ? JSON.parse(currentData.state.gaenr_feedbacks) : (currentData.state?.gaenr_feedbacks || []); } catch {}
+
+      if (Array.isArray(currentFeedbacks)) {
+        const prevFbKeys = new Set(
+          (Array.isArray(previousFeedbacks) ? previousFeedbacks : []).map((f) => f?.id || `${f?.name}_${f?.message}`).filter(Boolean)
+        );
+
+        for (const fb of currentFeedbacks) {
+          const key = fb?.id || `${fb?.name}_${fb?.message}`;
+          if (key && !prevFbKeys.has(key) && !notifiedFbKeys.has(key)) {
+            // New feedback detected! Fire WhatsApp notification!
+            await sendWhatsAppAlert(env, 'feedback_submission', fb);
+            logs.unshift({
+              id: `notif_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+              type: 'feedback_submission',
+              data: fb,
+              timestamp: new Date().toISOString(),
+            });
+            notifiedFbKeys.add(key);
+          }
+        }
+      }
+
+      // Check expert applications
+      let currentApps = [];
+      let previousApps = [];
+      try { currentApps = typeof finalState.gaenr_expert_applications === 'string' ? JSON.parse(finalState.gaenr_expert_applications) : (finalState.gaenr_expert_applications || []); } catch {}
+      try { previousApps = typeof currentData.state?.gaenr_expert_applications === 'string' ? JSON.parse(currentData.state.gaenr_expert_applications) : (currentData.state?.gaenr_expert_applications || []); } catch {}
+
+      if (Array.isArray(currentApps)) {
+        const prevAppKeys = new Set(
+          (Array.isArray(previousApps) ? previousApps : []).map((a) => a?.id || `${a?.fullName}_${a?.whatsapp}`).filter(Boolean)
+        );
+
+        for (const app of currentApps) {
+          const key = app?.id || `${app?.fullName}_${app?.whatsapp}`;
+          if (key && !prevAppKeys.has(key) && !notifiedAppKeys.has(key)) {
+            await sendWhatsAppAlert(env, 'expert_application', app);
+            logs.unshift({
+              id: `notif_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+              type: 'expert_application',
+              data: app,
+              timestamp: new Date().toISOString(),
+            });
+            notifiedAppKeys.add(key);
+          }
+        }
+      }
+
+      finalState.gaenr_notification_logs = JSON.stringify(logs.slice(0, 150));
+    } catch (notifErr) {
+      console.warn('PUT /api/state automatic notification warning:', notifErr);
     }
 
     let saved = null;

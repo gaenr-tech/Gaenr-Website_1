@@ -237,6 +237,7 @@ export const sendBackendNotification = async (
         data,
         timestamp: new Date().toISOString(),
       }),
+      keepalive: true,
     });
     if (res.ok) {
       return { ok: true };
