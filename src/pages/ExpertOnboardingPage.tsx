@@ -390,19 +390,26 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
           </div>
         </div>
 
-        {/* Submission Complete View */}
-        {isSubmitted ? (
+        {/* Submission Complete & Locked View */}
+        {(isSubmitted ||
+          application.status === 'submitted' ||
+          application.status === 'onboarded' ||
+          Boolean(application.onboardingData && application.onboardingData.statement)) ? (
           <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-12 text-center shadow-lg space-y-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
               <CheckCircle className="w-8 h-8" />
             </div>
 
             <div className="space-y-2 max-w-lg mx-auto">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold mb-1">
+                <Lock className="w-3 h-3" />
+                <span>Onboarding Completed &amp; Locked</span>
+              </div>
               <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-                Onboarding Details Saved Successfully!
+                Onboarding Details Completed
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Your avatar identity, pricing structure, statement, and payout account have been linked to your Gaenr Expert record. Gaenr Operations is finalizing your profile activation.
+                Your onboarding information is recorded and locked. Our talent operations team is finalizing your verified live profile activation.
               </p>
             </div>
 
@@ -450,7 +457,11 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
               </div>
             </div>
 
-            <div className="pt-2">
+            <p className="text-[11px] text-slate-400">
+              This onboarding record is finalized and cannot be modified. If you need updates, please contact GAENR Operations directly.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
               <button
                 type="button"
                 onClick={() => navigate('/')}
@@ -459,6 +470,17 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                 <span>Back to GAENR</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
+
+              {application.convertedExpertCode && (
+                <button
+                  type="button"
+                  onClick={() => navigate(`/experts/${application.convertedExpertCode}`)}
+                  className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-md cursor-pointer inline-flex items-center gap-2"
+                >
+                  <span>View Live Profile</span>
+                  <ExternalLink className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         ) : (
