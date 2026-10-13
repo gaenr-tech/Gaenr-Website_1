@@ -301,6 +301,8 @@ export async function onRequestPost({ request, env }) {
     const targetWaNumber = (env?.WHATSAPP_TARGET_PHONE || '8801608922800').replace(/[^0-9]/g, '');
     let callMeBotDispatched = false;
     let metaCloudDispatched = false;
+    let greenApiDispatched = false;
+    let gatewayDispatched = false;
 
     if (!skipWhatsApp) {
 
@@ -347,7 +349,7 @@ export async function onRequestPost({ request, env }) {
     // 4C. Green-API Native WhatsApp Dispatch (Fallback only if Meta Cloud did not dispatch)
     const greenApiInstance = env?.GREEN_API_INSTANCE_ID || '710722763907';
     const greenApiToken = env?.GREEN_API_TOKEN || '94c8624adafa427c8528cd7760d200c5c2b3b049349b4bc2a9';
-    let greenApiDispatched = false;
+    greenApiDispatched = false;
 
     if (!metaCloudDispatched && greenApiInstance && greenApiToken) {
       try {
@@ -367,7 +369,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     // 4D. Forward to WhatsApp Gateway API (UltraMsg / Custom Gateway)
-    let gatewayDispatched = false;
+    gatewayDispatched = false;
     if (waGatewayUrl) {
       try {
         const isUltraMsg = waGatewayUrl.includes('ultramsg.com');

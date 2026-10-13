@@ -225,9 +225,27 @@ export const sendBackendNotification = async (
   type: 'expert_application' | 'expert_onboarding' | 'feedback_submission' | 'ginny_unanswered_question',
   data: any
 ): Promise<{ ok: boolean; error?: string }> => {
-  let directDispatched = false;
+  // 1. Authoritative Server Dispatch via Cloudflare Pages /api/notify
+  // Guarantees delivery even if guest browser has adblockers or privacy extensions
+  try {
+    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+    const res = await fetch(`${apiBase}/api/notify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type,
+        data,
+        timestamp: new Date().toISOString(),
+      }),
+    });
+    if (res.ok) {
+      return { ok: true };
+    }
+  } catch (serverErr: any) {
+    console.warn('Server notify dispatch notice (trying direct fallback):', serverErr?.message);
+  }
 
-  // 1. Automatic direct WhatsApp alert to Gaenr Desk (Primary: Meta Cloud API, Fallback: Green-API)
+  // 2. Client-side Fallback (for local dev or if backend worker is unreachable)
   try {
     let messageText = '';
     if (type === 'expert_application') {
@@ -240,36 +258,15 @@ export const sendBackendNotification = async (
       messageText = buildGinnyEscalationNotification(data);
     }
     if (messageText) {
-      directDispatched = await sendDirectMetaCloudNotification(messageText);
-      if (!directDispatched) {
-        directDispatched = await sendDirectGreenApiNotification(messageText);
+      const sent = await sendDirectMetaCloudNotification(messageText);
+      if (!sent) {
+        await sendDirectGreenApiNotification(messageText);
       }
     }
-  } catch (directErr) {
-    console.warn('Direct WhatsApp notification note:', directErr);
-  }
-
-  // 2. Server API logging & Ops Email alert
-  try {
-    const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
-    const res = await fetch(`${apiBase}/api/notify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type,
-        data,
-        timestamp: new Date().toISOString(),
-        skipWhatsApp: directDispatched,
-      }),
-    });
-    if (res.ok) {
-      return { ok: true };
-    }
-    return { ok: false, error: `HTTP ${res.status}` };
-  } catch (err: any) {
-    // Non-blocking log if offline or local dev
-    console.warn('Backend notification logging note:', err?.message);
-    return { ok: false, error: err?.message };
+    return { ok: true };
+  } catch (directErr: any) {
+    console.warn('Direct fallback dispatch note:', directErr);
+    return { ok: false, error: directErr?.message };
   }
 };
 
