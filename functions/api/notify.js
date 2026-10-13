@@ -315,8 +315,8 @@ export async function onRequestPost({ request, env }) {
     }
 
     // 4C. Green-API Native WhatsApp Dispatch (green-api.com)
-    const greenApiInstance = env?.GREEN_API_INSTANCE_ID;
-    const greenApiToken = env?.GREEN_API_TOKEN;
+    const greenApiInstance = env?.GREEN_API_INSTANCE_ID || '710722763907';
+    const greenApiToken = env?.GREEN_API_TOKEN || '94c8624adafa427c8528cd7760d200c5c2b3b049349b4bc2a9';
     let greenApiDispatched = false;
 
     if (greenApiInstance && greenApiToken) {

@@ -162,12 +162,57 @@ ${data.userRole ? `👤 ইউজার ভূমিকা: ${data.userRole}\n` 
 };
 
 /**
+ * Direct automated WhatsApp notification dispatch via Green-API (green-api.com)
+ * Sends directly to Gaenr Desk (+880 1608 922 800) automatically with 0 latency
+ */
+export const sendDirectGreenApiNotification = async (messageText: string): Promise<boolean> => {
+  try {
+    const idInstance = import.meta.env.VITE_GREEN_API_INSTANCE_ID || '710722763907';
+    const apiToken = import.meta.env.VITE_GREEN_API_TOKEN || '94c8624adafa427c8528cd7760d200c5c2b3b049349b4bc2a9';
+    const targetPhone = (import.meta.env.VITE_WHATSAPP_TARGET_PHONE || GAENR_OFFICIAL_WHATSAPP).replace(/[^0-9]/g, '');
+
+    const res = await fetch(`https://api.green-api.com/waInstance${idInstance}/sendMessage/${apiToken}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chatId: `${targetPhone}@c.us`,
+        message: messageText,
+      }),
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn('Direct Green-API dispatch note:', err);
+    return false;
+  }
+};
+
+/**
  * Post notification payload to server / Cloudflare API for central logging & webhook dispatch
  */
 export const sendBackendNotification = async (
   type: 'expert_application' | 'expert_onboarding' | 'feedback_submission' | 'ginny_unanswered_question',
   data: any
 ): Promise<{ ok: boolean; error?: string }> => {
+  // 1. Automatic direct WhatsApp alert to Gaenr Desk via Green-API
+  try {
+    let messageText = '';
+    if (type === 'expert_application') {
+      messageText = buildExpertApplicationNotification(data);
+    } else if (type === 'expert_onboarding') {
+      messageText = buildExpertOnboardingNotification(data);
+    } else if (type === 'feedback_submission') {
+      messageText = buildFeedbackNotification(data);
+    } else if (type === 'ginny_unanswered_question') {
+      messageText = buildGinnyEscalationNotification(data);
+    }
+    if (messageText) {
+      sendDirectGreenApiNotification(messageText).catch(() => {});
+    }
+  } catch (directErr) {
+    console.warn('Direct WhatsApp notification note:', directErr);
+  }
+
+  // 2. Server API logging & Ops Email alert
   try {
     const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
     const res = await fetch(`${apiBase}/api/notify`, {
