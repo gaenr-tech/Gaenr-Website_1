@@ -16,7 +16,7 @@ function getEmailHeader(siteUrl) {
   return `
   <div style="background:#ffffff;padding:26px 20px;text-align:center;border-bottom:1px solid #e2e8f0;">
     <a href="${siteUrl}" target="_blank" style="display:inline-block;text-decoration:none;">
-      <img src="${siteUrl}/images/gaenr-logo.png" alt="GAENR" width="130" style="display:inline-block;max-width:130px;height:auto;border:0;outline:none;" />
+      <img src="${siteUrl}/images/gaenr-logo.png" alt="GAENR" width="170" style="display:inline-block;max-width:170px;height:auto;border:0;outline:none;" />
     </a>
   </div>`;
 }
@@ -30,57 +30,57 @@ function getEmailFooter(siteUrl) {
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;border-collapse:collapse;">
       <tr>
         <!-- 1. Website -->
-        <td style="padding:0 4px;" align="center">
+        <td style="padding:0 5px;" align="center">
           <a href="${siteUrl}" target="_blank" title="Website" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/globe.png" alt="Website" width="26" height="26" style="display:block;width:26px;height:26px;border-radius:50%;border:0;" />
+            <img src="${siteUrl}/email-icons/globe.png" alt="Website" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
           </a>
         </td>
         <!-- 2. Phone -->
-        <td style="padding:0 4px;" align="center">
+        <td style="padding:0 5px;" align="center">
           <a href="tel:+8809647922800" title="Phone: 09647 922 800" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/phone.png" alt="Phone" width="26" height="26" style="display:block;width:26px;height:26px;border-radius:50%;border:0;" />
+            <img src="${siteUrl}/email-icons/phone.png" alt="Phone" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
           </a>
         </td>
         <!-- 3. Email -->
-        <td style="padding:0 4px;" align="center">
+        <td style="padding:0 5px;" align="center">
           <a href="mailto:contact@gaenr.com" title="Email: contact@gaenr.com" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/mail.png" alt="Email" width="26" height="26" style="display:block;width:26px;height:26px;border-radius:50%;border:0;" />
+            <img src="${siteUrl}/email-icons/mail.png" alt="Email" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
           </a>
         </td>
         <!-- 4. WhatsApp -->
-        <td style="padding:0 4px;" align="center">
+        <td style="padding:0 5px;" align="center">
           <a href="https://wa.me/8801608922800" target="_blank" title="WhatsApp: +8801608922800" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/whatsapp.png" alt="WhatsApp" width="26" height="26" style="display:block;width:26px;height:26px;border-radius:50%;border:0;" />
+            <img src="${siteUrl}/email-icons/whatsapp.png" alt="WhatsApp" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
           </a>
         </td>
         <!-- 5. Facebook -->
-        <td style="padding:0 4px;" align="center">
+        <td style="padding:0 5px;" align="center">
           <a href="https://www.facebook.com/gaenrglobal/" target="_blank" title="Facebook" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/facebook.png" alt="Facebook" width="26" height="26" style="display:block;width:26px;height:26px;border-radius:50%;border:0;" />
+            <img src="${siteUrl}/email-icons/facebook.png" alt="Facebook" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
           </a>
         </td>
         <!-- 6. LinkedIn -->
-        <td style="padding:0 4px;" align="center">
+        <td style="padding:0 5px;" align="center">
           <a href="https://www.linkedin.com/company/gaenrglobal/" target="_blank" title="LinkedIn" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/linkedin.png" alt="LinkedIn" width="26" height="26" style="display:block;width:26px;height:26px;border-radius:50%;border:0;" />
+            <img src="${siteUrl}/email-icons/linkedin.png" alt="LinkedIn" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
           </a>
         </td>
         <!-- 7. Instagram -->
-        <td style="padding:0 4px;" align="center">
+        <td style="padding:0 5px;" align="center">
           <a href="https://www.instagram.com/gaenr_global/" target="_blank" title="Instagram" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/instagram.png" alt="Instagram" width="26" height="26" style="display:block;width:26px;height:26px;border-radius:50%;border:0;" />
+            <img src="${siteUrl}/email-icons/instagram.png" alt="Instagram" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
           </a>
         </td>
         <!-- 8. X / Twitter -->
-        <td style="padding:0 4px;" align="center">
+        <td style="padding:0 5px;" align="center">
           <a href="https://x.com/gaenr_global" target="_blank" title="X" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/x.png" alt="X" width="26" height="26" style="display:block;width:26px;height:26px;border-radius:50%;border:0;" />
+            <img src="${siteUrl}/email-icons/x.png" alt="X" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
           </a>
         </td>
         <!-- 9. Threads -->
-        <td style="padding:0 4px;" align="center">
+        <td style="padding:0 5px;" align="center">
           <a href="https://www.threads.com/@gaenr_global" target="_blank" title="Threads" style="display:inline-block;text-decoration:none;">
-            <img src="${siteUrl}/email-icons/threads.png" alt="Threads" width="26" height="26" style="display:block;width:26px;height:26px;border-radius:50%;border:0;" />
+            <img src="${siteUrl}/email-icons/threads.png" alt="Threads" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
           </a>
         </td>
       </tr>
@@ -165,7 +165,7 @@ export async function onRequestPost({ request, env }) {
       const profileUrl = `${siteUrl}/experts/${encodeURIComponent(code)}`;
       const uploadToken = payload.expert?.uploadToken || code;
       const uploadPortalUrl = `${siteUrl}/u/${encodeURIComponent(uploadToken)}`;
-      const idCardDownloadUrl = `${siteUrl}/api/id-card?code=${encodeURIComponent(code)}`;
+      const idCardDownloadUrl = `${siteUrl}/download/id-card/${encodeURIComponent(code)}`;
 
       subject = `Your GAENR Expert Profile is Live (ID: ${code})`;
       text = `Hi ${name},\n\nCongratulations! Your verified expert profile (${code}) is now active and live on Gaenr.\n\nDownload ID Card: ${idCardDownloadUrl}\nUpload Portfolios: ${uploadPortalUrl}\nView Profile: ${profileUrl}\n\nTeam GAENR`;

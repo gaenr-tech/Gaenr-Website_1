@@ -22,6 +22,7 @@ import { ClientReviewPage } from './pages/ClientReviewPage';
 import { JoinAsExpertPage } from './pages/JoinAsExpertPage';
 import { ExpertOnboardingPage } from './pages/ExpertOnboardingPage';
 import { ExpertPortfolioUploadPage } from './pages/ExpertPortfolioUploadPage';
+import { IdCardDownloadPage } from './pages/IdCardDownloadPage';
 import { AboutUsPage } from './pages/AboutUsPage';
 import { ContactPage } from './pages/ContactPage';
 import { PrivacyPolicyPage } from './pages/policies/PrivacyPolicyPage';
@@ -143,6 +144,16 @@ const AppContent: React.FC = () => {
     if (cleanRoute.startsWith('/expert-portfolio-upload/')) {
       const tokenOrCode = cleanRoute.replace('/expert-portfolio-upload/', '');
       return <ExpertPortfolioUploadPage tokenOrCode={tokenOrCode} />;
+    }
+
+    // Official Verified ID Card Auto-Download private route (does not appear in navigation)
+    if (cleanRoute.startsWith('/download/id-card/')) {
+      const code = cleanRoute.replace('/download/id-card/', '');
+      return <IdCardDownloadPage code={code} />;
+    }
+    if (cleanRoute.startsWith('/id-card-download/')) {
+      const code = cleanRoute.replace('/id-card-download/', '');
+      return <IdCardDownloadPage code={code} />;
     }
 
     // Client Review route match: /review/:expertCode
