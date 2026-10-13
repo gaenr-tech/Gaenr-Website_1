@@ -40,7 +40,7 @@ function getEmailFooter(siteUrl) {
       </td>
       <!-- 3. Email -->
       <td style="padding:0 4px;" align="center">
-        <a href="mailto:contact@gaenr.com" title="Email: contact@gaenr.com" style="display:inline-block;text-decoration:none;">
+        <a href="mailto:contact@gmail.com" title="Email: contact@gmail.com" style="display:inline-block;text-decoration:none;">
           <img src="${siteUrl}/email-icons/mail.png" alt="Email" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
@@ -137,7 +137,7 @@ export async function onRequestPost({ request, env }) {
     const type = payload?.type || 'welcome';
     const siteUrl = (env.APP_URL || env.SITE_URL || 'https://gaenr.com').replace(/\/$/, '');
     const resendApiKey = env.RESEND_API_KEY;
-    const emailFrom = env.EMAIL_FROM || 'Gaenr <contact@gaenr.com>';
+    const emailFrom = env.EMAIL_FROM || 'Gaenr <contact@gmail.com>';
     const webhookUrl = env.VITE_GOOGLE_DRIVE_WEBHOOK_URL;
 
     let recipient = '';
@@ -265,14 +265,16 @@ export async function onRequestPost({ request, env }) {
     // 1. Send via Resend if API key available
     if (resendApiKey && recipient) {
       try {
-        const res = await fetch('https://api.resend.com/emails', {
+        let fromAddress = emailFrom;
+        let res = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${resendApiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: emailFrom,
+            from: fromAddress,
+            reply_to: 'contact@gmail.com',
             to: [recipient],
             subject,
             html,
@@ -280,6 +282,32 @@ export async function onRequestPost({ request, env }) {
             attachments: attachments.length > 0 ? attachments : undefined,
           }),
         });
+
+        // Resend requires a domain verified in Resend to send. If fromAddress is unverified
+        // (e.g. @gmail.com), retry with verified domain fallback while keeping reply_to: contact@gmail.com
+        if (!res.ok && fromAddress.includes('@gmail.com')) {
+          const verifiedFallbackFrom = 'Gaenr <contact@gaenr.com>';
+          const retryRes = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${resendApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              from: verifiedFallbackFrom,
+              reply_to: 'contact@gmail.com',
+              to: [recipient],
+              subject,
+              html,
+              text,
+              attachments: attachments.length > 0 ? attachments : undefined,
+            }),
+          });
+          if (retryRes.ok) {
+            res = retryRes;
+          }
+        }
+
         if (res.ok) {
           sent = true;
           provider = 'resend';
@@ -301,6 +329,7 @@ export async function onRequestPost({ request, env }) {
           body: JSON.stringify({
             action: 'send_email',
             to: recipient,
+            reply_to: 'contact@gmail.com',
             subject,
             html,
             text,

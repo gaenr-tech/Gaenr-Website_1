@@ -243,7 +243,7 @@ MASTER KNOWLEDGE BASE (V1 + V2 COMBINED):
   * Office: 10/A, 15/13, Mirpur, Dhaka, Bangladesh (মিরপুর, ঢাকা)
   * Hotline: 09647 922 800
   * WhatsApp: 01608 922 800 (https://wa.me/8801608922800)
-  * Email: contact@gaenr.com
+  * Email: contact@gmail.com
 
 WEBSITE CONTROL ACTIONS:
 Append corresponding tag at the end when user intends:

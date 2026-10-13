@@ -195,7 +195,7 @@ Complete Onboarding Form: ${onboardingUrl}
 Best regards,
 Team Gaenr
 Website: https://gaenr.com
-Email: contact@gaenr.com
+Email: contact@gmail.com
 Phone: 09647 922 800
 WhatsApp: https://wa.me/8801608922800`;
 

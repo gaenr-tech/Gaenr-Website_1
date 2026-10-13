@@ -301,7 +301,7 @@ export const ContactPage: React.FC = () => {
               <div>
                 <h3 className="text-base font-bold text-slate-900">Official Email</h3>
                 <span className="block text-base sm:text-lg font-bold text-slate-900 hover:text-[#4f46e5] mt-1 break-all transition-colors duration-200 no-underline select-all cursor-default">
-                  contact@gaenr.com
+                  contact@gmail.com
                 </span>
                 <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                   Send your inquiries, briefs, or project documentation directly to our official inbox.
@@ -311,14 +311,14 @@ export const ContactPage: React.FC = () => {
 
             <div className="pt-2 flex items-center gap-2">
               <a
-                href="mailto:contact@gaenr.com"
+                href="mailto:contact@gmail.com"
                 className="flex-1 py-2.5 px-3 text-center text-xs font-medium text-white bg-[#4f46e5] hover:bg-[#4338ca] rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
               >
                 <Mail className="w-4 h-4" />
                 <span>Send Email</span>
               </a>
               <button
-                onClick={() => handleCopy('contact@gaenr.com', 'email')}
+                onClick={() => handleCopy('contact@gmail.com', 'email')}
                 title="Copy email address"
                 className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
               >

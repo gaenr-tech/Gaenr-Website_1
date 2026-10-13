@@ -342,7 +342,7 @@ export const SupportCenterPage: React.FC = () => {
             </a>
 
             <a
-              href="mailto:contact@gaenr.com"
+              href="mailto:contact@gmail.com"
               className="p-5 rounded-2xl border border-slate-200 hover:border-indigo-300 bg-slate-50/50 hover:bg-indigo-50/40 transition-all flex flex-col items-center text-center space-y-2.5 group cursor-pointer"
             >
               <div className="w-10 h-10 rounded-xl bg-indigo-50 text-[#4f46e5] flex items-center justify-center border border-indigo-100 group-hover:scale-105 transition-transform">
@@ -350,7 +350,7 @@ export const SupportCenterPage: React.FC = () => {
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-900">Official Support Inbox</p>
-                <p className="text-sm font-extrabold text-[#4f46e5] mt-0.5">contact@gaenr.com</p>
+                <p className="text-sm font-extrabold text-[#4f46e5] mt-0.5">contact@gmail.com</p>
                 <p className="text-[11px] text-slate-500 mt-1">Detailed briefs &amp; documentation</p>
               </div>
             </a>
