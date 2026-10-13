@@ -106,6 +106,7 @@ export const ExpertApplicationsView: React.FC<ExpertApplicationsViewProps> = ({
         isPublic: true,
         satisfactionRate: { satisfied: 100, neutral: 0, unsatisfied: 0 },
         reviews: [],
+        portfolioItems: [],
         pricingTiers: app.onboardingData?.pricingTiers || [],
       };
 

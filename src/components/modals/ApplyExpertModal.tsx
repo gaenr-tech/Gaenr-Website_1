@@ -17,8 +17,16 @@ import {
   Clock,
   Users,
   Check,
+  MessageCircle,
+  ExternalLink,
 } from 'lucide-react';
 import { sendApplicantReceivedEmail } from '../../utils/email';
+import {
+  buildExpertApplicationNotification,
+  createWhatsAppUrl,
+  sendBackendNotification,
+  triggerWhatsAppNotification,
+} from '../../utils/whatsappNotifications';
 
 export const ApplyExpertModal: React.FC = () => {
   const { isApplyExpertOpen, closeApplyExpert, showToast, submitExpertApplication } = useApp();
@@ -38,6 +46,7 @@ export const ApplyExpertModal: React.FC = () => {
   const [experience, setExperience] = useState('1–2 years / ১–২ বছর');
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedWaUrl, setSubmittedWaUrl] = useState('');
 
   // Active open dropdown tracker ('gender' | 'occupation' | 'address' | 'skill' | 'experience' | null)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -79,7 +88,7 @@ export const ApplyExpertModal: React.FC = () => {
       return;
     }
 
-    submitExpertApplication({
+    const applicationPayload = {
       fullName: fullName.trim(),
       whatsapp: whatsapp.trim(),
       email: email.trim(),
@@ -92,23 +101,38 @@ export const ApplyExpertModal: React.FC = () => {
       otherSkill: otherSkill.trim() || undefined,
       experience,
       portfolioUrl: portfolioUrl.trim(),
-    });
+    };
 
+    submitExpertApplication(applicationPayload);
+
+    // 1. Dispatch confirmation email to applicant
     sendApplicantReceivedEmail({
-      fullName: fullName.trim(),
-      email: email.trim(),
-      skill: otherSkill.trim() || skill,
-      whatsapp: whatsapp.trim(),
+      fullName: applicationPayload.fullName,
+      email: applicationPayload.email,
+      skill: applicationPayload.otherSkill || applicationPayload.skill,
+      whatsapp: applicationPayload.whatsapp,
     }).catch((err) => {
       console.warn('Applicant received email note:', err);
     });
 
+    // 2. Build structured WhatsApp Alert for Gaenr Operations (+880 1608 922 800)
+    const waMessage = buildExpertApplicationNotification(applicationPayload);
+    const waUrl = createWhatsAppUrl(waMessage);
+    setSubmittedWaUrl(waUrl);
+
+    // 3. Dispatch backend notification audit
+    sendBackendNotification('expert_application', applicationPayload).catch(() => {});
+
+    // 4. Auto-trigger client WhatsApp handover
+    triggerWhatsAppNotification(waMessage, true);
+
     setIsSubmitted(true);
-    showToast('Application received! Gaenr vetting team will review your portfolio.', 'success');
+    showToast('Application received! Opening Gaenr WhatsApp alert...', 'success');
   };
 
   const handleResetAndClose = () => {
     setIsSubmitted(false);
+    setSubmittedWaUrl('');
     setFullName('');
     setWhatsapp('');
     setEmail('');
@@ -268,9 +292,33 @@ export const ApplyExpertModal: React.FC = () => {
             <div className="space-y-2">
               <h3 className="text-2xl font-bold text-slate-900">Application Submitted!</h3>
               <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                Thank you, <span className="font-semibold text-slate-900">{fullName}</span>. Our vetting team will review your proof-of-work submission within 48 hours. If approved, you will receive an expert ID code and your profile will be created in the showcase directory.
+                Thank you, <span className="font-semibold text-slate-900">{fullName}</span>. Our vetting team will review your proof-of-work submission within 48 hours. If approved, you will receive an expert onboarding invitation.
               </p>
             </div>
+
+            {/* Direct WhatsApp Alert to Gaenr Operations */}
+            {submittedWaUrl && (
+              <div className="p-4 sm:p-5 bg-emerald-50/90 border border-emerald-200 rounded-2xl max-w-md mx-auto space-y-3 text-center shadow-xs">
+                <div className="flex items-center justify-center gap-2 text-emerald-900 font-bold text-xs sm:text-sm">
+                  <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />
+                  <span>GAENR Official WhatsApp Desk (+880 1608 922 800)</span>
+                </div>
+                <p className="text-xs text-emerald-800 leading-relaxed">
+                  আপনার আবেদনের একটি তাৎক্ষণিক নোটিফিকেশন Gaenr অপারেশন্স টিমের হোয়াটসঅ্যাপে পাঠিয়ে দিন যাতে যাচাইকরণ দ্রুত শুরু হয়:
+                </p>
+                <a
+                  href={submittedWaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs hover:shadow-md cursor-pointer active:scale-95"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>হোয়াটসঅ্যাপে অ্যালার্ট পাঠান</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            )}
+
             <div className="pt-2">
               <button
                 onClick={handleResetAndClose}

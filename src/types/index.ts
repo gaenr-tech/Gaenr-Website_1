@@ -152,6 +152,7 @@ export interface FreelancerProfile {
   mediaType?: string;
   pricingTiers?: ExpertPricingTier[];
   googleDriveFolderUrl?: string;
+  dateAdded?: string;
 }
 
 export interface ExpertPricingTier {

@@ -9,6 +9,11 @@
  * and a persistent adaptive memory store that learns across sessions.
  */
 
+import {
+  buildGinnyEscalationNotification,
+  createWhatsAppUrl,
+} from '../../utils/whatsappNotifications';
+
 export type ChatLanguage = 'bn' | 'en';
 
 export interface ChatMessage {
@@ -304,6 +309,10 @@ LANGUAGE & TONE:
 - Everyday Bangladeshi vocabulary: use "ধন্যবাদ", "অবশ্যই", "অনুগ্রহ করে", "দুঃখিত", "ঠিক আছে", "তাড়াতাড়ি" (avoid Hindi/Urdu).
 - STRICT CONCISENESS: 1 to 2 short sentences per reply in chat. Direct and helpful.
 
+UNKNOWN / OUT-OF-KNOWLEDGE QUESTIONS:
+- If asked about unlisted custom services, unknown company internal facts, or specific topics not covered in this guide, politely state in 1 short sentence that you are not fully sure and that the Gaenr Operations team can guide them directly.
+- Append '[ACTION:ESCALATE_TO_WHATSAPP]' at the end of such replies.
+
 WEBSITE CONTROL ACTIONS:
 Append corresponding tag at the end when user intends:
 - Assign task / hire: '[ACTION:OPEN_ASSIGN_TASK]'
@@ -311,6 +320,7 @@ Append corresponding tag at the end when user intends:
 - View services: '[ACTION:NAVIGATE:/services]'
 - View contact: '[ACTION:NAVIGATE:/contact]'
 - Chat WhatsApp: '[ACTION:OPEN_WHATSAPP]'
+- Escalate unknown query: '[ACTION:ESCALATE_TO_WHATSAPP]'
 `;
 
 /**
@@ -854,24 +864,32 @@ export function getLocalAIResponse(
     };
   }
 
-  // 17. Default fallback response
+  // 17. Default fallback response (Unknown Query / Escalation loop)
+  const escalationUrl = createWhatsAppUrl(
+    buildGinnyEscalationNotification({
+      userQuestion: rawQuery,
+      detectedLanguage: isEn ? 'en' : 'bn',
+      userRole: memory?.userRole,
+    })
+  );
+
   if (isEn) {
     return {
-      text: `I'm here to help with any project task, hiring, or Gaenr services. What would you like to get done?`,
+      text: `I'm not fully certain about this specific detail yet. You can forward your question directly to Gaenr WhatsApp support below so our team can guide you and update my knowledge bank!`,
       actions: [
+        { label: '📲 Ask Gaenr on WhatsApp', actionType: 'openWhatsAppUrl', payload: escalationUrl },
         { label: 'Let Ginny Guide Me', actionType: 'startInChatTask' },
         { label: 'Fill Form Myself', actionType: 'openAssignModal' },
-        { label: 'WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
       ],
     };
   }
 
   return {
-    text: `গেইনারের যেকোনো কাজ করানো, এক্সপার্ট হায়ার বা সার্ভিস সংক্রান্ত তথ্যের জন্য বলুন—কীভাবে সাহায্য করতে পারি?`,
+    text: `এই সুনির্দিষ্ট তথ্যের ব্যাপারে আমি তাৎক্ষণিকভাবে পুরোপুরি নিশ্চিত নই। আপনি নিচের বাটনে ট্যাপ করে সরাসরি Gaenr টিমের হোয়াটসঅ্যাপে প্রশ্নটি পাঠিয়ে জেনে নিতে পারেন—এতে টিমও আমার নলেজ ব্যাংক সমৃদ্ধ করবে!`,
     actions: [
-      { label: 'গিনির সহায়তায় শুরু করুন', actionType: 'startInChatTask' },
+      { label: '📲 হোয়াটসঅ্যাপে প্রশ্নটি জানান', actionType: 'openWhatsAppUrl', payload: escalationUrl },
+      { label: 'গিনির সহায়তায় কাজ শুরু', actionType: 'startInChatTask' },
       { label: 'নিজে ফর্ম পূরণ করুন', actionType: 'openAssignModal' },
-      { label: 'হোয়াটসঅ্যাপে চ্যাট', actionType: 'openWhatsApp', payload: '01608922800' },
     ],
   };
 }

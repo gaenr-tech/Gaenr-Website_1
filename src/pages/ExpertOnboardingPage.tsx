@@ -21,7 +21,14 @@ import {
   Smartphone,
   Wallet,
   Loader2,
+  MessageCircle,
 } from 'lucide-react';
+import {
+  buildExpertOnboardingNotification,
+  createWhatsAppUrl,
+  sendBackendNotification,
+  triggerWhatsAppNotification,
+} from '../utils/whatsappNotifications';
 
 interface ExpertOnboardingPageProps {
   applicationId?: string;
@@ -206,7 +213,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       }
 
       if (application.onboardingData?.payoutMethod) {
-        setPayoutMethod(application.onboardingData.payoutMethod);
+        setPayoutMethod(application.onboardingData.payoutMethod === 'bank' ? 'bank' : 'mfs');
       }
       if (application.onboardingData?.bankName) setBankName(application.onboardingData.bankName);
       if (application.onboardingData?.accountHolderName) {
@@ -344,6 +351,24 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
 
     saveExpertOnboardingResponse(application.id, onboardingPayload, application);
 
+    const avatarObj = RAW_AVATAR_SPECS.find((a) => a.id === selectedAvatarId);
+    const waNotificationMessage = buildExpertOnboardingNotification({
+      id: application.id,
+      fullName: application.fullName,
+      whatsapp: application.whatsapp,
+      email: application.email,
+      skill: skillTitle,
+      avatarName: avatarObj?.name || 'Custom Avatar',
+      statement: statement.trim(),
+      pricingTiers: cleanedTiers.map((t) => ({ serviceName: t.serviceName, price: t.price })),
+      payoutMethod,
+      bankName: payoutMethod === 'bank' ? bankName.trim() : undefined,
+      accountNumber: payoutMethod === 'bank' ? accountNumber.trim() : undefined,
+      mfsProvider: payoutMethod === 'mfs' ? mfsProvider : undefined,
+      mfsAccountType: payoutMethod === 'mfs' ? mfsAccountType : undefined,
+      mfsNumber: payoutMethod === 'mfs' ? mfsNumber.trim() : undefined,
+    });
+
     try {
       localStorage.setItem(`gaenr_onboarded_${application.id}`, 'true');
       fetch('/api/application', {
@@ -355,9 +380,21 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
           baseApp: application,
         }),
       }).catch(() => {});
+
+      // Dispatch backend audit notification
+      sendBackendNotification('expert_onboarding', {
+        applicationId: application.id,
+        fullName: application.fullName,
+        skill: skillTitle,
+        ...onboardingPayload,
+      }).catch(() => {});
+
+      // Auto-trigger WhatsApp notification to Gaenr Operations Desk (+880 1608 922 800)
+      triggerWhatsAppNotification(waNotificationMessage, true);
     } catch {}
 
     setIsSubmitted(true);
+    showToast('Onboarding submitted! Opening Gaenr Operations WhatsApp...', 'success');
   };
 
   const skillTitle = application.otherSkill || application.skill.split('/')[0].trim();
@@ -471,6 +508,44 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
                 <span className="text-[10px] text-slate-400 uppercase font-mono block">My Statement</span>
                 <p className="text-xs text-slate-600 italic">"{statement}"</p>
               </div>
+            </div>
+
+            {/* Direct WhatsApp Alert to Gaenr Operations Desk */}
+            <div className="p-4 sm:p-5 bg-emerald-50/90 border border-emerald-200 rounded-2xl max-w-md mx-auto space-y-3 text-center shadow-xs">
+              <div className="flex items-center justify-center gap-2 text-emerald-900 font-bold text-xs sm:text-sm">
+                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />
+                <span>Gaenr Operations WhatsApp (+880 1608 922 800)</span>
+              </div>
+              <p className="text-xs text-emerald-800 leading-relaxed">
+                আপনার অনবোর্ডিং ফর্মটি রেকর্ড করা হয়েছে। একাউন্ট দ্রুত ভেরিফাই ও লাইভ করতে অপারেশন্স টিমের হোয়াটসঅ্যাপে অ্যালার্ট পাঠান:
+              </p>
+              <a
+                href={createWhatsAppUrl(
+                  buildExpertOnboardingNotification({
+                    id: application.id,
+                    fullName: application.fullName,
+                    whatsapp: application.whatsapp,
+                    email: application.email,
+                    skill: skillTitle,
+                    avatarName: RAW_AVATAR_SPECS.find((a) => a.id === selectedAvatarId)?.name || 'Custom Avatar',
+                    statement: statement.trim(),
+                    pricingTiers: pricingTiers.map((t) => ({ serviceName: t.serviceName, price: t.price })),
+                    payoutMethod,
+                    bankName,
+                    accountNumber,
+                    mfsProvider,
+                    mfsAccountType,
+                    mfsNumber,
+                  })
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs hover:shadow-md cursor-pointer active:scale-95"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>হোয়াটসঅ্যাপে অ্যালার্ট পাঠান</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
             </div>
 
             <p className="text-[11px] text-slate-400">

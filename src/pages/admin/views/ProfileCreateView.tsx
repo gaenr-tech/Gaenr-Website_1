@@ -309,14 +309,18 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         <ExpertIdCard
           ref={cardPreviewRef}
           freelancer={{
+            id: 'preview_card',
             code: generatedCode,
             name: name.trim() || 'Verified Expert',
+            category,
             categoryTitle: catObj?.title || 'Verified Expert',
             avatarId: activeAvatar.id,
             completedProjects: 0,
             rating: 0,
             reviewsCount: 0,
             satisfactionRate: { satisfied: 100, neutral: 0, unsatisfied: 0 },
+            reviews: [],
+            portfolioItems: [],
             isPublic: true,
             skills: selectedSkills,
             status: 'active',

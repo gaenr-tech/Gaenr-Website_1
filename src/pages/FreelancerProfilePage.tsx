@@ -9,7 +9,7 @@ import {
   extractGoogleDriveFileId,
 } from '../utils/googleDriveUpload';
 import { Star, ChevronLeft, ChevronRight, Quote, Maximize2, X, EyeOff, Play, ExternalLink, Upload, Copy, Layers, ShieldCheck, Globe, FileText } from 'lucide-react';
-import { PortfolioItem } from '../types';
+import { PortfolioItem, FreelancerProfile } from '../types';
 import { getExpertSecureUploadUrl } from '../utils/security';
 
 const defaultPricingByCategory: Record<string, { serviceName: string; price: string }[]> = {
@@ -1796,7 +1796,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
 
               {/* Dots Indicator */}
               <div className="flex items-center gap-1.5">
-                {reviews.map((_, idx) => (
+                {reviews.map((_: any, idx: number) => (
                   <button
                     key={idx}
                     type="button"
@@ -1996,7 +1996,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
 
               {/* Dots Indicator */}
               <div className="flex items-center gap-1.5">
-                {portfolioItems.map((_, idx) => (
+                {portfolioItems.map((_: any, idx: number) => (
                   <button
                     key={idx}
                     type="button"
@@ -2051,7 +2051,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
                     { serviceName: 'Standard Milestone Deliverable', price: '3,000 - 6,000' },
                     { serviceName: 'Complete Project Delivery', price: '8,000 - 15,000' },
                   ])
-              ).map((p, idx) => {
+              ).map((p: any, idx: number) => {
                 // Strip any existing ৳ or BDT prefix so we never double-label
                 const cleanPrice = p.price.replace(/^(৳\s*|BDT\s*)/i, '').trim();
                 return (
@@ -2428,7 +2428,7 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
 
             {/* Dots */}
             <div className="flex items-center gap-2">
-              {portfolioItems.map((_, idx) => (
+              {portfolioItems.map((_: any, idx: number) => (
                 <button
                   key={idx}
                   type="button"

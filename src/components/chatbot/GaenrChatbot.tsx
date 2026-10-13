@@ -26,6 +26,11 @@ import {
   Mic,
   MicOff,
 } from 'lucide-react';
+import {
+  buildGinnyEscalationNotification,
+  createWhatsAppUrl,
+  sendBackendNotification,
+} from '../../utils/whatsappNotifications';
 
 const SUGGESTIONS_BN = [
   'টাস্ক কীভাবে দিতে হয়?',
@@ -460,7 +465,7 @@ export const GaenrChatbot: React.FC = () => {
     const matched = list.find(
       (f) =>
         f.code.toLowerCase() === cleanCode ||
-        f.name.toLowerCase() === lower ||
+        (f.name && f.name.toLowerCase() === lower) ||
         f.code.toLowerCase().includes(cleanCode)
     );
 
@@ -1096,7 +1101,7 @@ ${taskData.description.trim()}`;
         step: 'awaiting_confirmation',
       }));
 
-      return showTaskSummaryPrompt({ ...taskFlow, documentUrl: docUrl }, isBn);
+      return showTaskSummaryPrompt({ ...taskFlow, documentUrl: docUrl }, isBn ? 'bn' : 'en');
     }
 
     // Step 11: Final Review & Confirmation Gate (Consent Checkpoint)
@@ -1219,6 +1224,8 @@ ${taskData.description.trim()}`;
       setTimeout(() => {
         window.open('https://wa.me/8801608922800', '_blank');
       }, 500);
+    } else if (cleaned.includes('[ACTION:ESCALATE_TO_WHATSAPP]')) {
+      cleaned = cleaned.replace(/\[ACTION:ESCALATE_TO_WHATSAPP\]/g, '').trim();
     }
 
     return cleaned;
@@ -1341,6 +1348,33 @@ ${taskData.description.trim()}`;
         botActions = local.actions;
       }
 
+      // Handle Ginny escalation to WhatsApp
+      const hasEscalationTag = botResponseText.includes('[ACTION:ESCALATE_TO_WHATSAPP]');
+      if (hasEscalationTag) {
+        const escalationUrl = createWhatsAppUrl(
+          buildGinnyEscalationNotification({
+            userQuestion: text,
+            detectedLanguage: detectedLang,
+            userRole: updatedMemory?.userRole,
+          })
+        );
+        const escalateBtn = {
+          label: detectedLang === 'en' ? '📲 Ask Gaenr on WhatsApp' : '📲 হোয়াটসঅ্যাপে প্রশ্নটি জানান',
+          actionType: 'openWhatsAppUrl' as const,
+          payload: escalationUrl,
+        };
+        botActions = [escalateBtn, ...(botActions || [])];
+      }
+
+      // If unanswered or escalated, log to backend notify audit
+      if (hasEscalationTag || botActions?.some((a) => a.actionType === 'openWhatsAppUrl' && a.payload?.includes('GINNY%20ESCALATION'))) {
+        sendBackendNotification('ginny_unanswered_question', {
+          userQuestion: text,
+          language: detectedLang,
+          userRole: updatedMemory?.userRole,
+        }).catch(() => {});
+      }
+
       // Execute website control actions if requested
       const finalText = executeAutonomousAction(botResponseText);
 
@@ -1357,6 +1391,13 @@ ${taskData.description.trim()}`;
       console.error('Chatbot error:', error);
       const fallback = getLocalAIResponse(text, detectedLang, updatedMemory);
       const finalText = executeAutonomousAction(fallback.text);
+
+      sendBackendNotification('ginny_unanswered_question', {
+        userQuestion: text,
+        language: detectedLang,
+        error: String(error),
+      }).catch(() => {});
+
       setMessages((prev) => [
         ...prev,
         {
