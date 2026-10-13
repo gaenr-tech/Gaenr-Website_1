@@ -1,47 +1,72 @@
 function formatWhatsAppMessage(type, data) {
   if (type === 'expert_application') {
     const skill = (data?.otherSkill || data?.skill || 'Digital Creator').split('/')[0].replace(/[\u0980-\u09FF]/g, '').trim();
-    return `🚀 [GAENR ALERT] New Expert Application Received!
-━━━━━━━━━━━━━━━━━━━━
-👤 Name: ${data?.fullName || 'N/A'}
-💼 Skill: ${skill}
-📞 WhatsApp: ${data?.whatsapp || 'N/A'}
-✉️ Email: ${data?.email || 'N/A'}
-⏳ Experience: ${data?.experience || 'Verified'}
-🔗 Portfolio: ${data?.portfolioUrl || 'None provided'}
-━━━━━━━━━━━━━━━━━━━━
-📌 Action: Review and approve via gaenr.com/admin`;
+    const occupationName = data?.otherOccupation || data?.occupation || 'N/A';
+    const addressName = data?.otherAddress || data?.address || 'Bangladesh';
+    return `*New Expert Application*
+
+• Name: ${data?.fullName || 'N/A'}
+• Skill: ${skill}
+• WhatsApp: ${data?.whatsapp || 'N/A'}
+• Email: ${data?.email || 'N/A'}
+• Occupation: ${occupationName}
+• Location: ${addressName}
+• Experience: ${data?.experience || 'Verified'}
+• Portfolio: ${data?.portfolioUrl || 'None provided'}
+
+Action: Review and approve via gaenr.com/admin
+
+— Ginny, Gaenr`;
   }
   if (type === 'expert_onboarding') {
     const skill = (data?.skill || 'Verified Expert').split('/')[0].replace(/[\u0980-\u09FF]/g, '').trim();
-    return `🎉 [GAENR ALERT] Expert Onboarding Completed!
-━━━━━━━━━━━━━━━━━━━━
-👤 Name: ${data?.fullName || 'N/A'}
-💼 Skill: ${skill}
-📞 WhatsApp: ${data?.whatsapp || 'Registered in Admin'}
-🎨 Avatar: ${data?.avatarName || 'Standard'}
-🏦 Payout: ${data?.payoutMethod === 'bank' ? `Bank (${data?.bankName || 'Bank'} - Acc: ${data?.accountNumber || 'Provided'})` : `MFS (${data?.mfsProvider || 'bKash'} - ${data?.mfsNumber || 'Provided'})`}
-━━━━━━━━━━━━━━━━━━━━
-⚡ Next Step: Activate verified profile live via gaenr.com/admin`;
+    const payout = data?.payoutMethod === 'bank'
+      ? `Bank (${data?.bankName || 'Bank'} - Acc: ${data?.accountNumber || 'Provided'})`
+      : `MFS (${data?.mfsProvider || 'bKash'} - ${data?.mfsNumber || 'Provided'})`;
+    return `*Expert Onboarding Completed*
+
+• Name: ${data?.fullName || 'N/A'}
+• Skill: ${skill}
+• WhatsApp: ${data?.whatsapp || 'Registered in Admin'}
+• Email: ${data?.email || 'Registered in Admin'}
+• Avatar: ${data?.avatarName || 'Standard Verified Avatar'}
+• Payout: ${payout}
+
+Statement:
+"${data?.statement || 'Ready to deliver quality work.'}"
+
+Action: Review in Gaenr Admin and activate profile live: https://gaenr.com/admin
+
+— Ginny, Gaenr`;
   }
   if (type === 'feedback_submission') {
-    return `💬 [GAENR FEEDBACK] New Platform Feedback Received!
-━━━━━━━━━━━━━━━━━━━━
-👤 Sender: ${data?.name || 'Anonymous'} (${data?.userType || 'Visitor'})
-📌 Category: ${data?.category || 'General'}
-📝 Message: "${data?.message || ''}"
-━━━━━━━━━━━━━━━━━━━━
-🌐 Gaenr Quality & Experience Team`;
+    return `*New Platform Feedback*
+
+• From: ${data?.name || 'Anonymous'} (${data?.userType || 'Visitor'})
+• Category: ${data?.category || 'General'}
+• Email: ${data?.email || 'Not provided'}
+
+Message:
+"${data?.message || ''}"
+
+— Ginny, Gaenr`;
   }
   if (type === 'ginny_unanswered_question') {
-    return `🤖 [GINNY ESCALATION] Unanswered Client Question!
-━━━━━━━━━━━━━━━━━━━━
-❓ Question: "${data?.userQuestion || ''}"
-💡 Ginny's Note: Team Gaenr, please review this query and update my knowledge base.
-━━━━━━━━━━━━━━━━━━━━
-📲 Gaenr AI Intelligence Core`;
+    return `*Client Query Escalation*
+
+Client Question:
+"${data?.userQuestion || ''}"
+
+• Time: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' })} BST
+
+Note:
+Please review this query to update my knowledge base.
+
+— Ginny, Gaenr`;
   }
-  return `🔔 [GAENR ALERT] Platform Event: ${type}`;
+  return `*Platform Event: ${type}*
+
+— Ginny, Gaenr`;
 }
 
 export async function onRequestOptions() {

@@ -41,21 +41,21 @@ export const buildExpertApplicationNotification = (data: ExpertApplicationNotify
   const occupationName = data.otherOccupation || data.occupation || 'N/A';
   const addressName = data.otherAddress || data.address || 'Bangladesh';
 
-  return `🚀 [GAENR ALERT] New Expert Application Received!
-━━━━━━━━━━━━━━━━━━━━
-👤 Name: ${data.fullName}
-💼 Skill: ${skillName}
-📞 WhatsApp: ${data.whatsapp}
-✉️ Email: ${data.email}
-⚧ Gender: ${data.gender || 'Not specified'}
-💼 Occupation: ${occupationName}
-📍 Address: ${addressName}
-⏳ Experience: ${data.experience || 'Verified'}
-🔗 Portfolio Link:
-${data.portfolioUrl || 'None provided'}
-━━━━━━━━━━━━━━━━━━━━
-📌 Action: Review portfolio and approve via gaenr.com/admin
-🌐 Gaenr Operations Platform`;
+  return `*New Expert Application*
+
+• Name: ${data.fullName}
+• Skill: ${skillName}
+• WhatsApp: ${data.whatsapp}
+• Email: ${data.email}
+• Gender: ${data.gender || 'Not specified'}
+• Occupation: ${occupationName}
+• Location: ${addressName}
+• Experience: ${data.experience || 'Verified'}
+• Portfolio: ${data.portfolioUrl || 'None provided'}
+
+Action: Review and approve via gaenr.com/admin
+
+— Ginny, Gaenr`;
 };
 
 /**
@@ -80,8 +80,8 @@ export interface ExpertOnboardingNotifyData {
 
 export const buildExpertOnboardingNotification = (data: ExpertOnboardingNotifyData): string => {
   const tiersSummary = data.pricingTiers && data.pricingTiers.length > 0
-    ? data.pricingTiers.map((t) => `• ${t.serviceName}: ${t.price} BDT`).join('\n')
-    : 'Default Service Tier';
+    ? data.pricingTiers.map((t) => `  - ${t.serviceName}: ${t.price} BDT`).join('\n')
+    : '  - Default Service Tier';
 
   let payoutSummary = 'N/A';
   if (data.payoutMethod === 'bank') {
@@ -90,24 +90,24 @@ export const buildExpertOnboardingNotification = (data: ExpertOnboardingNotifyDa
     payoutSummary = `MFS (${data.mfsProvider || 'bKash'} - ${data.mfsAccountType || 'Personal'}): ${data.mfsNumber || 'Provided'}`;
   }
 
-  return `🎉 [GAENR ALERT] Expert Onboarding Completed!
-━━━━━━━━━━━━━━━━━━━━
-👤 Name: ${data.fullName}
-💼 Skill: ${data.skill || 'Verified Expert'}
-📞 WhatsApp: ${data.whatsapp || 'Registered in Admin'}
-✉️ Email: ${data.email || 'Registered in Admin'}
-🎨 Selected Avatar: ${data.avatarName || 'Standard Verified Avatar'}
-🏦 Payout Channel: ${payoutSummary}
+  return `*Expert Onboarding Completed*
 
-💰 Pricing Packages:
+• Name: ${data.fullName}
+• Skill: ${data.skill || 'Verified Expert'}
+• WhatsApp: ${data.whatsapp || 'Registered in Admin'}
+• Email: ${data.email || 'Registered in Admin'}
+• Avatar: ${data.avatarName || 'Standard Verified Avatar'}
+• Payout: ${payoutSummary}
+
+Pricing Packages:
 ${tiersSummary}
 
-📝 Expert Statement:
+Expert Statement:
 "${data.statement || 'Ready to deliver quality work.'}"
-━━━━━━━━━━━━━━━━━━━━
-⚡ Next Step: Review in Gaenr Admin and activate verified profile live!
-🔗 Admin Dashboard: https://gaenr.com/admin
-🌐 Gaenr Talent Network`;
+
+Action: Review in Gaenr Admin and activate profile live: https://gaenr.com/admin
+
+— Ginny, Gaenr`;
 };
 
 /**
@@ -122,17 +122,16 @@ export interface FeedbackNotifyData {
 }
 
 export const buildFeedbackNotification = (data: FeedbackNotifyData): string => {
-  return `💬 [GAENR FEEDBACK] New Platform Feedback Received!
-━━━━━━━━━━━━━━━━━━━━
-👤 From: ${data.name?.trim() || 'Anonymous'}
-🏷️ Role: ${data.userType}
-📌 Category: ${data.category}
-✉️ Email: ${data.email?.trim() || 'Not provided'}
+  return `*New Platform Feedback*
 
-📝 Message:
+• From: ${data.name?.trim() || 'Anonymous'} (${data.userType})
+• Category: ${data.category}
+• Email: ${data.email?.trim() || 'Not provided'}
+
+Message:
 "${data.message}"
-━━━━━━━━━━━━━━━━━━━━
-🌐 Gaenr Quality & Experience Team`;
+
+— Ginny, Gaenr`;
 };
 
 /**
@@ -147,18 +146,18 @@ export interface GinnyEscalationNotifyData {
 
 export const buildGinnyEscalationNotification = (data: GinnyEscalationNotifyData): string => {
   const langLabel = data.detectedLanguage === 'en' ? 'English' : 'Bangla';
-  return `🤖 [GINNY ESCALATION] Unanswered Client Question
-━━━━━━━━━━━━━━━━━━━━
-❓ Client Question:
+  return `*Client Query Escalation*
+
+Client Question:
 "${data.userQuestion}"
 
-🗣️ Language: ${langLabel}
-⏰ Time: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' })} BST
-${data.userRole ? `👤 User Role: ${data.userRole}\n` : ''}${data.contextNotes ? `📌 Notes: ${data.contextNotes}\n` : ''}
-💡 Ginny's Message:
-"Team Gaenr, please review this query so I can answer future clients and enrich my knowledge base."
-━━━━━━━━━━━━━━━━━━━━
-📲 Gaenr AI Intelligence Core`;
+• Language: ${langLabel}
+• Time: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' })} BST
+${data.userRole ? `• User Role: ${data.userRole}\n` : ''}${data.contextNotes ? `• Notes: ${data.contextNotes}\n` : ''}
+Note:
+Please review this query to update my knowledge base.
+
+— Ginny, Gaenr`;
 };
 
 /**
