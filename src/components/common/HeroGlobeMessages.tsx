@@ -181,24 +181,24 @@ export const HeroGlobeMessages: React.FC = () => {
         style={{ willChange: 'transform, opacity' }}
       >
         <div
-          className={`group relative flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-white/40 shadow-md backdrop-blur-md transition-transform duration-200 ${
+          className={`group relative flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-white/40 dark:border-cyan-400/50 shadow-md backdrop-blur-md transition-transform duration-200 ${
             current.role === 'Outsourcer'
-              ? 'bg-gradient-to-r from-[#0047b3]/95 via-[#0062d2]/95 to-[#0277bd]/95 shadow-blue-600/25'
-              : 'bg-gradient-to-r from-[#005fb8]/95 via-[#0284c7]/95 to-[#0d9488]/95 shadow-cyan-600/25'
+              ? 'bg-gradient-to-r from-[#0047b3]/95 via-[#0062d2]/95 to-[#0277bd]/95 dark:from-[#0369a1]/90 dark:via-[#0284c7]/90 dark:to-[#0256d0]/90 shadow-blue-600/25 dark:shadow-[0_0_20px_rgba(56,189,248,0.4)]'
+              : 'bg-gradient-to-r from-[#005fb8]/95 via-[#0284c7]/95 to-[#0d9488]/95 dark:from-[#0284c7]/90 dark:via-[#0d9488]/90 dark:to-[#059669]/90 shadow-cyan-600/25 dark:shadow-[0_0_20px_rgba(13,148,136,0.4)]'
           }`}
         >
           {/* Subtle Glowing Orbital Anchor Node */}
           <span className="absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white dark:bg-cyan-300 opacity-75 dark:opacity-90" />
             <span
-              className={`relative inline-flex rounded-full h-1.5 w-1.5 border border-white ${
+              className={`relative inline-flex rounded-full h-1.5 w-1.5 border border-white dark:border-cyan-200 ${
                 current.role === 'Outsourcer' ? 'bg-cyan-300' : 'bg-emerald-300'
               }`}
             />
           </span>
 
           {/* Ultra-compact Circular Avatar */}
-          <div className="relative w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full overflow-hidden shrink-0 border border-white/90 shadow-2xs bg-slate-800">
+          <div className="relative w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full overflow-hidden shrink-0 border border-white/90 dark:border-cyan-300/80 shadow-2xs bg-slate-800">
             <img
               src={current.avatarUrl}
               alt={current.role}

@@ -1685,53 +1685,53 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
         </div>
 
         {/* Satisfaction Scale */}
-        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/40 border border-emerald-200/70 shadow-2xs w-full space-y-2 text-left">
+        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/40 dark:bg-gradient-to-br dark:from-[#0d1627]/95 dark:via-[#111e36]/90 dark:to-[#0d1627]/95 border border-emerald-200/70 dark:border-emerald-500/30 shadow-2xs dark:shadow-[0_8px_24px_rgba(0,0,0,0.4)] dark:backdrop-blur-xl w-full space-y-2 text-left">
           <div className="flex items-center justify-between text-[11px] sm:text-xs">
-            <span className="font-bold text-emerald-950 uppercase tracking-wider">
+            <span className="font-bold text-emerald-950 dark:text-emerald-300 uppercase tracking-wider">
               Satisfaction Scale
             </span>
-            <span className="text-emerald-700 font-extrabold font-mono">
+            <span className="text-emerald-700 dark:text-emerald-400 font-extrabold font-mono">
               {expert.reviewsCount > 0 ? `${expert.satisfactionRate.satisfied}% Satisfied` : 'New Expert'}
             </span>
           </div>
 
           {/* Multi-segment Scale Bar */}
-          <div className="h-2 sm:h-2.5 w-full bg-slate-200/80 rounded-full overflow-hidden flex shadow-inner">
+          <div className="h-2 sm:h-2.5 w-full bg-slate-200/80 dark:bg-slate-800/90 rounded-full overflow-hidden flex shadow-inner">
             {expert.reviewsCount > 0 ? (
               <>
                 <div
                   style={{ width: `${expert.satisfactionRate.satisfied}%` }}
-                  className="bg-emerald-500 h-full transition-all"
+                  className="bg-emerald-500 h-full transition-all shadow-[0_0_8px_rgba(16,185,129,0.5)]"
                   title={`Satisfied ${expert.satisfactionRate.satisfied}%`}
                 />
                 <div
                   style={{ width: `${expert.satisfactionRate.neutral}%` }}
-                  className="bg-amber-400 h-full transition-all"
+                  className="bg-amber-400 h-full transition-all shadow-[0_0_8px_rgba(251,191,36,0.5)]"
                   title={`Neutral ${expert.satisfactionRate.neutral}%`}
                 />
                 <div
                   style={{ width: `${expert.satisfactionRate.unsatisfied}%` }}
-                  className="bg-rose-500 h-full transition-all"
+                  className="bg-rose-500 h-full transition-all shadow-[0_0_8px_rgba(244,63,94,0.5)]"
                   title={`Unsatisfied ${expert.satisfactionRate.unsatisfied}%`}
                 />
               </>
             ) : (
-              <div className="w-full bg-slate-200 h-full" title="Pending initial reviews" />
+              <div className="w-full bg-slate-200 dark:bg-slate-800 h-full" title="Pending initial reviews" />
             )}
           </div>
 
           {/* Breakdown labels */}
-          <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-600 font-semibold pt-0.5">
-            <span className="text-emerald-700 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-600 dark:text-slate-300 font-semibold pt-0.5">
+            <span className="text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
               <span>{expert.reviewsCount > 0 ? `${expert.satisfactionRate.satisfied}%` : '0%'} Satisfied</span>
             </span>
-            <span className="text-amber-700 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+            <span className="text-amber-700 dark:text-amber-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 shadow-[0_0_6px_rgba(251,191,36,0.8)]" />
               <span>{expert.reviewsCount > 0 ? `${expert.satisfactionRate.neutral}%` : '0%'} Neutral</span>
             </span>
-            <span className="text-rose-700 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+            <span className="text-rose-700 dark:text-rose-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 shadow-[0_0_6px_rgba(244,63,94,0.8)]" />
               <span>{expert.reviewsCount > 0 ? `${expert.satisfactionRate.unsatisfied}%` : '0%'} Unsat.</span>
             </span>
           </div>

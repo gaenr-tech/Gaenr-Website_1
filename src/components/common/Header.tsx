@@ -191,14 +191,7 @@ export const Header: React.FC = () => {
 
           {/* Mobile Theme Row */}
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-            <span className="flex items-center gap-2">
-              {isDark ? (
-                <Moon className="w-4.5 h-4.5 text-blue-400" />
-              ) : (
-                <Sun className="w-4.5 h-4.5 text-amber-500" />
-              )}
-              <span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
-            </span>
+            <span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
             <button
               type="button"
               onClick={toggleTheme}

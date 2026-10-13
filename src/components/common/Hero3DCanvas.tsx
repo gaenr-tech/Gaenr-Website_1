@@ -1,12 +1,134 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { HeroGlobeMessages } from './HeroGlobeMessages';
+import { useTheme } from '../../context/ThemeContext';
 
 interface CityHub {
   id: string;
   name: string;
   lat: number;
   lon: number;
+}
+
+interface ThemeableObjects {
+  ambientLight: THREE.AmbientLight;
+  blueLight: THREE.DirectionalLight;
+  cyanLight: THREE.DirectionalLight;
+  coreMat: THREE.MeshPhongMaterial;
+  haloMat: THREE.MeshBasicMaterial;
+  latLineMats: { mat: THREE.LineBasicMaterial; isEquator: boolean }[];
+  lonLineMats: THREE.LineBasicMaterial[];
+  dotGeo: THREE.BufferGeometry;
+  dotMat: THREE.PointsMaterial;
+  hubMats: THREE.MeshBasicMaterial[];
+  ringMats: THREE.MeshBasicMaterial[];
+  arcMats: THREE.LineBasicMaterial[];
+  pulseMats: { mat: THREE.MeshBasicMaterial; isEven: boolean }[];
+  orbitRingMat: THREE.MeshBasicMaterial;
+}
+
+function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
+  // Ambient Light
+  objs.ambientLight.color.setHex(isDark ? 0xdbeafe : 0xffffff);
+  objs.ambientLight.intensity = isDark ? 3.4 : 2.2;
+
+  // Blue Directional Light
+  objs.blueLight.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.blueLight.intensity = isDark ? 4.5 : 3.2;
+
+  // Cyan Directional Light
+  objs.cyanLight.color.setHex(isDark ? 0x00ffff : 0x38bdf8);
+  objs.cyanLight.intensity = isDark ? 3.5 : 2.0;
+
+  // Core Globe Sphere
+  objs.coreMat.color.setHex(isDark ? 0x0369a1 : 0x0256d0);
+  objs.coreMat.emissive.setHex(isDark ? 0x0284c7 : 0x023680);
+  objs.coreMat.specular.setHex(isDark ? 0x38bdf8 : 0x60a5fa);
+  objs.coreMat.shininess = isDark ? 65 : 35;
+  objs.coreMat.opacity = isDark ? 0.28 : 0.1;
+  objs.coreMat.needsUpdate = true;
+
+  // Atmospheric Corona Halo
+  objs.haloMat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.haloMat.opacity = isDark ? 0.35 : 0.12;
+  objs.haloMat.needsUpdate = true;
+
+  // Latitude Rings
+  objs.latLineMats.forEach(({ mat, isEquator }) => {
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+    mat.opacity = isDark ? (isEquator ? 0.70 : 0.35) : (isEquator ? 0.35 : 0.15);
+    mat.needsUpdate = true;
+  });
+
+  // Longitude Rings
+  objs.lonLineMats.forEach((mat) => {
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+    mat.opacity = isDark ? 0.32 : 0.14;
+    mat.needsUpdate = true;
+  });
+
+  // Continental Matrix Particles
+  objs.dotMat.size = isDark ? 0.046 : 0.034;
+  objs.dotMat.opacity = isDark ? 0.98 : 0.7;
+  objs.dotMat.needsUpdate = true;
+
+  const colorAttr = objs.dotGeo.getAttribute('color') as THREE.BufferAttribute;
+  if (colorAttr) {
+    const arr = colorAttr.array as Float32Array;
+    const count = arr.length / 3;
+    const cBlue = new THREE.Color(0x0256d0);
+    const cCyan = new THREE.Color(0x38bdf8);
+    const cNeon = new THREE.Color(0x00ffff);
+    const cWhite = new THREE.Color(0xffffff);
+
+    for (let i = 0; i < count; i++) {
+      const idx = i * 3;
+      if (isDark) {
+        const rand = Math.random();
+        const chosen = rand > 0.5 ? cNeon : rand > 0.15 ? cCyan : cWhite;
+        arr[idx] = chosen.r;
+        arr[idx + 1] = chosen.g;
+        arr[idx + 2] = chosen.b;
+      } else {
+        const isB = Math.random() > 0.4;
+        const chosen = isB ? cBlue : cCyan;
+        arr[idx] = chosen.r;
+        arr[idx + 1] = chosen.g;
+        arr[idx + 2] = chosen.b;
+      }
+    }
+    colorAttr.needsUpdate = true;
+  }
+
+  // City Hub Pins
+  objs.hubMats.forEach((mat) => {
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+    mat.needsUpdate = true;
+  });
+
+  // City Hub Pulse Waves
+  objs.ringMats.forEach((mat) => {
+    mat.color.setHex(isDark ? 0x00ffff : 0x38bdf8);
+    mat.needsUpdate = true;
+  });
+
+  // Multi-continent Connection Arcs
+  objs.arcMats.forEach((mat) => {
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+    mat.opacity = isDark ? 0.80 : 0.45;
+    mat.needsUpdate = true;
+  });
+
+  // Traveling Light Pulses
+  objs.pulseMats.forEach(({ mat, isEven }) => {
+    mat.color.setHex(isDark ? (isEven ? 0xffffff : 0x00ffff) : (isEven ? 0x0256d0 : 0x0084ff));
+    mat.needsUpdate = true;
+  });
+
+  // Orbital Ring
+  objs.orbitRingMat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.orbitRingMat.opacity = isDark ? 0.38 : 0.16;
+  objs.orbitRingMat.needsUpdate = true;
 }
 
 // Global talent & client innovation hubs spread across all continents of the world
@@ -106,7 +228,15 @@ function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector
  * - Generous camera frustum padding to guarantee no clipping on top, bottom, or sides.
  */
 export const Hero3DCanvas: React.FC = () => {
+  const { isDark } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
+  const themeObjectsRef = useRef<ThemeableObjects | null>(null);
+
+  useEffect(() => {
+    if (themeObjectsRef.current) {
+      applyThemeToObjects(themeObjectsRef.current, isDark);
+    }
+  }, [isDark]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -180,6 +310,7 @@ export const Hero3DCanvas: React.FC = () => {
     // Latitude & Longitude Coordinate Lines
     const gridLinesGroup = new THREE.Group();
     const latAngles = [-60, -40, -20, 0, 20, 40, 60];
+    const latLineMats: { mat: THREE.LineBasicMaterial; isEquator: boolean }[] = [];
     latAngles.forEach((lat) => {
       const phi = (90 - lat) * (Math.PI / 180);
       const r = GLOBE_RADIUS * Math.sin(phi);
@@ -197,9 +328,11 @@ export const Hero3DCanvas: React.FC = () => {
         transparent: true,
         opacity: lat === 0 ? 0.35 : 0.15,
       });
+      latLineMats.push({ mat: ringMat, isEquator: lat === 0 });
       gridLinesGroup.add(new THREE.Line(ringGeo, ringMat));
     });
 
+    const lonLineMats: THREE.LineBasicMaterial[] = [];
     for (let i = 0; i < 8; i++) {
       const lonRingGeo = new THREE.BufferGeometry();
       const points: THREE.Vector3[] = [];
@@ -216,6 +349,7 @@ export const Hero3DCanvas: React.FC = () => {
         transparent: true,
         opacity: 0.14,
       });
+      lonLineMats.push(ringMat);
       const lineMesh = new THREE.Line(lonRingGeo, ringMat);
       lineMesh.rotation.y = (i / 8) * Math.PI;
       gridLinesGroup.add(lineMesh);
@@ -259,6 +393,8 @@ export const Hero3DCanvas: React.FC = () => {
     const hubMap = new Map<string, THREE.Vector3>();
     const hubsGroup = new THREE.Group();
     const pulseRings: { mesh: THREE.Mesh; maxScale: number; speed: number }[] = [];
+    const hubMats: THREE.MeshBasicMaterial[] = [];
+    const ringMats: THREE.MeshBasicMaterial[] = [];
 
     HUBS.forEach((hub) => {
       const pos = latLonToVector3(hub.lat, hub.lon, GLOBE_RADIUS);
@@ -268,6 +404,7 @@ export const Hero3DCanvas: React.FC = () => {
       const hubMat = new THREE.MeshBasicMaterial({
         color: 0x0256d0,
       });
+      hubMats.push(hubMat);
       const hubMesh = new THREE.Mesh(hubGeo, hubMat);
       hubMesh.position.copy(pos);
       hubsGroup.add(hubMesh);
@@ -280,6 +417,7 @@ export const Hero3DCanvas: React.FC = () => {
         transparent: true,
         opacity: 0.8,
       });
+      ringMats.push(ringMat);
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
       ringMesh.position.copy(pos);
       ringMesh.lookAt(pos.clone().multiplyScalar(2));
@@ -303,6 +441,8 @@ export const Hero3DCanvas: React.FC = () => {
       direction: 1 | -1;
     }
     const arcsData: ArcData[] = [];
+    const arcMats: THREE.LineBasicMaterial[] = [];
+    const pulseMats: { mat: THREE.MeshBasicMaterial; isEven: boolean }[] = [];
 
     NETWORK_ROUTES.forEach(([fromId, toId], idx) => {
       const fromPos = hubMap.get(fromId);
@@ -326,6 +466,7 @@ export const Hero3DCanvas: React.FC = () => {
         transparent: true,
         opacity: 0.45,
       });
+      arcMats.push(arcMat);
       const arcLine = new THREE.Line(arcGeo, arcMat);
       arcsGroup.add(arcLine);
 
@@ -334,6 +475,7 @@ export const Hero3DCanvas: React.FC = () => {
       const pulseMat = new THREE.MeshBasicMaterial({
         color: idx % 2 === 0 ? 0x0256d0 : 0x0084ff,
       });
+      pulseMats.push({ mat: pulseMat, isEven: idx % 2 === 0 });
       const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
       arcsGroup.add(pulseMesh);
 
@@ -359,6 +501,26 @@ export const Hero3DCanvas: React.FC = () => {
     orbitRing.rotation.x = Math.PI / 2.2;
     orbitRing.rotation.y = 0.2;
     globeGroup.add(orbitRing);
+
+    // Assemble Themeable Collection & Apply Current Theme
+    const themeObjs: ThemeableObjects = {
+      ambientLight,
+      blueLight,
+      cyanLight,
+      coreMat,
+      haloMat,
+      latLineMats,
+      lonLineMats,
+      dotGeo,
+      dotMat,
+      hubMats,
+      ringMats,
+      arcMats,
+      pulseMats,
+      orbitRingMat,
+    };
+    themeObjectsRef.current = themeObjs;
+    applyThemeToObjects(themeObjs, isDark);
 
     // Animation Loop
     let animationFrameId: number;
@@ -420,6 +582,7 @@ export const Hero3DCanvas: React.FC = () => {
         container.removeChild(renderer.domElement);
       }
       renderer.dispose();
+      themeObjectsRef.current = null;
     };
   }, []);
 

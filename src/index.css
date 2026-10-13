@@ -1046,54 +1046,54 @@ html.dark .min-h-screen {
   color: #ffffff;
 }
 
-/* Fluid, Hero and Grid backgrounds in dark mode */
+/* Fluid, Hero and Grid backgrounds in dark mode - rich & luminous */
 .dark .bg-hero-colorful {
-  background-color: #090d16 !important;
+  background-color: #0d1527 !important;
   background-image: 
-    radial-gradient(circle at 85% 15%, rgba(14, 165, 233, 0.15) 0%, transparent 48%),
-    radial-gradient(circle at 10% 40%, rgba(59, 130, 246, 0.15) 0%, transparent 44%),
-    radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.1) 0%, transparent 44%),
-    linear-gradient(180deg, #090d16 0%, #0d1322 100%) !important;
+    radial-gradient(circle at 85% 15%, rgba(14, 165, 233, 0.22) 0%, transparent 52%),
+    radial-gradient(circle at 10% 40%, rgba(59, 130, 246, 0.22) 0%, transparent 48%),
+    radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.18) 0%, transparent 48%),
+    linear-gradient(180deg, #0d1527 0%, #111a30 100%) !important;
 }
 
 .dark .bg-gaenr-fluid {
-  background-color: #090d16 !important;
+  background-color: #0d1527 !important;
   background-image: 
-    radial-gradient(circle at 8% 12%, rgba(14, 165, 233, 0.14) 0%, transparent 45%),
-    radial-gradient(circle at 92% 18%, rgba(59, 130, 246, 0.13) 0%, transparent 45%),
-    radial-gradient(circle at 15% 65%, rgba(14, 165, 233, 0.1) 0%, transparent 48%),
-    radial-gradient(circle at 88% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 44%),
-    linear-gradient(180deg, #090d16 0%, #0c121f 50%, #090d16 100%) !important;
+    radial-gradient(circle at 8% 12%, rgba(14, 165, 233, 0.2) 0%, transparent 48%),
+    radial-gradient(circle at 92% 18%, rgba(59, 130, 246, 0.18) 0%, transparent 48%),
+    radial-gradient(circle at 15% 65%, rgba(14, 165, 233, 0.16) 0%, transparent 50%),
+    radial-gradient(circle at 88% 80%, rgba(99, 102, 241, 0.16) 0%, transparent 48%),
+    linear-gradient(180deg, #0d1527 0%, #111a30 50%, #0d1527 100%) !important;
 }
 
 .dark .bg-hero-grid {
-  background-color: #090d16 !important;
-  background-image: radial-gradient(rgba(56, 189, 248, 0.14) 1.25px, transparent 1.25px) !important;
+  background-color: #0d1527 !important;
+  background-image: radial-gradient(rgba(56, 189, 248, 0.2) 1.25px, transparent 1.25px) !important;
 }
 
 /* Section 8 on HomePage in dark mode */
 .dark section[class*="from-[#fafbfc]"] {
   background-image: none !important;
-  background-color: #090d16 !important;
+  background-color: #0d1527 !important;
 }
 
-/* Surface backgrounds: pure white becomes deep slate card (#111726) */
+/* Surface backgrounds: pure white becomes elevated deep slate card (#131f37) */
 .dark .bg-white,
 .dark .bg-white\/98,
 .dark .bg-white\/95,
 .dark .bg-white\/90,
 .dark .bg-white\/85,
 .dark .bg-white\/80 {
-  background-color: #111726 !important;
+  background-color: #131f37 !important;
 }
 
-/* Nested wells, secondary surfaces (#151d2e / #1e293b) - clearly distinguished from card surface */
+/* Nested wells, secondary surfaces (#1a2942) - clearly distinct and elevated */
 .dark .bg-slate-50,
 .dark .bg-slate-50\/50,
 .dark .bg-slate-50\/70,
 .dark .bg-slate-50\/80,
 .dark .bg-slate-50\/90 {
-  background-color: #151d2e !important;
+  background-color: #1a2942 !important;
 }
 
 .dark .bg-slate-100,
@@ -1101,14 +1101,14 @@ html.dark .min-h-screen {
 .dark .bg-slate-100\/70,
 .dark .bg-slate-100\/80,
 .dark .bg-slate-200 {
-  background-color: #1a2438 !important;
+  background-color: #223554 !important;
 }
 
 /* Light gradient overrides - rich deep gradients in dark mode */
 .dark [class*="bg-gradient-to-"][class*="from-white"],
 .dark [class*="bg-gradient-to-"][class*="from-[#fafbfc]"] {
   background-image: none !important;
-  background-color: #111726 !important;
+  background-color: #131f37 !important;
 }
 
 .dark [class*="bg-gradient-to-"][class*="from-blue-50"] {
@@ -1359,9 +1359,9 @@ html.dark .min-h-screen {
 .dark input:not([type="checkbox"]):not([type="radio"]),
 .dark textarea,
 .dark select {
-  background-color: #0c121e !important;
+  background-color: #0f182c !important;
   color: #f8fafc !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
 }
 
 .dark input:focus,
@@ -1382,23 +1382,23 @@ html.dark .min-h-screen {
 }
 
 .dark [role="dialog"] .bg-white {
-  background-color: #111726 !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: #131f37 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 .dark [role="dialog"] .bg-slate-50,
 .dark [role="dialog"] .bg-slate-50\/70,
 .dark [role="dialog"] .bg-slate-50\/80 {
-  background-color: #0c121e !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: #1a2942 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Custom select dropdown */
 .dark [role="dialog"] .bg-white\/95,
 .dark .bg-white\/95,
 .dark .bg-white\/98 {
-  background-color: #111726 !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: #131f37 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 /* Shadows in dark mode */
@@ -1417,22 +1417,22 @@ html.dark .min-h-screen {
 
 /* Footer obsidian background in dark mode */
 .dark footer {
-  background-color: #060911 !important;
+  background-color: #090e1c !important;
   border-top-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Chatbot window styling in dark mode */
 .dark .fixed .bg-white {
-  background-color: #111726 !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: #131f37 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 .dark .animate-in .bg-slate-50 {
-  background-color: #0c121e !important;
+  background-color: #1a2942 !important;
 }
 
 .dark .animate-in .bg-slate-100 {
-  background-color: #162033 !important;
+  background-color: #223554 !important;
   color: #f1f5f9 !important;
 }
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
+import { useTheme } from '../../context/ThemeContext';
 
 interface Pathway3DCanvasProps {
   className?: string;
@@ -25,7 +26,26 @@ const RIGHT_ARROW_PATH =
  * - Loops seamlessly
  */
 export const Pathway3DCanvas: React.FC<Pathway3DCanvasProps> = ({ className = '' }) => {
+  const { isDark } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
+  const themeRef = useRef<{
+    ambientLight: THREE.AmbientLight;
+    keyLight: THREE.DirectionalLight;
+    blueRimLight: THREE.DirectionalLight;
+    frontMaterialLeft: THREE.MeshPhysicalMaterial;
+    frontMaterialRight: THREE.MeshPhysicalMaterial;
+  } | null>(null);
+
+  useEffect(() => {
+    if (themeRef.current) {
+      themeRef.current.ambientLight.intensity = isDark ? 2.2 : 1.25;
+      themeRef.current.ambientLight.color.setHex(isDark ? 0xdbeafe : 0xffffff);
+      themeRef.current.keyLight.intensity = isDark ? 3.2 : 2.4;
+      themeRef.current.blueRimLight.intensity = isDark ? 3.5 : 2.0;
+      themeRef.current.frontMaterialLeft.emissiveIntensity = isDark ? 0.35 : 0.18;
+      themeRef.current.frontMaterialRight.emissiveIntensity = isDark ? 0.35 : 0.18;
+    }
+  }, [isDark]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -181,6 +201,24 @@ export const Pathway3DCanvas: React.FC<Pathway3DCanvasProps> = ({ className = ''
     const topFill = new THREE.DirectionalLight(0x93c5fd, 1.3);
     topFill.position.set(0, 300, 100);
     scene.add(topFill);
+
+    // Track themeable elements
+    themeRef.current = {
+      ambientLight,
+      keyLight,
+      blueRimLight,
+      frontMaterialLeft,
+      frontMaterialRight,
+    };
+
+    if (isDark) {
+      ambientLight.intensity = 2.2;
+      ambientLight.color.setHex(0xdbeafe);
+      keyLight.intensity = 3.2;
+      blueRimLight.intensity = 3.5;
+      frontMaterialLeft.emissiveIntensity = 0.35;
+      frontMaterialRight.emissiveIntensity = 0.35;
+    }
 
     // 6. Responsive Framing Function
     let baseScale = 0.48;
@@ -342,13 +380,14 @@ export const Pathway3DCanvas: React.FC<Pathway3DCanvasProps> = ({ className = ''
           }
         }
       });
+      themeRef.current = null;
     };
   }, []);
 
   return (
     <div className={`relative w-full flex items-center justify-center ${className}`}>
       {/* Soft ambient depth shadow directly beneath the 3D symbol */}
-      <div className="absolute w-[62%] sm:w-[50%] h-6 sm:h-7 bottom-2 sm:bottom-3 rounded-full bg-blue-900/18 blur-xl pointer-events-none transform scale-y-75" />
+      <div className="absolute w-[62%] sm:w-[50%] h-6 sm:h-7 bottom-2 sm:bottom-3 rounded-full bg-blue-900/18 dark:bg-cyan-500/25 blur-xl pointer-events-none transform scale-y-75" />
       <div
         ref={mountRef}
         className="relative w-full h-[240px] sm:h-[280px] lg:h-[320px] flex items-center justify-center pointer-events-auto select-none"

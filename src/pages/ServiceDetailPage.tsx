@@ -410,16 +410,16 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ slug }) =>
           MAIN CONTENT AREA
          ========================================================================= */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 text-left space-y-10 sm:space-y-12">
-        {/* 1. About the Service Card: Distinct light background, strictly ONLY title and description */}
-        <div className="group rounded-2xl sm:rounded-3xl bg-[#eef4fb] border border-[#d3e2f5] p-6 sm:p-8 md:p-10 shadow-xs space-y-4 hover:border-blue-300 transition-all duration-300">
+        {/* 1. About the Service Card: Distinct light background in light mode, sleek glassy card in dark mode */}
+        <div className="group rounded-2xl sm:rounded-3xl bg-[#eef4fb] dark:bg-gradient-to-br dark:from-[#131f37]/95 dark:via-[#16233d]/90 dark:to-[#111b30]/95 border border-[#d3e2f5] dark:border-blue-500/30 p-6 sm:p-8 md:p-10 shadow-xs dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] dark:backdrop-blur-xl space-y-4 hover:border-blue-300 dark:hover:border-blue-400/50 transition-all duration-300">
           <div className="inline-block">
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
               About {service.title}
             </h2>
-            <span className="block h-1 w-8 group-hover:w-full rounded-full bg-slate-900 group-hover:bg-[#006eff] transition-all duration-500 ease-out mt-3" />
+            <span className="block h-1 w-8 group-hover:w-full rounded-full bg-slate-900 dark:bg-blue-400 group-hover:bg-[#006eff] dark:group-hover:bg-[#38bdf8] transition-all duration-500 ease-out mt-3" />
           </div>
 
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
             {service.description}
           </p>
         </div>

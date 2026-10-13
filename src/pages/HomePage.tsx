@@ -815,10 +815,10 @@ export const HomePage: React.FC = () => {
                 <span className="text-xs text-slate-500 font-medium">Ready to monetize?</span>
                 <button
                   onClick={() => openApplyExpert()}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-xl bg-white text-[#0256d0] border-2 border-[#0256d0] text-xs font-medium hover:bg-[#0256d0] hover:text-white transition-all duration-200 shadow-xs hover:shadow-md shrink-0 whitespace-nowrap min-w-[135px] group cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-xl bg-white text-[#0256d0] border-2 border-[#0256d0] dark:!bg-white dark:!text-slate-900 dark:!border-white dark:hover:!bg-slate-100 dark:shadow-[0_0_24px_rgba(255,255,255,0.35)] dark:font-bold text-xs font-medium hover:bg-[#0256d0] hover:text-white transition-all duration-200 shadow-xs hover:shadow-md shrink-0 whitespace-nowrap min-w-[135px] group cursor-pointer"
                 >
-                  <span>Join as Expert</span>
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                  <span className="dark:text-slate-900">Join as Expert</span>
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 dark:text-slate-900" />
                 </button>
               </div>
             </div>
@@ -846,10 +846,10 @@ export const HomePage: React.FC = () => {
           {/* Desktop Flowchart Track (Horizontal connected sequence) */}
           <div className="hidden lg:block relative pt-4 pb-2 pointer-events-none select-none">
             {/* Background connecting track */}
-            <div className="absolute top-12 left-16 right-16 h-1 bg-slate-200/90 rounded-full -z-0" />
+            <div className="absolute top-12 left-16 right-16 h-1 bg-slate-200/90 dark:bg-white/20 rounded-full -z-0" />
             {/* Dynamic progressive highlight bar */}
             <div
-              className="absolute top-12 left-16 h-1 bg-[#0256d0] rounded-full -z-0 transition-all duration-300 ease-out"
+              className="absolute top-12 left-16 h-1 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.8)] rounded-full -z-0 transition-all duration-300 ease-out"
               style={{
                 width: `${(activeStepIndex / (flowchartSteps.length - 1)) * 100}%`,
                 maxWidth: 'calc(100% - 8rem)',
@@ -871,10 +871,10 @@ export const HomePage: React.FC = () => {
                       <div
                         className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 relative ${
                           isActive
-                            ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-900/50 scale-110 shadow-lg'
+                            ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_24px_rgba(2,86,208,0.7)] scale-110 shadow-lg'
                             : isPast
-                            ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 scale-100'
-                            : 'bg-white text-slate-400 border-2 border-slate-200 scale-100'
+                            ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 dark:bg-blue-500/25 dark:text-blue-300 dark:border-blue-400/60 scale-100'
+                            : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-white/14 dark:border-white/30 dark:text-white dark:backdrop-blur-sm dark:shadow-[0_4px_16px_rgba(255,255,255,0.08)] scale-100'
                         }`}
                       >
                         {st.icon}
@@ -892,12 +892,12 @@ export const HomePage: React.FC = () => {
                     <div className="space-y-1 px-1 transition-colors">
                       <h3
                         className={`font-bold text-sm transition-colors duration-300 ${
-                          isActive ? 'text-[#0256d0]' : isPast ? 'text-slate-900' : 'text-slate-700'
+                          isActive ? 'text-[#0256d0] dark:text-[#38bdf8]' : isPast ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-200'
                         }`}
                       >
                         {st.title}
                       </h3>
-                      <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                         {st.desc}
                       </p>
                     </div>
@@ -910,10 +910,10 @@ export const HomePage: React.FC = () => {
           {/* Mobile Vertical Stepper with progressive connection */}
           <div className="lg:hidden relative pl-6 space-y-5 pt-2 pointer-events-none select-none">
             {/* Background vertical line */}
-            <div className="absolute top-4 bottom-4 left-4 w-0.5 bg-slate-200" />
+            <div className="absolute top-4 bottom-4 left-4 w-0.5 bg-slate-200 dark:bg-white/20" />
             {/* Dynamic progressive vertical bar */}
             <div
-              className="absolute top-4 left-4 w-0.5 bg-[#0256d0] transition-all duration-300 ease-out"
+              className="absolute top-4 left-4 w-0.5 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.8)] transition-all duration-300 ease-out"
               style={{
                 height: `${(activeStepIndex / (flowchartSteps.length - 1)) * 100}%`,
                 maxHeight: 'calc(100% - 2rem)',
@@ -933,10 +933,10 @@ export const HomePage: React.FC = () => {
                     <div
                       className={`w-9 h-9 rounded-full flex items-center justify-center shadow-xs transition-all duration-300 ${
                         isActive
-                          ? 'bg-[#0256d0] text-white scale-115 ring-3 ring-blue-100 dark:ring-blue-900/50 shadow-md'
+                          ? 'bg-[#0256d0] text-white scale-115 ring-3 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_20px_rgba(2,86,208,0.7)] shadow-md'
                           : isPast
-                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400'
-                          : 'bg-white border-2 border-slate-300 text-slate-400'
+                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 dark:bg-blue-500/25 dark:text-blue-300 dark:border-blue-400/60'
+                          : 'bg-white border-2 border-slate-300 text-slate-400 dark:bg-white/14 dark:border-white/30 dark:text-white dark:backdrop-blur-sm'
                       }`}
                     >
                       {st.icon}
