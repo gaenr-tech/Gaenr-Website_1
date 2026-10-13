@@ -1,5 +1,48 @@
-// functions/api/notify.js
-// Cloudflare Pages Function: Receives, logs, and forwards real-time Gaenr platform notifications
+function formatWhatsAppMessage(type, data) {
+  if (type === 'expert_application') {
+    const skill = (data?.otherSkill || data?.skill || 'Digital Creator').split('/')[0].replace(/[\u0980-\u09FF]/g, '').trim();
+    return `🚀 [GAENR ALERT] নতুন এক্সপার্ট আবেদন জমা পড়েছে!
+━━━━━━━━━━━━━━━━━━━━
+👤 নাম: ${data?.fullName || 'N/A'}
+💼 স্কিল: ${skill}
+📞 হোয়াটসঅ্যাপ: ${data?.whatsapp || 'N/A'}
+✉️ ইমেইল: ${data?.email || 'N/A'}
+⏳ অভিজ্ঞতা: ${data?.experience || 'Verified'}
+🔗 পোর্টফোলিও: ${data?.portfolioUrl || 'None provided'}
+━━━━━━━━━━━━━━━━━━━━
+📌 gaenr.com/admin থেকে যাচাই করে Approve করুন।`;
+  }
+  if (type === 'expert_onboarding') {
+    const skill = (data?.skill || 'Verified Expert').split('/')[0].replace(/[\u0980-\u09FF]/g, '').trim();
+    return `🎉 [GAENR ALERT] এক্সপার্ট অনবোর্ডিং ফর্ম সম্পূর্ণ হয়েছে!
+━━━━━━━━━━━━━━━━━━━━
+👤 নাম: ${data?.fullName || 'N/A'}
+💼 স্কিল: ${skill}
+📞 হোয়াটসঅ্যাপ: ${data?.whatsapp || 'Registered in Admin'}
+🎨 অবতার: ${data?.avatarName || 'Standard'}
+🏦 পে-আউট: ${data?.payoutMethod === 'bank' ? `Bank (${data?.bankName || 'Bank'} - Acc: ${data?.accountNumber || 'Provided'})` : `MFS (${data?.mfsProvider || 'bKash'} - ${data?.mfsNumber || 'Provided'})`}
+━━━━━━━━━━━━━━━━━━━━
+⚡ gaenr.com/admin থেকে একাউন্ট লাইভ করুন!`;
+  }
+  if (type === 'feedback_submission') {
+    return `💬 [GAENR FEEDBACK] নতুন প্ল্যাটফর্ম ফিডব্যাক জমা হয়েছে!
+━━━━━━━━━━━━━━━━━━━━
+👤 প্রেরক: ${data?.name || 'Anonymous'} (${data?.userType || 'Visitor'})
+📌 বিষয়: ${data?.category || 'General'}
+📝 বার্তা: "${data?.message || ''}"
+━━━━━━━━━━━━━━━━━━━━
+🌐 Gaenr Quality & Experience Team`;
+  }
+  if (type === 'ginny_unanswered_question') {
+    return `🤖 [GINNY ESCALATION] ব্যবহারকারীর অজানা প্রশ্ন!
+━━━━━━━━━━━━━━━━━━━━
+❓ প্রশ্ন: "${data?.userQuestion || ''}"
+💡 গিনির বার্তা: টিম গেইনার, এই প্রশ্নটি পর্যালোচনা করে নলেজ ব্যাংকে যোগ করুন।
+━━━━━━━━━━━━━━━━━━━━
+📲 Gaenr AI Intelligence Core`;
+  }
+  return `🔔 [GAENR ALERT] প্ল্যাটফর্ম ইভেন্ট: ${type}`;
+}
 
 export async function onRequestOptions() {
   return new Response(null, {
@@ -228,21 +271,70 @@ export async function onRequestPost({ request, env }) {
       }
     }
 
-    // 4. Forward to WhatsApp Gateway API if configured
+    // 4. Automated Direct WhatsApp Dispatch (CallMeBot / Meta Cloud / UltraMsg / Gateway)
+    const waMessageText = formatWhatsAppMessage(type, data);
+    const targetWaNumber = (env?.WHATSAPP_TARGET_PHONE || '8801608922800').replace(/[^0-9]/g, '');
+    let callMeBotDispatched = false;
+    let metaCloudDispatched = false;
+
+    // 4A. CallMeBot Instant Free WhatsApp Dispatch
+    const callMeBotKey = env?.CALLMEBOT_API_KEY;
+    if (callMeBotKey) {
+      try {
+        const cmbUrl = `https://api.callmebot.com/whatsapp.php?phone=+${targetWaNumber}&text=${encodeURIComponent(waMessageText)}&apikey=${encodeURIComponent(callMeBotKey)}`;
+        const cmbRes = await fetch(cmbUrl);
+        if (cmbRes.ok) callMeBotDispatched = true;
+      } catch (cmbErr) {
+        console.warn('CallMeBot dispatch notice:', cmbErr);
+      }
+    }
+
+    // 4B. Meta WhatsApp Business Cloud API Dispatch
+    const metaToken = env?.WHATSAPP_TOKEN || env?.META_WHATSAPP_TOKEN;
+    const metaPhoneId = env?.WHATSAPP_PHONE_ID || env?.META_PHONE_ID;
+    if (metaToken && metaPhoneId) {
+      try {
+        const metaRes = await fetch(`https://graph.facebook.com/v20.0/${metaPhoneId}/messages`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${metaToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: targetWaNumber,
+            type: 'text',
+            text: { preview_url: false, body: waMessageText },
+          }),
+        });
+        if (metaRes.ok) metaCloudDispatched = true;
+      } catch (metaErr) {
+        console.warn('Meta WhatsApp Cloud dispatch notice:', metaErr);
+      }
+    }
+
+    // 4C. Forward to WhatsApp Gateway API (UltraMsg / Green-API / Custom Gateway)
     let gatewayDispatched = false;
     if (waGatewayUrl) {
       try {
+        const isUltraMsg = waGatewayUrl.includes('ultramsg.com');
+        const gwBody = isUltraMsg
+          ? JSON.stringify({ to: targetWaNumber, body: waMessageText })
+          : JSON.stringify({
+              recipient: targetWaNumber,
+              type,
+              data,
+              message: waMessageText,
+            });
+
         const gwRes = await fetch(waGatewayUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             ...(env?.WHATSAPP_GATEWAY_TOKEN ? { Authorization: `Bearer ${env.WHATSAPP_GATEWAY_TOKEN}` } : {}),
           },
-          body: JSON.stringify({
-            recipient: '8801608922800',
-            type,
-            data,
-          }),
+          body: gwBody,
         });
         if (gwRes.ok) gatewayDispatched = true;
       } catch (gwErr) {
@@ -256,6 +348,9 @@ export async function onRequestPost({ request, env }) {
         type,
         timestamp,
         webhookForwarded,
+        emailDispatched,
+        callMeBotDispatched,
+        metaCloudDispatched,
         gatewayDispatched,
       }),
       { status: 200, headers: corsHeaders }
