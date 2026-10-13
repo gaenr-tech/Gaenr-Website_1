@@ -27,57 +27,69 @@ function getEmailFooter(siteUrl) {
   <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;border-collapse:collapse;">
     <tr>
       <!-- 1. Website -->
-      <td style="padding:0 4px;" align="center">
+      <td style="padding:0 3px;" align="center">
         <a href="${siteUrl}" target="_blank" title="Website" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/globe.png" alt="Website" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
+          <img src="${siteUrl}/email-icons/globe.png" alt="Website" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
         </a>
       </td>
       <!-- 2. Phone -->
-      <td style="padding:0 4px;" align="center">
+      <td style="padding:0 3px;" align="center">
         <a href="tel:+8809647922800" title="Phone: 09647 922 800" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/phone.png" alt="Phone" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
+          <img src="${siteUrl}/email-icons/phone.png" alt="Phone" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
         </a>
       </td>
       <!-- 3. Email -->
-      <td style="padding:0 4px;" align="center">
+      <td style="padding:0 3px;" align="center">
         <a href="mailto:contact@gmail.com" title="Email: contact@gmail.com" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/mail.png" alt="Email" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
+          <img src="${siteUrl}/email-icons/mail.png" alt="Email" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
         </a>
       </td>
       <!-- 4. WhatsApp -->
-      <td style="padding:0 4px;" align="center">
+      <td style="padding:0 3px;" align="center">
         <a href="https://wa.me/8801608922800" target="_blank" title="WhatsApp: +8801608922800" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/whatsapp.png" alt="WhatsApp" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
+          <img src="${siteUrl}/email-icons/whatsapp.png" alt="WhatsApp" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
         </a>
       </td>
       <!-- 5. Facebook -->
-      <td style="padding:0 4px;" align="center">
+      <td style="padding:0 3px;" align="center">
         <a href="https://www.facebook.com/gaenrglobal/" target="_blank" title="Facebook" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/facebook.png" alt="Facebook" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
+          <img src="${siteUrl}/email-icons/facebook.png" alt="Facebook" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
         </a>
       </td>
       <!-- 6. LinkedIn -->
-      <td style="padding:0 4px;" align="center">
+      <td style="padding:0 3px;" align="center">
         <a href="https://www.linkedin.com/company/gaenrglobal/" target="_blank" title="LinkedIn" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/linkedin.png" alt="LinkedIn" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
+          <img src="${siteUrl}/email-icons/linkedin.png" alt="LinkedIn" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
         </a>
       </td>
       <!-- 7. Instagram -->
-      <td style="padding:0 4px;" align="center">
+      <td style="padding:0 3px;" align="center">
         <a href="https://www.instagram.com/gaenr_global/" target="_blank" title="Instagram" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/instagram.png" alt="Instagram" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
+          <img src="${siteUrl}/email-icons/instagram.png" alt="Instagram" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
         </a>
       </td>
-      <!-- 8. X / Twitter -->
-      <td style="padding:0 4px;" align="center">
+      <!-- 8. Pinterest -->
+      <td style="padding:0 3px;" align="center">
+        <a href="https://www.pinterest.com/gaenr_global/" target="_blank" title="Pinterest" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/pinterest.png" alt="Pinterest" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
+        </a>
+      </td>
+      <!-- 9. X / Twitter -->
+      <td style="padding:0 3px;" align="center">
         <a href="https://x.com/gaenr_global" target="_blank" title="X" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/x.png" alt="X" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
+          <img src="${siteUrl}/email-icons/x.png" alt="X" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
         </a>
       </td>
-      <!-- 9. Threads -->
-      <td style="padding:0 4px;" align="center">
+      <!-- 10. Threads -->
+      <td style="padding:0 3px;" align="center">
         <a href="https://www.threads.com/@gaenr_global" target="_blank" title="Threads" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/threads.png" alt="Threads" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
+          <img src="${siteUrl}/email-icons/threads.png" alt="Threads" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
+        </a>
+      </td>
+      <!-- 11. TikTok -->
+      <td style="padding:0 3px;" align="center">
+        <a href="https://www.tiktok.com/@gaenr_global" target="_blank" title="TikTok" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-icons/tiktok.png" alt="TikTok" width="24" height="24" style="display:block;width:24px;height:24px;border:0;border-radius:50%;" />
         </a>
       </td>
     </tr>
