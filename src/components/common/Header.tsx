@@ -189,26 +189,6 @@ export const Header: React.FC = () => {
             })}
           </div>
 
-          {/* Mobile Theme Row */}
-          <div className="pt-3 border-t border-slate-100 dark:border-white/10 flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-            <span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                isDark ? 'bg-blue-600' : 'bg-slate-300'
-              }`}
-              role="switch"
-              aria-checked={isDark}
-              aria-label="Toggle Theme Mode"
-            >
-              <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                  isDark ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
 
           <div className="pt-2 border-t border-slate-100 dark:border-white/10">
             <button

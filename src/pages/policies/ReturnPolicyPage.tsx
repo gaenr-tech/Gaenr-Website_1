@@ -3,7 +3,7 @@ import { RotateCcw, CheckCircle, AlertCircle, HeartHandshake, ShieldCheck } from
 
 export const ReturnPolicyPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased space-y-10 sm:space-y-12 pb-20">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-[#0b1324] text-slate-800 dark:text-slate-200 antialiased space-y-10 sm:space-y-12 pb-20">
       {/* =========================================================================
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - Matching standard py-12 sm:py-16 banner across ecosystem
@@ -60,84 +60,87 @@ export const ReturnPolicyPage: React.FC = () => {
       {/* Main Content Area */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
         {/* Intro Card */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs flex items-start gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-blue-50 text-[#006eff] flex items-center justify-center shrink-0 border border-blue-100 shadow-xs">
+        <div className="bg-white dark:bg-[#131f37] rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-white/10 shadow-xs flex items-start gap-4 transition-colors">
+          <div className="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-500/30 shadow-xs">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div className="space-y-1">
-            <h2 className="text-base sm:text-lg font-bold text-slate-900">Tailored Digital Services Notice</h2>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Tailored Digital Services Notice</h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               At Gaenr, we provide digital services that are tailored to your specific project needs. Because this work involves dedicated time and creative effort from our verified experts, our policy on cancellations and refunds is as follows:
             </p>
           </div>
         </div>
 
         {/* Cancellation Window (Full 100% Refund) */}
-        <section className="bg-white rounded-3xl p-6 sm:p-8 border border-emerald-200/80 shadow-xs space-y-4 relative overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl p-6 sm:p-8 border border-emerald-200/80 dark:border-emerald-500/30 shadow-xs space-y-4 relative overflow-hidden transition-colors">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500" />
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/30 shrink-0">
               <CheckCircle className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Before Execution Starts</span>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Before Execution Starts</span>
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                 Cancellation Window (Full 100% Refund)
               </h2>
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pl-0 sm:pl-13 p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100">
+          {/* Symmetrical padding p-4 sm:p-5 ensures text NEVER touches left/right box borders on mobile or desktop */}
+          <p className="text-xs sm:text-sm text-slate-700 dark:text-emerald-200/95 leading-relaxed p-4 sm:p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-500/30 transition-colors">
             You may cancel your project request for a full refund at any time before you provide final confirmation to our Gaenr Representative.
           </p>
         </section>
 
         {/* After Confirmation (No Refund) */}
-        <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-5">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-white/10 shadow-xs space-y-5 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100 shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-500/30 shrink-0">
               <AlertCircle className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Active Project Phase</span>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+              <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Active Project Phase</span>
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                 After Project Confirmation (No Refund)
               </h2>
             </div>
           </div>
 
-          <div className="space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed pl-0 sm:pl-13">
+          <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
             <p>
               A project is considered initiated once you have confirmed all of the following with our Gaenr representative (via WhatsApp, email, or verbal agreement):
             </p>
 
-            <ul className="list-disc list-inside space-y-2 text-slate-700 pl-2">
+            <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-slate-200 pl-2 sm:pl-3">
               <li>The project details, deliverables, and scope requirements.</li>
               <li>The final agreed price.</li>
               <li>The assignment of a specific expert.</li>
             </ul>
 
-            <p className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700">
+            {/* Symmetrical padding p-4 sm:p-5 with distinct amber warning aesthetic in dark and light modes */}
+            <p className="p-4 sm:p-5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-500/30 text-slate-700 dark:text-amber-200/90 leading-relaxed font-normal transition-colors">
               At this point, the expert dedicates their time and skills exclusively to your project. Because this digital work is created and delivered specifically for you, we cannot offer refunds or accept returns after a project has been confirmed and initiated.
             </p>
           </div>
         </section>
 
         {/* Commitment to Satisfaction */}
-        <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-4">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-white/10 shadow-xs space-y-4 transition-colors">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-[#006eff] flex items-center justify-center border border-blue-100 shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-500/30 shrink-0">
               <HeartHandshake className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Quality Mediation</span>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+              <span className="text-[11px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">Quality Mediation</span>
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                 Our Commitment to Your Satisfaction
               </h2>
             </div>
           </div>
 
-          <div className="text-xs sm:text-sm text-slate-600 leading-relaxed pl-0 sm:pl-13 p-4 rounded-2xl bg-blue-50/40 border border-blue-100">
+          {/* Symmetrical padding p-4 sm:p-5 inside blue box */}
+          <div className="text-xs sm:text-sm text-slate-700 dark:text-blue-200/90 leading-relaxed p-4 sm:p-5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-500/30 transition-colors">
             <p>
               While refunds cannot be issued post-confirmation, we are deeply committed to your satisfaction. Our team is here to mediate and work with you and the expert to ensure the final product meets the requirements you both agreed upon, including required revision rounds.
             </p>

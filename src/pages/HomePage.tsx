@@ -230,7 +230,7 @@ export const HomePage: React.FC = () => {
           - Half-width (50%) text layout, reserving the right half for visual
           - Content writer copy for trust highlights (Verified Student Talent, Zero Platform Fees, Escrow Protection)
          ========================================================================= */}
-      <section className="relative pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-20 border-b border-slate-200/80 bg-hero-colorful overflow-hidden">
+      <section className="relative pt-12 sm:pt-16 lg:pt-20 pb-16 sm:pb-20 border-b border-slate-200/80 dark:border-slate-800/80 bg-hero-colorful overflow-hidden">
         {/* Soft fluid ambient wave glow */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-200/35 rounded-full blur-3xl pointer-events-none -mr-32 -mt-32" />
         <div className="absolute bottom-0 left-10 w-[400px] h-[400px] bg-blue-200/30 rounded-full blur-3xl pointer-events-none -mb-32" />
@@ -467,7 +467,7 @@ export const HomePage: React.FC = () => {
          ========================================================================= */}
       <section
         ref={offeringSectionRef}
-        className="relative py-14 sm:py-18 lg:py-20 bg-gaenr-fluid overflow-hidden border-b border-blue-100/70"
+        className="relative py-14 sm:py-18 lg:py-20 bg-gaenr-fluid overflow-hidden border-b border-blue-100/70 dark:border-slate-800/80"
       >
         {/* Dynamic Interactive Multi-Touch Connection Laser Beam (Mobile View Only) */}
         {isOfferingConnected && offeringCoords && (
@@ -841,13 +841,16 @@ export const HomePage: React.FC = () => {
           - Hover attached strictly to circle boundary (no hover outside)
           - Hovering on circle turns icon white and background blue
          ========================================================================= */}
-      <section className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <section className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80 dark:border-slate-800/80 dark:bg-gradient-to-b dark:from-[#0d1527] dark:via-[#111c34] dark:to-[#0d1527] relative overflow-hidden">
+        {/* Soft subtle ambient glow across flowchart steps in dark mode */}
+        <div className="hidden dark:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 relative z-10">
           <div className="space-y-1.5 max-w-2xl mx-auto text-center flex flex-col items-center">
-            <span className="text-xs font-semibold text-[#0256d0] uppercase tracking-wider">
+            <span className="text-xs font-semibold text-[#0256d0] dark:text-[#38bdf8] uppercase tracking-wider">
               How It Works
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
               Quick, Clear, Secure Payment Process
             </h2>
           </div>
@@ -960,20 +963,20 @@ export const HomePage: React.FC = () => {
                   <div
                     className={`flex-1 rounded-2xl p-4 shadow-xs space-y-1 text-left transition-all duration-300 border ${
                       isActive
-                        ? 'bg-blue-50/80 border-[#0256d0] shadow-sm'
+                        ? 'bg-blue-50/80 dark:bg-blue-900/40 border-[#0256d0] dark:border-blue-400/60 shadow-sm'
                         : isPast
-                        ? 'bg-white border-blue-200'
-                        : 'bg-white border-slate-200'
+                        ? 'bg-white dark:bg-[#14213d]/85 border-blue-200 dark:border-blue-500/30'
+                        : 'bg-white dark:bg-[#14213d]/85 border-slate-200 dark:border-white/10'
                     }`}
                   >
                     <h3
                       className={`font-bold text-sm transition-colors duration-300 ${
-                        isActive ? 'text-[#0256d0]' : 'text-slate-800'
+                        isActive ? 'text-[#0256d0] dark:text-[#38bdf8]' : 'text-slate-800 dark:text-white'
                       }`}
                     >
                       {st.title}
                     </h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">
+                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                       {st.desc}
                     </p>
                   </div>
@@ -1008,7 +1011,9 @@ export const HomePage: React.FC = () => {
           - Background: VIBRANT BLUE (bg-expert-blue)
           - Scaled down typography, spacing, and iPhone mockup for optimal proportions
          ========================================================================= */}
-      <section className="py-10 sm:py-12 lg:py-14 relative overflow-hidden bg-gradient-to-b from-[#fafbfc] via-slate-100/60 to-blue-50/30 dark:from-[#090d16] dark:via-[#090d16] dark:to-[#090d16]">
+      <section className="py-10 sm:py-12 lg:py-14 relative overflow-hidden bg-gradient-to-b from-[#fafbfc] via-slate-100/60 to-blue-50/30 dark:from-[#0d1527] dark:via-[#111c34] dark:to-[#0d1527]">
+        {/* Ambient radial lighting across Become an Expert in dark mode */}
+        <div className="hidden dark:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="bg-expert-blue rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center relative">
             {/* Textured Design Overlay with reduced opacity so it does not look like solid blue */}

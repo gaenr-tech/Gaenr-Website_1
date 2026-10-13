@@ -1030,13 +1030,13 @@ html.dark {
 html.dark,
 html.dark body,
 html.dark #root {
-  background-color: #090d16 !important;
+  background-color: #0d1527 !important;
   color: #cbd5e1 !important;
 }
 
 /* Page containers & view wrappers */
 html.dark .min-h-screen {
-  background-color: #090d16 !important;
+  background-color: #0d1527 !important;
   color: #cbd5e1 !important;
 }
 
@@ -1168,12 +1168,29 @@ html.dark .min-h-screen {
 }
 
 .dark .bg-rose-50,
+.dark .bg-rose-50\/70,
+.dark .bg-rose-50\/80,
 .dark .bg-red-50 {
   background-color: rgba(244, 63, 94, 0.18) !important;
 }
 
 .dark .bg-rose-100 {
   background-color: rgba(244, 63, 94, 0.26) !important;
+}
+
+.dark .bg-emerald-50\/60,
+.dark .bg-emerald-50\/70 {
+  background-color: rgba(16, 185, 129, 0.18) !important;
+}
+
+.dark .bg-amber-50\/60,
+.dark .bg-amber-50\/70 {
+  background-color: rgba(245, 158, 11, 0.18) !important;
+}
+
+.dark .bg-blue-50\/40,
+.dark .bg-blue-50\/60 {
+  background-color: rgba(2, 86, 208, 0.2) !important;
 }
 
 .dark .bg-cyan-50 {
@@ -1240,8 +1257,20 @@ html.dark .min-h-screen {
 .dark .text-rose-800,
 .dark .text-rose-700,
 .dark .text-rose-600,
-.dark .text-rose-500 {
+.dark .text-rose-500,
+.dark .text-rose-900\/90,
+.dark .text-rose-800\/90 {
   color: #f87171 !important;
+}
+
+.dark .text-emerald-800\/90,
+.dark .text-emerald-900\/90 {
+  color: #34d399 !important;
+}
+
+.dark .text-amber-800\/90,
+.dark .text-amber-900\/90 {
+  color: #fbbf24 !important;
 }
 
 .dark .text-purple-700,

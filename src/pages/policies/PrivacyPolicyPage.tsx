@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Database, Layers, Share2, UserCheck, RefreshCw, Mail, CheckCircle2, Plus, Minus } from 'lucide-react';
+import { ShieldCheck, Database, Layers, Share2, UserCheck, RefreshCw, Mail, CheckCircle2, Plus, Minus, Lock } from 'lucide-react';
 
 export const PrivacyPolicyPage: React.FC = () => {
   // State for collapsible accordion sections (default all closed per user request)
@@ -23,7 +23,7 @@ export const PrivacyPolicyPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased space-y-10 sm:space-y-12 pb-20">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-[#0b1324] text-slate-800 dark:text-slate-200 antialiased space-y-10 sm:space-y-12 pb-20">
       {/* =========================================================================
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - Matching standard py-12 sm:py-16 banner across ecosystem
@@ -65,14 +65,14 @@ export const PrivacyPolicyPage: React.FC = () => {
 
         <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center gap-y-3 sm:gap-y-4">
           <div className="inline-flex items-center gap-2 text-xs font-semibold text-white/95 bg-white/15 backdrop-blur-md border border-white/20 px-3.5 py-1.5 rounded-full shadow-xs">
-            <ShieldCheck className="w-3.5 h-3.5 text-cyan-200" />
-            <span>User Data Protection</span>
+            <Lock className="w-3.5 h-3.5 text-cyan-200" />
+            <span>Privacy &amp; Data Ethics</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
             Privacy Policy
           </h1>
           <p className="text-sm sm:text-base text-white/95 font-normal leading-relaxed text-center max-w-xl">
-            Your Privacy Is Our Priority. Your trust is the foundation of our platform. This policy explains how Gaenr collects, uses, and protects your personal information in a clear and simple way.
+            Your Trust Is Our Foundation. Learn how we handle, protect, and respect your personal information across Gaenr.
           </p>
         </div>
       </section>
@@ -80,14 +80,14 @@ export const PrivacyPolicyPage: React.FC = () => {
       {/* Main Content Area */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
         {/* Core Guarantee Card with Expand/Collapse All Control */}
-        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white dark:bg-[#131f37] rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-white/10 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
           <div className="flex items-start sm:items-center gap-4">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100 shadow-xs">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-500/30 shadow-xs">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div className="space-y-0.5">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900">Zero Data Selling Guarantee</h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Zero Data Selling Guarantee</h2>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                 Click any section below to expand detailed privacy commitments and data handling.
               </p>
             </div>
@@ -95,69 +95,69 @@ export const PrivacyPolicyPage: React.FC = () => {
 
           <button
             onClick={toggleAll}
-            className="text-xs font-bold text-[#006eff] hover:underline self-end sm:self-center shrink-0 cursor-pointer px-3 py-1.5 rounded-xl bg-blue-50/80 border border-blue-100/80 transition-colors"
+            className="text-xs font-bold text-[#006eff] dark:text-blue-400 hover:underline self-end sm:self-center shrink-0 cursor-pointer px-3 py-1.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/60 border border-blue-100/80 dark:border-blue-500/30 transition-colors"
           >
             {allOpen ? 'Collapse All' : 'Expand All'}
           </button>
         </div>
 
         {/* Collapsible Section 1 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('p1')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 01
               </span>
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                <Database className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+                <Database className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   What Information We Collect
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['p1'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['p1'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['p1'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Information You Provide
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   When you create an account, submit a task brief, or apply as an expert, you provide us with details like your name, email, WhatsApp contact number, and project requirements.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Payment Information
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   When you pay or receive earnings, transactions are handled through secure, trusted third-party payment gateways (bKash, Nagad, bank transfers). Gaenr does not store complete banking or card credentials on our servers.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Information We Collect Automatically
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   We log standard technical information (such as browser type or IP address) to verify our beta service is functioning stably, ensure account integrity, and continually improve platform usability.
                 </p>
               </div>
@@ -166,62 +166,62 @@ export const PrivacyPolicyPage: React.FC = () => {
         </section>
 
         {/* Collapsible Section 2 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('p2')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 02
               </span>
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                <Layers className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+                <Layers className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   How We Use Your Information
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['p2'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['p2'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['p2'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     To Operate the Platform
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   To connect clients with verified experts, clarify deliverables, hold payments in escrow, and coordinate project completion.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     To Communicate With You
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   To send you task milestone notifications, respond to support inquiries, and confirm requirement scopes.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     To Improve Our Service
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   As a beta platform, we analyze anonymized feedback and usage trends to remove friction and build features requested by our community.
                 </p>
               </div>
@@ -230,72 +230,73 @@ export const PrivacyPolicyPage: React.FC = () => {
         </section>
 
         {/* Collapsible Section 3 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('p3')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 03
               </span>
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                <Share2 className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+                <Share2 className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   How We Share Your Information
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['p3'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['p3'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['p3'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              {/* Zero Data Selling Box: High-Contrast Emerald Alert in both Light and Dark Mode */}
+              <div className="p-4 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 text-emerald-950 dark:text-emerald-200 flex items-center gap-3 transition-colors">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0 border border-emerald-200/50 dark:border-emerald-500/30">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-xs sm:text-sm text-emerald-950">We DO NOT Sell Your Data. Ever.</h4>
-                  <p className="text-[11px] sm:text-xs text-emerald-800/90 mt-0.5">Your personal information is never traded, rented, or monetized with any third-party advertisers.</p>
+                  <h4 className="font-bold text-xs sm:text-sm text-emerald-950 dark:text-emerald-200">We DO NOT Sell Your Data. Ever.</h4>
+                  <p className="text-[11px] sm:text-xs text-emerald-800/90 dark:text-emerald-200/90 mt-0.5 font-normal">Your personal information is never traded, rented, or monetized with any third-party advertisers.</p>
                 </div>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     With Other Users
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   To facilitate the ecosystem, public showcase profiles (expert code, discipline, and curated portfolio work) are visible to visitors. Private contact or payment details are never exposed publicly.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     With Service Providers
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   We use trusted third-party providers (like SMS delivery and secure payment gateways) strictly to process requested transactions.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     For Legal Reasons
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   We may disclose information if legally required to protect the safety, rights, and integrity of our community.
                 </p>
               </div>
@@ -304,39 +305,39 @@ export const PrivacyPolicyPage: React.FC = () => {
         </section>
 
         {/* Collapsible Section 4 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('p4')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 04
               </span>
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                <UserCheck className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+                <UserCheck className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   Your Choices &amp; Rights
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['p4'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['p4'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['p4'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Access, Update &amp; Deletion
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
-                  You have the right to access, update, or ask us to delete your personal information. You can request changes at any time by contacting our support team at <a href="mailto:contact@gmail.com" className="text-[#006eff] hover:underline font-semibold inline-flex items-center gap-1"><Mail className="w-3.5 h-3.5 inline" /> contact@gmail.com</a>.
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
+                  You have the right to access, update, or ask us to delete your personal information. You can request changes at any time by contacting our support team at <a href="mailto:contact@gmail.com" className="text-[#006eff] dark:text-blue-400 hover:underline font-semibold inline-flex items-center gap-1"><Mail className="w-3.5 h-3.5 inline" /> contact@gmail.com</a>.
                 </p>
               </div>
             </div>
@@ -344,38 +345,38 @@ export const PrivacyPolicyPage: React.FC = () => {
         </section>
 
         {/* Collapsible Section 5 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('p5')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 05
               </span>
-              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                <RefreshCw className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+                <RefreshCw className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   Changes to This Policy
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['p5'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['p5'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['p5'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Policy Revisions &amp; Acceptance
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   We may update this policy as Gaenr evolves. We will notify users of any substantial revisions. By continuing to use our platform, you agree to the active policy.
                 </p>
               </div>

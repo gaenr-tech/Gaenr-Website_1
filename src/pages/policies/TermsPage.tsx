@@ -23,7 +23,7 @@ export const TermsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased space-y-10 sm:space-y-12 pb-20">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-[#0b1324] text-slate-800 dark:text-slate-200 antialiased space-y-10 sm:space-y-12 pb-20">
       {/* =========================================================================
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - Matching standard py-12 sm:py-16 banner across ecosystem
@@ -80,14 +80,14 @@ export const TermsPage: React.FC = () => {
       {/* Main Content Area */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
         {/* Core Guarantee Card with Expand/Collapse All Control */}
-        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white dark:bg-[#131f37] rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-white/10 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
           <div className="flex items-start sm:items-center gap-4">
-            <div className="w-11 h-11 rounded-2xl bg-blue-50 text-[#006eff] flex items-center justify-center shrink-0 border border-blue-100 shadow-xs">
+            <div className="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-500/30 shadow-xs">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div className="space-y-0.5">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900">Ecosystem Integrity &amp; Escrow Rules</h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Ecosystem Integrity &amp; Escrow Rules</h2>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                 Click any section below to review the guidelines for clients, experts, and project deliveries.
               </p>
             </div>
@@ -95,69 +95,69 @@ export const TermsPage: React.FC = () => {
 
           <button
             onClick={toggleAll}
-            className="text-xs font-bold text-[#006eff] hover:underline self-end sm:self-center shrink-0 cursor-pointer px-3 py-1.5 rounded-xl bg-blue-50/80 border border-blue-100/80 transition-colors"
+            className="text-xs font-bold text-[#006eff] dark:text-blue-400 hover:underline self-end sm:self-center shrink-0 cursor-pointer px-3 py-1.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/60 border border-blue-100/80 dark:border-blue-500/30 transition-colors"
           >
             {allOpen ? 'Collapse All' : 'Expand All'}
           </button>
         </div>
 
         {/* Collapsible Section 1 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s1')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 01
               </span>
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                <UserCheck className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+                <UserCheck className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   Your Account &amp; Participation
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['s1'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['s1'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['s1'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Eligibility
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   You must be at least 13 years old to use Gaenr services and create an account or assign tasks.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Account Responsibility
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   You are responsible for keeping all contact details accurate and maintaining the confidentiality of your credentials.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Beta Agreement
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   By using our beta platform, you acknowledge that some workflows are human-managed by our team rather than fully automated. You agree to provide honest feedback to help us build a better platform.
                 </p>
               </div>
@@ -166,62 +166,62 @@ export const TermsPage: React.FC = () => {
         </section>
 
         {/* Collapsible Section 2 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s2')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 02
               </span>
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                <Briefcase className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+                <Briefcase className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   The Gaenr Service
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['s2'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['s2'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['s2'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Clients (Outsourcers)
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   You agree to provide clear and accurate project specifications. Once you have paid for and approved the final deliverables, you own 100% of the commercial rights to that specific work.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Experts
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   You agree to deliver high-quality, original work on time, as described in the agreed brief. Payment is released to your local payout account following client approval.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Gaenr's Role
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   Gaenr acts as a facilitator and escrow manager. We confirm project details, hold payments in escrow, and mediate issues to ensure fairness for both sides.
                 </p>
               </div>
@@ -230,62 +230,63 @@ export const TermsPage: React.FC = () => {
         </section>
 
         {/* Collapsible Section 3 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s3')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 03
               </span>
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                <CreditCard className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+                <CreditCard className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   Payments &amp; Escrow
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['s3'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['s3'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['s3'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Upfront Escrow Deposit
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   Clients must deposit the project fee before expert execution commences.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Milestone &amp; Completion Release
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   Gaenr holds funds safely in escrow and releases them only after the client approves the final submission or confirms completion.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-rose-50/70 border border-rose-200/80 space-y-1.5">
-                <div className="flex items-center gap-2 text-rose-900">
-                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
-                  <h3 className="text-xs sm:text-sm font-bold tracking-tight">
+              {/* Off-Platform Payment Prohibition: High-Contrast Red Alert in Both Light and Dark Mode */}
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-500/30 space-y-1.5 transition-colors">
+                <div className="flex items-center gap-2 text-rose-900 dark:text-rose-200">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+                  <h3 className="text-xs sm:text-sm font-bold tracking-tight text-rose-900 dark:text-rose-200">
                     Off-Platform Payment Prohibition
                   </h3>
                 </div>
-                <p className="pl-6 text-rose-900/90 leading-relaxed">
+                <p className="pl-6 text-rose-900/90 dark:text-rose-200/90 leading-relaxed font-normal">
                   Attempting to solicit off-platform payments or circumvent our escrow system is a direct breach of community safety and results in immediate account suspension.
                 </p>
               </div>
@@ -294,64 +295,64 @@ export const TermsPage: React.FC = () => {
         </section>
 
         {/* Collapsible Section 4 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s4')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 04
               </span>
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                <Ban className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+                <Ban className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   Prohibited Conduct
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['s4'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['s4'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['s4'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <p className="font-semibold text-slate-900 text-xs sm:text-sm">You agree not to:</p>
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="font-semibold text-slate-900 dark:text-white text-xs sm:text-sm">You agree not to:</p>
               
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Illegal &amp; Fraudulent Activities
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   Use Gaenr for illegal, harmful, or fraudulent activities.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Harassment &amp; Abuse
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   Harass, abuse, or demean any freelancer, client, or representative.
                 </p>
               </div>
 
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Plagiarism &amp; Infringement
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   Submit plagiarized content or copyright-infringing assets.
                 </p>
               </div>
@@ -360,38 +361,38 @@ export const TermsPage: React.FC = () => {
         </section>
 
         {/* Collapsible Section 5 */}
-        <section className="bg-white rounded-3xl border border-slate-200/90 shadow-xs transition-all overflow-hidden">
+        <section className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 shadow-xs transition-all overflow-hidden">
           <button
             onClick={() => toggleSection('s5')}
-            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 transition-colors group"
+            className="w-full p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4 text-left cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors group"
           >
             <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
-              <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 text-xs font-bold flex items-center justify-center shrink-0">
+              <span className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 text-xs font-bold flex items-center justify-center shrink-0">
                 05
               </span>
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                <Power className="w-4 h-4 text-slate-400 group-hover:text-[#006eff] transition-colors shrink-0" />
-                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug break-words">
+                <Power className="w-4 h-4 text-slate-400 dark:text-slate-400 group-hover:text-[#006eff] dark:group-hover:text-blue-400 transition-colors shrink-0" />
+                <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                   Termination
                 </h2>
               </div>
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-blue-600 group-hover:bg-blue-50 transition-colors shrink-0">
-              {openSections['s5'] ? <Minus className="w-4 h-4 text-[#006eff]" /> : <Plus className="w-4 h-4" />}
+            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-500 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/60 transition-colors shrink-0">
+              {openSections['s5'] ? <Minus className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Plus className="w-4 h-4" />}
             </div>
           </button>
 
           {openSections['s5'] && (
-            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 space-y-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 border border-slate-100/90 space-y-1.5 hover:bg-slate-50 transition-colors">
+            <div className="p-5 sm:p-7 pt-2 border-t border-slate-100/90 dark:border-white/10 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="p-4 sm:p-4.5 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100/90 dark:border-white/8 space-y-1.5 hover:bg-slate-50 dark:hover:bg-[#1a2b49] transition-colors">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#006eff]" />
-                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                  <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                     Account Suspension &amp; Community Safety
                   </h3>
                 </div>
-                <p className="pl-3.5 text-slate-600 leading-relaxed">
+                <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
                   We reserve the right to suspend or terminate access for any user that violates these terms or compromises the trust and safety of the community.
                 </p>
               </div>

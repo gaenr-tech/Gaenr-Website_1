@@ -81,8 +81,10 @@ export const TestimonialsCarousel: React.FC = () => {
   };
 
   return (
-    <section id="testimonials-section" className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/50 dark:bg-[#090d16] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
+    <section id="testimonials-section" className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/50 dark:bg-gradient-to-b dark:from-[#0d1527] dark:via-[#101b31] dark:to-[#0d1527] relative overflow-hidden">
+      {/* Soft subtle ambient glow across endorsements in dark mode */}
+      <div className="hidden dark:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-cyan-500/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10 relative z-10">
         {/* Header: Voices of Trust & Endorsed by Recognized Voices */}
         <div className="text-center space-y-2 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-[#0256d0] dark:text-blue-400 text-xs font-bold">
