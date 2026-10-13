@@ -326,7 +326,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       ? `${cleanedTiers[0].price} BDT / Deliverable`
       : pricingModel;
 
-    saveExpertOnboardingResponse(application.id, {
+    const onboardingPayload = {
       pricingModel: calculatedBaseRate,
       pricingTiers: cleanedTiers,
       avatarId: selectedAvatarId,
@@ -340,7 +340,22 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       mfsProvider: payoutMethod === 'mfs' ? mfsProvider : undefined,
       mfsAccountType: payoutMethod === 'mfs' ? mfsAccountType : undefined,
       mfsNumber: payoutMethod === 'mfs' ? mfsNumber.trim() : undefined,
-    }, application);
+    };
+
+    saveExpertOnboardingResponse(application.id, onboardingPayload, application);
+
+    try {
+      localStorage.setItem(`gaenr_onboarded_${application.id}`, 'true');
+      fetch('/api/application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: application.id,
+          onboardingData: onboardingPayload,
+          baseApp: application,
+        }),
+      }).catch(() => {});
+    } catch {}
 
     setIsSubmitted(true);
   };
@@ -392,9 +407,10 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
 
         {/* Submission Complete & Locked View */}
         {(isSubmitted ||
+          Boolean(typeof window !== 'undefined' && (localStorage.getItem(`gaenr_onboarded_${resolvedId}`) || (application?.id && localStorage.getItem(`gaenr_onboarded_${application.id}`)))) ||
           application.status === 'submitted' ||
           application.status === 'onboarded' ||
-          Boolean(application.onboardingData && application.onboardingData.statement)) ? (
+          Boolean(application.onboardingData && (application.onboardingData.statement || application.onboardingData.submittedAt))) ? (
           <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-12 text-center shadow-lg space-y-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
               <CheckCircle className="w-8 h-8" />

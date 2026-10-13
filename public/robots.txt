@@ -5,4 +5,8 @@ Disallow: /operations
 Disallow: /ops
 Disallow: /manage/
 Disallow: /review/
+Disallow: /u/
+Disallow: /onboard/
+Disallow: /download/
+Disallow: /api/
 Sitemap: https://gaenr.com/sitemap.xml

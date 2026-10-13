@@ -14,7 +14,7 @@ export async function onRequestOptions() {
 
 function getEmailHeader(siteUrl) {
   return `
-  <div style="background:#ffffff;padding:26px 20px;text-align:center;border-bottom:1px solid #e2e8f0;">
+  <div style="background:#f8fafc;padding:26px 20px;text-align:center;border-bottom:1px solid #e2e8f0;">
     <a href="${siteUrl}" target="_blank" style="display:inline-block;text-decoration:none;">
       <img src="${siteUrl}/images/gaenr-logo.png" alt="GAENR" width="170" style="display:inline-block;max-width:170px;height:auto;border:0;outline:none;" />
     </a>
@@ -23,9 +23,9 @@ function getEmailHeader(siteUrl) {
 
 function getEmailFooter(siteUrl) {
   return `
-  <div style="background:#ffffff;padding:26px 20px;text-align:center;border-top:1px solid #e2e8f0;">
-    <div style="font-size:13px;font-weight:700;color:#0f172a;letter-spacing:0.5px;margin-bottom:14px;">
-      Team GAENR
+  <div style="background:#f8fafc;padding:26px 20px;text-align:center;border-top:1px solid #e2e8f0;">
+    <div style="font-size:14px;font-weight:900;color:#0f172a;letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;">
+      TEAM <span style="color:#006eff;">GAENR</span>
     </div>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;border-collapse:collapse;">
       <tr>
@@ -119,7 +119,7 @@ export async function onRequestPost({ request, env }) {
       text = `Hi ${name},\n\nCongratulations! We are pleased to inform you that your application has been reviewed and approved as a Verified Expert in ${skill}.\n\nPlease complete the expert onboarding form below to finalize your profile:\n\nComplete Onboarding Form: ${onboardingUrl}\n\nTeam GAENR`;
       html = `<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><style>body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:24px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);} .body{padding:32px 28px;} .btn{display:inline-block;background:#006eff;color:#ffffff !important;padding:14px 36px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:14px;box-shadow:0 4px 14px rgba(0,110,255,0.25);}</style></head>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><style>body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:24px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);} .body{padding:32px 28px;background:#ffffff;} .btn{display:inline-block;background:#006eff;color:#ffffff !important;padding:14px 36px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:14px;box-shadow:0 4px 14px rgba(0,110,255,0.25);}</style></head>
 <body>
   <div class="card">
     ${headerHtml}
@@ -144,7 +144,7 @@ export async function onRequestPost({ request, env }) {
       text = `Hi ${name},\n\nThank you for applying to join Gaenr as an Expert in ${skill}!\n\nWe have successfully received your application. Our vetting team is actively reviewing your credentials.\n\nBest regards,\nTeam GAENR`;
       html = `<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><style>body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:24px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);} .body{padding:32px 28px;}</style></head>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><style>body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:24px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);} .body{padding:32px 28px;background:#ffffff;}</style></head>
 <body>
   <div class="card">
     ${headerHtml}
@@ -158,26 +158,26 @@ export async function onRequestPost({ request, env }) {
 </body>
 </html>`;
     } else {
-      // Welcome email (Profile Live)
+      // Welcome email
       recipient = (payload.expert?.privateEmail || payload.email || '').trim();
       const name = (payload.expert?.name || 'there').trim();
       const code = (payload.code || payload.expert?.code || '').trim();
       const profileUrl = `${siteUrl}/experts/${encodeURIComponent(code)}`;
       const uploadToken = payload.expert?.uploadToken || code;
       const uploadPortalUrl = `${siteUrl}/u/${encodeURIComponent(uploadToken)}`;
-      const idCardDownloadUrl = `${siteUrl}/download/id-card/${encodeURIComponent(code)}`;
+      const idCardDownloadUrl = `${siteUrl}/api/id-card?code=${encodeURIComponent(code)}`;
 
-      subject = `Your GAENR Expert Profile is Live (ID: ${code})`;
-      text = `Hi ${name},\n\nCongratulations! Your verified expert profile (${code}) is now active and live on Gaenr.\n\nDownload ID Card: ${idCardDownloadUrl}\nUpload Portfolios: ${uploadPortalUrl}\nView Profile: ${profileUrl}\n\nTeam GAENR`;
+      subject = `Welcome to GAENR! Your Expert Profile is Now Active (ID: ${code})`;
+      text = `Hi ${name},\n\nWelcome to GAENR! Your verified expert profile (${code}) is now active and live.\n\nDownload ID Card: ${idCardDownloadUrl}\nUpload Portfolios: ${uploadPortalUrl}\nView Profile: ${profileUrl}\n\nTeam GAENR`;
 
       html = `<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><style>body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:24px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);} .body{padding:32px 28px;} .btn-dl{display:inline-block;background:#006eff;color:#ffffff !important;padding:12px 28px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;box-shadow:0 4px 14px rgba(0,110,255,0.25);} .btn-primary{display:inline-block;background:#0f172a;color:#ffffff !important;padding:11px 24px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;margin:4px;} .btn-secondary{display:inline-block;background:#ffffff;color:#0f172a !important;padding:11px 24px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;border:1px solid #cbd5e1;margin:4px;}</style></head>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><style>body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:24px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);} .body{padding:32px 28px;background:#ffffff;} .btn-dl{display:inline-block;background:#006eff;color:#ffffff !important;padding:12px 28px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;box-shadow:0 4px 14px rgba(0,110,255,0.25);} .btn-primary{display:inline-block;background:#0f172a;color:#ffffff !important;padding:11px 24px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;margin:4px;} .btn-secondary{display:inline-block;background:#ffffff;color:#0f172a !important;padding:11px 24px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;border:1px solid #cbd5e1;margin:4px;}</style></head>
 <body>
   <div class="card">
     ${headerHtml}
     <div class="body">
-      <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin-top:0;">Profile Live, <span style="color:#006eff;">${name}</span>!</h2>
+      <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin-top:0;">Welcome to GAENR, <span style="color:#006eff;">${name}</span>!</h2>
       <p style="font-size:14px;line-height:1.6;color:#475569;">Congratulations! Your verified expert profile (Official ID: <strong style="font-family:monospace;color:#006eff;font-size:15px;letter-spacing:1px;">${code}</strong>) is now active and live on Gaenr.</p>
       
       <!-- ID Card Announcement & Direct Download Action -->
@@ -188,7 +188,7 @@ export async function onRequestPost({ request, env }) {
         <div style="font-size:20px;font-weight:900;font-family:monospace;letter-spacing:3px;color:#006eff;margin-bottom:12px;">
           ${code}
         </div>
-        <p style="font-size:12px;color:#475569;margin:0 0 16px 0;line-height:1.5;">Your official digital ID card image has been attached to this email. You can also download it automatically at anytime using the link below:</p>
+        <p style="font-size:12px;color:#475569;margin:0 0 16px 0;line-height:1.5;">Your official digital ID card image has been attached to this email. You can also download it directly at anytime using the button below:</p>
         <div style="text-align:center;">
           <a href="${idCardDownloadUrl}" class="btn-dl" target="_blank">Download Official ID Card</a>
         </div>

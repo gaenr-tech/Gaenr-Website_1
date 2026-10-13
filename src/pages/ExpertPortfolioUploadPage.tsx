@@ -419,7 +419,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-600 leading-relaxed">
-                    আপনার তৈরি করা লাইভ ওয়েবসাইট, ওয়ার্ডপ্রেস পোর্টাল বা ফিগমা প্রোটোটাইপ লিঙ্ক এখানে পেস্ট করুন। লিঙ্ক দিলে কোনো ফাইল আপলোড করার প্রয়োজন নেই (যেকোনো একটা দিলেই হবে)।
+                    Paste your live website, WordPress portal, or Figma prototype link here. If you provide a link, uploading a file is optional.
                   </p>
                   <input
                     type="url"
@@ -491,7 +491,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
                       </p>
                       <p className="text-[11px] text-slate-400">
                         {previewType === 'website'
-                          ? 'লিঙ্ক দিয়েছেন? তাহলে ফাইল আপলোড ঐচ্ছিক (যেকোনো একটা দিলেই হবে)।'
+                          ? 'Provided a link? File upload is optional.'
                           : 'Supports Images (PNG, JPG, WebP), Videos (MP4) & Presentations (PDF)'}
                       </p>
                     </div>
