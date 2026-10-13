@@ -48,6 +48,23 @@ export const sendExpertWelcomeEmail = async (
 };
 
 /**
+ * Sanitize category / skill names to pure English, stripping any Bengali characters or slashes.
+ */
+export const sanitizeEnglishSkill = (skillStr?: string): string => {
+  if (!skillStr || typeof skillStr !== 'string') return 'Digital Creator';
+  const primary = skillStr.split('/')[0].trim();
+  const clean = primary.replace(/[\u0980-\u09FF]/g, '').trim();
+  if (/wordpress/i.test(clean)) return 'WordPress Website Design';
+  if (/ux|ui/i.test(clean)) return 'UX/UI Design';
+  if (/graphic/i.test(clean)) return 'Graphics Design';
+  if (/content/i.test(clean)) return 'Content Writing';
+  if (/video/i.test(clean)) return 'Video Editing';
+  if (/presentation/i.test(clean)) return 'Presentation Design';
+  if (/ads|marketing/i.test(clean)) return 'Ads Running (Performance Marketing)';
+  return clean || 'Digital Creator';
+};
+
+/**
  * Dispatch an automated onboarding invitation email to an approved applicant.
  */
 export const sendExpertOnboardingInviteEmail = async (application: {
@@ -58,6 +75,7 @@ export const sendExpertOnboardingInviteEmail = async (application: {
   otherSkill?: string;
 }): Promise<WelcomeEmailResult> => {
   try {
+    const cleanSkill = sanitizeEnglishSkill(application.otherSkill || application.skill);
     const response = await fetch(`${apiBase()}/api/send-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -66,7 +84,7 @@ export const sendExpertOnboardingInviteEmail = async (application: {
         applicationId: application.id,
         fullName: application.fullName,
         email: application.email,
-        skill: application.otherSkill || application.skill || 'Digital Creator',
+        skill: cleanSkill,
       }),
     });
     const data = (await response.json().catch(() => ({}))) as {
@@ -96,6 +114,7 @@ export const sendApplicantReceivedEmail = async (applicant: {
   whatsapp?: string;
 }): Promise<WelcomeEmailResult> => {
   try {
+    const cleanSkill = sanitizeEnglishSkill(applicant.otherSkill || applicant.skill);
     const response = await fetch(`${apiBase()}/api/send-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -104,7 +123,7 @@ export const sendApplicantReceivedEmail = async (applicant: {
         applicationId: applicant.id,
         fullName: applicant.fullName,
         email: applicant.email,
-        skill: applicant.otherSkill || applicant.skill || 'Digital Creator',
+        skill: cleanSkill,
         whatsapp: applicant.whatsapp,
       }),
     });

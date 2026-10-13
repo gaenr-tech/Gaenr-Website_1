@@ -20,7 +20,7 @@ import {
   MessageCircle,
   ExternalLink,
 } from 'lucide-react';
-import { sendApplicantReceivedEmail } from '../../utils/email';
+import { sendApplicantReceivedEmail, sanitizeEnglishSkill } from '../../utils/email';
 import {
   buildExpertApplicationNotification,
   createWhatsAppUrl,
@@ -105,26 +105,28 @@ export const ApplyExpertModal: React.FC = () => {
 
     submitExpertApplication(applicationPayload);
 
-    // 1. Dispatch confirmation email to applicant
+    // 1. Build structured WhatsApp Alert for Gaenr Operations (+880 1608 922 800)
+    const waMessage = buildExpertApplicationNotification(applicationPayload);
+    const waUrl = createWhatsAppUrl(waMessage);
+    setSubmittedWaUrl(waUrl);
+
+    // 2. Auto-trigger client WhatsApp handover SYNCHRONOUSLY before any async calls
+    // (Ensures browser popup blockers do NOT block the WhatsApp window)
+    triggerWhatsAppNotification(waMessage, true);
+
+    // 3. Dispatch confirmation email to applicant with 100% pure English skill name
+    const cleanSkill = sanitizeEnglishSkill(applicationPayload.otherSkill || applicationPayload.skill);
     sendApplicantReceivedEmail({
       fullName: applicationPayload.fullName,
       email: applicationPayload.email,
-      skill: applicationPayload.otherSkill || applicationPayload.skill,
+      skill: cleanSkill,
       whatsapp: applicationPayload.whatsapp,
     }).catch((err) => {
       console.warn('Applicant received email note:', err);
     });
 
-    // 2. Build structured WhatsApp Alert for Gaenr Operations (+880 1608 922 800)
-    const waMessage = buildExpertApplicationNotification(applicationPayload);
-    const waUrl = createWhatsAppUrl(waMessage);
-    setSubmittedWaUrl(waUrl);
-
-    // 3. Dispatch backend notification audit
+    // 4. Dispatch backend notification audit (also triggers instant Ops Alert Email to contact@gmail.com)
     sendBackendNotification('expert_application', applicationPayload).catch(() => {});
-
-    // 4. Auto-trigger client WhatsApp handover
-    triggerWhatsAppNotification(waMessage, true);
 
     setIsSubmitted(true);
     showToast('Application received! Opening Gaenr WhatsApp alert...', 'success');

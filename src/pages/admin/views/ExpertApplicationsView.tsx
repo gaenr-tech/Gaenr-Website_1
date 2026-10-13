@@ -5,6 +5,7 @@ import { getExpertSecureUploadUrl, generateUniqueExpertCode, generateSecureUploa
 import { RAW_AVATAR_SPECS, AvatarGraphic, VerifiedBadge3D } from '../../../components/common/Avatars';
 import { ExpertIdCard } from '../../../components/common/ExpertIdCard';
 import { captureIdCardDataUrl } from '../../../utils/downloadIdCardImage';
+import { sanitizeEnglishSkill } from '../../../utils/email';
 import {
   Users,
   Search,
@@ -182,7 +183,7 @@ export const ExpertApplicationsView: React.FC<ExpertApplicationsViewProps> = ({
 
   const handleCopyWelcomeEmail = (app: ExpertApplication) => {
     const onboardingUrl = getOnboardingUrl(app);
-    const skillName = app.otherSkill || app.skill.split('/')[0].trim();
+    const skillName = sanitizeEnglishSkill(app.otherSkill || app.skill);
     const emailBody = `Subject: Congratulations! Your Gaenr Expert Application is Approved
 
 Hi ${app.fullName},

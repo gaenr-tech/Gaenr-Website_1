@@ -197,7 +197,12 @@ export const triggerWhatsAppNotification = (messageText: string, autoOpen = true
   const url = createWhatsAppUrl(messageText);
   if (autoOpen && typeof window !== 'undefined') {
     try {
-      window.open(url, '_blank', 'noopener,noreferrer');
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+      if (isMobile) {
+        window.location.href = url;
+      } else {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
     } catch (e) {
       console.warn('Could not auto-open WhatsApp:', e);
     }

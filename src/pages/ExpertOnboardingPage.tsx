@@ -29,6 +29,7 @@ import {
   sendBackendNotification,
   triggerWhatsAppNotification,
 } from '../utils/whatsappNotifications';
+import { sanitizeEnglishSkill } from '../utils/email';
 
 interface ExpertOnboardingPageProps {
   applicationId?: string;
@@ -352,12 +353,13 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
     saveExpertOnboardingResponse(application.id, onboardingPayload, application);
 
     const avatarObj = RAW_AVATAR_SPECS.find((a) => a.id === selectedAvatarId);
+    const cleanEnglishSkill = sanitizeEnglishSkill(application.otherSkill || application.skill);
     const waNotificationMessage = buildExpertOnboardingNotification({
       id: application.id,
       fullName: application.fullName,
       whatsapp: application.whatsapp,
       email: application.email,
-      skill: skillTitle,
+      skill: cleanEnglishSkill,
       avatarName: avatarObj?.name || 'Custom Avatar',
       statement: statement.trim(),
       pricingTiers: cleanedTiers.map((t) => ({ serviceName: t.serviceName, price: t.price })),
@@ -368,6 +370,10 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       mfsAccountType: payoutMethod === 'mfs' ? mfsAccountType : undefined,
       mfsNumber: payoutMethod === 'mfs' ? mfsNumber.trim() : undefined,
     });
+
+    // 1. Auto-trigger WhatsApp notification to Gaenr Operations Desk (+880 1608 922 800) SYNCHRONOUSLY
+    // (Prevents browser popup blockers from suppressing the window!)
+    triggerWhatsAppNotification(waNotificationMessage, true);
 
     try {
       localStorage.setItem(`gaenr_onboarded_${application.id}`, 'true');
@@ -381,23 +387,20 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
         }),
       }).catch(() => {});
 
-      // Dispatch backend audit notification
+      // Dispatch backend audit notification (triggers instant Ops Email alert to contact@gmail.com)
       sendBackendNotification('expert_onboarding', {
         applicationId: application.id,
         fullName: application.fullName,
-        skill: skillTitle,
+        skill: cleanEnglishSkill,
         ...onboardingPayload,
       }).catch(() => {});
-
-      // Auto-trigger WhatsApp notification to Gaenr Operations Desk (+880 1608 922 800)
-      triggerWhatsAppNotification(waNotificationMessage, true);
     } catch {}
 
     setIsSubmitted(true);
     showToast('Onboarding submitted! Opening Gaenr Operations WhatsApp...', 'success');
   };
 
-  const skillTitle = application.otherSkill || application.skill.split('/')[0].trim();
+  const skillTitle = sanitizeEnglishSkill(application.otherSkill || application.skill);
 
   return (
     <div className="min-h-screen bg-slate-50/70 selection:bg-[#006eff] selection:text-white pb-20">
@@ -466,48 +469,15 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
               </p>
             </div>
 
-            {/* Summary Card */}
-            <div className="max-w-md mx-auto p-5 rounded-2xl bg-slate-50 border border-slate-200/80 text-left space-y-4">
-              <div className="flex items-center gap-3 pb-3 border-b border-slate-200/70">
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-900 border border-slate-300 shrink-0 relative">
-                  <AvatarGraphic id={selectedAvatarId} size="100%" className="w-full h-full object-cover" />
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-mono block">Selected Avatar</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-slate-900 text-xs">
-                      {RAW_AVATAR_SPECS.find((a) => a.id === selectedAvatarId)?.name || 'Custom Avatar'}
-                    </span>
-                    <VerifiedBadge3D size={16} />
-                  </div>
-                </div>
+            {/* Safe Submission Status (Private payout, pricing and statement details strictly hidden for privacy & security) */}
+            <div className="max-w-md mx-auto p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200/90 text-center space-y-2 shadow-2xs">
+              <div className="inline-flex items-center justify-center gap-2 text-emerald-800 font-bold text-xs sm:text-sm">
+                <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>অনবোর্ডিং তথ্য সফলভাবে জমা দেওয়া হয়েছে</span>
               </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-mono block">Pricing Packages</span>
-                <div className="space-y-1 mt-1">
-                  {pricingTiers.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between text-xs">
-                      <span className="text-slate-600">{t.serviceName}</span>
-                      <span className="font-mono font-bold text-[#006eff]">{t.price} BDT</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-mono block">Payout Method</span>
-                <span className="font-bold text-slate-800 text-xs uppercase">
-                  {payoutMethod === 'bank'
-                    ? `${bankName || 'Bank'} (${accountNumber ? `•••• ${accountNumber.slice(-4)}` : 'Active'})`
-                    : `${mfsProvider} (${mfsAccountType}) • ${mfsNumber}`}
-                </span>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-400 uppercase font-mono block">My Statement</span>
-                <p className="text-xs text-slate-600 italic">"{statement}"</p>
-              </div>
+              <p className="text-xs text-emerald-700 leading-relaxed">
+                আপনার অনবোর্ডিং প্রোফাইল এবং পেমেন্ট সংক্রান্ত তথ্য নিরাপদে ডাটাবেজে লক করা হয়েছে। তথ্যের সর্বোচ্চ গোপনীয়তা ও নিরাপত্তার স্বার্থে জমা দেওয়া ব্যাংকিং তথ্য এবং প্যাকেজ রেট এখানে আর প্রদর্শন করা হচ্ছে না।
+              </p>
             </div>
 
             {/* Direct WhatsApp Alert to Gaenr Operations Desk */}

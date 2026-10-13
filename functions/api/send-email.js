@@ -96,6 +96,20 @@ function getEmailFooter(siteUrl) {
   </table>`;
 }
 
+function sanitizeEnglishSkill(skillStr) {
+  if (!skillStr || typeof skillStr !== 'string') return 'Digital Creator';
+  const primary = skillStr.split('/')[0].trim();
+  const clean = primary.replace(/[\u0980-\u09FF]/g, '').trim();
+  if (/wordpress/i.test(clean)) return 'WordPress Website Design';
+  if (/ux|ui/i.test(clean)) return 'UX/UI Design';
+  if (/graphic/i.test(clean)) return 'Graphics Design';
+  if (/content/i.test(clean)) return 'Content Writing';
+  if (/video/i.test(clean)) return 'Video Editing';
+  if (/presentation/i.test(clean)) return 'Presentation Design';
+  if (/ads|marketing/i.test(clean)) return 'Ads Running (Performance Marketing)';
+  return clean || 'Digital Creator';
+}
+
 function buildFullEmailHtml({ siteUrl, bodyHtml }) {
   const headerInner = getEmailHeader(siteUrl);
   const footerInner = getEmailFooter(siteUrl);
@@ -112,9 +126,13 @@ function buildFullEmailHtml({ siteUrl, bodyHtml }) {
     <tr>
       <td align="center" style="padding:10px 0;">
         <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background-color:#ffffff;border-radius:22px;border:1px solid #cbd5e1;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);margin:0 auto;">
+          <!-- Top Gradient Accent Bar with Increased Stroke (7px) -->
+          <tr>
+            <td height="7" bgcolor="#006eff" style="height:7px;background:#006eff;background:linear-gradient(90deg, #0048ba 0%, #006eff 50%, #38bdf8 100%);line-height:7px;font-size:0;padding:0;margin:0;border:0;">&nbsp;</td>
+          </tr>
           <!-- 1. Pure Whitish Branded Header -->
           <tr>
-            <td align="center" bgcolor="#ffffff" style="background-color:#ffffff;padding:32px 20px 20px 20px;border-top:4px solid #006eff;border-bottom:1px solid #f1f5f9;text-align:center;">
+            <td align="center" bgcolor="#ffffff" style="background-color:#ffffff;padding:30px 20px 20px 20px;border-bottom:1px solid #f1f5f9;text-align:center;">
               ${headerInner}
             </td>
           </tr>
@@ -160,7 +178,7 @@ export async function onRequestPost({ request, env }) {
     if (type === 'onboarding_invite') {
       recipient = (payload.email || '').trim();
       const name = (payload.fullName || 'there').trim();
-      const skill = (payload.skill || 'Digital Creator').trim();
+      const skill = sanitizeEnglishSkill(payload.skill || payload.otherSkill);
       const onboardingUrl = `${siteUrl}/onboard/${payload.applicationId}?name=${encodeURIComponent(name)}&email=${encodeURIComponent(recipient)}&skill=${encodeURIComponent(skill)}`;
       
       subject = 'Congratulations! Your GAENR Expert Application is Approved';
@@ -180,7 +198,7 @@ export async function onRequestPost({ request, env }) {
     } else if (type === 'applicant_received') {
       recipient = (payload.email || '').trim();
       const name = (payload.fullName || 'there').trim();
-      const skill = (payload.skill || 'Digital Creator').trim();
+      const skill = sanitizeEnglishSkill(payload.skill || payload.otherSkill);
 
       subject = 'GAENR Expert Application Received';
       text = `Hi ${name},\n\nThank you for applying to join Gaenr as an Expert in ${skill}!\n\nWe have successfully received your application. Our vetting team is actively reviewing your credentials.\n\nBest regards,\nTeam GAENR`;
@@ -189,6 +207,65 @@ export async function onRequestPost({ request, env }) {
       <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin-top:0;">Application Received, <span style="color:#006eff;">${name}</span>!</h2>
       <p style="font-size:14px;line-height:1.6;color:#475569;">Thank you for applying to join Gaenr as a Verified Expert in <strong>${skill}</strong>. We have received your portfolio and application details.</p>
       <p style="font-size:14px;line-height:1.6;color:#475569;margin-bottom:0;">Our talent vetting operations team is actively reviewing your submission. You will receive an official update as soon as the review is complete.</p>`;
+
+      html = buildFullEmailHtml({ siteUrl, bodyHtml });
+
+      // Automatically dispatch high-priority Operations Alert Email to contact@gmail.com
+      if (resendApiKey) {
+        const cleanWa = (payload.whatsapp || '').replace(/[^0-9]/g, '');
+        const opsSubject = `🚨 [NEW EXPERT APPLICATION] ${name} - ${skill}`;
+        const opsBody = `
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:16px 20px;margin-bottom:20px;">
+          <span style="font-size:11px;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:1px;">New Expert Application Alert</span>
+          <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin:6px 0 0 0;">${name} (${skill})</h2>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;color:#334155;margin-bottom:20px;">
+          <tr><td style="padding:6px 0;font-weight:600;width:120px;">Applicant Name:</td><td>${name}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:600;">Category / Skill:</td><td><strong style="color:#006eff;">${skill}</strong></td></tr>
+          <tr><td style="padding:6px 0;font-weight:600;">WhatsApp:</td><td><a href="https://wa.me/${cleanWa}" target="_blank" style="color:#006eff;font-weight:700;">${payload.whatsapp || 'N/A'}</a></td></tr>
+          <tr><td style="padding:6px 0;font-weight:600;">Email:</td><td><a href="mailto:${recipient}" style="color:#006eff;">${recipient}</a></td></tr>
+          <tr><td style="padding:6px 0;font-weight:600;">Experience:</td><td>${payload.experience || 'Verified'}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:600;">Portfolio:</td><td><a href="${payload.portfolioUrl || '#'}" target="_blank" style="color:#006eff;">${payload.portfolioUrl || 'None provided'}</a></td></tr>
+        </table>
+        <div style="text-align:center;margin-top:24px;">
+          <a href="${siteUrl}/admin" style="display:inline-block;background:#006eff;color:#ffffff !important;padding:12px 30px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;box-shadow:0 4px 14px rgba(0,110,255,0.25);" target="_blank">Open Admin Dashboard &rarr;</a>
+          ${cleanWa ? `&nbsp;<a href="https://wa.me/${cleanWa}" style="display:inline-block;background:#10b981;color:#ffffff !important;padding:12px 24px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;" target="_blank">Chat with Applicant on WhatsApp</a>` : ''}
+        </div>`;
+        const opsHtml = buildFullEmailHtml({ siteUrl, bodyHtml: opsBody });
+
+        fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: emailFrom.includes('@gmail.com') ? 'Gaenr <contact@gaenr.com>' : emailFrom,
+            reply_to: recipient || 'contact@gmail.com',
+            to: ['contact@gmail.com'],
+            subject: opsSubject,
+            html: opsHtml,
+          }),
+        }).catch((e) => console.warn('Ops alert dispatch notice:', e));
+      }
+
+    } else if (type === 'ops_alert') {
+      recipient = 'contact@gmail.com';
+      const alertTitle = payload.title || payload.subject || 'Platform Operations Notification';
+      subject = `🚨 [GAENR OPS] ${alertTitle}`;
+      text = `GAENR Operations Alert: ${alertTitle}\n\nTime: ${new Date().toISOString()}`;
+
+      const bodyHtml = `
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:16px 20px;margin-bottom:20px;">
+        <span style="font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:1px;">Gaenr Operations Alert</span>
+        <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin:6px 0 0 0;">${alertTitle}</h2>
+      </div>
+      <div style="font-size:14px;color:#334155;line-height:1.6;">
+        ${payload.bodyHtml || `<p>${payload.text || 'New operational activity recorded.'}</p>`}
+      </div>
+      <div style="text-align:center;margin-top:28px;">
+        <a href="${siteUrl}/admin" style="display:inline-block;background:#006eff;color:#ffffff !important;padding:12px 32px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;" target="_blank">Open Admin Operations &rarr;</a>
+      </div>`;
 
       html = buildFullEmailHtml({ siteUrl, bodyHtml });
 
