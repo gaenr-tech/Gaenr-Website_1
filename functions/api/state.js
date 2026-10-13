@@ -20,14 +20,18 @@ export async function onRequestOptions() {
 // ---------------------------------------------------------------------------
 // Cloudflare D1 Native Edge Helpers
 // ---------------------------------------------------------------------------
+let d1Initialized = false;
+
 async function initD1Table(db) {
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS gaenr_app_state (
-      id INTEGER PRIMARY KEY,
-      state TEXT NOT NULL DEFAULT '{}',
-      updated_at TEXT NOT NULL
-    );
-  `);
+  if (d1Initialized) return;
+  try {
+    await db
+      .prepare('CREATE TABLE IF NOT EXISTS gaenr_app_state (id INTEGER PRIMARY KEY, state TEXT NOT NULL, updated_at TEXT NOT NULL)')
+      .run();
+    d1Initialized = true;
+  } catch (err) {
+    console.error('initD1Table error:', err);
+  }
 }
 
 async function getD1State(db) {
@@ -54,11 +58,7 @@ async function setD1State(db, finalState) {
   await initD1Table(db);
   const now = new Date().toISOString();
   await db
-    .prepare(`
-      INSERT INTO gaenr_app_state (id, state, updated_at)
-      VALUES (1, ?, ?)
-      ON CONFLICT (id) DO UPDATE SET state = excluded.state, updated_at = excluded.updated_at
-    `)
+    .prepare('INSERT INTO gaenr_app_state (id, state, updated_at) VALUES (1, ?, ?) ON CONFLICT(id) DO UPDATE SET state = excluded.state, updated_at = excluded.updated_at')
     .bind(JSON.stringify(finalState), now)
     .run();
   return { state: finalState, updatedAt: now };
