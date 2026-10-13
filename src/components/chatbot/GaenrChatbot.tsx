@@ -59,6 +59,7 @@ interface InChatTaskState {
     | 'service_needed'
     | 'category'
     | 'subCategory'
+    | 'custom_subcategory'
     | 'expert'
     | 'brief'
     | 'deadline'
@@ -98,6 +99,7 @@ export const GaenrChatbot: React.FC = () => {
   // Speech-to-text / Voice Command state
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const latestSpeechTranscriptRef = useRef<string>('');
 
   // Interactive step-by-step task flow state
   const [taskFlow, setTaskFlow] = useState<InChatTaskState>({
@@ -284,6 +286,7 @@ export const GaenrChatbot: React.FC = () => {
 
       recognition.onstart = () => {
         setIsListening(true);
+        latestSpeechTranscriptRef.current = '';
       };
 
       recognition.onresult = (event: any) => {
@@ -291,8 +294,10 @@ export const GaenrChatbot: React.FC = () => {
         for (let i = 0; i < event.results.length; ++i) {
           fullText += event.results[i][0].transcript;
         }
-        if (fullText.trim()) {
-          setInputValue(fullText.trim());
+        const trimmed = fullText.trim();
+        latestSpeechTranscriptRef.current = trimmed;
+        if (trimmed) {
+          setInputValue(trimmed);
         }
       };
 
@@ -894,41 +899,11 @@ ${taskData.description.trim()}`;
         };
       }
 
-      setTaskFlow((prev) => ({ ...prev, email: cleanText.toLowerCase(), step: 'service_needed' }));
+      setTaskFlow((prev) => ({ ...prev, email: cleanText.toLowerCase(), step: 'category' }));
       return {
         text: isBn
-          ? 'আপনার কী সার্ভিস প্রয়োজন এবং আপনি কী ফলাফল পেতে চান? (যেমন: "আমাদের প্রোডাক্ট লঞ্চের জন্য ল্যান্ডিং পেজ ডিজাইন" বা "ইউটিউব ভিডিও এডিটিং"):'
-          : 'What service do you need, and what outcome are you hoping for? (e.g. "A landing page design for our product launch" or "YouTube video editing"):',
-      };
-    }
-
-    // Step 4: Service Requested / Outcome
-    if (taskFlow.step === 'service_needed') {
-      if (cleanText.length < 3 || /^(help|something|কাজ|হেল্প|marketing|do it)$/i.test(cleanText)) {
-        return {
-          text: isBn
-            ? 'সঠিকভাবে কাজ শুরু করতে সাহায্য করছি। আপনি মূলত কী আউটকাম চাইছেন এবং আমাদের কী তৈরি করে দিতে হবে?'
-            : 'I can help route this correctly. What outcome are you looking for, and what do you need us to deliver?',
-        };
-      }
-
-      const matchedCat = matchApprovedCategory(cleanText);
-      setTaskFlow((prev) => ({
-        ...prev,
-        serviceNeeded: cleanText,
-        description: cleanText,
-        step: 'category',
-        ...(matchedCat ? { category: matchedCat.slug, categoryTitle: matchedCat.title } : {}),
-      }));
-
-      return {
-        text: isBn
-          ? (matchedCat
-              ? `বুঝতে পেরেছি—সম্ভাব্য ক্যাটাগরি: **${matchedCat.title}**। এটি নিশ্চিত করতে নিচে ক্লিক করুন বা অন্য কোনো অনুমোদিত ক্যাটাগরি বেছে নিন:`
-              : 'বুঝতে পেরেছি। অনুগ্রহ করে নিচের অনুমোদিত সার্ভিস ক্যাটাগরি থেকে বেছে নিন:')
-          : (matchedCat
-              ? `Understood—closest category: **${matchedCat.title}**. Please confirm that category or choose another approved category below:`
-              : 'Understood. Please choose the closest approved category from the list below:'),
+          ? 'ধন্যবাদ! এবার আপনার প্রয়োজনীয় সার্ভিসটি নির্বাচন করুন (নিচের যে কোনো একটি অপশনে ক্লিক করুন বা সার্ভিসের নাম লিখুন):'
+          : 'Thank you! Now please select the service you need from our approved categories below:',
         actions: [
           { label: '🎨 Graphics Design', actionType: 'selectTaskCategory', payload: 'graphics-design' },
           { label: '🎬 Video Editing', actionType: 'selectTaskCategory', payload: 'video-editing' },
@@ -941,14 +916,14 @@ ${taskData.description.trim()}`;
       };
     }
 
-    // Step 5: Service Category (Approved Taxonomy)
-    if (taskFlow.step === 'category') {
+    // Step 4: Service Category (Approved Taxonomy & Skill Detection)
+    if (taskFlow.step === 'category' || taskFlow.step === 'service_needed') {
       const matched = matchApprovedCategory(cleanText);
       if (!matched) {
         return {
           text: isBn
-            ? `"${cleanText}"-কে আমাদের কোনো অনুমোদিত টাস্ক ক্যাটাগরির সাথে মেলানো যায়নি। অনুগ্রহ করে নিচের তালিকাভুক্ত অনুমোদিত ক্যাটাগরিগুলোর একটি বেছে নিন:`
-            : `I couldn't match "${cleanText}" to an approved task category. Please choose one of our approved categories below:`,
+            ? `"${cleanText}" আমাদের কোনো অনুমোদিত সার্ভিস ক্যাটাগরির সাথে মেলেনি। অনুগ্রহ করে নিচের তালিকাভুক্ত অনুমোদিত ক্যাটাগরিগুলো থেকে বেছে নিন:`
+            : `"${cleanText}" doesn't match an approved Gaenr service category. Please choose from our approved categories below:`,
           actions: [
             { label: '🎨 Graphics Design', actionType: 'selectTaskCategory', payload: 'graphics-design' },
             { label: '🎬 Video Editing', actionType: 'selectTaskCategory', payload: 'video-editing' },
@@ -966,31 +941,81 @@ ${taskData.description.trim()}`;
         ...prev,
         category: matched.slug,
         categoryTitle: matched.title,
+        serviceNeeded: matched.title,
         subCategory: subList[0] || matched.title,
         step: 'subCategory',
       }));
 
       return {
         text: isBn
-          ? `সার্ভিস: **${matched.title}**। এই সার্ভিসের কোন নির্দিষ্ট কাজটি করাতে চান? নিচে ক্লিক করুন বা লিখে জানান:`
-          : `Service: **${matched.title}**. What specific deliverable do you need? Choose below or type:`,
-        actions: subList.slice(0, 5).map((sub) => ({
-          label: sub,
-          actionType: 'selectTaskSubCategory',
-          payload: sub,
-        })),
+          ? `সার্ভিস: **${matched.title}**। এই সার্ভিসের কোন নির্দিষ্ট কাজটি করাতে চান? নিচে ক্লিক করুন বা অন্য কিছু হলে 'Other' বেছে নিন:`
+          : `Service: **${matched.title}**. What specific deliverable do you need? Choose below or select 'Other':`,
+        actions: [
+          ...subList.slice(0, 5).map((sub) => ({
+            label: sub,
+            actionType: 'selectTaskSubCategory' as const,
+            payload: sub,
+          })),
+          {
+            label: isBn ? '✨ Other / অন্যান্য' : '✨ Other / Custom',
+            actionType: 'selectTaskSubCategory' as const,
+            payload: 'Other',
+          },
+        ],
       };
     }
 
-    // Step 6: Sub-Category / Specific Deliverable
+    // Step 5: Sub-Category / Specific Deliverable
     if (taskFlow.step === 'subCategory') {
+      const isOther = /^(other|অন্যান্য|অন্য কিছু|অন্য|custom|আদার)$/i.test(cleanText);
+      if (isOther) {
+        setTaskFlow((prev) => ({ ...prev, step: 'custom_subcategory' }));
+        return {
+          text: isBn
+            ? 'আপনি ঠিক কী ধরণের কাজ করাতে চাচ্ছেন? আপনার সাব-ক্যাটাগরি বা কাজের ধরনটি সংক্ষেপে লিখে জানান:'
+            : 'What specific deliverable or custom task do you need? Please describe it below:',
+        };
+      }
+
+      const isJunk = cleanText.length < 3 || /^(asdf|qwerty|na|none|test|??|\.\.)$/i.test(cleanText);
+      if (isJunk) {
+        const subList = getSubCategories(taskFlow.category);
+        return {
+          text: isBn
+            ? `অনুগ্রহ করে নিচের অপশনগুলো থেকে একটি নির্দিষ্ট ডেলিভারেবল বেছে নিন অথবা 'Other' নির্বাচন করে আপনার কাস্টম কাজের নাম লিখুন:`
+            : `Please choose a deliverable from the options below or select 'Other' to describe your custom task:`,
+          actions: [
+            ...subList.slice(0, 5).map((sub) => ({
+              label: sub,
+              actionType: 'selectTaskSubCategory' as const,
+              payload: sub,
+            })),
+            {
+              label: isBn ? '✨ Other / অন্যান্য' : '✨ Other / Custom',
+              actionType: 'selectTaskSubCategory' as const,
+              payload: 'Other',
+            },
+          ],
+        };
+      }
+
       const subCategory = cleanText;
       const matchedExperts = getMatchedFreelancers(taskFlow.category);
-      setTaskFlow((prev) => ({ ...prev, subCategory, step: 'expert' }));
+      setTaskFlow((prev) => ({
+        ...prev,
+        subCategory,
+        serviceNeeded: `${prev.categoryTitle} - ${subCategory}`,
+        step: 'expert',
+      }));
+
+      try {
+        navigate(`/experts?category=${taskFlow.category}`);
+      } catch {}
+
       return {
         text: isBn
-          ? `ডেলিভারেবল: **${subCategory}**। আপনার কি কোনো পছন্দের এক্সপার্ট আছে? 'Gaenr Verified Match (অটো-ম্যাচ)' বেছে নিতে পারেন অথবা নিচের ভেরিফাইড এক্সপার্টদের থেকে নির্বাচন করুন:`
-          : `Deliverable: **${subCategory}**. Do you have a preferred expert? You can choose 'Gaenr Verified Match (Auto)' or pick an eligible expert code:`,
+          ? `ডেলিভারেবল: **${subCategory}**। আমরা পেজে এক্সপার্ট ডিরেক্টরি ওপেন করেছি যাতে সরাসরি দেখতে পারেন। 'Gaenr Verified Match (অটো-ম্যাচ)' বেছে নিতে পারেন অথবা নিচের ভেরিফাইড এক্সপার্টদের থেকে নির্বাচন করুন:`
+          : `Deliverable: **${subCategory}**. We've loaded the expert directory on page for direct viewing. You can choose 'Gaenr Verified Match (Auto)' or pick an eligible expert code:`,
         actions: [
           {
             label: '✨ Gaenr Verified Match (Auto)',
@@ -1002,11 +1027,66 @@ ${taskData.description.trim()}`;
             actionType: 'selectTaskExpert' as const,
             payload: f.code,
           })),
+          {
+            label: isBn ? '🌐 এক্সপার্ট ডিরেক্টরি দেখুন (/experts)' : '🌐 View All Experts (/experts)',
+            actionType: 'navigate',
+            payload: `/experts?category=${taskFlow.category}`,
+          },
         ],
       };
     }
 
-    // Step 7: Expert Selection (Must map to approved expert or Auto-match)
+    // Step 5b: Custom Sub-Category Deliverable
+    if (taskFlow.step === 'custom_subcategory') {
+      const isJunk =
+        cleanText.length < 3 ||
+        /^(asdf|qwerty|na|none|test|??|\.\.)$/i.test(cleanText);
+      if (isJunk) {
+        return {
+          text: isBn
+            ? 'অনুগ্রহ করে কাজের ধরণ বা প্রয়োজনীয় সাব-ক্যাটাগরিটি আরেকটু স্পষ্ট করে লিখুন (যেমন: "কাস্টম ইলাস্ট্রেশন" বা "ইনভয়েস ডিজাইন"):'
+            : 'Please specify a meaningful deliverable or sub-category name (e.g. "Custom Illustration" or "Invoice Design"):',
+        };
+      }
+
+      const customSub = cleanText;
+      const matchedExperts = getMatchedFreelancers(taskFlow.category);
+      setTaskFlow((prev) => ({
+        ...prev,
+        subCategory: customSub,
+        serviceNeeded: `${prev.categoryTitle} - ${customSub}`,
+        step: 'expert',
+      }));
+
+      try {
+        navigate(`/experts?category=${taskFlow.category}`);
+      } catch {}
+
+      return {
+        text: isBn
+          ? `কাস্টম ডেলিভারেবল: **${customSub}**। আমরা পেজে এক্সপার্টদের ডিরেক্টরি ওপেন করেছি। 'Gaenr Verified Match (অটো-ম্যাচ)' বেছে নিতে পারেন অথবা নিচের ভেরিফাইড এক্সপার্টদের মধ্য থেকে নির্বাচন করুন:`
+          : `Custom Deliverable: **${customSub}**. We've loaded the category experts on page. Select 'Gaenr Verified Match (Auto)' or pick an expert code below:`,
+        actions: [
+          {
+            label: '✨ Gaenr Verified Match (Auto)',
+            actionType: 'selectTaskExpert',
+            payload: 'Gaenr Verified Match',
+          },
+          ...matchedExperts.map((f) => ({
+            label: `👤 Expert #${f.code} (${f.rating}★)`,
+            actionType: 'selectTaskExpert' as const,
+            payload: f.code,
+          })),
+          {
+            label: isBn ? '🌐 এক্সপার্ট ডিরেক্টরি দেখুন (/experts)' : '🌐 View All Experts (/experts)',
+            actionType: 'navigate',
+            payload: `/experts?category=${taskFlow.category}`,
+          },
+        ],
+      };
+    }
+
+    // Step 6: Expert Selection (Must map to approved expert or Auto-match)
     if (taskFlow.step === 'expert') {
       const verifiedExpertCode = matchApprovedExpert(cleanText, taskFlow.category, freelancers);
       if (!verifiedExpertCode) {
@@ -1026,6 +1106,11 @@ ${taskData.description.trim()}`;
               actionType: 'selectTaskExpert' as const,
               payload: f.code,
             })),
+            {
+              label: isBn ? '🌐 এক্সপার্ট ডিরেক্টরি দেখুন (/experts)' : '🌐 View All Experts (/experts)',
+              actionType: 'navigate',
+              payload: `/experts?category=${taskFlow.category}`,
+            },
           ],
         };
       }
@@ -1232,16 +1317,20 @@ ${taskData.description.trim()}`;
   };
 
   const handleSendMessage = async (textToSend?: string) => {
-    const text = (textToSend || inputValue).trim();
-    if (!text || isTyping) return;
-
-    // If voice listening is currently on, stop it
+    // If voice listening is currently on, stop it immediately and capture pending speech transcript
+    let pendingVoiceText = '';
     if (isListening) {
       try {
         recognitionRef.current?.stop();
       } catch {}
       setIsListening(false);
+      pendingVoiceText = latestSpeechTranscriptRef.current.trim();
     }
+
+    const text = (textToSend || inputValue || pendingVoiceText).trim();
+    if (!text || isTyping) return;
+
+    latestSpeechTranscriptRef.current = '';
 
     // Detect user language automatically from their message
     const detectedLang = detectLanguage(text);
@@ -1485,6 +1574,7 @@ ${taskData.description.trim()}`;
         ...prev,
         category: meta.slug,
         categoryTitle: meta.title,
+        serviceNeeded: meta.title,
         subCategory: subList[0] || meta.title,
         step: 'subCategory',
       }));
@@ -1495,33 +1585,67 @@ ${taskData.description.trim()}`;
           id: `bot-${Date.now()}`,
           sender: 'bot',
           text: isBn
-            ? `সার্ভিস: **${meta.title}**। এই সার্ভিসের কোন নির্দিষ্ট কাজটি করাতে চান? নিচে ক্লিক করুন বা লিখে জানান:`
-            : `Service: **${meta.title}**. What specific deliverable do you need? Choose below or type:`,
+            ? `সার্ভিস: **${meta.title}**। এই সার্ভিসের কোন নির্দিষ্ট কাজটি করাতে চান? নিচে ক্লিক করুন বা অন্য কিছু হলে 'Other' বেছে নিন:`
+            : `Service: **${meta.title}**. What specific deliverable do you need? Choose below or select 'Other':`,
           timestamp: getRealtimeClock(),
-          actions: subList.slice(0, 5).map((sub) => ({
-            label: sub,
-            actionType: 'selectTaskSubCategory',
-            payload: sub,
-          })),
+          actions: [
+            ...subList.slice(0, 5).map((sub) => ({
+              label: sub,
+              actionType: 'selectTaskSubCategory' as const,
+              payload: sub,
+            })),
+            {
+              label: isBn ? '✨ Other / অন্যান্য' : '✨ Other / Custom',
+              actionType: 'selectTaskSubCategory' as const,
+              payload: 'Other',
+            },
+          ],
         },
       ]);
     } else if (action.actionType === 'selectTaskSubCategory' && action.payload) {
       const subCategory = action.payload;
+      const isBn = language === 'bn';
+
+      if (subCategory === 'Other') {
+        setTaskFlow((prev) => ({
+          ...prev,
+          step: 'custom_subcategory',
+        }));
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `bot-${Date.now()}`,
+            sender: 'bot',
+            text: isBn
+              ? 'আপনি ঠিক কী ধরণের কাজ করাতে চাচ্ছেন? আপনার সাব-ক্যাটাগরি বা কাজের ধরনটি সংক্ষেপে লিখে জানান:'
+              : 'What specific deliverable or custom task do you need? Please describe it below:',
+            timestamp: getRealtimeClock(),
+          },
+        ]);
+        return;
+      }
+
       const matchedExperts = getMatchedFreelancers(taskFlow.category);
       setTaskFlow((prev) => ({
         ...prev,
         subCategory,
+        serviceNeeded: `${prev.categoryTitle} - ${subCategory}`,
         step: 'expert',
       }));
-      const isBn = language === 'bn';
+
+      // Direct view to experts directory on main page
+      try {
+        navigate(`/experts?category=${taskFlow.category}`);
+      } catch {}
+
       setMessages((prev) => [
         ...prev,
         {
           id: `bot-${Date.now()}`,
           sender: 'bot',
           text: isBn
-            ? `ডেলিভারেবল: **${subCategory}**। এবার এক্সপার্ট নির্বাচন করুন। গেইনার ভেরিফাইড অটো-ম্যাচ নিতে পারেন অথবা নির্দিষ্ট এক্সপার্ট কোড বেছে নিন:`
-            : `Deliverable: **${subCategory}**. Select an Expert for your project. Choose Gaenr Auto-Match or pick an Expert code:`,
+            ? `ডেলিভারেবল: **${subCategory}**। আমরা পেজে এক্সপার্ট ডিরেক্টরি ওপেন করেছি যাতে সরাসরি দেখতে পারেন। গেইনার ভেরিফাইড অটো-ম্যাচ নিতে পারেন অথবা নির্দিষ্ট এক্সপার্ট কোড বেছে নিন:`
+            : `Deliverable: **${subCategory}**. We've loaded the expert directory on page for direct viewing. Choose Gaenr Auto-Match or pick an Expert code:`,
           timestamp: getRealtimeClock(),
           actions: [
             {
@@ -1534,6 +1658,11 @@ ${taskData.description.trim()}`;
               actionType: 'selectTaskExpert' as const,
               payload: f.code,
             })),
+            {
+              label: isBn ? '🌐 এক্সপার্ট ডিরেক্টরি দেখুন (/experts)' : '🌐 View All Experts (/experts)',
+              actionType: 'navigate',
+              payload: `/experts?category=${taskFlow.category}`,
+            },
           ],
         },
       ]);
@@ -1968,9 +2097,15 @@ ${taskData.description.trim()}`;
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={
                     isListening
-                      ? 'Listening to voice...'
+                      ? language === 'bn'
+                        ? '🎙️ শুনছি... বলুন বা Send বাটনে চাপুন...'
+                        : '🎙️ Listening... Speak or hit Send...'
                       : taskFlow.active
-                      ? 'Type your answer or brief...'
+                      ? language === 'bn'
+                        ? 'উত্তর লিখুন বা অপশন বেছে নিন...'
+                        : 'Type your answer or select an option...'
+                      : language === 'bn'
+                      ? 'যে কোনো প্রশ্ন করুন...'
                       : 'Ask me anything...'
                   }
                   className={`w-full bg-slate-50 border rounded-2xl px-3.5 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#006eff]/20 focus:border-[#006eff] transition-all ${
@@ -2022,8 +2157,9 @@ ${taskData.description.trim()}`;
               {/* Send Button */}
               <button
                 type="submit"
-                disabled={!inputValue.trim() || isTyping}
+                disabled={(!inputValue.trim() && !isListening) || isTyping}
                 aria-label="Send message"
+                title={isListening ? 'Send voice command now' : 'Send message'}
                 className="w-8 h-8 rounded-xl bg-[#006eff] hover:bg-[#005cd4] text-white flex items-center justify-center shrink-0 transition-colors shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer active:scale-95"
               >
                 <Send className="w-3.5 h-3.5" />
