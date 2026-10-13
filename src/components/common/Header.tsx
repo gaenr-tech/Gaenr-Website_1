@@ -29,12 +29,12 @@ export const Header: React.FC = () => {
   return (
     <header
       className={`sticky top-0 z-50 border-b transition-colors duration-200 ${
-        isDark ? 'border-slate-800/80 shadow-2xl' : 'border-slate-200/70 shadow-2xs'
+        isDark ? 'border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.35)]' : 'border-slate-200/70 shadow-2xs'
       }`}
       style={{
-        backgroundColor: isDark ? 'rgba(9, 13, 22, 0.85)' : 'rgba(255, 255, 255, 0.68)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        backgroundColor: isDark ? 'rgba(13, 21, 39, 0.62)' : 'rgba(255, 255, 255, 0.68)',
+        backdropFilter: 'blur(24px) saturate(190%)',
+        WebkitBackdropFilter: 'blur(24px) saturate(190%)',
       }}
     >
       {/* Main Top Bar Contract: 3 zones */}
@@ -130,7 +130,7 @@ export const Header: React.FC = () => {
               e.stopPropagation();
               toggleTheme();
             }}
-            className="md:hidden flex items-center justify-center w-9 h-9 rounded-full text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 transition-colors cursor-pointer"
+            className="md:hidden flex items-center justify-center w-9 h-9 rounded-full text-slate-600 hover:text-slate-900 dark:text-amber-400 bg-slate-100/90 dark:bg-white/10 dark:hover:bg-white/15 border border-slate-200/80 dark:border-white/15 dark:shadow-[0_0_12px_rgba(251,191,36,0.2)] dark:backdrop-blur-md transition-colors cursor-pointer"
             aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             title={isDark ? 'Light Mode' : 'Dark Mode'}
           >
@@ -148,7 +148,7 @@ export const Header: React.FC = () => {
               e.stopPropagation();
               setMobileMenuOpen(!mobileMenuOpen);
             }}
-            className="md:hidden p-2 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="md:hidden p-2 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -159,14 +159,14 @@ export const Header: React.FC = () => {
       {/* Backdrop overlay to close drawer when tapping anywhere on screen */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 top-18 bg-slate-900/35 backdrop-blur-2xs z-40 md:hidden"
+          className="fixed inset-0 top-18 bg-slate-900/40 backdrop-blur-xs z-40 md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="relative z-50 md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] px-4 py-5 space-y-3 shadow-2xl transition-colors">
+        <div className="relative z-50 md:hidden border-t border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0d1527]/92 dark:backdrop-blur-2xl px-4 py-5 space-y-3 shadow-2xl transition-colors">
           <div className="flex flex-col space-y-1">
             {navLinks.map((link) => {
               const isActive =
@@ -179,8 +179,8 @@ export const Header: React.FC = () => {
                   onClick={() => handleNavClick(link.route)}
                   className={`flex items-center justify-between text-left px-3 py-2.5 rounded-lg text-base font-medium transition-colors cursor-pointer ${
                     isActive
-                      ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 font-semibold'
-                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                      ? 'bg-blue-50 dark:bg-blue-600/25 dark:text-blue-400 dark:border dark:border-blue-500/30 font-semibold'
+                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/8'
                   }`}
                 >
                   <span>{link.label}</span>
@@ -190,7 +190,7 @@ export const Header: React.FC = () => {
           </div>
 
           {/* Mobile Theme Row */}
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+          <div className="pt-3 border-t border-slate-100 dark:border-white/10 flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200">
             <span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
             <button
               type="button"
@@ -210,7 +210,7 @@ export const Header: React.FC = () => {
             </button>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+          <div className="pt-2 border-t border-slate-100 dark:border-white/10">
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

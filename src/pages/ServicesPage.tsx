@@ -297,12 +297,13 @@ export const ServicesPage: React.FC = () => {
           </div>
 
           {/* Desktop Flowchart Track (Horizontal connected sequence) */}
+          {/* Desktop Flowchart Track (Horizontal connected sequence) */}
           <div className="hidden xl:block relative pt-2 pb-2">
             {/* Background connecting track */}
-            <div className="absolute top-9 left-10 right-10 h-1 bg-slate-200 dark:bg-white/20 -z-0" />
+            <div className="absolute top-9 left-10 right-10 h-1 bg-slate-200 dark:bg-white/20 z-0" />
             {/* Dynamic progress highlight bar */}
             <div
-              className="absolute top-9 left-10 h-1 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.9)] -z-0 transition-all duration-300"
+              className="absolute top-9 left-10 h-1 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.9)] z-0 transition-all duration-300"
               style={{
                 width: `${(activeStepIndex / (assignWorkflowSteps.length - 1)) * 100}%`,
               }}
@@ -318,14 +319,14 @@ export const ServicesPage: React.FC = () => {
                     key={st.title}
                     className="flex flex-col items-center text-center space-y-3"
                   >
-                    {/* Circle Node (Numbers removed as requested) */}
+                    {/* Circle Node (solid opaque so line never shows through circle) */}
                     <div
-                      className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 relative ${
+                      className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 relative z-10 ${
                         isActive
                           ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_20px_rgba(2,86,208,0.7)] scale-110 shadow-md'
                           : isPast
-                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-300 dark:bg-blue-500/25 dark:text-blue-300 dark:border-blue-400/60'
-                          : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-white/14 dark:border-white/30 dark:text-white dark:backdrop-blur-sm dark:shadow-[0_4px_16px_rgba(255,255,255,0.08)]'
+                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-300 dark:bg-[#15294a] dark:text-blue-300 dark:border-blue-400'
+                          : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-[#16233d] dark:border-white/30 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]'
                       }`}
                     >
                       {st.icon}
@@ -378,14 +379,14 @@ export const ServicesPage: React.FC = () => {
                     }}
                     className="flex flex-col items-center text-center shrink-0 w-24 sm:w-28 relative z-10"
                   >
-                    {/* Circle Node: upper-aligned, exactly 48px (w-12 h-12) or 56px (w-14 h-14) */}
+                    {/* Circle Node: upper-aligned, solid opaque so line never shows through circle */}
                     <div
-                      className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 relative shrink-0 ${
+                      className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 relative shrink-0 z-10 ${
                         isActive
                           ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_20px_rgba(2,86,208,0.7)] scale-105 shadow-md'
                           : isPast
-                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-300 dark:bg-blue-500/25 dark:text-blue-300 dark:border-blue-400/60'
-                          : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-white/14 dark:border-white/30 dark:text-white dark:backdrop-blur-sm'
+                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-300 dark:bg-[#15294a] dark:text-blue-300 dark:border-blue-400'
+                          : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-[#16233d] dark:border-white/30 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]'
                       }`}
                     >
                       {React.cloneElement(st.icon as React.ReactElement<any>, {
@@ -402,7 +403,7 @@ export const ServicesPage: React.FC = () => {
                       >
                         {st.title}
                       </p>
-                      <p className="text-[10px] text-slate-500 font-medium">
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                         {st.subtitle}
                       </p>
                     </div>

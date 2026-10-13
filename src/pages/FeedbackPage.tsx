@@ -171,61 +171,61 @@ export const FeedbackPage: React.FC = () => {
           {/* Left Column: Context, Guidelines & Quick Support */}
           <div className="lg:col-span-5 space-y-6">
             {/* Guide Card */}
-            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-xs space-y-5">
+            <div className="bg-white dark:bg-[#131f37] border border-slate-200/90 dark:border-white/10 rounded-3xl p-6 sm:p-7 shadow-xs space-y-5">
               <div className="space-y-1.5">
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-[#006eff]" />
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-[#006eff] dark:text-blue-400" />
                   <span>What You Can Share</span>
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Every suggestion helps us make outsourcing and freelancing smoother, faster, and more reliable for Bangladesh.
                 </p>
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-slate-200 transition-colors">
-                  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-500 border border-amber-100 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100 dark:border-white/10 hover:border-slate-200 dark:hover:border-white/20 transition-colors">
+                  <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-500/15 text-amber-500 dark:text-amber-400 border border-amber-100 dark:border-amber-500/30 flex items-center justify-center shrink-0 mt-0.5">
                     <Lightbulb className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-800">Ideas & Improvements</h4>
-                    <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-white">Ideas & Improvements</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-0.5 leading-relaxed">
                       Suggestions for client ordering, communication, or portfolio showcases.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-slate-200 transition-colors">
-                  <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 border border-rose-100 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100 dark:border-white/10 hover:border-slate-200 dark:hover:border-white/20 transition-colors">
+                  <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-500/15 text-rose-500 dark:text-rose-400 border border-rose-100 dark:border-rose-500/30 flex items-center justify-center shrink-0 mt-0.5">
                     <Bug className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-800">Bugs & UI Flaws</h4>
-                    <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-white">Bugs & UI Flaws</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-0.5 leading-relaxed">
                       Visual glitches, broken links, or friction points noticed while browsing.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-slate-200 transition-colors">
-                  <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100 dark:border-white/10 hover:border-slate-200 dark:hover:border-white/20 transition-colors">
+                  <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/30 flex items-center justify-center shrink-0 mt-0.5">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-800">Feature Requests</h4>
-                    <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-white">Feature Requests</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-0.5 leading-relaxed">
                       Specific tools, payment options, or automations you wish existed.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-slate-200 transition-colors">
-                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] border border-blue-100 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 dark:bg-[#172540] border border-slate-100 dark:border-white/10 hover:border-slate-200 dark:hover:border-white/20 transition-colors">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-500/15 text-[#006eff] dark:text-blue-400 border border-blue-100 dark:border-blue-500/30 flex items-center justify-center shrink-0 mt-0.5">
                     <MessageSquare className="w-4 h-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-800">General Experience</h4>
-                    <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-white">General Experience</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-300 mt-0.5 leading-relaxed">
                       Honest feedback on what currently feels great and what can be polished.
                     </p>
                   </div>
@@ -233,25 +233,25 @@ export const FeedbackPage: React.FC = () => {
               </div>
 
               {/* Founding Team Commitment */}
-              <div className="pt-4 border-t border-slate-100 flex items-center gap-2.5 text-xs text-slate-500">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="pt-4 border-t border-slate-100 dark:border-white/10 flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Reviewed directly by the Gaenr core team in Dhaka during weekly sprints.</span>
               </div>
             </div>
 
             {/* Need Urgent Project Help? */}
-            <div className="bg-gradient-to-br from-blue-50/90 via-sky-50/50 to-indigo-50/40 border border-blue-200/80 rounded-3xl p-5 sm:p-6 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#006eff]">
+            <div className="bg-gradient-to-br from-blue-50/90 via-sky-50/50 to-indigo-50/40 dark:from-[#111c33] dark:via-[#131f38] dark:to-[#0f172a] border border-blue-200/80 dark:border-blue-500/30 rounded-3xl p-5 sm:p-6 space-y-3">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#006eff] dark:text-blue-400">
                 <Headphones className="w-4 h-4" />
                 <span>Need Urgent Project Assistance?</span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 If you have an active task or need urgent operational support, please connect with our dedicated Support Center for instant escalation.
               </p>
               <button
                 type="button"
                 onClick={() => navigate('/support')}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#006eff] hover:text-blue-700 transition-colors cursor-pointer group"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#006eff] dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer group"
               >
                 <span>Visit Support Center</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -260,26 +260,24 @@ export const FeedbackPage: React.FC = () => {
           </div>
 
           {/* Right Column: Interactive Feedback Form */}
-          <div className="lg:col-span-7 bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-xs">
+          <div className="lg:col-span-7 bg-white dark:bg-[#131f37] border border-slate-200/90 dark:border-white/10 rounded-3xl p-6 sm:p-8 shadow-xs">
             {submitted ? (
               <div className="text-center py-12 sm:py-16 space-y-6">
-                <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200 shadow-xs animate-in zoom-in-95 duration-200">
+                <div className="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-200 dark:border-emerald-500/30 shadow-xs animate-in zoom-in-95 duration-200">
                   <CheckCircle2 className="w-9 h-9" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-slate-900">Thank You for Your Feedback!</h3>
-                  <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Thank You for Your Feedback!</h3>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed">
                     Your thoughts have been logged successfully. Community input directly steers our roadmap, features, and platform updates.
                   </p>
                 </div>
-
-
 
                 <div className="pt-2">
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="px-6 py-2.5 text-xs sm:text-sm font-semibold text-[#006eff] bg-blue-50 hover:bg-blue-100 rounded-xl transition-all cursor-pointer border border-blue-200 active:scale-95"
+                    className="px-6 py-2.5 text-xs sm:text-sm font-semibold text-[#006eff] dark:text-blue-300 bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 rounded-xl transition-all cursor-pointer border border-blue-200 dark:border-blue-500/30 active:scale-95"
                   >
                     Submit Another Feedback
                   </button>
@@ -288,15 +286,15 @@ export const FeedbackPage: React.FC = () => {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900 tracking-tight">Share Your Thoughts</h2>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Share Your Thoughts</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     We welcome all types of input. Choose your role and topic to help us route your message accurately.
                   </p>
                 </div>
 
                 {/* Role Selection Pills */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200">
                     You are sharing feedback as:
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -311,10 +309,10 @@ export const FeedbackPage: React.FC = () => {
                           className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
                             isSelected
                               ? 'bg-[#006eff] text-white border-[#006eff] shadow-xs'
-                              : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/90'
+                              : 'bg-slate-50 dark:bg-[#172540] hover:bg-slate-100 dark:hover:bg-[#1c2e4f] text-slate-700 dark:text-slate-200 border-slate-200/90 dark:border-white/10'
                           }`}
                         >
-                          <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-slate-500'}`} />
+                          <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`} />
                           <span className="truncate">{role.label}</span>
                         </button>
                       );
@@ -324,7 +322,7 @@ export const FeedbackPage: React.FC = () => {
 
                 {/* Category Selection Grid */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-700">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-200">
                     What is this feedback regarding?
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -338,21 +336,21 @@ export const FeedbackPage: React.FC = () => {
                           onClick={() => setCategory(cat.id)}
                           className={`flex items-start gap-2.5 p-3 rounded-2xl text-left transition-all cursor-pointer border ${
                             isSelected
-                              ? 'bg-blue-50/70 border-[#006eff] shadow-xs ring-1 ring-[#006eff]/20'
-                              : 'bg-white hover:bg-slate-50/80 border-slate-200/90'
+                              ? 'bg-blue-50/70 dark:bg-blue-950/60 border-[#006eff] dark:border-blue-400 shadow-xs ring-1 ring-[#006eff]/20'
+                              : 'bg-white dark:bg-[#172540] hover:bg-slate-50/80 dark:hover:bg-[#1c2e4f] border-slate-200/90 dark:border-white/10'
                           }`}
                         >
-                          <div className={`p-1.5 rounded-lg shrink-0 ${isSelected ? 'bg-[#006eff] text-white' : 'bg-slate-100 text-slate-600'}`}>
+                          <div className={`p-1.5 rounded-lg shrink-0 ${isSelected ? 'bg-[#006eff] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}>
                             <Icon className="w-3.5 h-3.5" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
-                              <span className={`text-xs font-bold ${isSelected ? 'text-[#006eff]' : 'text-slate-800'}`}>
+                              <span className={`text-xs font-bold ${isSelected ? 'text-[#006eff] dark:text-blue-400' : 'text-slate-800 dark:text-white'}`}>
                                 {cat.title}
                               </span>
-                              {isSelected && <Check className="w-3.5 h-3.5 text-[#006eff]" />}
+                              {isSelected && <Check className="w-3.5 h-3.5 text-[#006eff] dark:text-blue-400" />}
                             </div>
-                            <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
                               {cat.description}
                             </p>
                           </div>
@@ -365,8 +363,8 @@ export const FeedbackPage: React.FC = () => {
                 {/* Contact Information (Name & Email) */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-semibold text-slate-700">
-                      Name <span className="text-slate-400 font-normal">(Optional)</span>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200">
+                      Name <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional)</span>
                     </label>
                     <div className="relative">
                       <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -375,14 +373,14 @@ export const FeedbackPage: React.FC = () => {
                         placeholder="Your name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:border-[#006eff] focus:ring-4 focus:ring-blue-500/10 text-slate-900 transition-all placeholder:text-slate-400"
+                        className="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm bg-white dark:bg-[#0f182c] border border-slate-200/90 dark:border-white/15 rounded-xl focus:outline-none focus:border-[#006eff] focus:ring-4 focus:ring-blue-500/10 text-slate-900 dark:text-white transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-semibold text-slate-700">
-                      Email <span className="text-slate-400 font-normal">(Optional, for replies)</span>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200">
+                      Email <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional, for replies)</span>
                     </label>
                     <div className="relative">
                       <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -391,7 +389,7 @@ export const FeedbackPage: React.FC = () => {
                         placeholder="you@domain.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:border-[#006eff] focus:ring-4 focus:ring-blue-500/10 text-slate-900 transition-all placeholder:text-slate-400"
+                        className="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm bg-white dark:bg-[#0f182c] border border-slate-200/90 dark:border-white/15 rounded-xl focus:outline-none focus:border-[#006eff] focus:ring-4 focus:ring-blue-500/10 text-slate-900 dark:text-white transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       />
                     </div>
                   </div>
@@ -399,7 +397,7 @@ export const FeedbackPage: React.FC = () => {
 
                 {/* Message Textarea */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-700">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200">
                     Your Feedback <span className="text-rose-500">*</span>
                   </label>
                   <textarea
@@ -408,7 +406,7 @@ export const FeedbackPage: React.FC = () => {
                     placeholder="Share your experience, feature request, or constructive thoughts. The more details you share, the better we can assist..."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="w-full px-3.5 py-3 text-xs sm:text-sm bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:border-[#006eff] focus:ring-4 focus:ring-blue-500/10 text-slate-900 leading-relaxed transition-all placeholder:text-slate-400 resize-none"
+                    className="w-full px-3.5 py-3 text-xs sm:text-sm bg-white dark:bg-[#0f182c] border border-slate-200/90 dark:border-white/15 rounded-xl focus:outline-none focus:border-[#006eff] focus:ring-4 focus:ring-blue-500/10 text-slate-900 dark:text-white leading-relaxed transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none"
                   />
                 </div>
 

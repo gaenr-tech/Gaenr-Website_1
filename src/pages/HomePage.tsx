@@ -305,8 +305,11 @@ export const HomePage: React.FC = () => {
           - Desktop: Text on left (col-span-7), 3D Pathway Symbol on right (col-span-5)
           - Half-width text (max-w-xl) with concise, punchy copy
          ========================================================================= */}
-      <section className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80 dark:border-slate-800/80 dark:bg-gradient-to-b dark:from-[#0d1527] dark:via-[#111c34] dark:to-[#0d1527] relative overflow-hidden">
+        {/* Soft subtle ambient glow behind 3D Pathway in dark mode */}
+        <div className="hidden dark:block absolute top-1/2 right-1/4 -translate-y-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 items-center">
             {/* Visual Column: In DOM FIRST so on mobile it is strictly at top right after hero */}
             <div className="order-1 lg:order-2 lg:col-span-5 flex justify-center items-center w-full">
@@ -315,11 +318,11 @@ export const HomePage: React.FC = () => {
 
             {/* Left Content Column: order-2 on mobile (below 3D icon), order-1 (lg:col-span-7) on desktop */}
             <div className="order-2 lg:order-1 lg:col-span-7 space-y-4 text-left max-w-xl">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
-                More Than a Platform, <span className="text-[#0256d0]">A Pathway</span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
+                More Than a Platform, <span className="text-[#0256d0] dark:text-[#38bdf8]">A Pathway</span>
               </h2>
 
-              <div className="space-y-3 text-sm sm:text-base text-slate-600 leading-relaxed font-normal max-w-xl">
+              <div className="space-y-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-xl">
                 <p>
                   Gaenr connects skilled freelancers directly with clients who need quality work done efficiently—no bidding wars, no unnecessary layers.
                 </p>
@@ -348,8 +351,11 @@ export const HomePage: React.FC = () => {
           - Mobile: Visual on top, then Headline, then Body text & CTA
           - Desktop: Visual on the Left, Headline and Text on the Right
          ========================================================================= */}
-      <section className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80 dark:border-slate-800/80 dark:bg-gradient-to-b dark:from-[#0d1527] dark:via-[#101b31] dark:to-[#0d1527] relative overflow-hidden">
+        {/* Soft subtle ambient glow behind Plant Animation in dark mode */}
+        <div className="hidden dark:block absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-cyan-500/8 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Visual: Top on mobile, Centered horizontally in the left column on desktop */}
             <div className="order-1 lg:order-1 lg:col-span-6 flex items-center justify-center w-full">
@@ -358,12 +364,12 @@ export const HomePage: React.FC = () => {
 
             {/* Text Content: Below visual on mobile, Right on desktop */}
             <div className="order-2 lg:order-2 lg:col-span-6 max-w-xl text-left space-y-4 lg:pl-4">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-slate-900">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-slate-900 dark:text-white">
                 We're Still Building <br />
-                <span className="text-[#0256d0]">But You Can Start Today</span>
+                <span className="text-[#0256d0] dark:text-[#38bdf8]">But You Can Start Today</span>
               </h2>
 
-              <div className="space-y-3 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+              <div className="space-y-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                 <p>
                   This is our beta version, and we're being honest about it. We handle the heavy lifting directly: confirming requirements, managing milestones, and ensuring work is delivered smoothly without hassle.
                 </p>
@@ -392,13 +398,16 @@ export const HomePage: React.FC = () => {
           - 6 core services (no numbers, compact card size, NO 'View Details')
           - Centered / Middle aligned "Let's Explore All Services" button
          ========================================================================= */}
-      <section className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <section className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80 dark:border-slate-800/80 dark:bg-gradient-to-b dark:from-[#0d1527] dark:via-[#121e38] dark:to-[#0d1527] relative overflow-hidden">
+        {/* Ambient radial lighting across service cards in dark mode */}
+        <div className="hidden dark:block absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 relative z-10">
           <div className="space-y-1.5 max-w-2xl text-left">
-            <span className="text-xs font-semibold text-[#0256d0] uppercase tracking-wider">
+            <span className="text-xs font-semibold text-[#0256d0] dark:text-[#38bdf8] uppercase tracking-wider">
               Available Services
             </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
               Services That Move You Forward
             </h2>
           </div>
@@ -409,18 +418,18 @@ export const HomePage: React.FC = () => {
               <div
                 key={service.slug}
                 onClick={() => navigate(`/services/${service.slug}`)}
-                className="group p-5 bg-white border border-slate-200/90 rounded-2xl shadow-xs hover:border-[#0256d0] hover:shadow-md transition-all cursor-pointer space-y-2.5 flex flex-col justify-start text-left"
+                className="group p-5 bg-white dark:bg-[#14213d]/85 dark:border-white/12 dark:backdrop-blur-md hover:border-[#0256d0] dark:hover:border-blue-400/60 hover:shadow-md dark:hover:shadow-[0_8px_30px_rgba(2,86,208,0.25)] border border-slate-200/90 rounded-2xl shadow-xs transition-all cursor-pointer space-y-2.5 flex flex-col justify-start text-left"
               >
                 {/* Visual Icon Badge */}
-                <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center transition-transform group-hover:scale-105">
+                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/40 border border-blue-100 dark:border-blue-500/30 flex items-center justify-center transition-transform group-hover:scale-105">
                   {service.icon}
                 </div>
 
-                <h3 className="text-base font-bold text-slate-900 group-hover:text-[#0256d0] transition-colors">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-[#0256d0] dark:group-hover:text-blue-400 transition-colors">
                   {service.title}
                 </h3>
 
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                   {service.desc}
                 </p>
               </div>
@@ -621,7 +630,7 @@ export const HomePage: React.FC = () => {
                       onTouchStart={handleLogo1TouchStart}
                       onTouchEnd={handleLogo1TouchEnd}
                       onTouchCancel={handleLogo1TouchEnd}
-                      className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center cursor-pointer active:scale-90 transition-all duration-200 p-1 group z-10 ${
+                      className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full !bg-white dark:!bg-white shadow-md border border-white/80 flex items-center justify-center cursor-pointer active:scale-90 transition-all duration-200 p-1 group z-10 ${
                         isOfferingConnected
                           ? 'ring-4 ring-cyan-400 shadow-cyan-400/60 shadow-lg scale-110'
                           : 'hover:scale-105'
@@ -747,7 +756,7 @@ export const HomePage: React.FC = () => {
                       onTouchStart={handleLogo2TouchStart}
                       onTouchEnd={handleLogo2TouchEnd}
                       onTouchCancel={handleLogo2TouchEnd}
-                      className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center cursor-pointer active:scale-90 transition-all duration-200 p-1 group z-10 ${
+                      className={`relative w-10 h-10 sm:w-11 sm:h-11 rounded-full !bg-white dark:!bg-white shadow-md border border-white/80 flex items-center justify-center cursor-pointer active:scale-90 transition-all duration-200 p-1 group z-10 ${
                         isOfferingConnected
                           ? 'ring-4 ring-cyan-400 shadow-cyan-400/60 shadow-lg scale-110'
                           : 'hover:scale-105'
@@ -846,10 +855,10 @@ export const HomePage: React.FC = () => {
           {/* Desktop Flowchart Track (Horizontal connected sequence) */}
           <div className="hidden lg:block relative pt-4 pb-2 pointer-events-none select-none">
             {/* Background connecting track */}
-            <div className="absolute top-12 left-16 right-16 h-1 bg-slate-200/90 dark:bg-white/20 rounded-full -z-0" />
+            <div className="absolute top-12 left-16 right-16 h-1 bg-slate-200/90 dark:bg-white/20 rounded-full z-0" />
             {/* Dynamic progressive highlight bar */}
             <div
-              className="absolute top-12 left-16 h-1 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.8)] rounded-full -z-0 transition-all duration-300 ease-out"
+              className="absolute top-12 left-16 h-1 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.8)] rounded-full z-0 transition-all duration-300 ease-out"
               style={{
                 width: `${(activeStepIndex / (flowchartSteps.length - 1)) * 100}%`,
                 maxWidth: 'calc(100% - 8rem)',
@@ -866,15 +875,15 @@ export const HomePage: React.FC = () => {
                     key={st.id}
                     className="flex flex-col items-center text-center space-y-3"
                   >
-                    {/* Step Circle with completed checkmark on past steps */}
-                    <div className="relative">
+                    {/* Step Circle with completed checkmark on past steps (solid opaque so line is 100% hidden inside circle) */}
+                    <div className="relative z-10">
                       <div
                         className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 relative ${
                           isActive
                             ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_24px_rgba(2,86,208,0.7)] scale-110 shadow-lg'
                             : isPast
-                            ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 dark:bg-blue-500/25 dark:text-blue-300 dark:border-blue-400/60 scale-100'
-                            : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-white/14 dark:border-white/30 dark:text-white dark:backdrop-blur-sm dark:shadow-[0_4px_16px_rgba(255,255,255,0.08)] scale-100'
+                            ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 dark:bg-[#15294a] dark:text-blue-300 dark:border-blue-400 scale-100'
+                            : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-[#16233d] dark:border-white/30 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] scale-100'
                         }`}
                       >
                         {st.icon}
@@ -882,7 +891,7 @@ export const HomePage: React.FC = () => {
 
                       {/* Completed Check badge for past steps */}
                       {isPast && (
-                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#0256d0] text-white flex items-center justify-center shadow-xs">
+                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#0256d0] text-white flex items-center justify-center shadow-xs z-20">
                           <Check className="w-3 h-3 stroke-[3]" />
                         </div>
                       )}
@@ -910,10 +919,10 @@ export const HomePage: React.FC = () => {
           {/* Mobile Vertical Stepper with progressive connection */}
           <div className="lg:hidden relative pl-6 space-y-5 pt-2 pointer-events-none select-none">
             {/* Background vertical line */}
-            <div className="absolute top-4 bottom-4 left-4 w-0.5 bg-slate-200 dark:bg-white/20" />
+            <div className="absolute top-4 bottom-4 left-4 w-0.5 bg-slate-200 dark:bg-white/20 z-0" />
             {/* Dynamic progressive vertical bar */}
             <div
-              className="absolute top-4 left-4 w-0.5 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.8)] transition-all duration-300 ease-out"
+              className="absolute top-4 left-4 w-0.5 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.8)] transition-all duration-300 ease-out z-0"
               style={{
                 height: `${(activeStepIndex / (flowchartSteps.length - 1)) * 100}%`,
                 maxHeight: 'calc(100% - 2rem)',
@@ -935,14 +944,14 @@ export const HomePage: React.FC = () => {
                         isActive
                           ? 'bg-[#0256d0] text-white scale-115 ring-3 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_20px_rgba(2,86,208,0.7)] shadow-md'
                           : isPast
-                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 dark:bg-blue-500/25 dark:text-blue-300 dark:border-blue-400/60'
-                          : 'bg-white border-2 border-slate-300 text-slate-400 dark:bg-white/14 dark:border-white/30 dark:text-white dark:backdrop-blur-sm'
+                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 dark:bg-[#15294a] dark:text-blue-300 dark:border-blue-400'
+                          : 'bg-white border-2 border-slate-300 text-slate-400 dark:bg-[#16233d] dark:border-white/30 dark:text-white'
                       }`}
                     >
                       {st.icon}
                     </div>
                     {isPast && (
-                      <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#0256d0] text-white flex items-center justify-center shadow-xs">
+                      <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#0256d0] text-white flex items-center justify-center shadow-xs z-20">
                         <Check className="w-2.5 h-2.5 stroke-[3]" />
                       </div>
                     )}
