@@ -60,7 +60,9 @@ export const BrandingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
     if (branding.backgroundColor) {
       document.documentElement.style.setProperty('--bg-theme-color', branding.backgroundColor);
-      document.body.style.backgroundColor = branding.backgroundColor;
+      if (!document.documentElement.classList.contains('dark')) {
+        document.body.style.backgroundColor = branding.backgroundColor;
+      }
     }
     if (branding.footerBgColor) {
       document.documentElement.style.setProperty('--footer-bg-color', branding.footerBgColor);

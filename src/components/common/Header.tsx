@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useBranding } from '../../context/BrandingContext';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
+import { Menu, X, ArrowUpRight, Sun, Moon } from 'lucide-react';
 import { GaenrLogo } from './GaenrLogo';
 
 export const Header: React.FC = () => {
   const { currentRoute, navigate, openAssignTask } = useApp();
   const { branding } = useBranding();
+  const { theme, isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNavClick = (route: string) => {
@@ -26,9 +28,11 @@ export const Header: React.FC = () => {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-slate-200/70 shadow-2xs transition-all"
+      className={`sticky top-0 z-50 border-b transition-colors duration-200 ${
+        isDark ? 'border-slate-800/80 shadow-2xl' : 'border-slate-200/70 shadow-2xs'
+      }`}
       style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.68)',
+        backgroundColor: isDark ? 'rgba(9, 13, 22, 0.85)' : 'rgba(255, 255, 255, 0.68)',
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
       }}
@@ -55,13 +59,13 @@ export const Header: React.FC = () => {
               <GaenrLogo size={32} />
             )}
           </div>
-          <span className="text-2xl font-extrabold tracking-tight text-slate-900 select-none">
+          <span className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white select-none transition-colors">
             {branding.siteTitle}
           </span>
         </button>
 
         {/* Zone 2: Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
           {navLinks.map((link) => {
             const isActive =
               link.route === '/'
@@ -74,26 +78,42 @@ export const Header: React.FC = () => {
                 onClick={() => handleNavClick(link.route)}
                 className={`relative py-1 transition-colors whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? 'text-blue-700 font-semibold'
-                    : 'text-slate-600 hover:text-slate-950'
+                    ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                    : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
                 }`}
               >
                 {link.label}
                 {link.route === '/experts' && (
-                  <span className="inline-block ml-1 text-slate-400">
+                  <span className="inline-block ml-1 text-slate-400 dark:text-slate-500">
                     <ArrowUpRight className="w-3.5 h-3.5 inline" />
                   </span>
                 )}
                 {isActive && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-full" />
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full" />
                 )}
               </button>
             );
           })}
         </nav>
 
-        {/* Zone 3: Primary action - Strictly hidden on mobile header, available in mobile drawer */}
-        <div className="flex items-center gap-3">
+        {/* Zone 3: Primary action & Dark Mode Switch */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Desktop Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="hidden md:inline-flex items-center justify-center w-9 h-9 rounded-full text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100/90 hover:bg-slate-200/90 dark:bg-slate-800/90 dark:hover:bg-slate-700/90 border border-slate-200/80 dark:border-slate-700/80 transition-all cursor-pointer shadow-2xs"
+            aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {isDark ? (
+              <Sun className="w-4.5 h-4.5 text-amber-400 transition-transform hover:rotate-45" />
+            ) : (
+              <Moon className="w-4.5 h-4.5 text-slate-700 transition-transform hover:-rotate-12" />
+            )}
+          </button>
+
+          {/* Desktop Assign Task Button */}
           <div className="hidden md:block">
             <button
               onClick={() => openAssignTask()}
@@ -103,6 +123,24 @@ export const Header: React.FC = () => {
             </button>
           </div>
 
+          {/* Mobile Theme Toggle Button - Directly visible on phone top bar */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleTheme();
+            }}
+            className="md:hidden flex items-center justify-center w-9 h-9 rounded-full text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 transition-colors cursor-pointer"
+            aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            title={isDark ? 'Light Mode' : 'Dark Mode'}
+          >
+            {isDark ? (
+              <Sun className="w-4.5 h-4.5 text-amber-400" />
+            ) : (
+              <Moon className="w-4.5 h-4.5 text-slate-700" />
+            )}
+          </button>
+
           {/* Mobile hamburger */}
           <button
             type="button"
@@ -110,7 +148,7 @@ export const Header: React.FC = () => {
               e.stopPropagation();
               setMobileMenuOpen(!mobileMenuOpen);
             }}
-            className="md:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            className="md:hidden p-2 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -121,14 +159,14 @@ export const Header: React.FC = () => {
       {/* Backdrop overlay to close drawer when tapping anywhere on screen */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 top-18 bg-slate-900/25 backdrop-blur-2xs z-40 md:hidden"
+          className="fixed inset-0 top-18 bg-slate-900/35 backdrop-blur-2xs z-40 md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="relative z-50 md:hidden border-t border-slate-200 bg-white px-4 py-5 space-y-3 shadow-lg">
+        <div className="relative z-50 md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] px-4 py-5 space-y-3 shadow-2xl transition-colors">
           <div className="flex flex-col space-y-1">
             {navLinks.map((link) => {
               const isActive =
@@ -141,8 +179,8 @@ export const Header: React.FC = () => {
                   onClick={() => handleNavClick(link.route)}
                   className={`flex items-center justify-between text-left px-3 py-2.5 rounded-lg text-base font-medium transition-colors cursor-pointer ${
                     isActive
-                      ? 'bg-blue-50 text-blue-700 font-semibold'
-                      : 'text-slate-700 hover:bg-slate-50'
+                      ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 font-semibold'
+                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                   }`}
                 >
                   <span>{link.label}</span>
@@ -151,7 +189,35 @@ export const Header: React.FC = () => {
             })}
           </div>
 
-          <div className="pt-3 border-t border-slate-100">
+          {/* Mobile Theme Row */}
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+            <span className="flex items-center gap-2">
+              {isDark ? (
+                <Moon className="w-4.5 h-4.5 text-blue-400" />
+              ) : (
+                <Sun className="w-4.5 h-4.5 text-amber-500" />
+              )}
+              <span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
+            </span>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                isDark ? 'bg-blue-600' : 'bg-slate-300'
+              }`}
+              role="switch"
+              aria-checked={isDark}
+              aria-label="Toggle Theme Mode"
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                  isDark ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { ThemeProvider } from './context/ThemeContext';
 import { BrandingProvider, useBranding } from './context/BrandingContext';
 import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/common/Header';
@@ -320,10 +321,12 @@ const AppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <BrandingProvider>
-      <AppProvider>
-        <AppContent />
-      </AppProvider>
-    </BrandingProvider>
+    <ThemeProvider>
+      <BrandingProvider>
+        <AppProvider>
+          <AppContent />
+        </AppProvider>
+      </BrandingProvider>
+    </ThemeProvider>
   );
 }
