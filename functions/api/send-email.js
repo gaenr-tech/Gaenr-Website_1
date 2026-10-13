@@ -15,69 +15,69 @@ export async function onRequestOptions() {
 function getEmailHeader(siteUrl) {
   return `
   <a href="${siteUrl}" target="_blank" style="display:inline-block;text-decoration:none;">
-    <img src="${siteUrl}/images/gaenr-logo.png" alt="GAENR" width="170" style="display:inline-block;max-width:170px;height:auto;border:0;outline:none;" />
+    <img src="${siteUrl}/images/gaenr-logo.png" alt="GAENR" width="165" style="display:inline-block;max-width:165px;height:auto;border:0;outline:none;" />
   </a>`;
 }
 
 function getEmailFooter(siteUrl) {
   return `
-  <div style="font-size:14px;font-weight:900;color:#0f172a;letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;">
+  <div style="font-size:13px;font-weight:600;color:#0f172a;letter-spacing:0.5px;margin-bottom:14px;text-transform:uppercase;">
     TEAM <span style="color:#006eff;">GAENR</span>
   </div>
   <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;border-collapse:collapse;">
     <tr>
       <!-- 1. Website -->
-      <td style="padding:0 5px;" align="center">
+      <td style="padding:0 4px;" align="center">
         <a href="${siteUrl}" target="_blank" title="Website" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/globe.png" alt="Website" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+          <img src="${siteUrl}/email-icons/globe.png" alt="Website" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
       <!-- 2. Phone -->
-      <td style="padding:0 5px;" align="center">
+      <td style="padding:0 4px;" align="center">
         <a href="tel:+8809647922800" title="Phone: 09647 922 800" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/phone.png" alt="Phone" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+          <img src="${siteUrl}/email-icons/phone.png" alt="Phone" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
       <!-- 3. Email -->
-      <td style="padding:0 5px;" align="center">
+      <td style="padding:0 4px;" align="center">
         <a href="mailto:contact@gaenr.com" title="Email: contact@gaenr.com" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/mail.png" alt="Email" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+          <img src="${siteUrl}/email-icons/mail.png" alt="Email" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
       <!-- 4. WhatsApp -->
-      <td style="padding:0 5px;" align="center">
+      <td style="padding:0 4px;" align="center">
         <a href="https://wa.me/8801608922800" target="_blank" title="WhatsApp: +8801608922800" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/whatsapp.png" alt="WhatsApp" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+          <img src="${siteUrl}/email-icons/whatsapp.png" alt="WhatsApp" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
       <!-- 5. Facebook -->
-      <td style="padding:0 5px;" align="center">
+      <td style="padding:0 4px;" align="center">
         <a href="https://www.facebook.com/gaenrglobal/" target="_blank" title="Facebook" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/facebook.png" alt="Facebook" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+          <img src="${siteUrl}/email-icons/facebook.png" alt="Facebook" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
       <!-- 6. LinkedIn -->
-      <td style="padding:0 5px;" align="center">
+      <td style="padding:0 4px;" align="center">
         <a href="https://www.linkedin.com/company/gaenrglobal/" target="_blank" title="LinkedIn" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/linkedin.png" alt="LinkedIn" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+          <img src="${siteUrl}/email-icons/linkedin.png" alt="LinkedIn" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
       <!-- 7. Instagram -->
-      <td style="padding:0 5px;" align="center">
+      <td style="padding:0 4px;" align="center">
         <a href="https://www.instagram.com/gaenr_global/" target="_blank" title="Instagram" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/instagram.png" alt="Instagram" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+          <img src="${siteUrl}/email-icons/instagram.png" alt="Instagram" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
       <!-- 8. X / Twitter -->
-      <td style="padding:0 5px;" align="center">
+      <td style="padding:0 4px;" align="center">
         <a href="https://x.com/gaenr_global" target="_blank" title="X" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/x.png" alt="X" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+          <img src="${siteUrl}/email-icons/x.png" alt="X" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
       <!-- 9. Threads -->
-      <td style="padding:0 5px;" align="center">
+      <td style="padding:0 4px;" align="center">
         <a href="https://www.threads.com/@gaenr_global" target="_blank" title="Threads" style="display:inline-block;text-decoration:none;">
-          <img src="${siteUrl}/email-icons/threads.png" alt="Threads" width="28" height="28" style="display:block;width:28px;height:28px;border:0;" />
+          <img src="${siteUrl}/email-icons/threads.png" alt="Threads" width="20" height="20" style="display:block;width:20px;height:20px;border:0;" />
         </a>
       </td>
     </tr>
@@ -100,9 +100,9 @@ function buildFullEmailHtml({ siteUrl, bodyHtml }) {
     <tr>
       <td align="center" style="padding:10px 0;">
         <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background-color:#ffffff;border-radius:22px;border:1px solid #cbd5e1;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);margin:0 auto;">
-          <!-- 1. Distinct Off-White Header -->
+          <!-- 1. Tasteful Branded Header -->
           <tr>
-            <td align="center" style="background-color:#f8fafc;padding:28px 20px;border-bottom:1px solid #e2e8f0;">
+            <td align="center" style="background-color:#f0f7ff;background:linear-gradient(180deg, #f0f7ff 0%, #e6f0fd 100%);padding:28px 20px;border-bottom:1px solid #bae6fd;border-top:4px solid #006eff;">
               ${headerInner}
             </td>
           </tr>
@@ -112,9 +112,9 @@ function buildFullEmailHtml({ siteUrl, bodyHtml }) {
               ${bodyHtml}
             </td>
           </tr>
-          <!-- 3. Distinct Off-White Footer -->
+          <!-- 3. Tasteful Branded Footer -->
           <tr>
-            <td align="center" style="background-color:#f8fafc;padding:28px 20px;border-top:1px solid #e2e8f0;">
+            <td align="center" style="background-color:#f8fafc;background:linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);padding:28px 20px;border-top:1px solid #e2e8f0;">
               ${footerInner}
             </td>
           </tr>
@@ -198,12 +198,14 @@ export async function onRequestPost({ request, env }) {
       <p style="font-size:14px;line-height:1.6;color:#475569;">Congratulations! Your verified expert profile (Official ID: <strong style="font-family:monospace;color:#006eff;font-size:15px;letter-spacing:1px;">${code}</strong>) is now active and live on Gaenr.</p>
       
       <!-- ID Card Announcement & Direct Download Action -->
-      <div style="background:#f0f7ff;border:1px solid #bae6fd;border-radius:18px;padding:22px 20px;margin:24px 0;text-align:center;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#0369a1;text-transform:uppercase;margin-bottom:6px;">
+      <div style="background:#f0f7ff;border:1px solid #bae6fd;border-radius:18px;padding:24px 20px;margin:24px 0;text-align:center;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#0369a1;text-transform:uppercase;margin-bottom:8px;">
           Official Verified Digital ID Card
         </div>
-        <div style="font-size:20px;font-weight:900;font-family:monospace;letter-spacing:3px;color:#006eff;margin-bottom:12px;">
-          ${code}
+        <div style="text-align:center;margin:10px 0 16px 0;">
+          <div style="display:inline-block;background:#0f172a;color:#ffffff;border:2px solid #006eff;border-radius:12px;padding:9px 24px;font-size:22px;font-weight:900;font-family:monospace;letter-spacing:4px;box-shadow:0 4px 14px rgba(0,110,255,0.25);">
+            ${code}
+          </div>
         </div>
         <p style="font-size:12px;color:#475569;margin:0 0 16px 0;line-height:1.5;">Your official digital ID card image has been attached to this email. You can also download it directly at anytime using the button below:</p>
         <div style="text-align:center;">

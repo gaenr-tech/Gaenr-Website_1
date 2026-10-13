@@ -89,21 +89,46 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
   const [description, setDescription] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const getAdminAcceptedMimeTypes = (type: string) => {
+    switch (type) {
+      case 'video':
+        return 'video/mp4,video/webm,video/quicktime';
+      case 'document':
+        return 'application/pdf';
+      case 'image':
+      case 'figma':
+      case 'website':
+      default:
+        return 'image/png,image/jpeg,image/webp,image/jpg';
+    }
+  };
+
   const handleFileSelect = (file: File) => {
-    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-      showToast('Please select a valid image or video file', 'error');
+    if (mediaType === 'video' && !file.type.startsWith('video/')) {
+      showToast('Please select a valid video file (.mp4, .webm, .mov)', 'error');
       return;
     }
+    if (
+      mediaType === 'document' &&
+      file.type !== 'application/pdf' &&
+      !file.name.toLowerCase().endsWith('.pdf')
+    ) {
+      showToast('Please select a valid PDF file (.pdf)', 'error');
+      return;
+    }
+    if (
+      (mediaType === 'image' || mediaType === 'website' || mediaType === 'figma') &&
+      !file.type.startsWith('image/')
+    ) {
+      showToast('Please select a valid image file (.png, .jpg, .webp)', 'error');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
       if (event.target?.result) {
         const dataUrl = event.target.result as string;
         setMediaUrl(dataUrl);
-        if (file.type.startsWith('image/')) {
-          setMediaType('image');
-        } else if (file.type.startsWith('video/')) {
-          setMediaType('video');
-        }
         if (!mediaTitle.trim()) {
           const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
           setMediaTitle(cleanName.charAt(0).toUpperCase() + cleanName.slice(1));
@@ -638,7 +663,7 @@ export const PortfolioManageView: React.FC<PortfolioManageViewProps> = ({
                 <input
                   type="file"
                   ref={fileInputRef}
-                  accept="image/png, image/jpeg, image/webp, image/svg+xml, video/mp4, video/webm"
+                  accept={getAdminAcceptedMimeTypes(mediaType)}
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
                       handleFileSelect(e.target.files[0]);

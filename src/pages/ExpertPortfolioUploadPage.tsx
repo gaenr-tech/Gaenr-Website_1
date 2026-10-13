@@ -88,6 +88,19 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
+  const getAcceptedFileTypes = (type: DeliverableType) => {
+    switch (type) {
+      case 'video':
+        return 'video/mp4,video/webm,video/quicktime';
+      case 'document':
+        return 'application/pdf';
+      case 'image':
+      case 'website':
+      default:
+        return 'image/png,image/jpeg,image/webp,image/jpg';
+    }
+  };
+
   const processFile = (file: File) => {
     // Max 50MB
     if (file.size > 50 * 1024 * 1024) {
@@ -95,20 +108,30 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
       return;
     }
 
+    // Strict validation based on active format
+    if (previewType === 'video' && !file.type.startsWith('video/')) {
+      showToast('Please upload a video file (.mp4, .webm, .mov) for Video Showcase', 'error');
+      return;
+    }
+    if (
+      previewType === 'document' &&
+      file.type !== 'application/pdf' &&
+      !file.name.toLowerCase().endsWith('.pdf')
+    ) {
+      showToast('Please upload a PDF document (.pdf) for Document / Deck', 'error');
+      return;
+    }
+    if (
+      (previewType === 'image' || previewType === 'website') &&
+      !file.type.startsWith('image/')
+    ) {
+      showToast('Please upload an image file (.png, .jpg, .webp) for Image Showcase', 'error');
+      return;
+    }
+
     setSelectedFile(file);
     setFileName(file.name);
     setFileSizeStr(formatFileSize(file.size));
-
-    // Determine preview type
-    if (file.type.startsWith('image/')) {
-      setPreviewType('image');
-    } else if (file.type.startsWith('video/')) {
-      setPreviewType('video');
-    } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-      setPreviewType('document');
-    } else {
-      setPreviewType('image');
-    }
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -381,7 +404,24 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
                   <label className="text-xs font-bold text-slate-700">Display Format</label>
                   <select
                     value={previewType}
-                    onChange={(e) => setPreviewType(e.target.value as DeliverableType)}
+                    onChange={(e) => {
+                      const newType = e.target.value as DeliverableType;
+                      setPreviewType(newType);
+                      if (selectedFile) {
+                        const isVid = selectedFile.type.startsWith('video/');
+                        const isDoc =
+                          selectedFile.type === 'application/pdf' ||
+                          selectedFile.name.toLowerCase().endsWith('.pdf');
+                        const isImg = selectedFile.type.startsWith('image/');
+                        if (
+                          (newType === 'video' && !isVid) ||
+                          (newType === 'document' && !isDoc) ||
+                          ((newType === 'image' || newType === 'website') && !isImg)
+                        ) {
+                          handleClearSelected();
+                        }
+                      }
+                    }}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff] cursor-pointer"
                   >
                     <option value="image">Image Showcase / Artwork</option>
@@ -445,7 +485,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*,video/*,application/pdf"
+                  accept={getAcceptedFileTypes(previewType)}
                   onChange={handleFileChange}
                   className="hidden"
                 />
