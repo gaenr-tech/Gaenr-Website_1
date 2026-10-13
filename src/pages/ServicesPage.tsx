@@ -319,17 +319,21 @@ export const ServicesPage: React.FC = () => {
                     key={st.title}
                     className="flex flex-col items-center text-center space-y-3"
                   >
-                    {/* Circle Node (solid opaque so line never shows through circle) */}
-                    <div
-                      className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 relative z-10 ${
-                        isActive
-                          ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_20px_rgba(2,86,208,0.7)] scale-110 shadow-md'
-                          : isPast
-                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-300 dark:bg-[#15294a] dark:text-blue-300 dark:border-blue-400'
-                          : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-[#16233d] dark:border-white/30 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]'
-                      }`}
-                    >
-                      {st.icon}
+                    {/* Circle Node (solid opaque backing disc guarantees line never shows through circle) */}
+                    <div className="relative z-10">
+                      {/* Solid opaque backing disc matching container background (#ffffff in light, #131f37 in dark) */}
+                      <div className="absolute inset-0 rounded-full bg-white dark:!bg-[#131f37] z-0 pointer-events-none" />
+                      <div
+                        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 relative z-10 ${
+                          isActive
+                            ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_20px_rgba(2,86,208,0.7)] scale-110 shadow-md'
+                            : isPast
+                            ? 'bg-[#e6f0ff] text-[#0256d0] border-2 border-blue-300 dark:!bg-[#15294a] dark:text-blue-300 dark:border-blue-400 stepper-circle-past'
+                            : 'bg-white text-slate-400 border-2 border-slate-200 dark:!bg-[#16233d] dark:border-white/30 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] stepper-circle-default'
+                        }`}
+                      >
+                        {st.icon}
+                      </div>
                     </div>
 
                     {/* Step label */}
@@ -379,19 +383,23 @@ export const ServicesPage: React.FC = () => {
                     }}
                     className="flex flex-col items-center text-center shrink-0 w-24 sm:w-28 relative z-10"
                   >
-                    {/* Circle Node: upper-aligned, solid opaque so line never shows through circle */}
-                    <div
-                      className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 relative shrink-0 z-10 ${
-                        isActive
-                          ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_20px_rgba(2,86,208,0.7)] scale-105 shadow-md'
-                          : isPast
-                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-300 dark:bg-[#15294a] dark:text-blue-300 dark:border-blue-400'
-                          : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-[#16233d] dark:border-white/30 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)]'
-                      }`}
-                    >
-                      {React.cloneElement(st.icon as React.ReactElement<any>, {
-                        className: 'w-5 h-5 sm:w-6 sm:h-6',
-                      })}
+                    {/* Circle Node: upper-aligned, solid opaque backing disc guarantees line never shows through circle */}
+                    <div className="relative shrink-0 z-10">
+                      {/* Solid opaque backing disc matching container background (#ffffff in light, #131f37 in dark) */}
+                      <div className="absolute inset-0 rounded-full bg-white dark:!bg-[#131f37] z-0 pointer-events-none" />
+                      <div
+                        className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center transition-all duration-300 relative shrink-0 z-10 ${
+                          isActive
+                            ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_20px_rgba(2,86,208,0.7)] scale-105 shadow-md'
+                            : isPast
+                            ? 'bg-[#e6f0ff] text-[#0256d0] border-2 border-blue-300 dark:!bg-[#15294a] dark:text-blue-300 dark:border-blue-400 stepper-circle-past'
+                            : 'bg-white text-slate-400 border-2 border-slate-200 dark:!bg-[#16233d] dark:border-white/30 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] stepper-circle-default'
+                        }`}
+                      >
+                        {React.cloneElement(st.icon as React.ReactElement<any>, {
+                          className: 'w-5 h-5 sm:w-6 sm:h-6',
+                        })}
+                      </div>
                     </div>
 
                     {/* Step Labels: Upper-aligned directly below the circle with consistent top margin */}

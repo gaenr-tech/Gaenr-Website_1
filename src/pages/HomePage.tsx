@@ -577,10 +577,10 @@ export const HomePage: React.FC = () => {
                 {/* Header Badge & Title */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="space-y-0.5 min-w-0">
-                    <span className="text-[#0256d0] font-bold text-xs uppercase tracking-wider block">For Outsourcers</span>
-                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight truncate">Hire Verified Experts</h3>
+                    <span className="text-[#0256d0] dark:text-[#38bdf8] font-bold text-xs uppercase tracking-wider block">For Outsourcers</span>
+                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate">Hire Verified Experts</h3>
                   </div>
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-blue-50 text-[#0256d0] border border-blue-200 whitespace-nowrap shrink-0">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#eff6ff] text-[#0256d0] border border-blue-200 whitespace-nowrap shrink-0 dark:!bg-white dark:!text-[#0248ad] dark:!border-white dark:shadow-[0_0_14px_rgba(255,255,255,0.4)] badge-highlight-white">
                     0% Platform Fee
                   </span>
                 </div>
@@ -653,43 +653,43 @@ export const HomePage: React.FC = () => {
 
                 {/* 4 Crisp Value Propositions in 2x2 Grid (Without truncate, fully readable on small screens) */}
                 <div className="grid grid-cols-2 gap-2 sm:gap-2.5 pt-1">
-                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 border border-slate-100 min-w-0">
-                    <Percent className="w-3.5 h-3.5 text-[#0256d0] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 dark:bg-white/5 border border-slate-100 dark:border-white/10 min-w-0 transition-colors">
+                    <Percent className="w-3.5 h-3.5 text-[#0256d0] dark:text-sky-400 shrink-0 mt-0.5" />
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-900 leading-tight">0% Platform Fee</div>
-                      <div className="text-[10px] sm:text-[11px] text-slate-500 leading-tight mt-0.5">Pay only for work</div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">0% Platform Fee</div>
+                      <div className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">Pay only for work</div>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 border border-slate-100 min-w-0">
-                    <Zap className="w-3.5 h-3.5 text-[#0256d0] shrink-0 mt-0.5 fill-[#0256d0]" />
+                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 dark:bg-white/5 border border-slate-100 dark:border-white/10 min-w-0 transition-colors">
+                    <Zap className="w-3.5 h-3.5 text-[#0256d0] dark:text-sky-400 shrink-0 mt-0.5 fill-[#0256d0] dark:fill-sky-400" />
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-900 leading-tight">Hassle-Free Match</div>
-                      <div className="text-[10px] sm:text-[11px] text-slate-500 leading-tight mt-0.5">Direct talent matching</div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Hassle-Free Match</div>
+                      <div className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">Direct talent matching</div>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 border border-slate-100 min-w-0">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 dark:bg-white/5 border border-slate-100 dark:border-white/10 min-w-0 transition-colors">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-900 leading-tight">Escrow Security</div>
-                      <div className="text-[10px] sm:text-[11px] text-slate-500 leading-tight mt-0.5">Released on approval</div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Escrow Security</div>
+                      <div className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">Released on approval</div>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 border border-slate-100 min-w-0">
-                    <CheckCheck className="w-3.5 h-3.5 text-[#0256d0] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 dark:bg-white/5 border border-slate-100 dark:border-white/10 min-w-0 transition-colors">
+                    <CheckCheck className="w-3.5 h-3.5 text-[#0256d0] dark:text-sky-400 shrink-0 mt-0.5" />
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-900 leading-tight">Verified Talent</div>
-                      <div className="text-[10px] sm:text-[11px] text-slate-500 leading-tight mt-0.5">Handpicked students</div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Verified Talent</div>
+                      <div className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">Handpicked students</div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Bottom CTA: On mobile stacks vertically centered, on sm+ row */}
-              <div className="pt-3 border-t border-slate-100 mt-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
-                <span className="text-xs text-slate-500 font-medium">Ready to start?</span>
+              <div className="pt-3 border-t border-slate-100 dark:border-white/10 mt-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Ready to start?</span>
                 <button
                   onClick={() => openAssignTask()}
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-xl bg-gradient-to-r from-[#1d74f5] via-[#0c67ea] to-[#0056d6] hover:from-[#2b82fa] hover:to-[#0862e6] text-white text-xs font-medium transition-all shadow-xs shrink-0 whitespace-nowrap min-w-[135px] cursor-pointer border border-white/20"
@@ -709,10 +709,10 @@ export const HomePage: React.FC = () => {
                 {/* Header Badge & Title */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="space-y-0.5 min-w-0">
-                    <span className="text-[#0256d0] font-bold text-xs uppercase tracking-wider block">For Experts</span>
-                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight truncate">Earn While You Build</h3>
+                    <span className="text-[#0256d0] dark:text-[#38bdf8] font-bold text-xs uppercase tracking-wider block">For Experts</span>
+                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate">Earn While You Build</h3>
                   </div>
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-blue-50 text-[#0256d0] border border-blue-200 whitespace-nowrap shrink-0">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#eff6ff] text-[#0256d0] border border-blue-200 whitespace-nowrap shrink-0 dark:!bg-white dark:!text-[#0248ad] dark:!border-white dark:shadow-[0_0_14px_rgba(255,255,255,0.4)] badge-highlight-white">
                     Guaranteed Pay
                   </span>
                 </div>
@@ -785,43 +785,43 @@ export const HomePage: React.FC = () => {
 
                 {/* 4 Crisp Value Propositions in 2x2 Grid (Without truncate, fully readable on small screens) */}
                 <div className="grid grid-cols-2 gap-2 sm:gap-2.5 pt-1">
-                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 border border-slate-100 min-w-0">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 dark:bg-white/5 border border-slate-100 dark:border-white/10 min-w-0 transition-colors">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-900 leading-tight">Guaranteed Pay</div>
-                      <div className="text-[10px] sm:text-[11px] text-slate-500 leading-tight mt-0.5">Fast, secure payouts</div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Guaranteed Pay</div>
+                      <div className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">Fast, secure payouts</div>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 border border-slate-100 min-w-0">
-                    <TrendingUp className="w-3.5 h-3.5 text-[#0256d0] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 dark:bg-white/5 border border-slate-100 dark:border-white/10 min-w-0 transition-colors">
+                    <TrendingUp className="w-3.5 h-3.5 text-[#0256d0] dark:text-sky-400 shrink-0 mt-0.5" />
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-900 leading-tight">Real Experience</div>
-                      <div className="text-[10px] sm:text-[11px] text-slate-500 leading-tight mt-0.5">Build verified portfolio</div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Real Experience</div>
+                      <div className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">Build verified portfolio</div>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 border border-slate-100 min-w-0">
-                    <Briefcase className="w-3.5 h-3.5 text-[#0256d0] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 dark:bg-white/5 border border-slate-100 dark:border-white/10 min-w-0 transition-colors">
+                    <Briefcase className="w-3.5 h-3.5 text-[#0256d0] dark:text-sky-400 shrink-0 mt-0.5" />
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-900 leading-tight">Fair Access</div>
-                      <div className="text-[10px] sm:text-[11px] text-slate-500 leading-tight mt-0.5">No bidding wars</div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Fair Access</div>
+                      <div className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">No bidding wars</div>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 border border-slate-100 min-w-0">
-                    <Check className="w-3.5 h-3.5 text-[#0256d0] shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 p-2 rounded-xl bg-slate-50/90 dark:bg-white/5 border border-slate-100 dark:border-white/10 min-w-0 transition-colors">
+                    <Check className="w-3.5 h-3.5 text-[#0256d0] dark:text-sky-400 shrink-0 mt-0.5" />
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-900 leading-tight">Total Flexibility</div>
-                      <div className="text-[10px] sm:text-[11px] text-slate-500 leading-tight mt-0.5">Work anywhere, anytime</div>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Total Flexibility</div>
+                      <div className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">Work anywhere, anytime</div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Bottom CTA: On mobile stacks vertically centered, on sm+ row */}
-              <div className="pt-3 border-t border-slate-100 mt-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
-                <span className="text-xs text-slate-500 font-medium">Ready to monetize?</span>
+              <div className="pt-3 border-t border-slate-100 dark:border-white/10 mt-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Ready to monetize?</span>
                 <button
                   onClick={() => openApplyExpert()}
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-xl bg-white text-[#0256d0] border-2 border-[#0256d0] dark:!bg-white dark:!text-slate-900 dark:!border-white dark:hover:!bg-slate-100 dark:shadow-[0_0_24px_rgba(255,255,255,0.35)] dark:font-bold text-xs font-medium hover:bg-[#0256d0] hover:text-white transition-all duration-200 shadow-xs hover:shadow-md shrink-0 whitespace-nowrap min-w-[135px] group cursor-pointer"
@@ -878,15 +878,17 @@ export const HomePage: React.FC = () => {
                     key={st.id}
                     className="flex flex-col items-center text-center space-y-3"
                   >
-                    {/* Step Circle with completed checkmark on past steps (solid opaque so line is 100% hidden inside circle) */}
+                    {/* Step Circle with completed checkmark on past steps (solid opaque backing guarantees line is 100% hidden inside circle) */}
                     <div className="relative z-10">
+                      {/* Solid opaque backing disc occluding the connecting line */}
+                      <div className="absolute inset-0 rounded-full bg-white dark:!bg-[#0d1527] z-0 pointer-events-none" />
                       <div
-                        className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 relative ${
+                        className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 relative z-10 ${
                           isActive
                             ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_24px_rgba(2,86,208,0.7)] scale-110 shadow-lg'
                             : isPast
-                            ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 dark:bg-[#15294a] dark:text-blue-300 dark:border-blue-400 scale-100'
-                            : 'bg-white text-slate-400 border-2 border-slate-200 dark:bg-[#16233d] dark:border-white/30 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] scale-100'
+                            ? 'bg-[#e6f0ff] text-[#0256d0] border-2 border-blue-400 dark:!bg-[#15294a] dark:text-blue-300 dark:border-blue-400 stepper-circle-past scale-100'
+                            : 'bg-white text-slate-400 border-2 border-slate-200 dark:!bg-[#16233d] dark:border-white/30 dark:text-white dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] stepper-circle-default scale-100'
                         }`}
                       >
                         {st.icon}
@@ -921,11 +923,11 @@ export const HomePage: React.FC = () => {
 
           {/* Mobile Vertical Stepper with progressive connection */}
           <div className="lg:hidden relative pl-6 space-y-5 pt-2 pointer-events-none select-none">
-            {/* Background vertical line */}
-            <div className="absolute top-4 bottom-4 left-4 w-0.5 bg-slate-200 dark:bg-white/20 z-0" />
+            {/* Background vertical line (dead-center behind circles) */}
+            <div className="absolute top-4 bottom-4 left-6 -translate-x-1/2 w-0.5 bg-slate-200 dark:bg-white/20 z-0" />
             {/* Dynamic progressive vertical bar */}
             <div
-              className="absolute top-4 left-4 w-0.5 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.8)] transition-all duration-300 ease-out z-0"
+              className="absolute top-4 left-6 -translate-x-1/2 w-0.5 bg-[#0256d0] dark:bg-[#38bdf8] dark:shadow-[0_0_12px_rgba(56,189,248,0.8)] transition-all duration-300 ease-out z-0"
               style={{
                 height: `${(activeStepIndex / (flowchartSteps.length - 1)) * 100}%`,
                 maxHeight: 'calc(100% - 2rem)',
@@ -942,13 +944,15 @@ export const HomePage: React.FC = () => {
                   className="relative flex items-start gap-4"
                 >
                   <div className="relative shrink-0 -ml-4.5 z-10">
+                    {/* Solid opaque backing disc occluding the vertical line */}
+                    <div className="absolute inset-0 rounded-full bg-white dark:!bg-[#0d1527] z-0 pointer-events-none" />
                     <div
-                      className={`w-9 h-9 rounded-full flex items-center justify-center shadow-xs transition-all duration-300 ${
+                      className={`w-9 h-9 rounded-full flex items-center justify-center shadow-xs transition-all duration-300 relative z-10 ${
                         isActive
                           ? 'bg-[#0256d0] text-white scale-115 ring-3 ring-blue-100 dark:ring-blue-400/50 dark:shadow-[0_0_20px_rgba(2,86,208,0.7)] shadow-md'
                           : isPast
-                          ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 dark:bg-[#15294a] dark:text-blue-300 dark:border-blue-400'
-                          : 'bg-white border-2 border-slate-300 text-slate-400 dark:bg-[#16233d] dark:border-white/30 dark:text-white'
+                          ? 'bg-[#e6f0ff] text-[#0256d0] border-2 border-blue-400 dark:!bg-[#15294a] dark:text-blue-300 dark:border-blue-400 stepper-circle-past'
+                          : 'bg-white border-2 border-slate-300 text-slate-400 dark:!bg-[#16233d] dark:border-white/30 dark:text-white stepper-circle-default'
                       }`}
                     >
                       {st.icon}

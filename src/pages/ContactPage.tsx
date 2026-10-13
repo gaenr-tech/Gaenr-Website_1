@@ -161,7 +161,7 @@ export const ContactPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased space-y-12 sm:space-y-14 pb-20">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-[#0b1324] text-slate-800 dark:text-slate-200 antialiased space-y-12 sm:space-y-14 pb-20">
       {/* =========================================================================
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - No lines or grids (clean, fluid, artistic)
@@ -218,18 +218,18 @@ export const ContactPage: React.FC = () => {
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1: Phone Support (শুধুমাত্র ফোন নাম্বার - Blue/Slate Style, Direct Mobile Dialer tel: link) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-blue-300 transition-all flex flex-col justify-between space-y-5">
+          <div className="bg-white dark:bg-[#131f37] rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-white/10 shadow-xs hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500/30 transition-all flex flex-col justify-between space-y-5">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#006eff] flex items-center justify-center shadow-xs border border-blue-100">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 flex items-center justify-center shadow-xs border border-blue-100 dark:border-blue-500/30">
                 <Phone className="w-6 h-6" />
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-slate-900">Phone Support</h3>
-                <span className="inline-block text-lg sm:text-xl font-extrabold text-slate-900 mt-1 transition-colors duration-200 hover:text-[#1d74f5] select-all cursor-default">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Phone Support</h3>
+                <span className="inline-block text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white mt-1 transition-colors duration-200 hover:text-[#1d74f5] dark:hover:text-blue-400 select-all cursor-default">
                   09647 922 800
                 </span>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   Direct voice helpline for immediate inquiries and call assistance.
                 </p>
               </div>
@@ -246,26 +246,26 @@ export const ContactPage: React.FC = () => {
               <button
                 onClick={() => handleCopy('09647922800', 'phone')}
                 title="Copy phone number"
-                className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/8 transition-colors cursor-pointer"
               >
-                {copiedPhone ? <Check className="w-4 h-4 text-[#006eff]" /> : <Copy className="w-4 h-4" />}
+                {copiedPhone ? <Check className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
           {/* Card 2: Dedicated WhatsApp Support (WhatsApp Green with number formatted 01608 922 800) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-emerald-300 transition-all flex flex-col justify-between space-y-5">
+          <div className="bg-white dark:bg-[#131f37] rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-white/10 shadow-xs hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/30 transition-all flex flex-col justify-between space-y-5">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shadow-xs border border-emerald-200/60">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shadow-xs border border-emerald-200/60 dark:border-emerald-500/30">
                 <MessageCircle className="w-6 h-6" />
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-slate-900">WhatsApp Support</h3>
-                <span className="inline-block text-lg sm:text-xl font-extrabold text-slate-900 mt-1 transition-colors duration-200 hover:text-emerald-600 select-all cursor-default">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">WhatsApp Support</h3>
+                <span className="inline-block text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white mt-1 transition-colors duration-200 hover:text-emerald-600 dark:hover:text-emerald-400 select-all cursor-default">
                   01608 922 800
                 </span>
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
                   For enterprise onboarding, partnerships, direct proposals, freelancing, client services, task scopes, and all operational assistance.
                 </p>
               </div>
@@ -284,26 +284,26 @@ export const ContactPage: React.FC = () => {
               <button
                 onClick={() => handleCopy('01608922800', 'whatsapp')}
                 title="Copy WhatsApp number"
-                className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/8 transition-colors cursor-pointer"
               >
-                {copiedWhatsapp ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                {copiedWhatsapp ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
           {/* Card 3: Official Email (Deep Tech Indigo Theme - #4f46e5) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs hover:shadow-md hover:border-indigo-300 transition-all flex flex-col justify-between space-y-5">
+          <div className="bg-white dark:bg-[#131f37] rounded-3xl p-6 sm:p-7 border border-slate-200/90 dark:border-white/10 shadow-xs hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-500/30 transition-all flex flex-col justify-between space-y-5">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-[#4f46e5] flex items-center justify-center shadow-xs border border-indigo-200/80">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-[#4f46e5] dark:text-indigo-400 flex items-center justify-center shadow-xs border border-indigo-200/80 dark:border-indigo-500/30">
                 <Mail className="w-6 h-6" />
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-slate-900">Official Email</h3>
-                <span className="block text-base sm:text-lg font-bold text-slate-900 hover:text-[#4f46e5] mt-1 break-all transition-colors duration-200 no-underline select-all cursor-default">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Official Email</h3>
+                <span className="block text-base sm:text-lg font-bold text-slate-900 dark:text-white hover:text-[#4f46e5] dark:hover:text-indigo-400 mt-1 break-all transition-colors duration-200 no-underline select-all cursor-default">
                   contact@gmail.com
                 </span>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   Send your inquiries, briefs, or project documentation directly to our official inbox.
                 </p>
               </div>
@@ -320,9 +320,9 @@ export const ContactPage: React.FC = () => {
               <button
                 onClick={() => handleCopy('contact@gmail.com', 'email')}
                 title="Copy email address"
-                className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/8 transition-colors cursor-pointer"
               >
-                {copiedEmail ? <Check className="w-4 h-4 text-[#4f46e5]" /> : <Copy className="w-4 h-4" />}
+                {copiedEmail ? <Check className="w-4 h-4 text-[#4f46e5] dark:text-indigo-400" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -335,12 +335,12 @@ export const ContactPage: React.FC = () => {
           - Address: 10/A, 15/13, Mirpur, Dhaka
          ========================================================================= */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-9 shadow-xs space-y-6">
+        <div className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 p-6 sm:p-9 shadow-xs space-y-6 transition-colors">
           <div className="text-center space-y-1.5 max-w-md mx-auto">
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Office Location
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
               Our central operations and management hub in Dhaka, Bangladesh.
             </p>
           </div>
@@ -348,20 +348,20 @@ export const ContactPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             {/* Left: Address details & copy action */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#172540] border border-slate-200/80 dark:border-white/8 space-y-3 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#006eff] flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#006eff] dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-500/30 shadow-2xs">
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Address</p>
-                    <p className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Address</p>
+                    <p className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5">
                       10/A, 15/13, Mirpur, Dhaka
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-xs text-slate-500 pt-1 border-t border-slate-200/60">
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-200/60 dark:border-white/8">
                   <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                   <span>10:00 AM – 10:00 PM (Saturday – Thursday)</span>
                 </div>
@@ -370,9 +370,9 @@ export const ContactPage: React.FC = () => {
               <div>
                 <button
                   onClick={() => handleCopy('10/A, 15/13, Mirpur, Dhaka', 'address')}
-                  className="w-full py-2.5 px-4 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-2xs active:scale-95"
+                  className="w-full py-2.5 px-4 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-2xs active:scale-95"
                 >
-                  {copiedAddress ? <Check className="w-4 h-4 text-[#006eff]" /> : <Copy className="w-4 h-4 text-slate-500" />}
+                  {copiedAddress ? <Check className="w-4 h-4 text-[#006eff] dark:text-blue-400" /> : <Copy className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
                   <span>{copiedAddress ? 'Address Copied to Clipboard' : 'Copy Address'}</span>
                 </button>
               </div>
@@ -380,7 +380,7 @@ export const ContactPage: React.FC = () => {
 
             {/* Right: Embedded Interactive Google Map Preview */}
             <div className="lg:col-span-7">
-              <div className="w-full h-64 sm:h-72 rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100 relative">
+              <div className="w-full h-64 sm:h-72 rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-sm bg-slate-100 dark:bg-slate-900 relative">
                 <iframe
                   title="Mirpur Dhaka Location Map"
                   src="https://maps.google.com/maps?q=10/A,+15/13,+Mirpur,+Dhaka,+Bangladesh&t=m&z=15&output=embed&iwloc=near"
@@ -395,19 +395,15 @@ export const ContactPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          OFFICIAL SOCIAL MEDIA NETWORKS
-          - Full card boundary hover triggering entire card color change
-          - TikTok is pure black
-          - Threads uses exact official 24x24 SVG
-          - X is named 'X' (no brackets) and pure black
+          OFFICIAL SOCIAL MEDIA NETWORKS (Glassy dark mode aesthetic)
          ========================================================================= */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl border border-slate-200/90 p-7 sm:p-10 shadow-xs space-y-6">
+        <div className="bg-white dark:bg-[#131f37] rounded-3xl border border-slate-200/90 dark:border-white/10 p-7 sm:p-10 shadow-xs space-y-6 transition-colors">
           <div className="text-center space-y-1.5 max-w-md mx-auto">
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Official Social Media
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
               Follow our verified profiles for updates, community releases, and announcements.
             </p>
           </div>
@@ -419,23 +415,26 @@ export const ContactPage: React.FC = () => {
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group flex items-center justify-between p-4 rounded-2xl border border-slate-200/90 bg-slate-50/60 ${social.bgHover} ${social.borderHover} transition-all duration-200 hover:shadow-xs cursor-pointer`}
+                className={`group flex items-center justify-between p-4 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-slate-50/70 dark:bg-[#16233d]/70 dark:backdrop-blur-xl ${social.bgHover} dark:hover:bg-white/[0.08] ${social.borderHover} dark:hover:border-white/25 transition-all duration-200 hover:shadow-xs dark:hover:shadow-[0_4px_24px_rgba(0,0,0,0.35)] cursor-pointer`}
               >
                 <div className="flex items-center gap-3.5 min-w-0">
-                  <div className={`text-slate-600 ${social.textHover} transition-colors group-hover:scale-110 duration-200`}>
-                    {social.icon}
+                  {/* Glassy circular/rounded badge for social media icon */}
+                  <div className="w-10 h-10 rounded-xl bg-white dark:bg-white/[0.08] dark:backdrop-blur-md border border-slate-200/80 dark:border-white/15 dark:shadow-[0_2px_10px_rgba(0,0,0,0.25)] flex items-center justify-center text-slate-700 dark:text-white shadow-xs group-hover:scale-105 transition-all shrink-0">
+                    <div className={`${social.textHover} dark:group-hover:text-blue-400 transition-colors`}>
+                      {social.icon}
+                    </div>
                   </div>
                   <div className="min-w-0">
-                    <p className={`text-sm font-bold text-slate-900 ${social.textHover} transition-colors truncate`}>
+                    <p className={`text-sm font-bold text-slate-900 dark:text-white ${social.textHover} dark:group-hover:text-white transition-colors truncate`}>
                       {social.name}
                     </p>
-                    <p className="text-[11px] text-slate-500 truncate">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                       {social.handle}
                     </p>
                   </div>
                 </div>
 
-                <ExternalLink className={`w-4 h-4 text-slate-400 ${social.textHover} transition-all group-hover:translate-x-0.5 shrink-0`} />
+                <ExternalLink className={`w-4 h-4 text-slate-400 dark:text-slate-400 ${social.textHover} dark:group-hover:text-cyan-400 transition-all group-hover:translate-x-0.5 shrink-0`} />
               </a>
             ))}
           </div>

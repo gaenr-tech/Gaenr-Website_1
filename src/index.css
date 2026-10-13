@@ -1469,4 +1469,25 @@ html.dark .min-h-screen {
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
+/* Guarantee 100% solid, fully opaque backgrounds for Stepper Circles & High-Contrast Badges */
+.dark .badge-highlight-white {
+  background-color: #ffffff !important;
+  color: #0248ad !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.4) !important;
+}
+
+.dark .stepper-circle-past {
+  background-color: #15294a !important;
+  color: #93c5fd !important;
+  border-color: #60a5fa !important;
+}
+
+.dark .stepper-circle-default {
+  background-color: #16233d !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+
 
