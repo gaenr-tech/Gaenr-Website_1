@@ -140,17 +140,10 @@ const installMirror = () => {
     configurable: true,
     writable: true,
     value(this: Storage, key: string, value: string) {
-      const previous = this === nativeStorage ? this.getItem(key) : null;
       nativeSetItem.call(this, key, value);
       if (this !== nativeStorage || LOCAL_ONLY_KEYS.has(key)) return;
 
-      const previousArray = parseArray(previous);
-      const nextArray = parseArray(value);
-      if (nextArray) {
-        const arrayChange = diffArray(previousArray || [], nextArray);
-        if (arrayChange) queueRemoteMutation({ arrayChanges: [{ ...arrayChange, key }] });
-        return;
-      }
+      // Always push the full updated value to remote storage so server state is 100% authoritative
       queueRemoteMutation({ changes: { [key]: value } });
     },
   });
@@ -205,6 +198,36 @@ export const initializeRemoteStorage = async () => {
       Object.entries(remoteState).forEach(([key, rawValue]) => {
         if (LOCAL_ONLY_KEYS.has(key)) return;
         const value = serializeValue(rawValue);
+
+        // Smart merge for arrays so local additions are never lost or wiped by older server state
+        if (key === 'gaenr_freelancers' || key === 'gaenr_expert_applications') {
+          const localVal = nativeStorage.getItem(key);
+          const localParsed = parseArray(localVal);
+          const remoteParsed = parseArray(value);
+          if (Array.isArray(localParsed) && Array.isArray(remoteParsed)) {
+            const mergedMap = new Map<string, unknown>();
+            // Remote items first
+            remoteParsed.forEach((item) => mergedMap.set(identity(item), item));
+            let localAdditionsFound = false;
+            // Retain any local additions
+            localParsed.forEach((item) => {
+              const k = identity(item);
+              if (!mergedMap.has(k)) {
+                mergedMap.set(k, item);
+                localAdditionsFound = true;
+              }
+            });
+            const mergedArray = Array.from(mergedMap.values());
+            const mergedStr = JSON.stringify(mergedArray);
+            nativeSetItem.call(nativeStorage, key, mergedStr);
+            if (localAdditionsFound) {
+              // Immediately sync the merged state to enrich remote database
+              queueRemoteMutation({ changes: { [key]: mergedStr } });
+            }
+            return;
+          }
+        }
+
         nativeSetItem.call(nativeStorage, key, value);
       });
     } else {

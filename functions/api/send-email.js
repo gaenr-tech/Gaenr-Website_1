@@ -84,6 +84,15 @@ export async function onRequestPost({ request, env }) {
       const uploadPortalUrl = `${siteUrl}/u/${encodeURIComponent(uploadToken)}`;
       subject = 'Your GAENR Expert Profile is Live';
       text = `Hi ${name},\n\nCongratulations! Your verified expert profile (${code}) is now live on Gaenr.\n\nView Profile: ${profileUrl}\nUpload Portal: ${uploadPortalUrl}\n\nTeam Gaenr`;
+
+      const cardDataUrl = payload.cardImage || payload.cardImageDataUrl || '';
+      const cardPreviewHtml = cardDataUrl
+        ? `<div style="text-align:center;margin:24px 0;">
+            <img src="${cardDataUrl}" alt="GAENR Official Verified ID Card" style="max-width:320px;width:100%;border-radius:18px;border:1px solid #cbd5e1;box-shadow:0 12px 30px rgba(0,0,0,0.12);display:inline-block;" />
+            <p style="font-size:12px;color:#64748b;margin:8px 0 0;font-weight:600;">Official Digital ID Card &bull; ID: <span style="font-family:monospace;color:#006eff;">${code}</span></p>
+          </div>`
+        : '';
+
       html = `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"/><style>body{font-family:'DM Sans',sans-serif;background:#f8fafc;color:#1e293b;padding:20px;margin:0;} .card{max-width:540px;margin:0 auto;background:#ffffff;border-radius:20px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.05);} .hdr{background:#0a1222;padding:24px;text-align:center;color:#fff;} .logo{font-size:20px;font-weight:800;letter-spacing:3px;color:#006eff;} .body{padding:30px;} .btn{display:inline-block;background:#006eff;color:#ffffff !important;padding:12px 30px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;} .sec-btn{display:inline-block;background:#f1f5f9;color:#0f172a !important;padding:12px 30px;border-radius:9999px;font-weight:700;text-decoration:none;font-size:13px;border:1px solid #cbd5e1;margin-left:8px;} .ftr{background:#f8fafc;padding:20px;text-align:center;font-size:12px;color:#64748b;border-top:1px solid #edf2f7;}</style></head>
@@ -93,15 +102,28 @@ export async function onRequestPost({ request, env }) {
     <div class="body">
       <h2 style="font-size:20px;margin-top:0;">Profile Live, <span style="color:#006eff;">${name}</span>!</h2>
       <p style="font-size:14px;line-height:1.6;color:#475569;">Congratulations! Your verified expert profile (Official ID: <strong>${code}</strong>) is now active and live on Gaenr.</p>
+      ${cardPreviewHtml}
       <div style="text-align:center;margin:30px 0;">
         <a href="${profileUrl}" class="btn" target="_blank">View Live Profile</a>
         <a href="${uploadPortalUrl}" class="sec-btn" target="_blank">Upload Portal</a>
       </div>
+      <p style="font-size:12px;color:#94a3b8;line-height:1.5;text-align:center;">Your official digital ID card has been attached to this email. Please keep it safe for verification.</p>
     </div>
     <div class="ftr"><strong>Team Gaenr</strong> &bull; <a href="https://gaenr.com" style="color:#006eff;text-decoration:none;">gaenr.com</a></div>
   </div>
 </body>
 </html>`;
+    }
+
+    const attachments = [];
+    const cardData = payload.cardImage || payload.cardImageDataUrl;
+    if (cardData && typeof cardData === 'string') {
+      const code = (payload.code || payload.expert?.code || 'EXPERT').trim();
+      const base64Content = cardData.includes(',') ? cardData.split(',')[1] : cardData;
+      attachments.push({
+        filename: `GAENR-ID-${code}.png`,
+        content: base64Content,
+      });
     }
 
     let sent = false;
@@ -122,11 +144,15 @@ export async function onRequestPost({ request, env }) {
             subject,
             html,
             text,
+            attachments: attachments.length > 0 ? attachments : undefined,
           }),
         });
         if (res.ok) {
           sent = true;
           provider = 'resend';
+        } else {
+          const errDetail = await res.text().catch(() => '');
+          console.warn('Resend error response:', res.status, errDetail);
         }
       } catch (err) {
         console.warn('Resend error:', err);
@@ -145,6 +171,7 @@ export async function onRequestPost({ request, env }) {
             subject,
             html,
             text,
+            attachments: attachments.length > 0 ? attachments : undefined,
           }),
         });
         const data = await res.json().catch(() => ({}));
