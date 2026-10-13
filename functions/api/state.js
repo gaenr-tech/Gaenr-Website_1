@@ -17,80 +17,151 @@ export async function onRequestOptions() {
   return new Response(null, { status: 204, headers: corsHeaders });
 }
 
-export async function onRequestGet({ env }) {
-  const connectionString = env.DATABASE_URL || env.POSTGRES_URL;
-  if (!connectionString) {
-    return jsonResponse({
-      version: 1,
-      state: {},
-      warning: 'DATABASE_URL is not configured in Cloudflare environment variables',
-    });
-  }
+// ---------------------------------------------------------------------------
+// Cloudflare D1 Native Edge Helpers
+// ---------------------------------------------------------------------------
+async function initD1Table(db) {
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS gaenr_app_state (
+      id INTEGER PRIMARY KEY,
+      state TEXT NOT NULL DEFAULT '{}',
+      updated_at TEXT NOT NULL
+    );
+  `);
+}
 
+async function getD1State(db) {
+  await initD1Table(db);
+  const row = await db
+    .prepare('SELECT state, updated_at AS updatedAt FROM gaenr_app_state WHERE id = 1')
+    .first();
+  if (!row) return { state: {}, updatedAt: null };
+
+  let raw = {};
   try {
-    const sql = neon(connectionString);
-    await sql`
-      CREATE TABLE IF NOT EXISTS gaenr_app_state (
-        id integer PRIMARY KEY,
-        state jsonb NOT NULL DEFAULT '{}'::jsonb,
-        updated_at timestamptz NOT NULL DEFAULT now()
-      )
-    `;
+    raw = typeof row.state === 'string' ? JSON.parse(row.state) : row.state || {};
+  } catch {}
 
-    const rows = await sql`
-      SELECT state, updated_at AS "updatedAt"
-      FROM gaenr_app_state
-      WHERE id = 1
-      LIMIT 1
-    `;
-
-    const rawState = rows[0]?.state || {};
-    const normalizedState = {};
-    for (const [k, v] of Object.entries(rawState)) {
-      if (SENSITIVE_LOCAL_KEYS.includes(k)) continue;
-      normalizedState[k] = typeof v === 'string' ? v : JSON.stringify(v);
-    }
-
-    return jsonResponse({
-      version: 1,
-      state: normalizedState,
-      updatedAt: rows[0]?.updatedAt || null,
-    });
-  } catch (err) {
-    return jsonResponse({ error: 'Database read failed', detail: err.message }, 500);
+  const normalized = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (SENSITIVE_LOCAL_KEYS.includes(k)) continue;
+    normalized[k] = typeof v === 'string' ? v : JSON.stringify(v);
   }
+  return { state: normalized, updatedAt: row.updatedAt };
+}
+
+async function setD1State(db, finalState) {
+  await initD1Table(db);
+  const now = new Date().toISOString();
+  await db
+    .prepare(`
+      INSERT INTO gaenr_app_state (id, state, updated_at)
+      VALUES (1, ?, ?)
+      ON CONFLICT (id) DO UPDATE SET state = excluded.state, updated_at = excluded.updated_at
+    `)
+    .bind(JSON.stringify(finalState), now)
+    .run();
+  return { state: finalState, updatedAt: now };
+}
+
+// ---------------------------------------------------------------------------
+// Neon Postgres Helpers (Fallback)
+// ---------------------------------------------------------------------------
+async function getPgState(connectionString) {
+  const sql = neon(connectionString);
+  await sql`
+    CREATE TABLE IF NOT EXISTS gaenr_app_state (
+      id integer PRIMARY KEY,
+      state jsonb NOT NULL DEFAULT '{}'::jsonb,
+      updated_at timestamptz NOT NULL DEFAULT now()
+    )
+  `;
+  const rows = await sql`
+    SELECT state, updated_at AS "updatedAt"
+    FROM gaenr_app_state
+    WHERE id = 1
+    LIMIT 1
+  `;
+  const raw = rows[0]?.state || {};
+  const normalized = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (SENSITIVE_LOCAL_KEYS.includes(k)) continue;
+    normalized[k] = typeof v === 'string' ? v : JSON.stringify(v);
+  }
+  return { state: normalized, updatedAt: rows[0]?.updatedAt || null };
+}
+
+async function setPgState(connectionString, finalState) {
+  const sql = neon(connectionString);
+  await sql`
+    CREATE TABLE IF NOT EXISTS gaenr_app_state (
+      id integer PRIMARY KEY,
+      state jsonb NOT NULL DEFAULT '{}'::jsonb,
+      updated_at timestamptz NOT NULL DEFAULT now()
+    )
+  `;
+  const saved = await sql`
+    INSERT INTO gaenr_app_state (id, state, updated_at)
+    VALUES (1, ${JSON.stringify(finalState)}::jsonb, now())
+    ON CONFLICT (id) DO UPDATE
+    SET state = EXCLUDED.state, updated_at = now()
+    RETURNING state, updated_at AS "updatedAt"
+  `;
+  return { state: finalState, updatedAt: saved[0]?.updatedAt || new Date().toISOString() };
+}
+
+// ---------------------------------------------------------------------------
+// Handlers
+// ---------------------------------------------------------------------------
+export async function onRequestGet({ env }) {
+  // 1. Prioritize Cloudflare Native D1
+  if (env.DB) {
+    try {
+      const res = await getD1State(env.DB);
+      return jsonResponse({ version: 1, ...res, database: 'cloudflare-d1' });
+    } catch (err) {
+      return jsonResponse({ error: 'Cloudflare D1 read failed', detail: err.message }, 500);
+    }
+  }
+
+  // 2. Fallback to Postgres / Neon
+  const connectionString = env.DATABASE_URL || env.POSTGRES_URL;
+  if (connectionString) {
+    try {
+      const res = await getPgState(connectionString);
+      return jsonResponse({ version: 1, ...res, database: 'postgres' });
+    } catch (err) {
+      return jsonResponse({ error: 'Postgres read failed', detail: err.message }, 500);
+    }
+  }
+
+  return jsonResponse({
+    version: 1,
+    state: {},
+    warning: 'No database configured. Bind Cloudflare D1 as "DB" or set DATABASE_URL.',
+  });
 }
 
 export async function onRequestPut({ request, env }) {
+  const isD1 = Boolean(env.DB);
   const connectionString = env.DATABASE_URL || env.POSTGRES_URL;
-  if (!connectionString) {
-    return jsonResponse({ error: 'DATABASE_URL is required' }, 500);
+
+  if (!isD1 && !connectionString) {
+    return jsonResponse({ error: 'No database configured. Bind Cloudflare D1 as "DB" or set DATABASE_URL.' }, 500);
   }
 
   try {
     const payload = await request.json().catch(() => ({}));
-    const sql = neon(connectionString);
 
-    await sql`
-      CREATE TABLE IF NOT EXISTS gaenr_app_state (
-        id integer PRIMARY KEY,
-        state jsonb NOT NULL DEFAULT '{}'::jsonb,
-        updated_at timestamptz NOT NULL DEFAULT now()
-      )
-    `;
-
-    const existingRows = await sql`
-      SELECT state, updated_at AS "updatedAt"
-      FROM gaenr_app_state
-      WHERE id = 1
-      LIMIT 1
-    `;
-
-    let currentState = {};
-    if (existingRows[0]?.state && typeof existingRows[0].state === 'object') {
-      currentState = { ...existingRows[0].state };
+    // Read current state
+    let currentData = { state: {} };
+    if (isD1) {
+      currentData = await getD1State(env.DB);
+    } else {
+      currentData = await getPgState(connectionString);
     }
 
+    let currentState = { ...(currentData.state || {}) };
     for (const key of SENSITIVE_LOCAL_KEYS) {
       delete currentState[key];
     }
@@ -103,7 +174,7 @@ export async function onRequestPut({ request, env }) {
       }
     }
 
-    // 2. Direct key-value changes
+    // 2. Changes
     if (payload.changes && typeof payload.changes === 'object' && !Array.isArray(payload.changes)) {
       for (const [key, value] of Object.entries(payload.changes)) {
         if (typeof key !== 'string' || SENSITIVE_LOCAL_KEYS.includes(key)) continue;
@@ -179,18 +250,18 @@ export async function onRequestPut({ request, env }) {
       finalState[k] = typeof v === 'string' ? v : JSON.stringify(v);
     }
 
-    const savedRows = await sql`
-      INSERT INTO gaenr_app_state (id, state, updated_at)
-      VALUES (1, ${JSON.stringify(finalState)}::jsonb, now())
-      ON CONFLICT (id) DO UPDATE
-      SET state = EXCLUDED.state, updated_at = now()
-      RETURNING state, updated_at AS "updatedAt"
-    `;
+    let saved = null;
+    if (isD1) {
+      saved = await setD1State(env.DB, finalState);
+    } else {
+      saved = await setPgState(connectionString, finalState);
+    }
 
     return jsonResponse({
       version: 1,
       state: finalState,
-      updatedAt: savedRows[0]?.updatedAt || new Date().toISOString(),
+      updatedAt: saved.updatedAt,
+      database: isD1 ? 'cloudflare-d1' : 'postgres',
     });
   } catch (err) {
     return jsonResponse({ error: 'Database update failed', detail: err.message }, 500);
