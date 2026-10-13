@@ -10,7 +10,7 @@ import {
 
 export const AboutUsPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white text-slate-800 antialiased">
+    <div className="min-h-screen bg-white dark:bg-[#090d16] text-slate-800 dark:text-slate-200 antialiased">
       {/* =========================================================================
           PAGE HERO BANNER: Blue background with textured pattern overlay
           (Reduced opacity design so it does not feel like flat solid blue)

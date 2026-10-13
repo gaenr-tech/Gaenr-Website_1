@@ -11,6 +11,21 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+function getDeviceThemeCookie(): ThemeMode | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/(?:^|; )gaenr_device_theme=([^;]+)/);
+  if (match && (match[1] === 'dark' || match[1] === 'light')) {
+    return match[1] as ThemeMode;
+  }
+  return null;
+}
+
+function setDeviceThemeCookie(mode: ThemeMode) {
+  if (typeof document === 'undefined') return;
+  // 10 years persistence per device
+  document.cookie = `gaenr_device_theme=${mode}; path=/; max-age=315360000; SameSite=Lax`;
+}
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     if (typeof window !== 'undefined') {
@@ -19,8 +34,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (saved === 'dark' || saved === 'light') {
           return saved;
         }
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
+        const cookieTheme = getDeviceThemeCookie();
+        if (cookieTheme === 'dark' || cookieTheme === 'light') {
+          return cookieTheme;
         }
       } catch {}
     }
@@ -51,6 +67,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     applyTheme(theme);
     try {
       localStorage.setItem('gaenr_theme', theme);
+      setDeviceThemeCookie(theme);
     } catch {}
   }, [theme]);
 

@@ -871,7 +871,7 @@ export const HomePage: React.FC = () => {
                       <div
                         className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 relative ${
                           isActive
-                            ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 scale-110 shadow-lg'
+                            ? 'bg-[#0256d0] text-white ring-4 ring-blue-100 dark:ring-blue-900/50 scale-110 shadow-lg'
                             : isPast
                             ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400 scale-100'
                             : 'bg-white text-slate-400 border-2 border-slate-200 scale-100'
@@ -933,7 +933,7 @@ export const HomePage: React.FC = () => {
                     <div
                       className={`w-9 h-9 rounded-full flex items-center justify-center shadow-xs transition-all duration-300 ${
                         isActive
-                          ? 'bg-[#0256d0] text-white scale-115 ring-3 ring-blue-100 shadow-md'
+                          ? 'bg-[#0256d0] text-white scale-115 ring-3 ring-blue-100 dark:ring-blue-900/50 shadow-md'
                           : isPast
                           ? 'bg-blue-50 text-[#0256d0] border-2 border-blue-400'
                           : 'bg-white border-2 border-slate-300 text-slate-400'
@@ -999,7 +999,7 @@ export const HomePage: React.FC = () => {
           - Background: VIBRANT BLUE (bg-expert-blue)
           - Scaled down typography, spacing, and iPhone mockup for optimal proportions
          ========================================================================= */}
-      <section className="py-10 sm:py-12 lg:py-14 relative overflow-hidden bg-gradient-to-b from-[#fafbfc] via-slate-100/60 to-blue-50/30">
+      <section className="py-10 sm:py-12 lg:py-14 relative overflow-hidden bg-gradient-to-b from-[#fafbfc] via-slate-100/60 to-blue-50/30 dark:from-[#090d16] dark:via-[#090d16] dark:to-[#090d16]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="bg-expert-blue rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center relative">
             {/* Textured Design Overlay with reduced opacity so it does not look like solid blue */}
@@ -1147,7 +1147,7 @@ export const HomePage: React.FC = () => {
 
                 {/* Compact Floating Notification Popup with Frameless Official Logo */}
                 <div className="absolute top-[48%] -translate-y-1/2 -left-3 -right-3 sm:-left-5 sm:-right-5 z-30 pointer-events-auto">
-                  <div className="bg-white/85 backdrop-blur-2xl text-slate-900 rounded-xl px-3.5 py-2.5 sm:py-3 shadow-xl border border-white/60 space-y-1 animate-notif text-left ring-1 ring-black/5">
+                  <div className="bg-white/85 dark:bg-[#111726]/90 backdrop-blur-2xl text-slate-900 dark:text-white rounded-xl px-3.5 py-2.5 sm:py-3 shadow-xl border border-white/60 dark:border-slate-700/60 space-y-1 animate-notif text-left ring-1 ring-black/5 dark:ring-white/10">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
                         <GaenrLogo size={20} className="shrink-0" />

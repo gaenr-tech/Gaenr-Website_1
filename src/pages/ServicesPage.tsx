@@ -164,7 +164,7 @@ export const ServicesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased space-y-12 sm:space-y-16 pb-16">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-[#090d16] text-slate-800 dark:text-slate-200 antialiased space-y-12 sm:space-y-16 pb-16">
       {/* =========================================================================
           HERO BANNER: Exactly matching About Us styling
           - Deep brand blue `#006eff`
@@ -413,7 +413,7 @@ export const ServicesPage: React.FC = () => {
           </div>
 
           {/* Active Step Spotlight Card - Fixed min-height & Middle-aligned to prevent any jumping */}
-          <div className="bg-gradient-to-br from-blue-50/60 via-white to-slate-50 border border-blue-200/80 rounded-2xl p-5 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6 transition-all duration-300 text-left min-h-[150px] sm:min-h-[134px] md:min-h-[120px]">
+          <div className="bg-gradient-to-br from-blue-50/60 via-white to-slate-50 dark:from-[#131c2e] dark:via-[#111726] dark:to-[#0d1424] border border-blue-200/80 dark:border-slate-800 rounded-2xl p-5 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6 transition-all duration-300 text-left min-h-[150px] sm:min-h-[134px] md:min-h-[120px]">
             <div className="flex items-center gap-4 sm:gap-5 flex-1 w-full md:w-auto">
               <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-2xl bg-[#0256d0] text-white flex items-center justify-center shrink-0 shadow-md">
                 {assignWorkflowSteps[activeStepIndex].icon}

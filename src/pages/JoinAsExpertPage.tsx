@@ -501,7 +501,7 @@ export const JoinAsExpertPage: React.FC = () => {
           </div>
 
           {/* CENTER ACTIVE CARD (All devices) */}
-          <div className="shrink-0 w-full max-w-[350px] sm:max-w-[390px] md:max-w-[415px] min-h-[390px] sm:min-h-[420px] rounded-[28px] bg-gradient-to-b from-white via-white to-[#f5f9fe] border border-blue-200 shadow-xl shadow-blue-500/5 transition-all duration-300 transform scale-100 relative z-10 flex flex-col justify-between p-4 sm:p-5.5 md:p-6 ring-1 ring-blue-500/10">
+          <div className="shrink-0 w-full max-w-[350px] sm:max-w-[390px] md:max-w-[415px] min-h-[390px] sm:min-h-[420px] rounded-[28px] bg-gradient-to-b from-white via-white to-[#f5f9fe] dark:from-[#111726] dark:via-[#111726] dark:to-[#0d1424] border border-blue-200 dark:border-slate-800 shadow-xl shadow-blue-500/5 transition-all duration-300 transform scale-100 relative z-10 flex flex-col justify-between p-4 sm:p-5.5 md:p-6 ring-1 ring-blue-500/10">
             {renderCardContent(currentIndex)}
           </div>
 
@@ -509,7 +509,7 @@ export const JoinAsExpertPage: React.FC = () => {
           <div
             onClick={handleNext}
             aria-label="Next Card"
-            className="hidden md:block shrink-0 w-[260px] lg:w-[310px] min-h-[390px] sm:min-h-[420px] rounded-[28px] bg-[#f8fbfe] border border-slate-200/90 opacity-45 hover:opacity-75 transition-all duration-300 transform scale-95 cursor-pointer overflow-hidden shadow-2xs p-4 sm:p-5 flex flex-col justify-between"
+            className="hidden md:block shrink-0 w-[260px] lg:w-[310px] min-h-[390px] sm:min-h-[420px] rounded-[28px] bg-[#f8fbfe] dark:bg-[#162033] border border-slate-200/90 dark:border-slate-800 opacity-45 hover:opacity-75 transition-all duration-300 transform scale-95 cursor-pointer overflow-hidden shadow-2xs p-4 sm:p-5 flex flex-col justify-between"
           >
             {renderCardContent(nextIndex)}
           </div>
@@ -561,7 +561,7 @@ export const JoinAsExpertPage: React.FC = () => {
         <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-80 h-32 bg-purple-400/25 rounded-full blur-[70px] pointer-events-none" />
 
         {/* Authentic Glassmorphism (গ্লাসি ব্লারি) Card */}
-        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-white/75 via-blue-50/40 to-white/60 backdrop-blur-2xl border border-white/90 shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/10 p-8 sm:p-11 text-center space-y-4">
+        <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-white/75 via-blue-50/40 to-white/60 dark:from-[#111726]/85 dark:via-[#162033]/60 dark:to-[#111726]/85 backdrop-blur-2xl border border-white/90 dark:border-slate-700/60 shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/10 p-8 sm:p-11 text-center space-y-4">
           {/* Top specular highlight & light sheen */}
           <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-white to-transparent" />
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-gradient-to-r from-blue-400/20 via-cyan-300/25 to-transparent rounded-full blur-2xl pointer-events-none" />

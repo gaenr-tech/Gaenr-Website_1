@@ -81,18 +81,18 @@ export const TestimonialsCarousel: React.FC = () => {
   };
 
   return (
-    <section id="testimonials-section" className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80 bg-slate-50/50 overflow-hidden">
+    <section id="testimonials-section" className="py-14 sm:py-18 lg:py-20 border-b border-slate-200/80 dark:border-slate-800/80 bg-slate-50/50 dark:bg-[#090d16] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
         {/* Header: Voices of Trust & Endorsed by Recognized Voices */}
         <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[#0256d0] text-xs font-bold">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#0256d0]" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-[#0256d0] dark:text-blue-400 text-xs font-bold">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#0256d0] dark:text-blue-400" />
             <span>Voices of Trust</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Endorsed by Recognized Voices
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 font-normal max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-normal max-w-xl mx-auto">
             Respected professionals and founders sharing their belief in Gaenr's dependable ecosystem.
           </p>
         </div>
@@ -110,7 +110,7 @@ export const TestimonialsCarousel: React.FC = () => {
           <button
             onClick={handlePrev}
             aria-label="Previous Endorsement"
-            className="absolute -left-2 sm:left-2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 text-slate-700 hover:text-[#0256d0] hover:border-[#0256d0] shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer -translate-y-1/2 top-1/2"
+            className="absolute -left-2 sm:left-2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 dark:bg-[#162033]/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0256d0] dark:hover:text-cyan-400 hover:border-[#0256d0] shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer -translate-y-1/2 top-1/2"
           >
             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
@@ -119,7 +119,7 @@ export const TestimonialsCarousel: React.FC = () => {
           <button
             onClick={handleNext}
             aria-label="Next Endorsement"
-            className="absolute -right-2 sm:right-2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 text-slate-700 hover:text-[#0256d0] hover:border-[#0256d0] shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer -translate-y-1/2 top-1/2"
+            className="absolute -right-2 sm:right-2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 dark:bg-[#162033]/95 backdrop-blur-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0256d0] dark:hover:text-cyan-400 hover:border-[#0256d0] shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer -translate-y-1/2 top-1/2"
           >
             <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
@@ -146,10 +146,10 @@ export const TestimonialsCarousel: React.FC = () => {
                     pointerEvents: isVisible ? 'auto' : 'none',
                     transition: 'transform 500ms cubic-bezier(0.22, 1, 0.36, 1), opacity 500ms ease, filter 500ms ease',
                   }}
-                  className={`absolute top-0 bottom-0 left-1/2 my-auto h-[310px] sm:h-[285px] w-[90%] sm:w-[78%] lg:w-[64%] max-w-xl flex flex-col justify-between overflow-hidden rounded-3xl p-5 sm:p-7 text-left transition-all bg-white ${
+                  className={`absolute top-0 bottom-0 left-1/2 my-auto h-[310px] sm:h-[285px] w-[90%] sm:w-[78%] lg:w-[64%] max-w-xl flex flex-col justify-between overflow-hidden rounded-3xl p-5 sm:p-7 text-left transition-all bg-white dark:bg-[#111726] ${
                     isActive
-                      ? 'border-2 border-[#0256d0]/80 shadow-2xl shadow-blue-950/10 ring-4 ring-blue-50 cursor-default'
-                      : 'border border-slate-200/90 shadow-md cursor-pointer blur-[0.5px] hover:opacity-60'
+                      ? 'border-2 border-[#0256d0]/80 dark:border-[#006eff] shadow-2xl shadow-blue-950/10 ring-4 ring-blue-50 dark:ring-blue-900/30 cursor-default'
+                      : 'border border-slate-200/90 dark:border-slate-800 shadow-md cursor-pointer blur-[0.5px] hover:opacity-60'
                   }`}
                 >
                   {/* Top Accent Gradient on Featured Card */}
@@ -158,7 +158,7 @@ export const TestimonialsCarousel: React.FC = () => {
                   )}
 
                   {/* Decorative Background Quote Watermark */}
-                  <Quote className="absolute right-5 top-5 w-10 h-10 sm:w-12 sm:h-12 text-slate-100/90 pointer-events-none" />
+                  <Quote className="absolute right-5 top-5 w-10 h-10 sm:w-12 sm:h-12 text-slate-100/90 dark:text-slate-800/40 pointer-events-none" />
 
                   {/* Endorsement Quote Body */}
                   <div className="relative z-10 pt-1 sm:pt-1.5">

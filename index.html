@@ -59,9 +59,12 @@
     <script>
       (function() {
         try {
-          var savedTheme = localStorage.getItem('gaenr_theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+          var getCookie = function(name) {
+            var match = document.cookie.match(new RegExp('(^|; )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+          };
+          var saved = localStorage.getItem('gaenr_theme') || getCookie('gaenr_device_theme');
+          if (saved === 'dark') {
             document.documentElement.classList.add('dark');
             document.documentElement.setAttribute('data-theme', 'dark');
             document.documentElement.style.colorScheme = 'dark';

@@ -110,7 +110,7 @@ export const FeedbackPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased space-y-10 sm:space-y-12 pb-20">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-[#090d16] text-slate-800 dark:text-slate-200 antialiased space-y-10 sm:space-y-12 pb-20">
       {/* =========================================================================
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - Matching standard ecosystem styling

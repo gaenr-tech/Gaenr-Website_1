@@ -1018,8 +1018,8 @@
 }
 
 /* =========================================================================
-   GAENR UNIFIED DARK MODE ECOSYSTEM
-   Deep Obsidian & Tech Slate palette (#090d16 / #111726)
+   GAENR UNIFIED DARK MODE ECOSYSTEM (Facebook-style Deep Cohesion)
+   Deep Obsidian & Tech Slate palette (#090d16 base / #111726 cards / #162033 wells)
    Maintains 100% integrity of Light Mode when .dark class is absent
    ========================================================================= */
 
@@ -1028,9 +1028,16 @@ html.dark {
 }
 
 html.dark,
-html.dark body {
-  background-color: #090d16;
-  color: #cbd5e1;
+html.dark body,
+html.dark #root {
+  background-color: #090d16 !important;
+  color: #cbd5e1 !important;
+}
+
+/* Page containers & view wrappers */
+html.dark .min-h-screen {
+  background-color: #090d16 !important;
+  color: #cbd5e1 !important;
 }
 
 /* Custom selection in dark mode */
@@ -1043,8 +1050,8 @@ html.dark body {
 .dark .bg-hero-colorful {
   background-color: #090d16 !important;
   background-image: 
-    radial-gradient(circle at 85% 15%, rgba(14, 165, 233, 0.14) 0%, transparent 48%),
-    radial-gradient(circle at 10% 40%, rgba(59, 130, 246, 0.14) 0%, transparent 44%),
+    radial-gradient(circle at 85% 15%, rgba(14, 165, 233, 0.15) 0%, transparent 48%),
+    radial-gradient(circle at 10% 40%, rgba(59, 130, 246, 0.15) 0%, transparent 44%),
     radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.1) 0%, transparent 44%),
     linear-gradient(180deg, #090d16 0%, #0d1322 100%) !important;
 }
@@ -1064,80 +1071,87 @@ html.dark body {
   background-image: radial-gradient(rgba(56, 189, 248, 0.14) 1.25px, transparent 1.25px) !important;
 }
 
-/* Surface backgrounds: pure white becomes deep slate card */
-.dark .bg-white {
+/* Section 8 on HomePage in dark mode */
+.dark section[class*="from-[#fafbfc]"] {
+  background-image: none !important;
+  background-color: #090d16 !important;
+}
+
+/* Surface backgrounds: pure white becomes deep slate card (#111726) */
+.dark .bg-white,
+.dark .bg-white\/98,
+.dark .bg-white\/95,
+.dark .bg-white\/90,
+.dark .bg-white\/85,
+.dark .bg-white\/80 {
   background-color: #111726 !important;
 }
 
-.dark .bg-slate-50 {
+/* Nested wells, secondary surfaces (#0d1322 / #162033) */
+.dark .bg-slate-50,
+.dark .bg-slate-50\/50,
+.dark .bg-slate-50\/70,
+.dark .bg-slate-50\/80,
+.dark .bg-slate-50\/90 {
   background-color: #0d1322 !important;
 }
 
-.dark .bg-slate-100 {
+.dark .bg-slate-100,
+.dark .bg-slate-100\/60,
+.dark .bg-slate-100\/70,
+.dark .bg-slate-100\/80,
+.dark .bg-slate-200 {
   background-color: #162033 !important;
 }
 
-.dark .bg-slate-200 {
-  background-color: #1e293b !important;
-}
-
-.dark .bg-slate-50\/70,
-.dark .bg-slate-50\/80,
-.dark .bg-slate-50\/90,
-.dark .bg-slate-50\/50 {
-  background-color: rgba(13, 19, 34, 0.82) !important;
-}
-
-.dark .bg-slate-100\/80,
-.dark .bg-slate-100\/70,
-.dark .bg-slate-100\/60 {
-  background-color: rgba(22, 32, 51, 0.85) !important;
-}
-
-.dark .bg-white\/95,
-.dark .bg-white\/90,
-.dark .bg-white\/80 {
-  background-color: rgba(17, 23, 38, 0.92) !important;
+/* Light gradient overrides - prevent white/light gradient blocks */
+.dark [class*="bg-gradient-to-"][class*="from-white"],
+.dark [class*="bg-gradient-to-"][class*="from-[#fafbfc]"],
+.dark [class*="bg-gradient-to-"][class*="from-slate-50"] {
+  background-image: none !important;
+  background-color: #111726 !important;
 }
 
 /* Tinted accents in dark mode */
-.dark .bg-blue-50 {
+.dark .bg-blue-50,
+.dark .bg-blue-50\/50,
+.dark .bg-blue-50\/60,
+.dark .bg-blue-50\/70,
+.dark .bg-blue-50\/80,
+.dark .bg-blue-50\/90 {
   background-color: rgba(2, 86, 208, 0.18) !important;
 }
 
-.dark .bg-blue-50\/70,
-.dark .bg-blue-50\/80 {
-  background-color: rgba(2, 86, 208, 0.14) !important;
-}
-
-.dark .bg-emerald-50 {
-  background-color: rgba(16, 185, 129, 0.14) !important;
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/80 {
+  background-color: rgba(16, 185, 129, 0.16) !important;
 }
 
 .dark .bg-emerald-100 {
   background-color: rgba(16, 185, 129, 0.22) !important;
 }
 
-.dark .bg-emerald-50\/80 {
-  background-color: rgba(16, 185, 129, 0.16) !important;
-}
-
 .dark .bg-amber-50 {
-  background-color: rgba(245, 158, 11, 0.14) !important;
+  background-color: rgba(245, 158, 11, 0.16) !important;
 }
 
 .dark .bg-purple-50 {
-  background-color: rgba(168, 85, 247, 0.14) !important;
+  background-color: rgba(168, 85, 247, 0.16) !important;
 }
 
 .dark .bg-sky-50 {
-  background-color: rgba(14, 165, 233, 0.14) !important;
+  background-color: rgba(14, 165, 233, 0.16) !important;
+}
+
+.dark .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.16) !important;
 }
 
 /* Typography contrast in dark mode */
 .dark .text-slate-900,
 .dark .text-slate-950,
-.dark .text-gray-900 {
+.dark .text-gray-900,
+.dark .text-black {
   color: #f8fafc !important;
 }
 
@@ -1175,10 +1189,7 @@ html.dark body {
 }
 
 .dark .text-emerald-900,
-.dark .text-emerald-950 {
-  color: #34d399 !important;
-}
-
+.dark .text-emerald-950,
 .dark .text-emerald-700 {
   color: #34d399 !important;
 }
@@ -1200,24 +1211,34 @@ html.dark body {
 }
 
 .dark .border-blue-100,
-.dark .border-blue-200 {
+.dark .border-blue-200,
+.dark .border-blue-200\/80 {
   border-color: rgba(56, 189, 248, 0.22) !important;
 }
 
 .dark .border-emerald-100,
 .dark .border-emerald-200,
-.dark .border-emerald-200\/60 {
+.dark .border-emerald-200\/60,
+.dark .border-emerald-200\/80 {
   border-color: rgba(52, 211, 153, 0.22) !important;
 }
 
 .dark .border-amber-100,
-.dark .border-amber-200 {
+.dark .border-amber-200,
+.dark .border-amber-200\/60 {
   border-color: rgba(251, 191, 36, 0.22) !important;
 }
 
 .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
 .dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
   border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Rings in dark mode - prevent light glowing halos */
+.dark [class*="ring-blue-50"],
+.dark [class*="ring-blue-100"],
+.dark [class*="ring-slate-100"] {
+  --tw-ring-color: rgba(2, 86, 208, 0.3) !important;
 }
 
 /* Buttons in dark mode */
@@ -1277,19 +1298,27 @@ html.dark body {
 }
 
 /* Modals & Dialogs in dark mode */
+.dark [role="dialog"] {
+  color: #cbd5e1;
+}
+
 .dark [role="dialog"] .bg-white {
   background-color: #111726 !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-.dark [role="dialog"] .bg-slate-50\/70 {
-  background-color: rgba(13, 19, 34, 0.85) !important;
+.dark [role="dialog"] .bg-slate-50,
+.dark [role="dialog"] .bg-slate-50\/70,
+.dark [role="dialog"] .bg-slate-50\/80 {
+  background-color: #0c121e !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Custom select dropdown */
 .dark [role="dialog"] .bg-white\/95,
-.dark .bg-white\/95 {
-  background-color: rgba(17, 23, 38, 0.95) !important;
+.dark .bg-white\/95,
+.dark .bg-white\/98 {
+  background-color: #111726 !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
@@ -1314,6 +1343,15 @@ html.dark body {
 }
 
 /* Chatbot window styling in dark mode */
+.dark .fixed .bg-white {
+  background-color: #111726 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .animate-in .bg-slate-50 {
+  background-color: #0c121e !important;
+}
+
 .dark .animate-in .bg-slate-100 {
   background-color: #162033 !important;
   color: #f1f5f9 !important;
@@ -1322,4 +1360,5 @@ html.dark body {
 .dark .animate-in .border-slate-200 {
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
+
 
