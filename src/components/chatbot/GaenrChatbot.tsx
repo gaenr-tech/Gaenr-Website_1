@@ -977,7 +977,7 @@ ${taskData.description.trim()}`;
         };
       }
 
-      const isJunk = cleanText.length < 3 || /^(asdf|qwerty|na|none|test|??|\.\.)$/i.test(cleanText);
+      const isJunk = cleanText.length < 3 || /^(asdf|qwerty|na|none|test|\?\?|\.\.)$/i.test(cleanText);
       if (isJunk) {
         const subList = getSubCategories(taskFlow.category);
         return {
@@ -1040,7 +1040,7 @@ ${taskData.description.trim()}`;
     if (taskFlow.step === 'custom_subcategory') {
       const isJunk =
         cleanText.length < 3 ||
-        /^(asdf|qwerty|na|none|test|??|\.\.)$/i.test(cleanText);
+        /^(asdf|qwerty|na|none|test|\?\?|\.\.)$/i.test(cleanText);
       if (isJunk) {
         return {
           text: isBn
