@@ -17,15 +17,10 @@ import {
   Clock,
   Users,
   Check,
-  MessageCircle,
-  ExternalLink,
 } from 'lucide-react';
 import { sendApplicantReceivedEmail, sanitizeEnglishSkill } from '../../utils/email';
 import {
-  buildExpertApplicationNotification,
-  createWhatsAppUrl,
   sendBackendNotification,
-  triggerWhatsAppNotification,
 } from '../../utils/whatsappNotifications';
 
 export const ApplyExpertModal: React.FC = () => {
@@ -46,7 +41,6 @@ export const ApplyExpertModal: React.FC = () => {
   const [experience, setExperience] = useState('1–2 years / ১–২ বছর');
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submittedWaUrl, setSubmittedWaUrl] = useState('');
 
   // Active open dropdown tracker ('gender' | 'occupation' | 'address' | 'skill' | 'experience' | null)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -105,16 +99,7 @@ export const ApplyExpertModal: React.FC = () => {
 
     submitExpertApplication(applicationPayload);
 
-    // 1. Build structured WhatsApp Alert for Gaenr Operations (+880 1608 922 800)
-    const waMessage = buildExpertApplicationNotification(applicationPayload);
-    const waUrl = createWhatsAppUrl(waMessage);
-    setSubmittedWaUrl(waUrl);
-
-    // 2. Auto-trigger client WhatsApp handover SYNCHRONOUSLY before any async calls
-    // (Ensures browser popup blockers do NOT block the WhatsApp window)
-    triggerWhatsAppNotification(waMessage, true);
-
-    // 3. Dispatch confirmation email to applicant with 100% pure English skill name
+    // 1. Dispatch confirmation email to applicant with 100% pure English skill name
     const cleanSkill = sanitizeEnglishSkill(applicationPayload.otherSkill || applicationPayload.skill);
     sendApplicantReceivedEmail({
       fullName: applicationPayload.fullName,
@@ -125,16 +110,15 @@ export const ApplyExpertModal: React.FC = () => {
       console.warn('Applicant received email note:', err);
     });
 
-    // 4. Dispatch backend notification audit (also triggers instant Ops Alert Email to contact@gmail.com)
+    // 2. Dispatch automated WhatsApp & Ops Email alert
     sendBackendNotification('expert_application', applicationPayload).catch(() => {});
 
     setIsSubmitted(true);
-    showToast('Application received! Opening Gaenr WhatsApp alert...', 'success');
+    showToast('Application submitted successfully! Our team will review your portfolio.', 'success');
   };
 
   const handleResetAndClose = () => {
     setIsSubmitted(false);
-    setSubmittedWaUrl('');
     setFullName('');
     setWhatsapp('');
     setEmail('');
@@ -298,28 +282,7 @@ export const ApplyExpertModal: React.FC = () => {
               </p>
             </div>
 
-            {/* Direct WhatsApp Alert to Gaenr Operations */}
-            {submittedWaUrl && (
-              <div className="p-4 sm:p-5 bg-emerald-50/90 border border-emerald-200 rounded-2xl max-w-md mx-auto space-y-3 text-center shadow-xs">
-                <div className="flex items-center justify-center gap-2 text-emerald-900 font-bold text-xs sm:text-sm">
-                  <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />
-                  <span>GAENR Official WhatsApp Desk (+880 1608 922 800)</span>
-                </div>
-                <p className="text-xs text-emerald-800 leading-relaxed">
-                  আপনার আবেদনের একটি তাৎক্ষণিক নোটিফিকেশন Gaenr অপারেশন্স টিমের হোয়াটসঅ্যাপে পাঠিয়ে দিন যাতে যাচাইকরণ দ্রুত শুরু হয়:
-                </p>
-                <a
-                  href={submittedWaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs hover:shadow-md cursor-pointer active:scale-95"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>হোয়াটসঅ্যাপে অ্যালার্ট পাঠান</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            )}
+
 
             <div className="pt-2">
               <button

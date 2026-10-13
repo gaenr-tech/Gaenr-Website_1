@@ -17,14 +17,9 @@ import {
   Headphones,
   ArrowRight,
   ShieldCheck,
-  ExternalLink,
-  MessageCircle,
 } from 'lucide-react';
 import {
-  buildFeedbackNotification,
-  createWhatsAppUrl,
   sendBackendNotification,
-  triggerWhatsAppNotification,
 } from '../utils/whatsappNotifications';
 
 export const FeedbackPage: React.FC = () => {
@@ -37,7 +32,6 @@ export const FeedbackPage: React.FC = () => {
   const [category, setCategory] = useState<'Suggestion / Idea' | 'Issue or Bug' | 'Feature Request' | 'General Feedback'>('Suggestion / Idea');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [submittedWaUrl, setSubmittedWaUrl] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,16 +47,8 @@ export const FeedbackPage: React.FC = () => {
 
     submitFeedback(fbPayload);
 
-    // 1. Build WhatsApp message & URL
-    const waMessage = buildFeedbackNotification(fbPayload);
-    const waUrl = createWhatsAppUrl(waMessage);
-    setSubmittedWaUrl(waUrl);
-
-    // 2. Dispatch backend notification audit
+    // Automated backend notification (dispatches to Green-API WhatsApp & Ops Email)
     sendBackendNotification('feedback_submission', fbPayload).catch(() => {});
-
-    // 3. Auto-trigger client WhatsApp handover
-    triggerWhatsAppNotification(waMessage, true);
 
     setSubmitted(true);
   };
@@ -71,7 +57,6 @@ export const FeedbackPage: React.FC = () => {
     setName('');
     setEmail('');
     setMessage('');
-    setSubmittedWaUrl('');
     setSubmitted(false);
   };
 
@@ -282,28 +267,7 @@ export const FeedbackPage: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Direct WhatsApp Alert to Gaenr Operations */}
-                {submittedWaUrl && (
-                  <div className="p-4 sm:p-5 bg-emerald-50/90 border border-emerald-200 rounded-2xl max-w-md mx-auto space-y-3 text-center shadow-xs">
-                    <div className="flex items-center justify-center gap-2 text-emerald-900 font-bold text-xs sm:text-sm">
-                      <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />
-                      <span>GAENR Official WhatsApp Desk (+880 1608 922 800)</span>
-                    </div>
-                    <p className="text-xs text-emerald-800 leading-relaxed">
-                      আপনার মূল্যবান মতামত সরাসরি Gaenr টিমের হোয়াটসঅ্যাপে ফরোয়ার্ড করুন যাতে টিম দ্রুত রেসপন্স করতে পারে:
-                    </p>
-                    <a
-                      href={submittedWaUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-xs hover:shadow-md cursor-pointer active:scale-95"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      <span>হোয়াটসঅ্যাপে পাঠান</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-                )}
+
 
                 <div className="pt-2">
                   <button
