@@ -186,6 +186,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
   );
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Synchronize form states whenever application resolves asynchronously
   useEffect(() => {
@@ -293,8 +294,9 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     // 1. Mandatory Pricing validation
     const emptyTiers = pricingTiers.filter((t) => !t.serviceName.trim() || !t.price.trim());
@@ -322,6 +324,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       }
     }
 
+    setIsSubmitting(true);
     const cleanedTiers = pricingTiers.map((t) => ({
       ...t,
       price: t.price.replace(/\s*BDT\s*/gi, '').trim(),
@@ -353,7 +356,7 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
 
     try {
       localStorage.setItem(`gaenr_onboarded_${application.id}`, 'true');
-      fetch('/api/application', {
+      await fetch('/api/application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -364,16 +367,19 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
       }).catch(() => {});
 
       // Dispatch automated WhatsApp & Ops Email alert
-      sendBackendNotification('expert_onboarding', {
+      await sendBackendNotification('expert_onboarding', {
         applicationId: application.id,
         fullName: application.fullName,
         skill: cleanEnglishSkill,
         ...onboardingPayload,
-      }).catch(() => {});
-    } catch {}
-
-    setIsSubmitted(true);
-    showToast('Onboarding submitted successfully! Profile details locked for verification.', 'success');
+      });
+    } catch (onboardingErr) {
+      console.warn('Onboarding notification note:', onboardingErr);
+    } finally {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      showToast('Onboarding submitted successfully! Profile details locked for verification.', 'success');
+    }
   };
 
   const skillTitle = sanitizeEnglishSkill(application.otherSkill || application.skill);
@@ -849,9 +855,12 @@ export const ExpertOnboardingPage: React.FC<ExpertOnboardingPageProps> = ({ appl
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 type="submit"
-                className="px-8 py-3.5 bg-[#006eff] hover:bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                disabled={isSubmitting}
+                className={`px-8 py-3.5 bg-[#006eff] hover:bg-blue-600 text-white font-bold text-xs rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95 ${
+                  isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
               >
-                <span>Submit</span>
+                <span>{isSubmitting ? 'Submitting...' : 'Submit'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

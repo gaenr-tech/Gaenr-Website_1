@@ -16,7 +16,7 @@ function formatWhatsAppMessage(type, data) {
 
 Action: Review and approve via gaenr.com/admin
 
-— Ginny, Gaenr`;
+*— Ginny, Gaenr*`;
   }
   if (type === 'expert_onboarding') {
     const skill = (data?.skill || 'Verified Expert').split('/')[0].replace(/[\u0980-\u09FF]/g, '').trim();
@@ -37,7 +37,7 @@ Statement:
 
 Action: Review in Gaenr Admin and activate profile live: https://gaenr.com/admin
 
-— Ginny, Gaenr`;
+*— Ginny, Gaenr*`;
   }
   if (type === 'feedback_submission') {
     return `*New Platform Feedback*
@@ -49,7 +49,7 @@ Action: Review in Gaenr Admin and activate profile live: https://gaenr.com/admin
 Message:
 "${data?.message || ''}"
 
-— Ginny, Gaenr`;
+*— Ginny, Gaenr*`;
   }
   if (type === 'ginny_unanswered_question') {
     return `*Client Query Escalation*
@@ -62,11 +62,11 @@ Client Question:
 Note:
 Please review this query to update my knowledge base.
 
-— Ginny, Gaenr`;
+*— Ginny, Gaenr*`;
   }
   return `*Platform Event: ${type}*
 
-— Ginny, Gaenr`;
+*— Ginny, Gaenr*`;
 }
 
 export async function onRequestOptions() {
@@ -99,6 +99,10 @@ export async function onRequestGet({ env }) {
         state = typeof row?.state === 'string' ? JSON.parse(row.state) : row?.state || {};
       } catch {}
       logs = state.gaenr_notification_logs || [];
+      if (typeof logs === 'string') {
+        try { logs = JSON.parse(logs); } catch { logs = []; }
+      }
+      if (!Array.isArray(logs)) logs = [];
     }
 
     return new Response(JSON.stringify({ ok: true, logs }), {
@@ -149,6 +153,9 @@ export async function onRequestPost({ request, env }) {
         } catch {}
 
         let logs = state.gaenr_notification_logs || [];
+        if (typeof logs === 'string') {
+          try { logs = JSON.parse(logs); } catch { logs = []; }
+        }
         if (!Array.isArray(logs)) logs = [];
 
         logs.unshift({
@@ -162,8 +169,57 @@ export async function onRequestPost({ request, env }) {
         if (logs.length > 150) {
           logs = logs.slice(0, 150);
         }
+        state.gaenr_notification_logs = JSON.stringify(logs);
 
-        state.gaenr_notification_logs = logs;
+        // Centralized storage for feedbacks so Admin Dashboard always receives guest submissions
+        if (type === 'feedback_submission' && data) {
+          let feedbacks = state.gaenr_feedbacks || [];
+          if (typeof feedbacks === 'string') {
+            try { feedbacks = JSON.parse(feedbacks); } catch { feedbacks = []; }
+          }
+          if (!Array.isArray(feedbacks)) feedbacks = [];
+          feedbacks.unshift({
+            id: `fb_${Date.now()}`,
+            name: data.name?.trim() || undefined,
+            email: data.email?.trim() || undefined,
+            userType: data.userType || 'Visitor',
+            category: data.category || 'General Feedback',
+            message: data.message?.trim() || '',
+            createdAt: timestamp,
+          });
+          state.gaenr_feedbacks = JSON.stringify(feedbacks.slice(0, 300));
+        } else if (type === 'expert_application' && data) {
+          let apps = state.gaenr_expert_applications || [];
+          if (typeof apps === 'string') {
+            try { apps = JSON.parse(apps); } catch { apps = []; }
+          }
+          if (!Array.isArray(apps)) apps = [];
+          apps.unshift({
+            id: `app_${Date.now()}`,
+            ...data,
+            status: 'applied',
+            createdAt: timestamp,
+          });
+          state.gaenr_expert_applications = JSON.stringify(apps.slice(0, 300));
+        } else if (type === 'expert_onboarding' && data) {
+          let apps = state.gaenr_expert_applications || [];
+          if (typeof apps === 'string') {
+            try { apps = JSON.parse(apps); } catch { apps = []; }
+          }
+          if (Array.isArray(apps)) {
+            const targetId = data.applicationId || data.id;
+            const idx = apps.findIndex((a) => a && a.id === targetId);
+            if (idx !== -1) {
+              apps[idx] = {
+                ...apps[idx],
+                onboardingData: data,
+                status: 'applied',
+                updatedAt: timestamp,
+              };
+            }
+            state.gaenr_expert_applications = JSON.stringify(apps);
+          }
+        }
 
         await env.DB
           .prepare(
@@ -319,14 +375,12 @@ export async function onRequestPost({ request, env }) {
     }
 
     // 4B. Meta WhatsApp Business Cloud API Dispatch (Primary: sends from +1 555 number with loud ringtone)
-    const metaToken =
-      env?.WHATSAPP_TOKEN ||
-      env?.META_WHATSAPP_TOKEN ||
-      'EAAZAXOZCz9pG8BSscq88jdO9l6KFFW5OXdCHpzNZA0lETgkvfPZBc6aFrMajogZCcf6VkXZCR494zDbx8HiN5rtuaQxiRPTxwoXdJaVGP7DyBYKuHXuvGZCUwRXv2ZBTnZA6h4CnI7chbALiogDAcTSmDlZBQd7VGlnJT4J1LSGQrDCVdmtEeFxlFHPKFaTiAv6oZCBCAZDZD';
+    const permanentMetaToken = 'EAAZAXOZCz9pG8BSscq88jdO9l6KFFW5OXdCHpzNZA0lETgkvfPZBc6aFrMajogZCcf6VkXZCR494zDbx8HiN5rtuaQxiRPTxwoXdJaVGP7DyBYKuHXuvGZCUwRXv2ZBTnZA6h4CnI7chbALiogDAcTSmDlZBQd7VGlnJT4J1LSGQrDCVdmtEeFxlFHPKFaTiAv6oZCBCAZDZD';
+    let metaToken = env?.WHATSAPP_TOKEN || env?.META_WHATSAPP_TOKEN || permanentMetaToken;
     const metaPhoneId = env?.WHATSAPP_PHONE_ID || env?.META_PHONE_ID || '1436780476182860';
     if (metaToken && metaPhoneId) {
       try {
-        const metaRes = await fetch(`https://graph.facebook.com/v20.0/${metaPhoneId}/messages`, {
+        let metaRes = await fetch(`https://graph.facebook.com/v20.0/${metaPhoneId}/messages`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${metaToken}`,
@@ -340,7 +394,31 @@ export async function onRequestPost({ request, env }) {
             text: { preview_url: false, body: waMessageText },
           }),
         });
-        if (metaRes.ok) metaCloudDispatched = true;
+
+        // If environment token expired/failed and it wasn't already permanent token, retry with permanent token
+        if (!metaRes.ok && metaToken !== permanentMetaToken) {
+          metaRes = await fetch(`https://graph.facebook.com/v20.0/${metaPhoneId}/messages`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${permanentMetaToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              messaging_product: 'whatsapp',
+              recipient_type: 'individual',
+              to: targetWaNumber,
+              type: 'text',
+              text: { preview_url: false, body: waMessageText },
+            }),
+          });
+        }
+
+        if (metaRes.ok) {
+          metaCloudDispatched = true;
+        } else {
+          const errText = await metaRes.text().catch(() => '');
+          console.warn('Meta WhatsApp Cloud dispatch error status:', metaRes.status, errText);
+        }
       } catch (metaErr) {
         console.warn('Meta WhatsApp Cloud dispatch notice:', metaErr);
       }

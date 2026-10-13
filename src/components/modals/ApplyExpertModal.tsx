@@ -41,6 +41,7 @@ export const ApplyExpertModal: React.FC = () => {
   const [experience, setExperience] = useState('1–2 years');
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Active open dropdown tracker ('gender' | 'occupation' | 'address' | 'skill' | 'experience' | null)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -63,8 +64,9 @@ export const ApplyExpertModal: React.FC = () => {
 
   if (!isApplyExpertOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (!fullName.trim() || !whatsapp.trim() || !email.trim() || !portfolioUrl.trim()) {
       showToast('Please complete all required fields.', 'error');
       return;
@@ -82,6 +84,7 @@ export const ApplyExpertModal: React.FC = () => {
       return;
     }
 
+    setIsSubmitting(true);
     const applicationPayload = {
       fullName: fullName.trim(),
       whatsapp: whatsapp.trim(),
@@ -97,24 +100,29 @@ export const ApplyExpertModal: React.FC = () => {
       portfolioUrl: portfolioUrl.trim(),
     };
 
-    submitExpertApplication(applicationPayload);
+    try {
+      submitExpertApplication(applicationPayload);
 
-    // 1. Dispatch confirmation email to applicant with 100% pure English skill name
-    const cleanSkill = sanitizeEnglishSkill(applicationPayload.otherSkill || applicationPayload.skill);
-    sendApplicantReceivedEmail({
-      fullName: applicationPayload.fullName,
-      email: applicationPayload.email,
-      skill: cleanSkill,
-      whatsapp: applicationPayload.whatsapp,
-    }).catch((err) => {
-      console.warn('Applicant received email note:', err);
-    });
+      // 1. Dispatch confirmation email to applicant with 100% pure English skill name
+      const cleanSkill = sanitizeEnglishSkill(applicationPayload.otherSkill || applicationPayload.skill);
+      sendApplicantReceivedEmail({
+        fullName: applicationPayload.fullName,
+        email: applicationPayload.email,
+        skill: cleanSkill,
+        whatsapp: applicationPayload.whatsapp,
+      }).catch((err) => {
+        console.warn('Applicant received email note:', err);
+      });
 
-    // 2. Dispatch automated WhatsApp & Ops Email alert
-    sendBackendNotification('expert_application', applicationPayload).catch(() => {});
-
-    setIsSubmitted(true);
-    showToast('Application submitted successfully! Our team will review your portfolio.', 'success');
+      // 2. Dispatch automated WhatsApp & Ops Email alert
+      await sendBackendNotification('expert_application', applicationPayload);
+    } catch (notifErr) {
+      console.warn('Application notification note:', notifErr);
+    } finally {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      showToast('Application submitted successfully! Our team will review your portfolio.', 'success');
+    }
   };
 
   const handleResetAndClose = () => {
@@ -486,9 +494,12 @@ export const ApplyExpertModal: React.FC = () => {
               </button>
               <button
                 type="submit"
-                className="px-7 py-2.5 rounded-xl bg-[#006eff] hover:bg-[#0055d4] text-white font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all cursor-pointer flex items-center gap-2 active:scale-95"
+                disabled={isSubmitting}
+                className={`px-7 py-2.5 rounded-xl bg-[#006eff] hover:bg-[#0055d4] text-white font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all cursor-pointer flex items-center gap-2 active:scale-95 ${
+                  isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                }`}
               >
-                <span>Submit Application</span>
+                <span>{isSubmitting ? 'Submitting...' : 'Submit Application'}</span>
                 <Send className="w-4 h-4" />
               </button>
             </div>

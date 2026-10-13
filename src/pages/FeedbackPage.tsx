@@ -32,11 +32,13 @@ export const FeedbackPage: React.FC = () => {
   const [category, setCategory] = useState<'Suggestion / Idea' | 'Issue or Bug' | 'Feature Request' | 'General Feedback'>('Suggestion / Idea');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || isSubmitting) return;
 
+    setIsSubmitting(true);
     const fbPayload = {
       name: name.trim() || undefined,
       email: email.trim() || undefined,
@@ -47,10 +49,15 @@ export const FeedbackPage: React.FC = () => {
 
     submitFeedback(fbPayload);
 
-    // Automated backend notification (dispatches to Green-API WhatsApp & Ops Email)
-    sendBackendNotification('feedback_submission', fbPayload).catch(() => {});
-
-    setSubmitted(true);
+    // Automated backend notification (dispatches to Meta Cloud API WhatsApp & Ops Email)
+    try {
+      await sendBackendNotification('feedback_submission', fbPayload);
+    } catch (err) {
+      console.warn('Feedback notification dispatch notice:', err);
+    } finally {
+      setIsSubmitting(false);
+      setSubmitted(true);
+    }
   };
 
   const handleReset = () => {
@@ -410,10 +417,13 @@ export const FeedbackPage: React.FC = () => {
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full py-3 text-xs sm:text-sm font-bold text-white rounded-xl shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 gaenr-btn-primary"
+                    disabled={isSubmitting}
+                    className={`w-full py-3 text-xs sm:text-sm font-bold text-white rounded-xl shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 gaenr-btn-primary ${
+                      isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                    }`}
                     style={{ backgroundColor: branding.primaryColor }}
                   >
-                    <span>Submit Feedback</span>
+                    <span>{isSubmitting ? 'Submitting...' : 'Submit Feedback'}</span>
                     <Send className="w-4 h-4" />
                   </button>
                   <p className="text-[11px] text-slate-400 text-center mt-2.5">

@@ -55,7 +55,7 @@ export const buildExpertApplicationNotification = (data: ExpertApplicationNotify
 
 Action: Review and approve via gaenr.com/admin
 
-— Ginny, Gaenr`;
+*— Ginny, Gaenr*`;
 };
 
 /**
@@ -107,7 +107,7 @@ Expert Statement:
 
 Action: Review in Gaenr Admin and activate profile live: https://gaenr.com/admin
 
-— Ginny, Gaenr`;
+*— Ginny, Gaenr*`;
 };
 
 /**
@@ -131,7 +131,7 @@ export const buildFeedbackNotification = (data: FeedbackNotifyData): string => {
 Message:
 "${data.message}"
 
-— Ginny, Gaenr`;
+*— Ginny, Gaenr*`;
 };
 
 /**
@@ -157,7 +157,7 @@ ${data.userRole ? `• User Role: ${data.userRole}\n` : ''}${data.contextNotes ?
 Note:
 Please review this query to update my knowledge base.
 
-— Ginny, Gaenr`;
+*— Ginny, Gaenr*`;
 };
 
 /**

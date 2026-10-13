@@ -80,8 +80,21 @@ const diffArray = (previous: unknown[], next: unknown[]): ArrayChange | null => 
   return { key: '', upserts, deletes };
 };
 
+const isPrivilegedWriter = (): boolean => {
+  try {
+    return (
+      nativeStorage.getItem('gaenr_admin_logged') === 'true' ||
+      window.sessionStorage.getItem('gaenr_admin_logged') === 'true' ||
+      Boolean(nativeStorage.getItem('gaenr_current_employee')) ||
+      Boolean(window.sessionStorage.getItem('gaenr_current_employee'))
+    );
+  } catch {
+    return false;
+  }
+};
+
 const queueRemoteMutation = (payload: { changes?: Record<string, string>; deletedKeys?: string[]; arrayChanges?: ArrayChange[] }) => {
-  if (!hydrated) return;
+  if (!hydrated || !isPrivilegedWriter()) return;
 
   const safeChanges: Record<string, string> = {};
   for (const [k, v] of Object.entries(payload.changes || {})) {
@@ -200,7 +213,7 @@ export const initializeRemoteStorage = async () => {
         const value = serializeValue(rawValue);
 
         // Smart merge for arrays so local additions are never lost or wiped by older server state
-        if (key === 'gaenr_freelancers' || key === 'gaenr_expert_applications') {
+        if (key === 'gaenr_freelancers' || key === 'gaenr_expert_applications' || key === 'gaenr_feedbacks') {
           const localVal = nativeStorage.getItem(key);
           const localParsed = parseArray(localVal);
           const remoteParsed = parseArray(value);
@@ -220,7 +233,7 @@ export const initializeRemoteStorage = async () => {
             const mergedArray = Array.from(mergedMap.values());
             const mergedStr = JSON.stringify(mergedArray);
             nativeSetItem.call(nativeStorage, key, mergedStr);
-            if (localAdditionsFound) {
+            if (localAdditionsFound && isPrivilegedWriter()) {
               // Immediately sync the merged state to enrich remote database
               queueRemoteMutation({ changes: { [key]: mergedStr } });
             }
@@ -230,8 +243,8 @@ export const initializeRemoteStorage = async () => {
 
         nativeSetItem.call(nativeStorage, key, value);
       });
-    } else {
-      // One-time migration: the first browser seeds the shared store from its local data.
+    } else if (isPrivilegedWriter()) {
+      // One-time migration: only an authorized admin seeds the shared store.
       await fetch(apiUrl(), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
