@@ -18,6 +18,8 @@ const LOCAL_ONLY_KEYS = new Set([
   'gaenr_admin_logged',
   'gaenr_current_employee',
   'gaenr_admin_session',
+  'gaenr_theme',
+  'gaenr_device_theme',
 ]);
 
 const apiUrl = () => {

@@ -28,7 +28,7 @@ export const PrivacyPolicyPage: React.FC = () => {
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - Matching standard py-12 sm:py-16 banner across ecosystem
          ========================================================================= */}
-      <section className="relative w-full bg-gradient-to-br from-[#0048ba] via-[#006eff] to-[#003d99] py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
+      <section className="relative w-full bg-gradient-to-br from-[#0048ba] via-[#006eff] to-[#003d99] py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center overflow-hidden isolate">
         {/* Soft Glowing Ambient Color Clouds */}
         <div className="absolute -top-24 -left-20 w-96 h-96 bg-cyan-400/25 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-20 w-96 h-96 bg-indigo-500/30 rounded-full blur-3xl pointer-events-none" />
@@ -36,7 +36,7 @@ export const PrivacyPolicyPage: React.FC = () => {
 
         {/* Artistic Layered Flowing Waves SVG */}
         <svg
-          className="absolute inset-0 w-full h-full pointer-events-none opacity-40 mix-blend-screen"
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-25"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 1440 320"
           preserveAspectRatio="none"

@@ -115,7 +115,7 @@ export const FeedbackPage: React.FC = () => {
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - Matching standard ecosystem styling
          ========================================================================= */}
-      <section className="relative w-full bg-gradient-to-br from-[#0048ba] via-[#006eff] to-[#003d99] py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center overflow-hidden">
+      <section className="relative w-full bg-gradient-to-br from-[#0048ba] via-[#006eff] to-[#003d99] py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center overflow-hidden isolate">
         {/* Soft Glowing Ambient Color Clouds */}
         <div className="absolute -top-24 -left-20 w-96 h-96 bg-cyan-400/25 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-20 w-96 h-96 bg-indigo-500/30 rounded-full blur-3xl pointer-events-none" />
@@ -123,7 +123,7 @@ export const FeedbackPage: React.FC = () => {
 
         {/* Artistic Layered Flowing Waves SVG */}
         <svg
-          className="absolute inset-0 w-full h-full pointer-events-none opacity-40 mix-blend-screen"
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-25"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 1440 320"
           preserveAspectRatio="none"
@@ -151,7 +151,7 @@ export const FeedbackPage: React.FC = () => {
         </svg>
 
         <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center gap-y-3 sm:gap-y-4">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold text-white/95 bg-white/15 backdrop-blur-md border border-white/20 px-3.5 py-1.5 rounded-full shadow-xs">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold text-white/95 bg-white/20 border border-white/25 px-3.5 py-1.5 rounded-full shadow-xs">
             <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
             <span>Community & Ecosystem Feedback</span>
           </div>

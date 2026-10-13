@@ -1,6 +1,12 @@
 import { neon } from '@neondatabase/serverless';
 
-const SENSITIVE_LOCAL_KEYS = ['gaenr_admin_logged', 'gaenr_current_employee', 'gaenr_admin_session'];
+const SENSITIVE_LOCAL_KEYS = [
+  'gaenr_admin_logged',
+  'gaenr_current_employee',
+  'gaenr_admin_session',
+  'gaenr_theme',
+  'gaenr_device_theme',
+];
 
 const corsHeaders = {
   'Content-Type': 'application/json; charset=utf-8',

@@ -19,7 +19,13 @@ const send = (res, status, body) => {
   res.status(status).json(body);
 };
 
-const SENSITIVE_LOCAL_KEYS = ['gaenr_admin_logged', 'gaenr_current_employee', 'gaenr_admin_session'];
+const SENSITIVE_LOCAL_KEYS = [
+  'gaenr_admin_logged',
+  'gaenr_current_employee',
+  'gaenr_admin_session',
+  'gaenr_theme',
+  'gaenr_device_theme',
+];
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
