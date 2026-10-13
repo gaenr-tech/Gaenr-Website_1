@@ -31,14 +31,14 @@ export const ApplyExpertModal: React.FC = () => {
   const [fullName, setFullName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
-  const [gender, setGender] = useState('Male / পুরুষ');
-  const [occupation, setOccupation] = useState('Student / শিক্ষার্থী');
+  const [gender, setGender] = useState('Male');
+  const [occupation, setOccupation] = useState('Student');
   const [otherOccupation, setOtherOccupation] = useState('');
-  const [address, setAddress] = useState('Dhaka / ঢাকা');
+  const [address, setAddress] = useState('Dhaka');
   const [otherAddress, setOtherAddress] = useState('');
-  const [skill, setSkill] = useState('Graphics Design / গ্রাফিক ডিজাইন');
+  const [skill, setSkill] = useState('Graphic Design');
   const [otherSkill, setOtherSkill] = useState('');
-  const [experience, setExperience] = useState('1–2 years / ১–২ বছর');
+  const [experience, setExperience] = useState('1–2 years');
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -69,15 +69,15 @@ export const ApplyExpertModal: React.FC = () => {
       showToast('Please complete all required fields.', 'error');
       return;
     }
-    if (occupation === 'Other / অন্যান্য' && !otherOccupation.trim()) {
+    if (occupation === 'Other' && !otherOccupation.trim()) {
       showToast('Please specify your occupation.', 'error');
       return;
     }
-    if (address === 'Other / অন্যান্য' && !otherAddress.trim()) {
+    if (address === 'Other' && !otherAddress.trim()) {
       showToast('Please specify your city or district.', 'error');
       return;
     }
-    if (skill === 'Other / অন্যান্য' && !otherSkill.trim()) {
+    if (skill === 'Other' && !otherSkill.trim()) {
       showToast('Please specify your primary skill.', 'error');
       return;
     }
@@ -122,62 +122,62 @@ export const ApplyExpertModal: React.FC = () => {
     setFullName('');
     setWhatsapp('');
     setEmail('');
-    setGender('Male / পুরুষ');
-    setOccupation('Student / শিক্ষার্থী');
+    setGender('Male');
+    setOccupation('Student');
     setOtherOccupation('');
-    setAddress('Dhaka / ঢাকা');
+    setAddress('Dhaka');
     setOtherAddress('');
-    setSkill('Graphics Design / গ্রাফিক ডিজাইন');
+    setSkill('Graphic Design');
     setOtherSkill('');
-    setExperience('1–2 years / ১–২ বছর');
+    setExperience('1–2 years');
     setPortfolioUrl('');
     setActiveDropdown(null);
     closeApplyExpert();
   };
 
   const genderOptions = [
-    'Male / পুরুষ',
-    'Female / নারী',
-    'Third Gender / তৃতীয় লিঙ্গ',
+    'Male',
+    'Female',
+    'Other',
   ];
 
   const occupationOptions = [
-    'Student / শিক্ষার্থী',
-    'Employed / চাকুরিজীবী',
-    'Self-employed / ফ্রিল্যান্সার বা আত্মকর্মসংস্থান',
-    'Unemployed / বেকার বা কর্মপ্রত্যাশী',
-    'Retired / অবসরপ্রাপ্ত',
-    'Other / অন্যান্য',
+    'Student',
+    'Employed',
+    'Self-employed / Freelancer',
+    'Seeking Opportunities',
+    'Retired',
+    'Other',
   ];
 
   const addressOptions = [
-    'Dhaka / ঢাকা',
-    'Chattogram / চট্টগ্রাম',
-    'Khulna / খুলনা',
-    'Barishal / বরিশাল',
-    'Mymensingh / ময়মনসিংহ',
-    'Rajshahi / রাজশাহী',
-    'Rangpur / রংপুর',
-    'Sylhet / সিলেট',
-    'Other / অন্যান্য',
+    'Dhaka',
+    'Chattogram',
+    'Khulna',
+    'Barishal',
+    'Mymensingh',
+    'Rajshahi',
+    'Rangpur',
+    'Sylhet',
+    'Other',
   ];
 
   const skillOptions = [
-    'Graphics Design / গ্রাফিক ডিজাইন',
-    'Content Writing / কনটেন্ট রাইটিং',
-    'Video Editing / ভিডিও এডিটিং',
-    'WordPress Website Design / ওয়ার্ডপ্রেস ওয়েবসাইট ডিজাইন',
-    'Presentation Design / প্রেজেন্টেশন ডিজাইন',
-    'UX/UI Design / ইউএক্স/ইউআই ডিজাইন',
-    'Ads Running (Performance Marketing) / অ্যাডস ক্যাম্পেইন ও পারফরম্যান্স মার্কেটিং',
-    'Other / অন্যান্য',
+    'Graphic Design',
+    'Content Writing',
+    'Video Editing',
+    'WordPress Web Design',
+    'Presentation Design',
+    'UI/UX Design',
+    'Ads & Performance Marketing',
+    'Other',
   ];
 
   const experienceOptions = [
-    'Less than 1 year / ১ বছরের কম',
-    '1–2 years / ১–২ বছর',
-    '2–5 years / ২–৫ বছর',
-    '5+ years / ৫ বছরের বেশি',
+    'Less than 1 year',
+    '1–2 years',
+    '2–5 years',
+    '5+ years',
   ];
 
   // Helper for rendering custom styled dropdown menu with vibrant colors & active indicator
@@ -304,7 +304,7 @@ export const ApplyExpertModal: React.FC = () => {
                 {/* Full Name */}
                 <div className="space-y-2">
                   <label className="block text-xs sm:text-[13px] font-bold text-slate-800">
-                    Full Name / আপনার পুরো নাম <span className="text-rose-500">*</span>
+                    Full Name <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -322,7 +322,7 @@ export const ApplyExpertModal: React.FC = () => {
                 {/* WhatsApp Number */}
                 <div className="space-y-2">
                   <label className="block text-xs sm:text-[13px] font-bold text-slate-800">
-                    WhatsApp Number / হোয়াটসঅ্যাপ নম্বর <span className="text-rose-500">*</span>
+                    WhatsApp Number <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -343,7 +343,7 @@ export const ApplyExpertModal: React.FC = () => {
                 {/* Email Address */}
                 <div className="space-y-2">
                   <label className="block text-xs sm:text-[13px] font-bold text-slate-800">
-                    Email Address / ইমেইল অ্যাড্রেস <span className="text-rose-500">*</span>
+                    Email Address <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -361,7 +361,7 @@ export const ApplyExpertModal: React.FC = () => {
                 {/* Gender */}
                 <div className="space-y-2">
                   <label className="block text-xs sm:text-[13px] font-bold text-slate-800">
-                    Gender / লিঙ্গ <span className="text-rose-500">*</span>
+                    Gender <span className="text-rose-500">*</span>
                   </label>
                   {renderCustomDropdown('gender', gender, genderOptions, setGender, Users)}
                 </div>
@@ -378,17 +378,17 @@ export const ApplyExpertModal: React.FC = () => {
                 {/* Occupation */}
                 <div className="space-y-2">
                   <label className="block text-xs sm:text-[13px] font-bold text-slate-800">
-                    Occupation / পেশাগত অবস্থা <span className="text-rose-500">*</span>
+                    Occupation <span className="text-rose-500">*</span>
                   </label>
                   {renderCustomDropdown('occupation', occupation, occupationOptions, setOccupation, Briefcase)}
 
                   {/* Dynamic Other Occupation input */}
-                  {occupation === 'Other / অন্যান্য' && (
+                  {occupation === 'Other' && (
                     <div className="pt-1.5 animate-in fade-in duration-200">
                       <input
                         type="text"
                         required
-                        placeholder="Specify occupation / আপনার পেশা লিখুন"
+                        placeholder="Specify occupation"
                         value={otherOccupation}
                         onChange={(e) => setOtherOccupation(e.target.value)}
                         className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-white border border-[#006eff] rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 text-slate-900 transition-all placeholder:text-slate-400"
@@ -400,17 +400,17 @@ export const ApplyExpertModal: React.FC = () => {
                 {/* Present Address */}
                 <div className="space-y-2">
                   <label className="block text-xs sm:text-[13px] font-bold text-slate-800">
-                    Present Address / বর্তমান ঠিকানা <span className="text-rose-500">*</span>
+                    Present Address / Location <span className="text-rose-500">*</span>
                   </label>
                   {renderCustomDropdown('address', address, addressOptions, setAddress, MapPin)}
 
                   {/* Dynamic Other Address input */}
-                  {address === 'Other / অন্যান্য' && (
+                  {address === 'Other' && (
                     <div className="pt-1.5 animate-in fade-in duration-200">
                       <input
                         type="text"
                         required
-                        placeholder="Specify city or district / জেলা বা শহরের নাম লিখুন"
+                        placeholder="Specify city or district"
                         value={otherAddress}
                         onChange={(e) => setOtherAddress(e.target.value)}
                         className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-white border border-[#006eff] rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 text-slate-900 transition-all placeholder:text-slate-400"
@@ -425,17 +425,17 @@ export const ApplyExpertModal: React.FC = () => {
                 {/* Skills & Experience */}
                 <div className="space-y-2">
                   <label className="block text-xs sm:text-[13px] font-bold text-slate-800">
-                    Skills &amp; Experience / স্কিল ও কাজের অভিজ্ঞতা <span className="text-rose-500">*</span>
+                    Primary Skill <span className="text-rose-500">*</span>
                   </label>
                   {renderCustomDropdown('skill', skill, skillOptions, setSkill, Award)}
 
                   {/* Dynamic Other Skill input */}
-                  {skill === 'Other / অন্যান্য' && (
+                  {skill === 'Other' && (
                     <div className="pt-1.5 animate-in fade-in duration-200">
                       <input
                         type="text"
                         required
-                        placeholder="Specify primary skill / আপনার প্রধান স্কিল লিখুন"
+                        placeholder="Specify primary skill"
                         value={otherSkill}
                         onChange={(e) => setOtherSkill(e.target.value)}
                         className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-white border border-[#006eff] rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 text-slate-900 transition-all placeholder:text-slate-400"
@@ -447,7 +447,7 @@ export const ApplyExpertModal: React.FC = () => {
                 {/* Practical Experience */}
                 <div className="space-y-2">
                   <label className="block text-xs sm:text-[13px] font-bold text-slate-800">
-                    Practical Experience / আপনার প্র্যাকটিক্যাল অভিজ্ঞতা <span className="text-rose-500">*</span>
+                    Practical Experience <span className="text-rose-500">*</span>
                   </label>
                   {renderCustomDropdown('experience', experience, experienceOptions, setExperience, Clock)}
                 </div>
@@ -460,7 +460,7 @@ export const ApplyExpertModal: React.FC = () => {
             {/* Section 3: Portfolio & Proof of Work */}
             <div className="space-y-2">
               <label className="block text-xs sm:text-[13px] font-bold text-slate-800 leading-snug">
-                Link to your Previous Work / Portfolio (Google Drive / Behance / Website Link) / আপনার সেরা কাজের পোর্টফোলিও লিংক দিন <span className="text-rose-500">*</span>
+                Portfolio / Previous Work Link (Google Drive / Behance / Website) <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <FolderGit2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />

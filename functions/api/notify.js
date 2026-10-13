@@ -121,7 +121,7 @@ export async function onRequestPost({ request, env }) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const { type, data, timestamp = new Date().toISOString() } = body;
+    const { type, data, timestamp = new Date().toISOString(), skipWhatsApp = false } = body;
 
     if (!type) {
       return new Response(JSON.stringify({ error: 'Notification type is required' }), {
@@ -302,6 +302,8 @@ export async function onRequestPost({ request, env }) {
     let callMeBotDispatched = false;
     let metaCloudDispatched = false;
 
+    if (!skipWhatsApp) {
+
     // 4A. CallMeBot Instant Free WhatsApp Dispatch
     const callMeBotKey = env?.CALLMEBOT_API_KEY;
     if (callMeBotKey) {
@@ -391,6 +393,7 @@ export async function onRequestPost({ request, env }) {
         console.warn('WhatsApp gateway dispatch warning:', gwErr);
       }
     }
+  }
 
     return new Response(
       JSON.stringify({

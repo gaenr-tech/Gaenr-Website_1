@@ -225,6 +225,8 @@ export const sendBackendNotification = async (
   type: 'expert_application' | 'expert_onboarding' | 'feedback_submission' | 'ginny_unanswered_question',
   data: any
 ): Promise<{ ok: boolean; error?: string }> => {
+  let directDispatched = false;
+
   // 1. Automatic direct WhatsApp alert to Gaenr Desk (Primary: Meta Cloud API, Fallback: Green-API)
   try {
     let messageText = '';
@@ -238,13 +240,10 @@ export const sendBackendNotification = async (
       messageText = buildGinnyEscalationNotification(data);
     }
     if (messageText) {
-      sendDirectMetaCloudNotification(messageText).then((ok) => {
-        if (!ok) {
-          sendDirectGreenApiNotification(messageText).catch(() => {});
-        }
-      }).catch(() => {
-        sendDirectGreenApiNotification(messageText).catch(() => {});
-      });
+      directDispatched = await sendDirectMetaCloudNotification(messageText);
+      if (!directDispatched) {
+        directDispatched = await sendDirectGreenApiNotification(messageText);
+      }
     }
   } catch (directErr) {
     console.warn('Direct WhatsApp notification note:', directErr);
@@ -260,6 +259,7 @@ export const sendBackendNotification = async (
         type,
         data,
         timestamp: new Date().toISOString(),
+        skipWhatsApp: directDispatched,
       }),
     });
     if (res.ok) {
