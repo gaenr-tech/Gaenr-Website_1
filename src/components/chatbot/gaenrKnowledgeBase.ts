@@ -30,9 +30,11 @@ export interface ChatMessage {
       | 'selectTaskSubCategory'
       | 'selectTaskExpert'
       | 'selectTaskDeadline'
-      | 'skipTaskEmail'
       | 'skipTaskDocument'
       | 'confirmTaskAgreement'
+      | 'editTaskDetails'
+      | 'selectEditField'
+      | 'cancelTaskFlow'
       | 'openWhatsAppUrl';
     payload?: string;
   }>;
@@ -244,17 +246,40 @@ GAENR CORE FACTS (PRESENT VS FUTURE):
 - Expert Payout: Target is 3 to 7 business days after client approves final delivery.
 - Future Vision: Long term, a skill-based community economy where people earn with skills, hire others' skills, learn, and grow together.
 
-TASK-INTAKE FLOW ("ASSIGN WITH GINNY"):
-- Two paths: "Let Ginny guide me" (গিনির সহায়তায় শুরু করুন) vs "Fill the form myself" (নিজে ফর্ম পূরণ করুন).
-- Field validation:
-  1. Name: 2-60 letters, real name (no 'asdf', 'qwerty', 'test').
-  2. Phone: 11-digit BD mobile (01XXXXXXXXX) or international with +.
-  3. Email: MANDATORY, CANNOT BE SKIPPED. Delivery and official receipts go to email.
-  4. Service: Must match Gaenr's 7 core offerings (Graphics, Video, WordPress, Content, Slides, UI/UX, Ads).
-  5. Category: Must fit the selected service.
-  6. Expert: Public code or 'Gaenr Verified Match'.
-  7. Links: Web URLs or 'none'.
-  8. Confirmation: Explicit agreement required.
+TASK-ASSIGNMENT FLOW ("ASSIGN WITH GINNY" - SPECIFICATION V1.0 / 13 OCT 2026):
+- Entry paths: "Let Ginny guide me" (গিনির সহায়তায় শুরু করুন) vs "Open Task Form" (নিজে ফর্ম পূরণ করুন).
+- Non-Negotiable Core Rules:
+  1. Validate meaning, not just presence. A non-empty answer is not automatically valid.
+  2. Ask one clear question at a time when a field is missing or invalid.
+  3. Never invent names, phone numbers, emails, services, categories, experts, links, or consent.
+  4. Do not bypass required fields because the user is impatient, changes the subject, or asks to continue.
+  5. Treat Cancel, No, Stop, and "I don't agree" as non-confirmation—never as approval. Cancellation must never trigger task submission.
+  6. Do not create, submit, or assign the task until all required fields pass validation and the user gives explicit affirmative confirmation.
+  7. Keep conversation natural, respectful, concise, and helpful (acknowledge-explain-guide pattern).
+  8. Enforce rules in backend as well as chat interface.
+
+- Strict Field Validation:
+  1. Name: 2-60 letters, accept real names (Latin/Bengali). Reject empty, digits-only, placeholders ('test', 'asdf', 'qwerty', 'anything', 'none', '12345', 'just do it'), or random keyboard mashing.
+  2. Phone: Required and non-skippable! 11-digit BD mobile (013-019XXXXXXXX) or international standard with '+'. Reject alphabetic-only, dummy digits ('01700000000'), too short/too long. Reject 'skip' attempts.
+  3. Email: Required and non-skippable! Standard syntax name@domain.tld. Reject placeholders ('none', 'skip', 'test', 'no email', 'abc@'). Reject 'skip' attempts.
+  4. Service Needed: Outcome description in user's words. If too vague ('help', 'something', 'কাজ'), ask one focused follow-up question.
+  5. Category: Must map to one of Gaenr's 7 approved categories (Graphics Design, Video Editing, WordPress Website Design, Content Writing, Presentation Slide Design, UX/UI Design, Ad Running). Reject arbitrary items ('banana', etc.) and show approved options.
+  6. Expert: Verified Match (Auto) / No preference OR an approved verified expert code from the directory. Reject arbitrary names ('Batman').
+  7. Reference Link: If provided, validate full URL (https:// or http://). Reject malformed URLs, javascript:, data:. Allow explicit skip only if user has no link.
+  8. Final Review & Confirmation: Show full summary. Offer: 'Confirm and assign', 'Edit details', 'Cancel'.
+     - Confirm/Yes: Explicit affirmative -> Submit to backend once.
+     - No/Not yet: Declines submission. Offer edit or leave.
+     - Cancel/Stop: Cancellation -> Stop flow safely, confirm nothing was submitted.
+     - Ambiguous ('looks fine, I guess'): Ask for explicit Confirm, Edit, or Cancel.
+     - Details edited: Invalidate previous confirmation and show updated summary.
+
+- State Discipline:
+  Maintain explicit states: collecting, validating, ready_for_review, awaiting_confirmation, submitting, submitted, cancelled, failed.
+
+- Error Message Pattern (Acknowledge, Explain, Guide):
+  - Acknowledge intent.
+  - Explain specific issue in plain language.
+  - Guide with single clear next step or valid choices.
 
 OBJECTION HANDLING (L-A-E-R FRAMEWORK):
 - "দাম বেশি / ফেসবুকে কমে পাই": Understand budget is vital. Highlight managed brief, verified expert, 1 revision, and refund/reassignment protection.
@@ -311,9 +336,11 @@ export function getLocalAIResponse(
       | 'selectTaskSubCategory'
       | 'selectTaskExpert'
       | 'selectTaskDeadline'
-      | 'skipTaskEmail'
       | 'skipTaskDocument'
       | 'confirmTaskAgreement'
+      | 'editTaskDetails'
+      | 'selectEditField'
+      | 'cancelTaskFlow'
       | 'openWhatsAppUrl';
     payload?: string;
   }>;

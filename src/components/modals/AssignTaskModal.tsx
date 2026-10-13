@@ -75,9 +75,53 @@ export const AssignTaskModal: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!fullName.trim() || !email.trim() || !whatsapp.trim() || !description.trim()) {
+    const trimmedName = fullName.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPhone = whatsapp.trim();
+    const trimmedDesc = description.trim();
+    const trimmedDoc = documentUrl.trim();
+
+    if (!trimmedName || !trimmedEmail || !trimmedPhone || !trimmedDesc) {
       showToast('Please fill in all required fields.', 'error');
       return;
+    }
+
+    // Name validation
+    if (
+      trimmedName.length < 2 ||
+      trimmedName.length > 60 ||
+      /^\d+$/.test(trimmedName) ||
+      /^(asdf|qwerty|test|abc|xyz|na|none|anything|12345|just do it)$/i.test(trimmedName)
+    ) {
+      showToast('Please enter a valid requester name.', 'error');
+      return;
+    }
+
+    // Phone validation
+    const phoneDigits = trimmedPhone.replace(/[\s-]/g, '');
+    const isBDMobile = /(?:\+?88)?01[3-9]\d{8}$/.test(phoneDigits);
+    const isIntlPhone = /^\+[1-9]\d{6,14}$/.test(phoneDigits);
+    if (!isBDMobile && !isIntlPhone) {
+      showToast('Please enter a valid 11-digit Bangladeshi number or international phone with country code.', 'error');
+      return;
+    }
+
+    // Email validation
+    const isEmailValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmedEmail);
+    const isEmailPlaceholder = /^(test|asdf|na|none|skip|no|no email)$/i.test(trimmedEmail);
+    if (!isEmailValid || isEmailPlaceholder) {
+      showToast('Please provide a valid email address (e.g. name@example.com).', 'error');
+      return;
+    }
+
+    // Reference URL validation
+    if (trimmedDoc) {
+      const isUnsafe = /^(javascript|data|file):/i.test(trimmedDoc);
+      const isUrl = /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(trimmedDoc);
+      if (isUnsafe || !isUrl) {
+        showToast('Please provide a valid reference URL starting with https://', 'error');
+        return;
+      }
     }
 
     if (!agreedAccuracy || !agreedTerms) {
