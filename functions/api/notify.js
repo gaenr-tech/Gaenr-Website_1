@@ -314,7 +314,29 @@ export async function onRequestPost({ request, env }) {
       }
     }
 
-    // 4C. Forward to WhatsApp Gateway API (UltraMsg / Green-API / Custom Gateway)
+    // 4C. Green-API Native WhatsApp Dispatch (green-api.com)
+    const greenApiInstance = env?.GREEN_API_INSTANCE_ID;
+    const greenApiToken = env?.GREEN_API_TOKEN;
+    let greenApiDispatched = false;
+
+    if (greenApiInstance && greenApiToken) {
+      try {
+        const greenUrl = `https://api.green-api.com/waInstance${greenApiInstance}/sendMessage/${greenApiToken}`;
+        const greenRes = await fetch(greenUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chatId: `${targetWaNumber}@c.us`,
+            message: waMessageText,
+          }),
+        });
+        if (greenRes.ok) greenApiDispatched = true;
+      } catch (greenErr) {
+        console.warn('Green-API dispatch notice:', greenErr);
+      }
+    }
+
+    // 4D. Forward to WhatsApp Gateway API (UltraMsg / Custom Gateway)
     let gatewayDispatched = false;
     if (waGatewayUrl) {
       try {
@@ -351,6 +373,7 @@ export async function onRequestPost({ request, env }) {
         emailDispatched,
         callMeBotDispatched,
         metaCloudDispatched,
+        greenApiDispatched,
         gatewayDispatched,
       }),
       { status: 200, headers: corsHeaders }
