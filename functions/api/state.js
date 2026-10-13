@@ -56,6 +56,40 @@ Action: Review and approve via gaenr.com/admin
 
 *— Ginny, Gaenr*`;
   }
+  if (type === 'expert_onboarding') {
+    const skill = (data?.skill || 'Verified Expert').split('/')[0].replace(/[\u0980-\u09FF]/g, '').trim();
+    const payout = data?.payoutMethod === 'bank'
+      ? `Bank (${data?.bankName || 'Bank'} - Acc: ${data?.accountNumber || 'Provided'})`
+      : `MFS (${data?.mfsProvider || 'bKash'} - ${data?.mfsNumber || 'Provided'})`;
+    return `*Expert Onboarding Completed*
+
+• Name: ${data?.fullName || 'N/A'}
+• Skill: ${skill}
+• WhatsApp: ${data?.whatsapp || 'Registered in Admin'}
+• Email: ${data?.email || 'Registered in Admin'}
+• Avatar: ${data?.avatarName || 'Standard Verified Avatar'}
+• Payout: ${payout}
+
+Statement:
+"${data?.statement || 'Ready to deliver quality work.'}"
+
+Action: Review in Gaenr Admin and activate profile live: https://gaenr.com/admin
+
+*— Ginny, Gaenr*`;
+  }
+  if (type === 'ginny_unanswered_question') {
+    return `*Client Query Escalation*
+
+Client Question:
+"${data?.userQuestion || ''}"
+
+• Time: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' })} BST
+
+Note:
+Please review this query to update my knowledge base.
+
+*— Ginny, Gaenr*`;
+  }
   return `*Platform Event: ${type}*
 
 *— Ginny, Gaenr*`;
