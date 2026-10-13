@@ -293,7 +293,7 @@ export async function onRequestPost({ request, env }) {
     const metaToken =
       env?.WHATSAPP_TOKEN ||
       env?.META_WHATSAPP_TOKEN ||
-      'EAAZAXOZCz9pG8BSpiWZB3mhGdo2PeskWoMFmGcXjYDV6VujKwTaMHfpiM0dNIN4ZCZAPxUrBodZCI5EExtQDZC9QmzvdCMxbvoSN0PunSt5cj5WzqfchI3gunFpvmOSqSZA6fg6t4sFCWCbsQrPnZCycjdiv2zWBzo7CZB7aLmQNkCvzw8EmT9TaZAwdZAkwx8KPGtT8viMBMHyuMnZAN2Oqw1UaFCD5zAe41ivoZBSBJgZCMZC4Yx1N8f2ToBh3TMQFr2L0jnkWZAFiSnOax58PQzssmHE5KQGKnXQZDZD';
+      'EAAZAXOZCz9pG8BSscq88jdO9l6KFFW5OXdCHpzNZA0lETgkvfPZBc6aFrMajogZCcf6VkXZCR494zDbx8HiN5rtuaQxiRPTxwoXdJaVGP7DyBYKuHXuvGZCUwRXv2ZBTnZA6h4CnI7chbALiogDAcTSmDlZBQd7VGlnJT4J1LSGQrDCVdmtEeFxlFHPKFaTiAv6oZCBCAZDZD';
     const metaPhoneId = env?.WHATSAPP_PHONE_ID || env?.META_PHONE_ID || '1436780476182860';
     if (metaToken && metaPhoneId) {
       try {
