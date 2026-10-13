@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../../context/AppContext';
 import { useBranding } from '../../context/BrandingContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -10,6 +11,33 @@ export const Header: React.FC = () => {
   const { branding } = useBranding();
   const { theme, isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Close mobile sidebar drawer on outside click / tap anywhere on screen or Escape key
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (headerRef.current && !headerRef.current.contains(target)) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick, { passive: true });
+    window.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [mobileMenuOpen]);
 
   const handleNavClick = (route: string) => {
     navigate(route);
@@ -28,6 +56,7 @@ export const Header: React.FC = () => {
 
   return (
     <header
+      ref={headerRef}
       className={`sticky top-0 z-50 border-b transition-colors duration-200 ${
         isDark ? 'border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.35)]' : 'border-slate-200/70 shadow-2xs'
       }`}
@@ -156,13 +185,18 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Backdrop overlay to close drawer when tapping anywhere on screen */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 top-18 bg-slate-900/40 backdrop-blur-xs z-40 md:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
+      {/* Full-screen Backdrop overlay portaled to document.body: Tapping anywhere on phone screen outside closes drawer immediately */}
+      {mobileMenuOpen &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-xs cursor-pointer md:hidden transition-opacity duration-200"
+            onClick={() => setMobileMenuOpen(false)}
+            onTouchStart={() => setMobileMenuOpen(false)}
+            aria-label="Close mobile navigation menu"
+          />,
+          document.body
+        )}
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (

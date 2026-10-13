@@ -240,12 +240,14 @@ export const HomePage: React.FC = () => {
             {/* Left Content Column: order-2 on mobile (below visual), order-1 on desktop */}
             <div className="lg:col-span-6 space-y-6 text-left order-2 lg:order-1">
               <div className="space-y-3">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.14]">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.14]">
                   ARE YOU <br />
-                  <span className="text-[#0256d0]">#ReadyToChange?</span>
+                  <span className="text-[#0256d0] dark:text-[#38bdf8] drop-shadow-[0_2px_12px_rgba(56,189,248,0.35)]">
+                    #ReadyToChange?
+                  </span>
                 </h1>
 
-                <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                   Assign projects with ease and get reliable results. Gaenr connects you with verified student experts who deliver efficiently, so you can focus on what matters.
                 </p>
               </div>
@@ -269,17 +271,17 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* Crisp Professional Trust Highlights */}
-              <div className="pt-2 flex flex-wrap items-center gap-6 text-xs text-slate-700 font-medium">
+              <div className="pt-2 flex flex-wrap items-center gap-6 text-xs text-slate-700 dark:text-slate-300 font-medium">
                 <div className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span>0% Platform Fee</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-[#0256d0] shrink-0" />
+                  <Check className="w-4 h-4 text-[#0256d0] dark:text-[#38bdf8] shrink-0" />
                   <span>Verified Student Talent</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span>Escrow-Protected Delivery</span>
                 </div>
               </div>
