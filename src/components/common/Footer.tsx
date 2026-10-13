@@ -295,16 +295,6 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Gaenr Operations - Middle Aligned */}
-        <div className="py-2.5 border-t border-slate-800/80 flex items-center justify-center">
-          <button
-            onClick={() => navigate('/admin')}
-            className="text-slate-400 hover:text-white transition-colors cursor-pointer text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 border border-slate-700 shadow-xs inline-flex items-center gap-2 hover:scale-105 transition-transform"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>Gaenr Operations</span>
-          </button>
-        </div>
 
         {/* Palestine Solidarity Box with Middle Alignment between subtle dividers */}
         <div className="py-3 border-t border-slate-800/80 flex items-center justify-center">
