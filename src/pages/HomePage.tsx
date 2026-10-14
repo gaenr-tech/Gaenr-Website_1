@@ -264,7 +264,7 @@ export const HomePage: React.FC = () => {
 
                 <button
                   onClick={() => openApplyExpert()}
-                  className="gaenr-btn-secondary !px-3 sm:!px-7 !py-2.5 sm:!py-3.5 !text-xs sm:!text-sm justify-center whitespace-nowrap text-center"
+                  className="gaenr-btn-secondary !px-3 sm:!px-7 !py-2.5 sm:!py-3.5 !text-xs sm:!text-sm justify-center whitespace-nowrap text-center font-bold tracking-tight"
                 >
                   Join as Expert
                 </button>
@@ -826,7 +826,7 @@ export const HomePage: React.FC = () => {
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Ready to monetize?</span>
                 <button
                   onClick={() => openApplyExpert()}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-full bg-[#006eff] hover:bg-blue-600 text-white dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 dark:text-cyan-200 dark:border dark:border-cyan-400/50 dark:shadow-[0_0_25px_rgba(56,189,248,0.35)] dark:backdrop-blur-md text-xs font-bold transition-all duration-200 shadow-xs hover:shadow-md shrink-0 whitespace-nowrap min-w-[135px] group cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-xl bg-[#006eff] hover:bg-blue-600 text-white dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 dark:text-cyan-200 dark:border dark:border-cyan-400/50 dark:shadow-[0_0_25px_rgba(56,189,248,0.35)] dark:backdrop-blur-md text-xs font-bold transition-all duration-200 shadow-xs hover:shadow-md shrink-0 whitespace-nowrap min-w-[135px] group cursor-pointer"
                 >
                   <span>Join as Expert</span>
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />

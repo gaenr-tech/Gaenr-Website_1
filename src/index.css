@@ -1351,22 +1351,25 @@ html.dark .min-h-screen {
 
 /* Buttons in dark mode */
 .dark .gaenr-btn-secondary {
-  background-color: rgba(56, 189, 248, 0.12) !important;
-  color: #38bdf8 !important;
-  border: 1.5px solid rgba(56, 189, 248, 0.4) !important;
-  box-shadow: 0 0 20px 0 rgba(56, 189, 248, 0.2) !important;
-  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .dark .gaenr-btn-secondary:hover {
-  background-color: rgba(56, 189, 248, 0.22) !important;
-  border-color: #7dd3fc !important;
-  color: #7dd3fc !important;
-  box-shadow: 0 0 25px 0 rgba(56, 189, 248, 0.35) !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px 0 rgba(255, 255, 255, 0.25), 0 4px 16px 0 rgba(0, 0, 0, 0.4) !important;
 }
 
 .dark .gaenr-btn-secondary:active {
-  background-color: rgba(56, 189, 248, 0.18) !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 .dark .gaenr-link-btn {
