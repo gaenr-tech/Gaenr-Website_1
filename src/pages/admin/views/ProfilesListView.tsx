@@ -427,11 +427,11 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                   <tr key={fl.code} className="hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
-                          <AvatarGraphic id={fl.avatarId} size={30} />
+                        <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center shrink-0 overflow-hidden">
+                          <AvatarGraphic id={fl.avatarId} size={32} shape="circle" />
                         </div>
                         <div className="min-w-0">
-                          <span className="font-mono font-bold text-slate-900 dark:text-white text-xs block truncate">
+                          <span className="font-mono font-bold text-slate-900 dark:text-[#38bdf8] text-xs block truncate">
                             {fl.code}
                           </span>
                           <span className="text-[10px] text-slate-400 block truncate">
@@ -614,8 +614,8 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
 
             {/* Target Expert Card */}
             <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
-                <AvatarGraphic id={selectedReviewExpert.avatarId} size={40} />
+              <div className="w-11 h-11 rounded-full bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+                <AvatarGraphic id={selectedReviewExpert.avatarId} size={40} shape="circle" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -735,8 +735,8 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
             {/* Target Expert Card */}
             <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-11 h-11 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
-                  <AvatarGraphic id={selectedPortalExpert.avatarId} size={40} />
+                <div className="w-11 h-11 rounded-full bg-white dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+                  <AvatarGraphic id={selectedPortalExpert.avatarId} size={40} shape="circle" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
