@@ -89,6 +89,10 @@ interface AppContextType {
   openApplyExpert: () => void;
   closeApplyExpert: () => void;
 
+  isDownloadAppOpen: boolean;
+  openDownloadApp: () => void;
+  closeDownloadApp: () => void;
+
   // Data & Admin operations
   freelancers: FreelancerProfile[];
   addFreelancer: (newFl: FreelancerProfile) => void;
@@ -206,6 +210,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [preselectedCategory, setPreselectedCategory] = useState<ServiceSlug | null>(null);
 
   const [isApplyExpertOpen, setIsApplyExpertOpen] = useState(false);
+  const [isDownloadAppOpen, setIsDownloadAppOpen] = useState(false);
 
   // Admin Auth - strictly requires active session authentication
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
@@ -923,6 +928,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const openApplyExpert = () => setIsApplyExpertOpen(true);
   const closeApplyExpert = () => setIsApplyExpertOpen(false);
+
+  const openDownloadApp = () => setIsDownloadAppOpen(true);
+  const closeDownloadApp = () => setIsDownloadAppOpen(false);
 
   const loginAdmin = () => {
     setIsAdminLoggedIn(true);
@@ -1644,6 +1652,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isApplyExpertOpen,
         openApplyExpert,
         closeApplyExpert,
+        isDownloadAppOpen,
+        openDownloadApp,
+        closeDownloadApp,
         freelancers,
         addFreelancer,
         updateFreelancer,

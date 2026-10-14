@@ -1,11 +1,11 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { useBranding } from '../../context/BrandingContext';
-import { Phone, Mail } from 'lucide-react';
+import { Phone, Mail, Smartphone } from 'lucide-react';
 import { GaenrLogo } from './GaenrLogo';
 
 export const Footer: React.FC = () => {
-  const { navigate, currentRoute } = useApp();
+  const { navigate, currentRoute, openDownloadApp } = useApp();
   const { branding } = useBranding();
 
   return (
@@ -35,6 +35,22 @@ export const Footer: React.FC = () => {
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
               {branding.footerTagline}
             </p>
+
+            {/* Download App Quick Badge */}
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={openDownloadApp}
+                className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-750 border border-slate-700/80 hover:border-blue-500/50 text-xs font-medium text-slate-200 hover:text-white transition-all cursor-pointer shadow-xs group"
+                title="Download Gaenr App (Android APK)"
+              >
+                <Smartphone className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                <div className="text-left">
+                  <span className="block text-[9px] text-slate-400 leading-none">Get on Android</span>
+                  <span className="font-bold text-[11px] text-white">Download APK (1-Tap)</span>
+                </div>
+              </button>
+            </div>
 
             {/* Social Icons with Official Handles */}
             <div className="pt-2 flex flex-wrap items-center gap-2.5">
@@ -167,6 +183,16 @@ export const Footer: React.FC = () => {
                   className="hover:text-white transition-colors cursor-pointer"
                 >
                   Blogs
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={openDownloadApp}
+                  className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5 text-blue-400 font-medium"
+                >
+                  <Smartphone className="w-3.5 h-3.5" />
+                  <span>Download App (APK)</span>
                 </button>
               </li>
               <li>

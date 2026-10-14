@@ -11,6 +11,7 @@ import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
 import { AssignTaskModal } from './components/modals/AssignTaskModal';
 import { ApplyExpertModal } from './components/modals/ApplyExpertModal';
+import { DownloadAppModal } from './components/modals/DownloadAppModal';
 
 import { HomePage } from './pages/HomePage';
 import { ServicesPage } from './pages/ServicesPage';
@@ -38,8 +39,16 @@ import { ServiceSlug } from './types';
 import { X, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
 const AppContent: React.FC = () => {
-  const { currentRoute, toasts, dismissToast, isAdminLoggedIn } = useApp();
+  const { currentRoute, toasts, dismissToast, isAdminLoggedIn, openDownloadApp } = useApp();
   const { branding } = useBranding();
+
+  // Route listener for /download-app and /app
+  React.useEffect(() => {
+    const clean = currentRoute.split('?')[0].split('#')[0];
+    if (clean === '/download-app' || clean === '/app') {
+      openDownloadApp();
+    }
+  }, [currentRoute, openDownloadApp]);
 
   // Global protection: Prevent saving, context menu, and dragging on all photos
   React.useEffect(() => {
@@ -289,6 +298,7 @@ const AppContent: React.FC = () => {
       {/* Global Modals */}
       <AssignTaskModal />
       <ApplyExpertModal />
+      <DownloadAppModal />
 
       {/* Global AI Chatbot */}
       <GaenrChatbot />

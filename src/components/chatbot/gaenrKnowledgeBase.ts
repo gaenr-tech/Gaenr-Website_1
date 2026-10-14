@@ -869,6 +869,24 @@ export function getLocalAIResponse(
     };
   }
 
+  // 15b. Mobile App & APK Download
+  if (q.includes('apk') || q.includes('app') || q.includes('অ্যাপ') || q.includes('এপ') || q.includes('application') || q.includes('এপিকে')) {
+    if (isEn) {
+      return {
+        text: `📲 You can download the official **Gaenr Android App (APK)** directly from our website! After downloading, tap the "Open" prompt in your browser notification for instant 1-tap installation without opening your file manager.`,
+        actions: [
+          { label: '📲 Download Gaenr App (APK)', actionType: 'navigate', payload: '/download-app' },
+        ],
+      };
+    }
+    return {
+      text: `📲 আপনি সরাসরি আমাদের ওয়েবসাইট থেকেই **Gaenr অফিসিয়াল অ্যান্ড্রয়েড অ্যাপ (APK)** ডাউনলোড করতে পারবেন! ফাইলটি ডাউনলোড হওয়ামাত্রই ব্রাউজারের "Open" অপশনে এক ট্যাপ করলেই সরাসরি ইনস্টলেশন উইন্ডো চলে আসবে। ফাইল ম্যানেজারে খোঁজার কোনো ঝামেলা নেই!`,
+      actions: [
+        { label: '📲 ডাউনলোড Gaenr অ্যাপ (APK)', actionType: 'navigate', payload: '/download-app' },
+      ],
+    };
+  }
+
   // 16. Specific service queries (Video, Graphics, Web, Slides, Ads)
   if (q.includes('video') || q.includes('ভিডিও') || q.includes('reels') || q.includes('youtube')) {
     if (isEn) {

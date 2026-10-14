@@ -3,11 +3,11 @@ import { createPortal } from 'react-dom';
 import { useApp } from '../../context/AppContext';
 import { useBranding } from '../../context/BrandingContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Menu, X, ArrowUpRight, Sun, Moon } from 'lucide-react';
+import { Menu, X, ArrowUpRight, Sun, Moon, Smartphone } from 'lucide-react';
 import { GaenrLogo } from './GaenrLogo';
 
 export const Header: React.FC = () => {
-  const { currentRoute, navigate, openAssignTask } = useApp();
+  const { currentRoute, navigate, openAssignTask, openDownloadApp } = useApp();
   const { branding } = useBranding();
   const { theme, isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -127,6 +127,17 @@ export const Header: React.FC = () => {
 
         {/* Zone 3: Primary action & Dark Mode Switch */}
         <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Desktop Download App Button */}
+          <button
+            type="button"
+            onClick={openDownloadApp}
+            className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100/90 hover:bg-slate-200/90 dark:bg-white/10 dark:hover:bg-white/15 border border-slate-200/80 dark:border-white/15 transition-all cursor-pointer shadow-2xs hover:scale-102"
+            title="Download Gaenr Android App (APK)"
+          >
+            <Smartphone className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span>App (APK)</span>
+          </button>
+
           {/* Desktop Theme Toggle */}
           <button
             type="button"
@@ -224,7 +235,18 @@ export const Header: React.FC = () => {
           </div>
 
 
-          <div className="pt-2 border-t border-slate-100 dark:border-white/10">
+          <div className="pt-2 border-t border-slate-100 dark:border-white/10 space-y-2">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openDownloadApp();
+              }}
+              className="gaenr-btn-secondary w-full !py-2.5 flex items-center justify-center gap-2 border border-slate-200 dark:border-white/15 text-slate-800 dark:text-white"
+            >
+              <Smartphone className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <span>Download App (Android APK)</span>
+            </button>
+
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

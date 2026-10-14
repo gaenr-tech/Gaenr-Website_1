@@ -20,6 +20,7 @@ export const INITIAL_BRANDING: BrandingConfig = {
   watermarkPosition: 'diagonal',
   repeatingWatermark: true,
   footerTagline: 'Connecting businesses with expert talent for seamless, hassle-free outsourcing.',
+  appDownloadUrl: '/downloads/Gaenr.apk',
 };
 
 export const INITIAL_AVATARS: AvatarAsset[] = [
