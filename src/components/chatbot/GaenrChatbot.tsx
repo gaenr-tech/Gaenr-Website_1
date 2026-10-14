@@ -93,32 +93,52 @@ export const GaenrChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isJumping, setIsJumping] = useState(false);
+  const [isMessagePopupVisible, setIsMessagePopupVisible] = useState(false);
+  const [isBubbleHovered, setIsBubbleHovered] = useState(false);
+  const isBubbleHoveredRef = useRef(false);
+  isBubbleHoveredRef.current = isBubbleHovered;
+  const hidePopupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Periodic playful jump animation for Ginny mascot circle
+  // Periodic playful jump animation (every 15s) and proactive speech bubble (every 25s for 3s)
   useEffect(() => {
     if (isOpen) {
       setIsJumping(false);
+      setIsMessagePopupVisible(false);
+      if (hidePopupTimerRef.current) clearTimeout(hidePopupTimerRef.current);
       return;
     }
 
-    // Trigger initial jump 8 seconds after arrival
-    const initialTimer = setTimeout(() => {
+    // Trigger initial jump 6 seconds after arrival
+    const initialJumpTimer = setTimeout(() => {
       setIsJumping(true);
       const stopTimer = setTimeout(() => setIsJumping(false), 2000);
       return () => clearTimeout(stopTimer);
-    }, 8000);
+    }, 6000);
 
-    // Repeated playful bounce and wing fluttering every 25 seconds
-    const interval = setInterval(() => {
+    // Repeated playful bounce and wing fluttering every 15 seconds
+    const jumpInterval = setInterval(() => {
       setIsJumping(true);
       setTimeout(() => {
         setIsJumping(false);
       }, 2000);
+    }, 15000);
+
+    // Proactive greeting bubble timer: pop up every 25 seconds, stay visible for 3 seconds
+    const popupInterval = setInterval(() => {
+      setIsMessagePopupVisible(true);
+      if (hidePopupTimerRef.current) clearTimeout(hidePopupTimerRef.current);
+      hidePopupTimerRef.current = setTimeout(() => {
+        if (!isBubbleHoveredRef.current) {
+          setIsMessagePopupVisible(false);
+        }
+      }, 3000);
     }, 25000);
 
     return () => {
-      clearTimeout(initialTimer);
-      clearInterval(interval);
+      clearTimeout(initialJumpTimer);
+      clearInterval(jumpInterval);
+      clearInterval(popupInterval);
+      if (hidePopupTimerRef.current) clearTimeout(hidePopupTimerRef.current);
     };
   }, [isOpen]);
 
@@ -1912,47 +1932,107 @@ ${taskData.description.trim()}`;
          ========================================================================= */}
       <div ref={chatContainerRef} className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-[100] flex flex-col items-end">
         {!isOpen && (
-          <button
-            onClick={() => setIsOpen(true)}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            aria-label="Chat with Ginny"
-            className={`group relative flex items-center bg-gradient-to-r from-[#006eff] to-[#004dc9] text-white rounded-full shadow-2xl hover:shadow-blue-500/35 border border-blue-400/40 cursor-pointer active:scale-95 transition-all duration-300 ease-out h-12 w-12 sm:h-13 sm:w-13 overflow-hidden px-2 hover:px-3.5 ${
-              isJumping && !isHovered ? 'animate-ginny-jump shadow-[0_16px_32px_rgba(0,110,255,0.5)]' : ''
-            }`}
-            style={{
-              width: isHovered ? 'auto' : undefined,
-            }}
-          >
-            {/* Ambient Pulse Ring */}
-            <span className="absolute -inset-1 rounded-full bg-blue-400/30 blur-sm group-hover:bg-blue-400/50 animate-pulse pointer-events-none" />
-
-            {/* Custom Gaenr Butterfly AI Bot Avatar - High Contrast Royal Blue Disc */}
-            <div className="relative w-8.5 h-8.5 rounded-full bg-gradient-to-tr from-[#002868] to-[#0048ba] flex items-center justify-center shrink-0 border border-blue-300/40 shadow-inner">
-              <GaenrBotAvatar size={24} isFlapping={isJumping && !isHovered} />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full animate-ping" />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full" />
-            </div>
-
-            {/* Smoothly expanding label revealed on hover */}
+          <>
+            {/* Proactive Speech Bubble Popup (every 25s for 3s) */}
             <div
-              className={`flex items-center gap-1.5 transition-all duration-300 ease-out whitespace-nowrap overflow-hidden ${
-                isHovered
-                  ? 'max-w-[145px] opacity-100 ml-2'
-                  : 'max-w-0 opacity-0 ml-0'
+              onMouseEnter={() => setIsBubbleHovered(true)}
+              onMouseLeave={() => {
+                setIsBubbleHovered(false);
+                setIsMessagePopupVisible(false);
+              }}
+              onClick={() => {
+                setIsOpen(true);
+                setIsMessagePopupVisible(false);
+              }}
+              role="dialog"
+              aria-live="polite"
+              className={`mb-2.5 sm:mb-3 max-w-[270px] sm:max-w-[290px] cursor-pointer select-none relative group/bubble transition-all duration-300 ease-out ${
+                isMessagePopupVisible
+                  ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
+                  : 'opacity-0 translate-y-2 scale-95 pointer-events-none'
               }`}
             >
-              <div className="text-left">
-                <div className="flex items-center gap-1 text-[11px] font-bold leading-tight text-white">
-                  <span>Ginny</span>
-                  <Sparkles className="w-2.5 h-2.5 text-amber-300" />
+              {/* Bubble Card */}
+              <div className="relative bg-white/95 dark:bg-[#0c162d]/95 backdrop-blur-md text-slate-800 dark:text-slate-100 px-3.5 py-2.5 rounded-2xl shadow-xl shadow-blue-900/10 dark:shadow-[0_12px_28px_rgba(0,0,0,0.6)] border border-slate-200/90 dark:border-blue-500/30 flex items-center gap-2.5 hover:border-blue-400 dark:hover:border-blue-400 transition-colors">
+                {/* Mini Bot Avatar Badge */}
+                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#002868] to-[#0048ba] flex items-center justify-center shrink-0 border border-blue-300/40 shadow-xs">
+                  <GaenrBotAvatar size={18} />
                 </div>
-                <p className="text-[9.5px] text-blue-100 font-medium leading-none mt-0.5">
-                  Gaenr
-                </p>
+
+                {/* Text Content */}
+                <div className="text-left flex-1 min-w-0 pr-0.5">
+                  <div className="text-[12px] font-bold text-slate-900 dark:text-white leading-tight flex items-center gap-1">
+                    <span>Hi, I'm Ginny from Gaenr!</span>
+                    <Sparkles className="w-2.5 h-2.5 text-amber-400 shrink-0" />
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-300 font-medium leading-tight mt-0.5">
+                    Ask me anything.
+                  </p>
+                </div>
+
+                {/* Dismiss Button (X) */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMessagePopupVisible(false);
+                  }}
+                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 -mr-1 rounded-full transition-colors cursor-pointer"
+                  aria-label="Dismiss message"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
               </div>
+
+              {/* Speech Bubble Arrow / Caret pointing down to launcher button */}
+              <div
+                className="absolute -bottom-1.5 right-4 sm:right-5 w-3 h-3 bg-white/95 dark:bg-[#0c162d]/95 border-b border-r border-slate-200/90 dark:border-blue-500/30 rotate-45 transform pointer-events-none"
+                aria-hidden="true"
+              />
             </div>
-          </button>
+
+            <button
+              onClick={() => setIsOpen(true)}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              aria-label="Chat with Ginny"
+              className={`group relative flex items-center bg-gradient-to-r from-[#006eff] to-[#004dc9] text-white rounded-full shadow-2xl hover:shadow-blue-500/35 border border-blue-400/40 cursor-pointer active:scale-95 transition-all duration-300 ease-out h-12 w-12 sm:h-13 sm:w-13 overflow-hidden px-2 hover:px-3.5 ${
+                isJumping && !isHovered ? 'animate-ginny-jump shadow-[0_16px_32px_rgba(0,110,255,0.5)]' : ''
+              }`}
+              style={{
+                width: isHovered ? 'auto' : undefined,
+              }}
+            >
+              {/* Ambient Pulse Ring */}
+              <span className="absolute -inset-1 rounded-full bg-blue-400/30 blur-sm group-hover:bg-blue-400/50 animate-pulse pointer-events-none" />
+
+              {/* Custom Gaenr Butterfly AI Bot Avatar - High Contrast Royal Blue Disc */}
+              <div className="relative w-8.5 h-8.5 rounded-full bg-gradient-to-tr from-[#002868] to-[#0048ba] flex items-center justify-center shrink-0 border border-blue-300/40 shadow-inner">
+                <GaenrBotAvatar size={24} isFlapping={isJumping && !isHovered} />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full animate-ping" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full" />
+              </div>
+
+              {/* Smoothly expanding label revealed on hover */}
+              <div
+                className={`flex items-center gap-1.5 transition-all duration-300 ease-out whitespace-nowrap overflow-hidden ${
+                  isHovered
+                    ? 'max-w-[145px] opacity-100 ml-2'
+                    : 'max-w-0 opacity-0 ml-0'
+                }`}
+              >
+                <div className="text-left">
+                  <div className="flex items-center gap-1 text-[11px] font-bold leading-tight text-white">
+                    <span>Ginny</span>
+                    <Sparkles className="w-2.5 h-2.5 text-amber-300" />
+                  </div>
+                  <p className="text-[9.5px] text-blue-100 font-medium leading-none mt-0.5">
+                    Gaenr
+                  </p>
+                </div>
+              </div>
+            </button>
+          </>
         )}
 
         {/* =========================================================================
