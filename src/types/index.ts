@@ -185,7 +185,6 @@ export interface BrandingConfig {
   watermarkPosition: 'diagonal' | 'center' | 'bottom-right';
   repeatingWatermark?: boolean;
   footerTagline: string;
-  appDownloadUrl?: string;
 }
 
 export interface TaskAssignment {

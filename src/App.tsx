@@ -38,21 +38,8 @@ import { ServiceSlug } from './types';
 import { X, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
 const AppContent: React.FC = () => {
-  const { currentRoute, toasts, dismissToast, isAdminLoggedIn, navigate } = useApp();
+  const { currentRoute, toasts, dismissToast, isAdminLoggedIn } = useApp();
   const { branding } = useBranding();
-
-  // Route listener for /download-app and /app -> scrolls directly to the in-page App section
-  React.useEffect(() => {
-    const clean = currentRoute.split('?')[0].split('#')[0];
-    if (clean === '/download-app' || clean === '/app') {
-      const el = document.getElementById('download-app');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        navigate('/#download-app');
-      }
-    }
-  }, [currentRoute, navigate]);
 
   // Global protection: Prevent saving, context menu, and dragging on all photos
   React.useEffect(() => {
