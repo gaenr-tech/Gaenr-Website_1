@@ -92,6 +92,35 @@ export const GaenrChatbot: React.FC = () => {
   } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isJumping, setIsJumping] = useState(false);
+
+  // Periodic playful jump animation for Ginny mascot circle
+  useEffect(() => {
+    if (isOpen) {
+      setIsJumping(false);
+      return;
+    }
+
+    // Trigger initial jump 8 seconds after arrival
+    const initialTimer = setTimeout(() => {
+      setIsJumping(true);
+      const stopTimer = setTimeout(() => setIsJumping(false), 2000);
+      return () => clearTimeout(stopTimer);
+    }, 8000);
+
+    // Repeated playful bounce every 38 seconds (~30-50s as requested)
+    const interval = setInterval(() => {
+      setIsJumping(true);
+      setTimeout(() => {
+        setIsJumping(false);
+      }, 2000);
+    }, 38000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, [isOpen]);
 
   // Dynamic language state: starts in English, automatically adapts to user's query
   const [language, setLanguage] = useState<ChatLanguage>('en');
@@ -1888,7 +1917,9 @@ ${taskData.description.trim()}`;
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             aria-label="Chat with Ginny"
-            className="group relative flex items-center bg-gradient-to-r from-[#006eff] to-[#004dc9] text-white rounded-full shadow-2xl hover:shadow-blue-500/35 border border-blue-400/40 cursor-pointer active:scale-95 transition-all duration-300 ease-out h-12 w-12 sm:h-13 sm:w-13 overflow-hidden px-2 hover:px-3.5"
+            className={`group relative flex items-center bg-gradient-to-r from-[#006eff] to-[#004dc9] text-white rounded-full shadow-2xl hover:shadow-blue-500/35 border border-blue-400/40 cursor-pointer active:scale-95 transition-all duration-300 ease-out h-12 w-12 sm:h-13 sm:w-13 overflow-hidden px-2 hover:px-3.5 ${
+              isJumping && !isHovered ? 'animate-ginny-jump shadow-[0_16px_32px_rgba(0,110,255,0.5)]' : ''
+            }`}
             style={{
               width: isHovered ? 'auto' : undefined,
             }}
