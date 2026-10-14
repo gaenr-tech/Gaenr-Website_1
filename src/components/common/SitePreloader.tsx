@@ -210,19 +210,19 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
     window.addEventListener('resize', updateFraming);
 
     // 7. Exact Dual-Arrow Approach & Snapping Sequence for Preloader
-    // - 0.00s - 0.52s: Dual 3D arrows glide inward and reveal from tips (invisible -> 100% visible)
-    // - 0.52s - 0.60s: Lightning-fast swoop into central connection!
-    // - 0.60s - 0.82s: Tactile impact bounce & upward lift settle
-    // - 0.82s - 1.15s: 100% full, solid, authentic static hold (user clearly sees the connected arrows)
-    // - 1.15s: Preloader initiates silky smooth fade-out to reveal the website
-    // - 1.55s: Preloader completely removed from DOM
+    // - 0.00s - 0.85s: Dual 3D arrows glide inward and reveal from tips (invisible -> 100% visible)
+    // - 0.85s - 1.05s: Smooth swoop into central connection!
+    // - 1.05s - 1.45s: Tactile impact bounce & upward lift settle
+    // - 1.45s - 2.20s: 100% full, solid, authentic static hold (user clearly sees the connected arrows)
+    // - 2.20s: Preloader initiates silky smooth fade-out to reveal the website
+    // - 2.70s: Preloader completely removed from DOM
     let animationFrameId: number;
     const startTime = performance.now();
     const MAX_SEPARATION_X = 40;
     const MAX_SEPARATION_Y = 5;
     const MAX_ROTATION_Z = 0.012;
-    const T_REVEAL = 0.50;
-    const T_CONNECT = 0.58;
+    const T_REVEAL = 0.85;
+    const T_CONNECT = 1.05;
 
     let hasTriggeredFade = false;
 
@@ -260,7 +260,7 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
 
         symbolGroup.position.set(0, 0, 0);
         symbolGroup.scale.set(1.0, 1.0, 1.0);
-      } else if (elapsed < 0.82) {
+      } else if (elapsed < 1.45) {
         // Phase 2: Connected! Tactile impact with upward lift & spring settle
         localPlaneLeft.constant = 500;
         localPlaneRight.constant = 500;
@@ -269,14 +269,14 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
         leftGroup.rotation.z = 0;
         rightGroup.rotation.z = 0;
 
-        const settleT = (elapsed - T_CONNECT) / 0.24;
-        const upwardLift = Math.sin(settleT * Math.PI) * Math.exp(-settleT * 2.5) * 4.8;
+        const settleT = (elapsed - T_CONNECT) / 0.40;
+        const upwardLift = Math.sin(settleT * Math.PI) * Math.exp(-settleT * 2.5) * 5.0;
         symbolGroup.position.y = upwardLift;
 
-        const bounce = Math.sin(settleT * Math.PI) * Math.exp(-settleT * 3.2) * 0.024;
+        const bounce = Math.sin(settleT * Math.PI) * Math.exp(-settleT * 3.0) * 0.026;
         symbolGroup.scale.set(1.0 + bounce, 1.0 + bounce, 1.0 + bounce);
       } else {
-        // Phase 3: Connected static hold
+        // Phase 3: Connected static hold (clearly readable and viewable)
         localPlaneLeft.constant = 500;
         localPlaneRight.constant = 500;
         leftGroup.position.set(0, 0, 0);
@@ -286,14 +286,14 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
         symbolGroup.position.set(0, 0, 0);
         symbolGroup.scale.set(1.0, 1.0, 1.0);
 
-        // At 1.15s: trigger smooth fade out
-        if (elapsed >= 1.15 && !hasTriggeredFade) {
+        // At 2.20s: trigger smooth fade out
+        if (elapsed >= 2.20 && !hasTriggeredFade) {
           hasTriggeredFade = true;
           setIsFadingOut(true);
           setTimeout(() => {
             setIsRemoved(true);
             if (onLoadedRef.current) onLoadedRef.current();
-          }, 450);
+          }, 500);
         }
       }
 
@@ -311,14 +311,14 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
 
     animate();
 
-    // Safety timeout (2.5s)
+    // Safety timeout (4.0s)
     const fallbackTimer = setTimeout(() => {
       setIsFadingOut(true);
       setTimeout(() => {
         setIsRemoved(true);
         if (onLoadedRef.current) onLoadedRef.current();
-      }, 450);
-    }, 2500);
+      }, 500);
+    }, 4000);
 
     return () => {
       clearTimeout(fallbackTimer);
@@ -335,7 +335,7 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[99999] flex items-center justify-center select-none transition-opacity duration-450 ease-out ${
+      className={`fixed inset-0 z-[99999] flex items-center justify-center select-none transition-opacity duration-500 ease-out ${
         isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       } ${isDark ? 'bg-[#0b1324]' : 'bg-white'}`}
       aria-label="Loading Gaenr"
