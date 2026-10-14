@@ -337,10 +337,10 @@ export const HomePage: React.FC = () => {
               <div className="pt-2">
                 <button
                   onClick={() => navigate('/about-us')}
-                  className="gaenr-link-btn"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer shadow-xs active:scale-98 bg-[#0256d0] hover:bg-blue-600 text-white shadow-blue-500/20 dark:bg-cyan-500/15 dark:hover:bg-cyan-500/25 dark:text-cyan-300 dark:border dark:border-cyan-400/40 dark:shadow-[0_0_20px_rgba(56,189,248,0.2)] group"
                 >
                   <span>Know More About Us</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
               </div>
             </div>
@@ -384,10 +384,10 @@ export const HomePage: React.FC = () => {
               <div className="pt-2">
                 <button
                   onClick={() => navigate('/feedback')}
-                  className="gaenr-link-btn"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer shadow-xs active:scale-98 bg-[#0256d0] hover:bg-blue-600 text-white shadow-blue-500/20 dark:bg-cyan-500/15 dark:hover:bg-cyan-500/25 dark:text-cyan-300 dark:border dark:border-cyan-400/40 dark:shadow-[0_0_20px_rgba(56,189,248,0.2)] group"
                 >
                   <span>Share Feedback</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
               </div>
             </div>

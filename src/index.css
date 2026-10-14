@@ -1351,25 +1351,27 @@ html.dark .min-h-screen {
 
 /* Buttons in dark mode */
 .dark .gaenr-btn-secondary {
-  background-color: #141c2e !important;
-  color: #f8fafc !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(8px);
 }
 
 .dark .gaenr-btn-secondary:hover {
-  background-color: #1b263d !important;
+  background-color: rgba(255, 255, 255, 0.16) !important;
   border-color: #38bdf8 !important;
   color: #38bdf8 !important;
-  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 0 20px 0 rgba(56, 189, 248, 0.3) !important;
 }
 
 .dark .gaenr-btn-secondary:active {
-  background-color: #111827 !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .dark .gaenr-link-btn {
   color: #38bdf8 !important;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
 }
 
 .dark .gaenr-link-btn:hover {
@@ -1378,6 +1380,7 @@ html.dark .min-h-screen {
 
 .dark .gaenr-link-btn::after {
   background-color: #38bdf8 !important;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
 }
 
 .dark .gaenr-link-btn:hover::after {

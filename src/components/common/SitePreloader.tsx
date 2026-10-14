@@ -125,34 +125,40 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
       steps: 2,
       depth: 18,
       bevelEnabled: true,
-      bevelThickness: 3,
-      bevelSize: 3,
+      bevelThickness: 3.5,
+      bevelSize: 2.5,
       bevelOffset: 0,
-      bevelSegments: 3,
+      bevelSegments: 5,
     };
 
     const leftMeshes: THREE.Mesh[] = [];
     const rightMeshes: THREE.Mesh[] = [];
 
-    leftSvgData.paths.forEach((p) => {
-      const shapes = SVGLoader.createShapes(p);
-      shapes.forEach((s) => {
-        const geom = new THREE.ExtrudeGeometry(s, extrudeSettings);
-        geom.center();
-        const mesh = new THREE.Mesh(geom, [frontMaterialLeft, sideMaterialLeft]);
-        leftMeshes.push(mesh);
+    // Build Left 3D Arrow (Independent Solid Geometry, exactly matching Pathway3DCanvas)
+    leftSvgData.paths.forEach((path) => {
+      const shapes = path.toShapes();
+      shapes.forEach((shape) => {
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        // Center around the shared emblem origin (456.5, 135)
+        geometry.translate(-456.5, -135, -9);
+        const mesh = new THREE.Mesh(geometry, [frontMaterialLeft, sideMaterialLeft]);
+        mesh.scale.set(0.48, -0.48, 0.48);
         leftGroup.add(mesh);
+        leftMeshes.push(mesh);
       });
     });
 
-    rightSvgData.paths.forEach((p) => {
-      const shapes = SVGLoader.createShapes(p);
-      shapes.forEach((s) => {
-        const geom = new THREE.ExtrudeGeometry(s, extrudeSettings);
-        geom.center();
-        const mesh = new THREE.Mesh(geom, [frontMaterialRight, sideMaterialRight]);
-        rightMeshes.push(mesh);
+    // Build Right 3D Arrow (Independent Solid Geometry, exactly matching Pathway3DCanvas)
+    rightSvgData.paths.forEach((path) => {
+      const shapes = path.toShapes();
+      shapes.forEach((shape) => {
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        // Center around the shared emblem origin (456.5, 135)
+        geometry.translate(-456.5, -135, -9);
+        const mesh = new THREE.Mesh(geometry, [frontMaterialRight, sideMaterialRight]);
+        mesh.scale.set(0.48, -0.48, 0.48);
         rightGroup.add(mesh);
+        rightMeshes.push(mesh);
       });
     });
 
@@ -334,10 +340,8 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
       } ${isDark ? 'bg-[#0b1324]' : 'bg-white'}`}
       aria-label="Loading Gaenr"
     >
-      {/* Exact 3D Pathway Symbol Canvas with ambient contact shadow */}
+      {/* Authentic 3D Pathway Symbol Canvas */}
       <div className="relative w-full max-w-[480px] h-[240px] sm:h-[280px] flex items-center justify-center">
-        {/* Soft ambient depth shadow directly beneath the 3D symbol */}
-        <div className="absolute w-[62%] sm:w-[50%] h-6 sm:h-7 bottom-2 sm:bottom-3 rounded-full bg-blue-900/18 dark:bg-cyan-500/25 blur-xl pointer-events-none transform scale-y-75" />
         <div
           ref={mountRef}
           className="relative w-full h-full flex items-center justify-center pointer-events-auto select-none"
