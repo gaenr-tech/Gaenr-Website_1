@@ -826,10 +826,10 @@ export const HomePage: React.FC = () => {
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Ready to monetize?</span>
                 <button
                   onClick={() => openApplyExpert()}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-xl bg-white text-[#006eff] border-2 border-[#006eff] dark:!bg-white dark:!text-[#006eff] dark:!border-white dark:hover:!bg-slate-100 dark:shadow-[0_0_24px_rgba(0,110,255,0.4)] dark:font-bold text-xs font-bold hover:bg-[#006eff] hover:text-white transition-all duration-200 shadow-xs hover:shadow-md shrink-0 whitespace-nowrap min-w-[135px] group cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 h-10 px-5 rounded-full bg-[#006eff] hover:bg-blue-600 text-white dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 dark:text-cyan-200 dark:border dark:border-cyan-400/50 dark:shadow-[0_0_25px_rgba(56,189,248,0.35)] dark:backdrop-blur-md text-xs font-bold transition-all duration-200 shadow-xs hover:shadow-md shrink-0 whitespace-nowrap min-w-[135px] group cursor-pointer"
                 >
-                  <span className="text-[#006eff] dark:text-[#006eff]">Join as Expert</span>
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 text-[#006eff] dark:text-[#006eff]" />
+                  <span>Join as Expert</span>
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
                 </button>
               </div>
             </div>
@@ -1099,10 +1099,10 @@ export const HomePage: React.FC = () => {
               <div className="pt-2">
                 <button
                   onClick={() => openApplyExpert()}
-                  className="bg-white text-[#006eff] hover:bg-blue-50 hover:text-[#0056d6] font-bold px-6 py-2.5 sm:px-7 sm:py-3 rounded-full shadow-md hover:shadow-xl hover:shadow-blue-950/25 dark:shadow-[0_0_24px_rgba(0,110,255,0.45)] transition-all duration-200 hover:-translate-y-0.5 inline-flex items-center gap-2 text-xs sm:text-sm cursor-pointer group"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 sm:px-7 sm:py-3 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 cursor-pointer shadow-md hover:shadow-xl active:scale-98 bg-white hover:bg-blue-50 text-[#006eff] dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 dark:text-cyan-200 dark:border dark:border-cyan-400/50 dark:shadow-[0_0_25px_rgba(56,189,248,0.35)] dark:backdrop-blur-md group"
                 >
-                  <span className="text-[#006eff] font-bold">Become an Expert Today</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#006eff] transition-transform group-hover:translate-x-1" />
+                  <span>Become an Expert Today</span>
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1 text-[#006eff] dark:text-cyan-200" />
                 </button>
               </div>
             </div>
