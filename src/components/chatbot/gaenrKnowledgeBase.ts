@@ -873,16 +873,16 @@ export function getLocalAIResponse(
   if (q.includes('apk') || q.includes('app') || q.includes('অ্যাপ') || q.includes('এপ') || q.includes('application') || q.includes('এপিকে')) {
     if (isEn) {
       return {
-        text: `📲 You can download the official **Gaenr Android App (APK)** directly from our website! After downloading, tap the "Open" prompt in your browser notification for instant 1-tap installation without opening your file manager.`,
+        text: `📲 You can install the official **Gaenr Mobile App** or download the Android APK directly from our homepage!`,
         actions: [
-          { label: '📲 Download Gaenr App (APK)', actionType: 'navigate', payload: '/download-app' },
+          { label: '📲 Get Gaenr App', actionType: 'navigate', payload: '/#download-app' },
         ],
       };
     }
     return {
-      text: `📲 আপনি সরাসরি আমাদের ওয়েবসাইট থেকেই **Gaenr অফিসিয়াল অ্যান্ড্রয়েড অ্যাপ (APK)** ডাউনলোড করতে পারবেন! ফাইলটি ডাউনলোড হওয়ামাত্রই ব্রাউজারের "Open" অপশনে এক ট্যাপ করলেই সরাসরি ইনস্টলেশন উইন্ডো চলে আসবে। ফাইল ম্যানেজারে খোঁজার কোনো ঝামেলা নেই!`,
+      text: `📲 আপনি সরাসরি আমাদের হোমপেজ থেকেই **Gaenr অফিসিয়াল মোবাইল অ্যাপ** ১-ট্যাপে ইনস্টল বা অ্যান্ড্রয়েড APK ডাউনলোড করতে পারবেন!`,
       actions: [
-        { label: '📲 ডাউনলোড Gaenr অ্যাপ (APK)', actionType: 'navigate', payload: '/download-app' },
+        { label: '📲 Gaenr অ্যাপ সেকশন দেখুন', actionType: 'navigate', payload: '/#download-app' },
       ],
     };
   }

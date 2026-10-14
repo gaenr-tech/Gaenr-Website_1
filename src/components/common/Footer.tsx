@@ -5,8 +5,23 @@ import { Phone, Mail, Smartphone } from 'lucide-react';
 import { GaenrLogo } from './GaenrLogo';
 
 export const Footer: React.FC = () => {
-  const { navigate, currentRoute, openDownloadApp } = useApp();
+  const { navigate, currentRoute } = useApp();
   const { branding } = useBranding();
+
+  const handleAppClick = () => {
+    if (currentRoute === '/' || currentRoute.startsWith('/#')) {
+      const el = document.getElementById('download-app');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+    }
+    navigate('/#download-app');
+    setTimeout(() => {
+      const el = document.getElementById('download-app');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  };
 
   return (
     <footer
@@ -40,7 +55,7 @@ export const Footer: React.FC = () => {
             <div className="pt-1">
               <button
                 type="button"
-                onClick={openDownloadApp}
+                onClick={handleAppClick}
                 className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-750 border border-slate-700/80 hover:border-blue-500/50 text-xs font-medium text-slate-200 hover:text-white transition-all cursor-pointer shadow-xs group"
                 title="Download Gaenr App (Android APK)"
               >
@@ -188,7 +203,7 @@ export const Footer: React.FC = () => {
               <li>
                 <button
                   type="button"
-                  onClick={openDownloadApp}
+                  onClick={handleAppClick}
                   className="hover:text-white transition-colors cursor-pointer flex items-center gap-1.5 text-blue-400 font-medium"
                 >
                   <Smartphone className="w-3.5 h-3.5" />
