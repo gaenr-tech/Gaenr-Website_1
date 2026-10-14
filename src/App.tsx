@@ -33,6 +33,7 @@ import { SupportCenterPage } from './pages/SupportCenterPage';
 import { BlogsPage } from './pages/BlogsPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { GaenrChatbot } from './components/chatbot/GaenrChatbot';
+import { SitePreloader } from './components/common/SitePreloader';
 import { ServiceSlug } from './types';
 import { X, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
@@ -226,9 +227,9 @@ const AppContent: React.FC = () => {
   if (isOperationsRoute) {
     return (
       <div
-        className={`min-h-screen flex flex-col font-sans selection:bg-[#006eff] selection:text-white ${isAdminLoggedIn ? 'text-slate-800' : 'text-slate-900'}`}
-        style={{ backgroundColor: branding.backgroundColor || '#f8fafc' }}
+        className={`min-h-screen flex flex-col font-sans selection:bg-[#006eff] selection:text-white bg-slate-100/70 dark:bg-[#0b1324] ${isAdminLoggedIn ? 'text-slate-800 dark:text-slate-100' : 'text-slate-900 dark:text-white'}`}
       >
+        <SitePreloader />
         <AdminDashboard />
 
         {/* Global AI Chatbot */}
@@ -273,6 +274,7 @@ const AppContent: React.FC = () => {
       className="min-h-screen flex flex-col text-slate-900 selection:bg-blue-600 selection:text-white"
       style={{ backgroundColor: branding.backgroundColor || '#fafbfc' }}
     >
+      <SitePreloader />
       {/* Top Bar Header adhering to 3-zone contract */}
       <Header />
 

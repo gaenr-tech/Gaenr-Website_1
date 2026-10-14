@@ -130,12 +130,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-10">
       {/* Dashboard Overview Header */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="glass-panel rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
             Dashboard Overview
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Real-time statistics of verified experts, completed deliveries, skill categories, and client reviews.
           </p>
         </div>
@@ -150,9 +150,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           </button>
           <button
             onClick={() => navigate('/')}
-            className="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
           >
-            <ExternalLink className="w-3.5 h-3.5 text-[#006eff]" />
+            <ExternalLink className="w-3.5 h-3.5 text-[#006eff] dark:text-blue-400" />
             <span>View Public Site</span>
           </button>
         </div>
@@ -161,42 +161,42 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       {/* 4 Direct & Simple KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Experts */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs space-y-3">
+        <div className="glass-panel rounded-2xl p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">
               Experts
             </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-[#006eff] dark:text-blue-400 flex items-center justify-center">
               <Users className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono tracking-tight">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
               {totalFreelancers}
             </div>
-            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5 font-medium">
-              <span className="text-emerald-600 font-bold">{activePublicProfiles} Live Public</span>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5 font-medium">
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold">{activePublicProfiles} Live Public</span>
               <span>•</span>
-              <span className="text-slate-400">{draftProfiles} Draft</span>
+              <span className="text-slate-400 dark:text-slate-500">{draftProfiles} Draft</span>
             </div>
           </div>
         </div>
 
         {/* Card 2: Completed Deliveries */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs space-y-3">
+        <div className="glass-panel rounded-2xl p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">
               Completed Deliveries
             </span>
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono tracking-tight">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
               {totalCompletedProjects}
             </div>
-            <div className="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+            <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1 flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
               <span>100% Client Satisfaction</span>
             </div>
@@ -204,44 +204,44 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
 
         {/* Card 3: Skills & Categories */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs space-y-3">
+        <div className="glass-panel rounded-2xl p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">
               Skills &amp; Categories
             </span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
               <Layers className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900 font-mono tracking-tight">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
               {totalCategories}
             </div>
-            <div className="text-[11px] text-slate-500 mt-1">
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
               Active precision outsourcing lines
             </div>
           </div>
         </div>
 
         {/* Card 4: Client Reviews */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs space-y-3">
+        <div className="glass-panel rounded-2xl p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">
               Client Reviews
             </span>
-            <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center">
               <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
             </div>
           </div>
           <div>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 font-mono tracking-tight">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
                 {avgRating}
               </span>
-              <span className="text-xs text-slate-400 font-mono">/ 5.0</span>
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">/ 5.0</span>
             </div>
-            <div className="text-[11px] text-slate-500 mt-1">
-              <span className="font-bold text-slate-800">{totalReviews}</span> verified feedbacks
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+              <span className="font-bold text-slate-800 dark:text-slate-200">{totalReviews}</span> verified feedbacks
             </div>
           </div>
         </div>
@@ -250,20 +250,20 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       {/* Infographics & Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart 1: Deliveries & Output Performance (2 Cols) */}
-        <div className="lg:col-span-2 bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+        <div className="lg:col-span-2 glass-panel rounded-2xl p-6 shadow-xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-white/10">
             <div>
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BarChart2 className="w-4 h-4 text-[#006eff]" />
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <BarChart2 className="w-4 h-4 text-[#006eff] dark:text-blue-400" />
                 <span>Deliveries &amp; Project Output Trend</span>
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 {timeframeMeta[timeframe].subtitle}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2.5">
               {/* Daily, Weekly, Monthly, Yearly Filter Buttons */}
-              <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200/80">
+              <div className="flex items-center bg-slate-100 dark:bg-white/10 p-0.5 rounded-xl border border-slate-200/80 dark:border-white/10">
                 {(['daily', 'weekly', 'monthly', 'yearly'] as const).map((period) => (
                   <button
                     key={period}
@@ -271,8 +271,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                     onClick={() => setTimeframe(period)}
                     className={`px-3 py-1 text-xs font-semibold rounded-lg capitalize transition-all cursor-pointer ${
                       timeframe === period
-                        ? 'bg-white text-[#006eff] shadow-xs font-bold'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-white dark:bg-[#006eff] text-[#006eff] dark:text-white shadow-xs font-bold'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     {period}
@@ -306,13 +306,13 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-full" preserveAspectRatio="none">
                         {/* Horizontal grid lines */}
                         {[0, 0.25, 0.5, 0.75, 1].map(pct => (
-                          <line key={pct} x1={pad.left} x2={W - pad.right} y1={pad.top + innerH * (1 - pct)} y2={pad.top + innerH * (1 - pct)} stroke="#f1f5f9" strokeWidth="1" />
+                          <line key={pct} x1={pad.left} x2={W - pad.right} y1={pad.top + innerH * (1 - pct)} y2={pad.top + innerH * (1 - pct)} stroke="#f1f5f9" strokeWidth="1" className="opacity-40" />
                         ))}
                         {/* Baseline */}
-                        <line x1={pad.left} x2={W - pad.right} y1={H - pad.bottom} y2={H - pad.bottom} stroke="#e2e8f0" strokeWidth="1.5" />
+                        <line x1={pad.left} x2={W - pad.right} y1={H - pad.bottom} y2={H - pad.bottom} stroke="#e2e8f0" strokeWidth="1.5" className="opacity-40" />
                         {allZero ? (
                           /* flat dotted line when no data */
-                          <line x1={pad.left} x2={W - pad.right} y1={flatY} y2={flatY} stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 4" />
+                          <line x1={pad.left} x2={W - pad.right} y1={flatY} y2={flatY} stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 4" className="opacity-50" />
                         ) : (
                           <>
                             {/* Area fill */}
@@ -357,7 +357,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             ) : (
               /* ── Bar Chart (Daily / Weekly / Yearly) ───────────────────── */
               <div
-                className={`h-56 flex items-end justify-between border-b border-slate-100 pb-3 ${
+                className={`h-56 flex items-end justify-between border-b border-slate-100 dark:border-white/10 pb-3 ${
                   timeframe === 'daily'
                     ? 'gap-1 sm:gap-1.5 px-1 sm:px-3 overflow-x-auto'
                     : 'gap-2.5 sm:gap-6 px-2 sm:px-6'
@@ -378,26 +378,26 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                       <span
                         className={`font-mono font-bold transition-colors ${
                           isDaily ? 'text-[9px] sm:text-[10px]' : 'text-[11px]'
-                        } ${isEmpty ? 'text-slate-300' : 'text-slate-600 group-hover:text-[#006eff]'}`}
+                        } ${isEmpty ? 'text-slate-300 dark:text-slate-600' : 'text-slate-600 dark:text-slate-300 group-hover:text-[#006eff] dark:group-hover:text-blue-400'}`}
                       >
                         {d.count}
                       </span>
                       <div
-                        className={`w-full bg-slate-100 rounded-t-lg overflow-hidden h-40 flex items-end ${
+                        className={`w-full bg-slate-100 dark:bg-white/10 rounded-t-lg overflow-hidden h-40 flex items-end ${
                           isDaily ? 'max-w-[20px]' : 'max-w-[48px]'
                         }`}
                       >
                         <div
                           className={`w-full rounded-t-lg transition-all duration-500 ${
                             isEmpty
-                              ? 'bg-slate-100'
+                              ? 'bg-slate-100 dark:bg-white/10'
                               : 'bg-gradient-to-t from-[#006eff] to-blue-400 group-hover:brightness-110'
                           }`}
                           style={{ height: `${heightPercent}%` }}
                         />
                       </div>
                       <span
-                        className={`font-semibold text-slate-500 mt-0.5 whitespace-nowrap ${
+                        className={`font-semibold text-slate-500 dark:text-slate-400 mt-0.5 whitespace-nowrap ${
                           isDaily
                             ? 'text-[7.5px] sm:text-[9px] font-mono'
                             : 'text-[10px]'
@@ -411,7 +411,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               </div>
             )}
 
-            <div className="flex items-center justify-between text-[11px] text-slate-400 pt-3 px-2">
+            <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-400 pt-3 px-2">
               <span className="font-mono">{timeframeMeta[timeframe].footnote}</span>
               <span className="text-slate-400 font-mono">
                 {currentTrendData.reduce((s, d) => s + d.count, 0) === 0 ? 'No data yet' : `Total: ${currentTrendData.reduce((s, d) => s + d.count, 0)}`}
@@ -421,20 +421,20 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
 
         {/* Chart 2: Category & Skill Distribution Infographic (1 Col) */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-4">
-          <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
+        <div className="glass-panel rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="pb-3 border-b border-slate-100 dark:border-white/10 flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <PieChart className="w-4 h-4 text-[#006eff]" />
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <PieChart className="w-4 h-4 text-[#006eff] dark:text-blue-400" />
                 <span>Category Distribution</span>
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Workforce share across active skills
               </p>
             </div>
             <button
               onClick={() => navigate('/manage/categories')}
-              className="text-xs text-[#006eff] hover:underline font-semibold cursor-pointer"
+              className="text-xs text-[#006eff] dark:text-blue-400 hover:underline font-semibold cursor-pointer"
             >
               Categories →
             </button>
@@ -445,12 +445,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             {categoryStats.map((cat) => (
               <div key={cat.id} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-700 truncate">{cat.title}</span>
-                  <span className="font-mono text-slate-500 text-[11px]">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300 truncate">{cat.title}</span>
+                  <span className="font-mono text-slate-500 dark:text-slate-400 text-[11px]">
                     {cat.count} ({cat.percentage}%)
                   </span>
                 </div>
-                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
                   <div
                     className={`h-full ${cat.color} rounded-full transition-all duration-500`}
                     style={{ width: `${Math.max(cat.percentage, 6)}%` }}
@@ -460,9 +460,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             ))}
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+          <div className="pt-2 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-[11px] text-slate-400 font-mono">
             <span>Total Disciplines:</span>
-            <span className="font-bold text-slate-700">{totalCategories} Active</span>
+            <span className="font-bold text-slate-700 dark:text-slate-300">{totalCategories} Active</span>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useBranding } from '../../context/BrandingContext';
+import { useTheme } from '../../context/ThemeContext';
 import { GaenrLogo } from '../../components/common/GaenrLogo';
 import { SERVICE_CATEGORIES } from '../../data/mockData';
 import {
@@ -28,6 +29,8 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 // Import modular view components implementing the backend sitemap
@@ -92,6 +95,7 @@ export const AdminDashboard: React.FC = () => {
   } = useApp();
 
   const { branding, updateBranding, resetBranding } = useBranding();
+  const { isDark, toggleTheme } = useTheme();
 
   // Helper to map route to tab
   const getTabFromRoute = (route: string): SitemapTab => {
@@ -385,47 +389,57 @@ export const AdminDashboard: React.FC = () => {
     };
 
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 selection:bg-[#006eff] selection:text-white relative">
+      <div className="min-h-screen bg-slate-100/70 dark:bg-[#0b1324] flex flex-col justify-center items-center p-4 selection:bg-[#006eff] selection:text-white relative overflow-hidden transition-colors">
         {/* Soft Ambient Glows */}
-        <div className="fixed top-0 left-1/4 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl pointer-events-none -z-10" />
-        <div className="fixed bottom-10 right-1/4 w-80 h-80 bg-indigo-100/40 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/15 rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="fixed bottom-10 right-1/4 w-[450px] h-[450px] bg-indigo-400/10 dark:bg-cyan-500/12 rounded-full blur-3xl pointer-events-none -z-10" />
 
-        {/* Return to Public Button */}
-        <div className="w-full max-w-md flex justify-start mb-3">
+        {/* Return to Public Button & Theme Toggle */}
+        <div className="w-full max-w-md flex justify-between items-center mb-3">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-blue-50 border border-slate-200/90 hover:border-blue-200 text-slate-600 hover:text-[#006eff] text-xs font-semibold transition-all cursor-pointer shadow-2xs group"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full glass-panel hover:bg-blue-50 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 hover:text-[#006eff] text-xs font-semibold transition-all cursor-pointer shadow-2xs group"
           >
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5 text-[#006eff]" />
             <span>Return to Public gaenr.com</span>
           </button>
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-full glass-panel text-slate-600 hover:text-slate-900 dark:text-amber-400 transition-all cursor-pointer shadow-2xs"
+            aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
+          </button>
         </div>
 
-        {/* Whitish Login Card */}
-        <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-[0_12px_45px_rgba(0,110,255,0.06)] space-y-6 text-left">
+        {/* Glassy Login Card */}
+        <div className="w-full max-w-md glass-panel rounded-3xl p-6 sm:p-8 shadow-[0_12px_45px_rgba(0,110,255,0.08)] dark:shadow-[0_16px_50px_rgba(0,0,0,0.5)] space-y-6 text-left">
           <div className="text-center space-y-2">
             <div className="pt-1 flex justify-center">
-              <GaenrLogo className="h-7 text-slate-900" />
+              <GaenrLogo className="h-7 text-slate-900 dark:text-white" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Gaenr Operations Gateway
             </h1>
-            <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto">
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm mx-auto">
               Authorized internal control center. Private access for Gaenr operations.
             </p>
           </div>
 
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             {loginError && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2 font-medium">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2 font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
                 <span>{loginError}</span>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                 Username
               </label>
               <input
@@ -438,12 +452,12 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Enter username"
                 autoComplete="off"
                 required
-                className="w-full px-3.5 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#006eff] rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono"
+                className="w-full px-3.5 py-2.5 bg-slate-50/80 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 focus:bg-white dark:focus:bg-white/10 border border-slate-200 dark:border-white/10 focus:border-[#006eff] rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                 Password
               </label>
               <input
@@ -456,7 +470,7 @@ export const AdminDashboard: React.FC = () => {
                 placeholder="Enter password"
                 autoComplete="new-password"
                 required
-                className="w-full px-3.5 py-2.5 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#006eff] rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono"
+                className="w-full px-3.5 py-2.5 bg-slate-50/80 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 focus:bg-white dark:focus:bg-white/10 border border-slate-200 dark:border-white/10 focus:border-[#006eff] rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 transition-all font-mono"
               />
             </div>
 
@@ -506,7 +520,11 @@ export const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[#f8fafc] text-slate-800 overflow-hidden font-sans">
+    <div className="flex h-screen bg-slate-100/70 dark:bg-[#0b1324] text-slate-800 dark:text-slate-100 overflow-hidden font-sans relative">
+      {/* Ambient glowing orbs for glossy look */}
+      <div className="fixed top-0 left-1/3 w-[600px] h-[600px] bg-blue-400/8 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-indigo-400/8 dark:bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+
       {/* ------------------------------------------------------------- */}
       {/* MOBILE DRAWER NAVIGATION (< md screens)                        */}
       {/* ------------------------------------------------------------- */}
@@ -516,9 +534,9 @@ export const AdminDashboard: React.FC = () => {
             className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
             onClick={() => setMobileNavOpen(false)}
           />
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-2xl z-10 animate-in slide-in-from-left duration-200">
+          <div className="relative flex-1 flex flex-col max-w-xs w-full glass-sidebar shadow-2xl z-10 animate-in slide-in-from-left duration-200">
             {/* Drawer Brand Header */}
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="p-4 border-b border-slate-100 dark:border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 {branding.logoUrl && branding.logoUrl !== '/logo.svg' ? (
                   <img
@@ -530,18 +548,18 @@ export const AdminDashboard: React.FC = () => {
                   <GaenrLogo size={28} />
                 )}
                 <div>
-                  <div className="text-xs font-black tracking-wider uppercase text-slate-900 flex items-center gap-1.5">
+                  <div className="text-xs font-black tracking-wider uppercase text-slate-900 dark:text-white flex items-center gap-1.5">
                     <span>{branding.siteTitle || 'Gaenr'}</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-[#006eff] border border-blue-200/60 font-mono font-bold">
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-900/40 text-[#006eff] dark:text-blue-300 border border-blue-200/60 dark:border-blue-700/50 font-mono font-bold">
                       OPS
                     </span>
                   </div>
-                  <div className="text-[10px] text-slate-400 font-mono">Control Center v2.4</div>
+                  <div className="text-[10px] text-slate-400 dark:text-slate-400 font-mono">Control Center v2.4</div>
                 </div>
               </div>
               <button
                 onClick={() => setMobileNavOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -555,7 +573,7 @@ export const AdminDashboard: React.FC = () => {
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                     activeTab === 'dashboard'
                       ? 'bg-[#006eff] text-white shadow-sm shadow-blue-500/20'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <LayoutDashboard className="w-4 h-4 shrink-0" />
@@ -564,15 +582,15 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+                <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-400 font-bold mb-1">
                   EXPERTS &amp; TALENT
                 </div>
                 <button
                   onClick={() => handleNavigateTab('profiles')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'profiles'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <Users className="w-4 h-4 shrink-0" />
@@ -583,8 +601,8 @@ export const AdminDashboard: React.FC = () => {
                   onClick={() => handleNavigateTab('profiles_new')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'profiles_new'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <UserPlus className="w-4 h-4 shrink-0" />
@@ -594,8 +612,8 @@ export const AdminDashboard: React.FC = () => {
                   onClick={() => handleNavigateTab('directory')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'directory'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <Building2 className="w-4 h-4 shrink-0" />
@@ -604,15 +622,15 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+                <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-400 font-bold mb-1">
                   PLATFORM CATALOG
                 </div>
                 <button
                   onClick={() => handleNavigateTab('categories')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'categories'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <Layers className="w-4 h-4 shrink-0" />
@@ -623,8 +641,8 @@ export const AdminDashboard: React.FC = () => {
                   onClick={() => handleNavigateTab('skills')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'skills'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <Tag className="w-4 h-4 shrink-0" />
@@ -634,20 +652,20 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               <div className="space-y-1">
-                <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+                <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-400 font-bold mb-1">
                   RESPONSES &amp; INBOX
                 </div>
                 <button
                   onClick={() => handleNavigateTab('tasks')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'tasks'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <FolderKanban className="w-4 h-4 shrink-0" />
                   <span>Assigned Tasks</span>
-                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-[#006eff]">
+                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-[#006eff] dark:text-blue-300">
                     {taskAssignments.length}
                   </span>
                 </button>
@@ -655,13 +673,13 @@ export const AdminDashboard: React.FC = () => {
                   onClick={() => handleNavigateTab('applications')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'applications'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <UserCheck className="w-4 h-4 shrink-0" />
                   <span>Become an Expert</span>
-                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-[#006eff]">
+                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-[#006eff] dark:text-blue-300">
                     {expertApplications.length}
                   </span>
                 </button>
@@ -669,28 +687,28 @@ export const AdminDashboard: React.FC = () => {
                   onClick={() => handleNavigateTab('feedbacks')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'feedbacks'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <MessageSquare className="w-4 h-4 shrink-0" />
                   <span>Feedback Forms</span>
-                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-[#006eff]">
+                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-[#006eff] dark:text-blue-300">
                     {feedbacks.length}
                   </span>
                 </button>
               </div>
 
               <div className="space-y-1 pb-4">
-                <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+                <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-400 font-bold mb-1">
                   SYSTEM
                 </div>
                 <button
                   onClick={() => handleNavigateTab('settings')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'settings'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <SlidersHorizontal className="w-4 h-4 shrink-0" />
@@ -700,8 +718,8 @@ export const AdminDashboard: React.FC = () => {
                   onClick={() => handleNavigateTab('branding')}
                   className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === 'branding'
-                      ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                      ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
                   }`}
                 >
                   <Sliders className="w-4 h-4 shrink-0" />
@@ -711,7 +729,7 @@ export const AdminDashboard: React.FC = () => {
             </nav>
 
             {/* Mobile Footer */}
-            <div className="p-3.5 border-t border-slate-100 bg-slate-50/70">
+            <div className="p-3.5 border-t border-slate-100 dark:border-white/10 bg-slate-50/70 dark:bg-white/5">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-[#006eff] flex items-center justify-center p-1.5 shadow-xs overflow-hidden shrink-0">
                   {branding.logoUrl && branding.logoUrl !== '/logo.svg' ? (
@@ -721,13 +739,13 @@ export const AdminDashboard: React.FC = () => {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-bold text-slate-900 truncate">Gaenr Operations</div>
-                  <div className="text-[10px] text-slate-500 truncate font-mono">{currentEmployee.id}</div>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white truncate">Gaenr Operations</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate font-mono">{currentEmployee.id}</div>
                 </div>
                 <button
                   onClick={logoutOperations}
                   title="Sign Out"
-                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -743,11 +761,11 @@ export const AdminDashboard: React.FC = () => {
       <aside
         className={`hidden md:flex ${
           sidebarCollapsed ? 'md:w-16' : 'md:w-64'
-        } bg-white border-r border-slate-200/90 flex-col shrink-0 shadow-xs transition-all duration-200`}
+        } glass-sidebar flex-col shrink-0 shadow-xs transition-all duration-200`}
       >
         {/* Brand Header */}
         <div
-          className={`p-3.5 border-b border-slate-100 flex items-center ${
+          className={`p-3.5 border-b border-slate-100 dark:border-white/10 flex items-center ${
             sidebarCollapsed ? 'justify-center flex-col gap-2' : 'justify-between'
           }`}
         >
@@ -764,20 +782,20 @@ export const AdminDashboard: React.FC = () => {
                   <GaenrLogo size={28} />
                 )}
                 <div className="min-w-0">
-                  <div className="text-xs font-black tracking-wider uppercase text-slate-900 flex items-center gap-1.5">
+                  <div className="text-xs font-black tracking-wider uppercase text-slate-900 dark:text-white flex items-center gap-1.5">
                     <span className="truncate">{branding.siteTitle || 'Gaenr'}</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-[#006eff] border border-blue-200/60 font-mono font-bold shrink-0">
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-900/40 text-[#006eff] dark:text-blue-300 border border-blue-200/60 dark:border-blue-700/50 font-mono font-bold shrink-0">
                       OPS
                     </span>
                   </div>
-                  <div className="text-[10px] text-slate-400 font-mono truncate">Control Center</div>
+                  <div className="text-[10px] text-slate-400 dark:text-slate-400 font-mono truncate">Control Center</div>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSidebarCollapsed(true)}
                 title="Collapse sidebar to icon-only"
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer shrink-0"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer shrink-0"
               >
                 <PanelLeftClose className="w-4 h-4" />
               </button>
@@ -788,7 +806,7 @@ export const AdminDashboard: React.FC = () => {
                 type="button"
                 onClick={() => setSidebarCollapsed(false)}
                 title="Expand sidebar"
-                className="p-1.5 text-slate-400 hover:text-[#006eff] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-[#006eff] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
               >
                 <PanelLeftOpen className="w-4 h-4" />
               </button>
@@ -806,7 +824,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Sidebar Navigation Items */}
-        <nav className="flex-1 overflow-y-auto p-2 space-y-4 scrollbar-thin scrollbar-thumb-slate-200">
+        <nav className="flex-1 overflow-y-auto p-2 space-y-4 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
           {/* Section: OVERVIEW */}
           <div>
             <button
@@ -817,7 +835,7 @@ export const AdminDashboard: React.FC = () => {
               } transition-all cursor-pointer ${
                 activeTab === 'dashboard'
                   ? 'bg-[#006eff] text-white shadow-sm shadow-blue-500/20'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <LayoutDashboard className="w-4 h-4 shrink-0" />
@@ -828,11 +846,11 @@ export const AdminDashboard: React.FC = () => {
           {/* Section: EXPERT MANAGEMENT */}
           <div className="space-y-1">
             {!sidebarCollapsed ? (
-              <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+              <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-400 font-bold mb-1">
                 EXPERTS &amp; TALENT
               </div>
             ) : (
-              <div className="h-px bg-slate-100 my-2 mx-1" />
+              <div className="h-px bg-slate-100 dark:bg-white/10 my-2 mx-1" />
             )}
 
             {/* /manage/profiles */}
@@ -843,8 +861,8 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'profiles'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <Users className="w-4 h-4 shrink-0" />
@@ -866,8 +884,8 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'profiles_new'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <UserPlus className="w-4 h-4 shrink-0" />
@@ -882,8 +900,8 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'directory'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <Building2 className="w-4 h-4 shrink-0" />
@@ -894,11 +912,11 @@ export const AdminDashboard: React.FC = () => {
           {/* Section: TAXONOMY & MEDIA */}
           <div className="space-y-1">
             {!sidebarCollapsed ? (
-              <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+              <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-400 font-bold mb-1">
                 TAXONOMY &amp; ASSETS
               </div>
             ) : (
-              <div className="h-px bg-slate-100 my-2 mx-1" />
+              <div className="h-px bg-slate-100 dark:bg-white/10 my-2 mx-1" />
             )}
 
             {/* /manage/categories */}
@@ -909,8 +927,8 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'categories'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <Layers className="w-4 h-4 shrink-0" />
@@ -932,8 +950,8 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'skills'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <Tag className="w-4 h-4 shrink-0" />
@@ -951,11 +969,11 @@ export const AdminDashboard: React.FC = () => {
           {/* Section: FORM RESPONSES & INBOX */}
           <div className="space-y-1">
             {!sidebarCollapsed ? (
-              <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+              <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-400 font-bold mb-1">
                 RESPONSES &amp; INBOX
               </div>
             ) : (
-              <div className="h-px bg-slate-100 my-2 mx-1" />
+              <div className="h-px bg-slate-100 dark:bg-white/10 my-2 mx-1" />
             )}
 
             {/* /manage/tasks */}
@@ -966,15 +984,15 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'tasks'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <FolderKanban className="w-4 h-4 shrink-0" />
               {!sidebarCollapsed && (
                 <>
                   <span className="truncate">Assigned Tasks</span>
-                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-[#006eff]">
+                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-[#006eff] dark:text-blue-300">
                     {taskAssignments.length}
                   </span>
                 </>
@@ -989,15 +1007,15 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'applications'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <UserCheck className="w-4 h-4 shrink-0" />
               {!sidebarCollapsed && (
                 <>
                   <span className="truncate">Become an Expert</span>
-                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-[#006eff]">
+                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-[#006eff] dark:text-blue-300">
                     {expertApplications.length}
                   </span>
                 </>
@@ -1012,15 +1030,15 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'feedbacks'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <MessageSquare className="w-4 h-4 shrink-0" />
               {!sidebarCollapsed && (
                 <>
                   <span className="truncate">Feedback Forms</span>
-                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-[#006eff]">
+                  <span className="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-[#006eff] dark:text-blue-300">
                     {feedbacks.length}
                   </span>
                 </>
@@ -1031,11 +1049,11 @@ export const AdminDashboard: React.FC = () => {
           {/* Section: SYSTEM */}
           <div className="space-y-1 pb-4">
             {!sidebarCollapsed ? (
-              <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+              <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-400 font-bold mb-1">
                 SYSTEM
               </div>
             ) : (
-              <div className="h-px bg-slate-100 my-2 mx-1" />
+              <div className="h-px bg-slate-100 dark:bg-white/10 my-2 mx-1" />
             )}
 
             {/* /manage/settings */}
@@ -1046,8 +1064,8 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'settings'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <SlidersHorizontal className="w-4 h-4 shrink-0" />
@@ -1062,8 +1080,8 @@ export const AdminDashboard: React.FC = () => {
                 sidebarCollapsed ? 'justify-center p-2.5 rounded-xl' : 'gap-3 px-3 py-1.5 rounded-lg text-xs font-medium'
               } transition-colors cursor-pointer ${
                 activeTab === 'branding'
-                  ? 'bg-blue-50 text-[#006eff] border border-blue-200/80 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                  ? 'bg-blue-50 dark:bg-[#006eff]/20 text-[#006eff] dark:text-blue-400 border border-blue-200/80 dark:border-blue-500/30 font-bold'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-white/5'
               }`}
             >
               <Sliders className="w-4 h-4 shrink-0" />
@@ -1073,7 +1091,7 @@ export const AdminDashboard: React.FC = () => {
         </nav>
 
         {/* User Card & Sign Out */}
-        <div className="p-3 border-t border-slate-100 bg-slate-50/70">
+        <div className="p-3 border-t border-slate-100 dark:border-white/10 bg-slate-50/70 dark:bg-white/5">
           {!sidebarCollapsed ? (
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-[#006eff] flex items-center justify-center p-1.5 shadow-xs overflow-hidden shrink-0">
@@ -1084,17 +1102,17 @@ export const AdminDashboard: React.FC = () => {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-bold text-slate-900 truncate">
+                <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
                   Gaenr Operations
                 </div>
-                <div className="text-[10px] text-slate-500 truncate font-mono">
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate font-mono">
                   {currentEmployee.id}
                 </div>
               </div>
               <button
                 onClick={logoutOperations}
                 title="Sign Out of Operations"
-                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -1111,7 +1129,7 @@ export const AdminDashboard: React.FC = () => {
               <button
                 onClick={logoutOperations}
                 title="Sign Out"
-                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -1123,47 +1141,58 @@ export const AdminDashboard: React.FC = () => {
       {/* ------------------------------------------------------------- */}
       {/* MAIN CONTENT AREA                                             */}
       {/* ------------------------------------------------------------- */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#f8fafc]">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-transparent">
         {/* Top Header Bar */}
-        <header className="h-14 bg-white border-b border-slate-200/90 px-4 sm:px-6 flex items-center justify-between shrink-0 shadow-2xs">
+        <header className="h-14 glass-header px-4 sm:px-6 flex items-center justify-between shrink-0 shadow-2xs">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileNavOpen(true)}
-              className="md:hidden p-2 -ml-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+              className="md:hidden p-2 -ml-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
               title="Open Navigation Menu"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h2 className="text-sm font-bold text-slate-900 capitalize tracking-wide truncate max-w-[200px] sm:max-w-none">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white capitalize tracking-wide truncate max-w-[200px] sm:max-w-none">
               {getSectionTitle()}
             </h2>
-            <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/70 text-[10px] font-mono text-emerald-700">
+            <div className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800 text-[10px] font-mono text-emerald-700 dark:text-emerald-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span>ONLINE</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             {/* Account badge */}
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono">
-              <span className="text-slate-500">Account:</span>
-              <span className="text-[#006eff] font-bold">Gaenr Operations</span>
+            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-xs font-mono">
+              <span className="text-slate-500 dark:text-slate-400">Account:</span>
+              <span className="text-[#006eff] dark:text-blue-400 font-bold">Gaenr Operations</span>
             </div>
+
+            {/* Theme Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="inline-flex items-center justify-center w-8 h-8 rounded-xl glass-panel text-slate-600 hover:text-slate-900 dark:text-amber-400 transition-all cursor-pointer shadow-2xs"
+              aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
+            </button>
 
             {/* Direct View Public Site Action */}
             <button
               onClick={() => navigate('/')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-[#006eff] border border-slate-200 hover:border-blue-200 text-xs font-semibold transition-all cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-blue-50 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 hover:text-[#006eff] dark:hover:text-blue-400 border border-slate-200 dark:border-white/10 hover:border-blue-200 dark:hover:border-blue-400/40 text-xs font-semibold transition-all cursor-pointer shadow-2xs"
               title="View Public Site"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-[#006eff]" />
-              <span>View Public Site</span>
+              <ExternalLink className="w-3.5 h-3.5 text-[#006eff] dark:text-blue-400" />
+              <span className="hidden sm:inline">View Public Site</span>
             </button>
           </div>
         </header>
 
         {/* View Content Body: Renders exact sitemap component */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#f8fafc] scrollbar-thin scrollbar-thumb-slate-300">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-transparent scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
           {activeTab === 'dashboard' && (
             <OverviewView
               freelancers={freelancers}
