@@ -294,17 +294,17 @@ WhatsApp: https://wa.me/8801608922800`;
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Top Header Card */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="glass-panel border border-slate-200/90 dark:border-white/10 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-blue-50 text-[#006eff]">
+            <span className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-[#006eff] dark:text-blue-400">
               <Users className="w-5 h-5" />
             </span>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
               Become an Expert Responses &amp; Onboarding
             </h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Review talent applications, approve for onboarding, and convert to live expert profiles automatically.
           </p>
         </div>
@@ -312,20 +312,20 @@ WhatsApp: https://wa.me/8801608922800`;
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleExportCSV}
-            className="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            className="px-3.5 py-2 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
             title="Export as CSV"
           >
-            <Download className="w-3.5 h-3.5 text-slate-500" />
+            <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
             <span>Export CSV</span>
           </button>
-          <div className="px-3 py-1.5 bg-blue-50 text-[#006eff] rounded-xl text-xs font-bold font-mono border border-blue-200/60">
+          <div className="px-3 py-1.5 bg-blue-50 dark:bg-blue-500/10 text-[#006eff] dark:text-blue-300 rounded-xl text-xs font-bold font-mono border border-blue-200/60 dark:border-blue-500/20">
             {applications.length} Total Applications
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="glass-panel border border-slate-200/90 dark:border-white/10 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -333,18 +333,18 @@ WhatsApp: https://wa.me/8801608922800`;
             placeholder="Search by name, email, WhatsApp, skill, location, or expert code..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-[#006eff] transition-colors"
+            className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:bg-white dark:focus:bg-[#131f37] focus:outline-none focus:border-[#006eff] transition-colors"
           />
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
           {/* Status Filter */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-semibold text-slate-500">Status:</span>
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Status:</span>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff] cursor-pointer"
+              className="px-3 py-1.5 bg-slate-50 dark:bg-[#131f37] border border-slate-200 dark:border-white/10 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#006eff] cursor-pointer"
             >
               <option value="all">All Statuses ({applications.length})</option>
               <option value="applied">Applied ({applications.filter((a) => (a.status || 'applied') === 'applied').length})</option>
@@ -357,11 +357,11 @@ WhatsApp: https://wa.me/8801608922800`;
           {/* Skill Filter */}
           {uniqueSkills.length > 0 && (
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-semibold text-slate-500">Skill:</span>
+              <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Skill:</span>
               <select
                 value={filterSkill}
                 onChange={(e) => setFilterSkill(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-[#006eff] cursor-pointer"
+                className="px-3 py-1.5 bg-slate-50 dark:bg-[#131f37] border border-slate-200 dark:border-white/10 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-[#006eff] cursor-pointer"
               >
                 <option value="all">All Skills</option>
                 {uniqueSkills.map((sk) => (
@@ -377,26 +377,26 @@ WhatsApp: https://wa.me/8801608922800`;
 
       {/* Responses Directory Table */}
       {filteredApps.length === 0 ? (
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-12 text-center space-y-3 shadow-xs">
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+        <div className="glass-panel border border-slate-200/90 dark:border-white/10 rounded-2xl p-12 text-center space-y-3 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/10 text-slate-400 flex items-center justify-center mx-auto">
             <Users className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-bold text-slate-800">
+          <h3 className="text-base font-bold text-slate-800 dark:text-white">
             {applications.length === 0
               ? 'No Expert Applications Received Yet'
               : 'No matching applications found'}
           </h3>
-          <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
             {applications.length === 0
               ? 'When freelancers submit their details via the "Join as Expert" form, their responses will appear here in real time.'
               : 'Try clearing your search keyword or selecting a different status/skill filter.'}
           </p>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs">
+        <div className="glass-panel border border-slate-200/90 dark:border-white/10 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-200/90 text-[10px] uppercase text-slate-500 font-bold tracking-wider font-mono">
+              <thead className="bg-slate-50 dark:bg-white/5 border-b border-slate-200/90 dark:border-white/10 text-[10px] uppercase text-slate-500 dark:text-slate-400 font-bold tracking-wider font-mono">
                 <tr>
                   <th className="py-3.5 px-4">Applicant &amp; Status</th>
                   <th className="py-3.5 px-4">Primary Skill &amp; Exp</th>
@@ -406,7 +406,7 @@ WhatsApp: https://wa.me/8801608922800`;
                   <th className="py-3.5 px-4 text-right">Workflow Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                 {filteredApps.map((app) => {
                   const status = app.status || 'applied';
                   const onboardingUrl = getOnboardingUrl(app);
@@ -421,14 +421,14 @@ WhatsApp: https://wa.me/8801608922800`;
                   const profilePath = profileCode ? `/experts/${encodeURIComponent(profileCode)}` : '';
 
                   return (
-                    <tr key={app.id} className="hover:bg-slate-50/70 transition-colors">
+                    <tr key={app.id} className="hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors">
                       {/* Applicant & Status */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900">{app.fullName}</span>
+                          <span className="font-bold text-slate-900 dark:text-white">{app.fullName}</span>
                           {getStatusBadge(status)}
                         </div>
-                        <div className="text-[11px] text-slate-500 flex items-center gap-1.5 mt-1">
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
                           <span>{app.gender.split('/')[0].trim()}</span>
                           <span>•</span>
                           <span>{app.otherOccupation || app.occupation.split('/')[0].trim()}</span>

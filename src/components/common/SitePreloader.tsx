@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 import { useTheme } from '../../context/ThemeContext';
 
-// Exact authentic SVG symbol matching Pathway3DCanvas
+// Exact authentic SVG vector symbol from Section 2 (Pathway3DCanvas)
 const LEFT_ARROW_PATH =
   'M0 0 C3.93 1.31 5.32 3.8 7.69 7 C48.31 60.26 110.47 92.94 176.25 102.31 C202.63 105.3 229.98 104.7 256 99 C262.59 92.41 258.43 61.81 258.56 53 C258.61 50.37 258.65 47.75 258.69 45.12 C258.8 38.75 258.9 32.38 259 26 C262.12 27.23 265.01 28.48 267.88 30.22 C268.62 30.67 269.36 31.12 270.12 31.58 C270.93 32.07 271.73 32.56 272.56 33.06 C273.43 33.59 274.3 34.11 275.19 34.65 C280.27 37.73 285.34 40.82 290.42 43.91 C292.11 44.94 293.81 45.97 295.51 47 C296.68 47.71 297.85 48.43 299.02 49.14 C308.64 54.99 318.31 60.76 328 66.5 C338.12 72.49 348.21 78.52 358.25 84.62 C359.11 85.15 359.11 85.15 359.98 85.68 C364.56 88.46 369.13 91.25 373.71 94.04 C377.72 96.49 381.73 98.93 385.75 101.38 C386.32 101.72 386.89 102.07 387.48 102.43 C398.39 109.06 409.37 115.58 420.36 122.08 C426.62 125.78 432.85 129.5 439.03 133.31 C440.1 133.97 441.17 134.63 442.27 135.31 C444.24 136.53 446.22 137.75 448.19 138.99 C449.05 139.52 449.91 140.06 450.8 140.61 C451.54 141.07 452.29 141.54 453.06 142.02 C455.08 143.23 455.08 143.23 458 143 L457 147 C447.75 152.08 438.83 157.6 429.95 163.3 C422.62 167.99 415.23 172.58 407.81 177.12 C400.31 181.73 392.81 186.35 385.38 191.06 C369.88 200.88 354.32 210.59 338.69 220.19 C330.46 225.24 322.27 230.33 314.12 235.5 C304.78 241.41 295.4 247.27 286.02 253.11 C283.01 255 279.99 256.88 276.98 258.77 C275.09 259.95 273.2 261.13 271.31 262.31 C270.45 262.86 269.58 263.4 268.69 263.96 C267.88 264.47 267.07 264.97 266.24 265.49 C265.54 265.93 264.84 266.37 264.11 266.82 C261.81 268.11 259.46 269.04 257 270 C257 269.18 257 268.36 257.01 267.51 C257.03 259.79 257.04 252.06 257.05 244.34 C257.06 240.37 257.06 236.4 257.08 232.42 C257.09 228.59 257.09 224.76 257.09 220.93 C257.1 219.47 257.1 218 257.11 216.54 C257.11 214.49 257.11 212.45 257.11 210.4 C257.12 209.23 257.12 208.07 257.12 206.87 C257.13 203.93 257.13 203.93 256 201 C249.8 199.24 243.43 198.42 237.07 197.45 C194.53 190.89 152.96 177.04 117 153 C116.28 152.52 115.55 152.03 114.81 151.54 C105.01 144.93 95.85 137.82 87 130 C85.82 128.98 85.82 128.98 84.61 127.95 C72.13 117.03 60.05 105.2 50 92 C49.01 90.75 48.02 89.5 47.04 88.26 C29.67 66.2 16.25 42.65 5 17 C4.42 15.7 3.84 14.4 3.26 13.11 C-0.27 5.03 -0.27 5.03 0 0 Z';
 
@@ -16,28 +16,27 @@ interface SitePreloaderProps {
 
 export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
   const { isDark } = useTheme();
-  const canvasMountRef = useRef<HTMLDivElement>(null);
+  const mountRef = useRef<HTMLDivElement>(null);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [isRemoved, setIsRemoved] = useState(false);
-  const [hasConnected, setHasConnected] = useState(false);
   const onLoadedRef = useRef(onLoaded);
   onLoadedRef.current = onLoaded;
 
   useEffect(() => {
-    const container = canvasMountRef.current;
+    const container = mountRef.current;
     if (!container) return;
 
-    let width = container.clientWidth || 360;
-    let height = container.clientHeight || 200;
+    let width = container.clientWidth || 400;
+    let height = container.clientHeight || 260;
 
-    // 1. Three.js Scene
+    // 1. Scene
     const scene = new THREE.Scene();
 
     // 2. Camera
     const camera = new THREE.PerspectiveCamera(40, width / height, 1, 2000);
     camera.position.set(0, 0, 480);
 
-    // 3. Renderer with transparent background
+    // 3. Renderer with transparent background and antialiasing
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
@@ -46,11 +45,11 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.domElement.style.filter =
-      'drop-shadow(0 16px 28px rgba(2, 86, 208, 0.28)) drop-shadow(0 4px 12px rgba(0, 30, 80, 0.16))';
+      'drop-shadow(0 16px 24px rgba(2, 86, 208, 0.22)) drop-shadow(0 4px 10px rgba(0, 30, 80, 0.12))';
     renderer.localClippingEnabled = true;
     container.appendChild(renderer.domElement);
 
-    // 4. Extrude SVG Shapes
+    // 4. Two Independent Solid Extruded 3D Arrow Meshes
     const loader = new SVGLoader();
     const leftSvgData = loader.parse(
       `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 913 270"><path d="${LEFT_ARROW_PATH}" /></svg>`
@@ -68,16 +67,18 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
     symbolGroup.add(rightGroup);
     group.add(symbolGroup);
 
+    // Starting clip distance for progressive tip reveal
     const X_CLIP_START = 460;
     const localPlaneLeft = new THREE.Plane(new THREE.Vector3(-1, 0, 0), -X_CLIP_START);
     const localPlaneRight = new THREE.Plane(new THREE.Vector3(1, 0, 0), -X_CLIP_START);
     const worldPlaneLeft = new THREE.Plane();
     const worldPlaneRight = new THREE.Plane();
 
+    // Authentic brand blue materials (matching Pathway3DCanvas exactly)
     const frontMaterialLeft = new THREE.MeshPhysicalMaterial({
       color: new THREE.Color('#0256d0'),
       emissive: new THREE.Color('#012563'),
-      emissiveIntensity: isDark ? 0.35 : 0.2,
+      emissiveIntensity: isDark ? 0.35 : 0.18,
       metalness: 0.35,
       roughness: 0.22,
       clearcoat: 0.85,
@@ -100,7 +101,7 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
     const frontMaterialRight = new THREE.MeshPhysicalMaterial({
       color: new THREE.Color('#0256d0'),
       emissive: new THREE.Color('#012563'),
-      emissiveIntensity: isDark ? 0.35 : 0.2,
+      emissiveIntensity: isDark ? 0.35 : 0.18,
       metalness: 0.35,
       roughness: 0.22,
       clearcoat: 0.85,
@@ -158,10 +159,10 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
     scene.add(group);
 
     // 5. Studio Lighting
-    const ambientLight = new THREE.AmbientLight(isDark ? 0xdbeafe : 0xffffff, isDark ? 2.2 : 1.3);
+    const ambientLight = new THREE.AmbientLight(isDark ? 0xdbeafe : 0xffffff, isDark ? 2.2 : 1.25);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, isDark ? 3.2 : 2.5);
+    const keyLight = new THREE.DirectionalLight(0xffffff, isDark ? 3.2 : 2.4);
     keyLight.position.set(150, 200, 300);
     scene.add(keyLight);
 
@@ -169,24 +170,29 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
     blueRimLight.position.set(-200, -100, 250);
     scene.add(blueRimLight);
 
-    // 6. Responsive Sizing & Perspective
+    const topFill = new THREE.DirectionalLight(0x93c5fd, 1.3);
+    topFill.position.set(0, 300, 100);
+    scene.add(topFill);
+
+    // 6. Responsive Framing Function
+    let baseScale = 0.48;
     const updateFraming = () => {
       if (!container) return;
-      width = container.clientWidth || 360;
-      height = container.clientHeight || 200;
+      width = container.clientWidth || 400;
+      height = container.clientHeight || 260;
       const aspect = width / height;
 
       camera.aspect = aspect;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
 
-      const baseScale = width < 480 ? 0.35 : width < 768 ? 0.42 : 0.46;
+      baseScale = width < 480 ? 0.38 : width < 768 ? 0.42 : 0.48;
       leftMeshes.forEach((m) => m.scale.set(baseScale, -baseScale, baseScale));
       rightMeshes.forEach((m) => m.scale.set(baseScale, -baseScale, baseScale));
 
       const vFovRad = (camera.fov * Math.PI) / 180;
       const totalWorldWidth = 913 * baseScale + 120;
-      const safeCoverage = 0.88;
+      const safeCoverage = width < 480 ? 0.85 : width < 768 ? 0.85 : 0.86;
       const requiredVisibleWidth = totalWorldWidth / safeCoverage;
       const requiredVisibleHeight = requiredVisibleWidth / aspect;
       const targetZ = requiredVisibleHeight / 2 / Math.tan(vFovRad / 2);
@@ -197,22 +203,22 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
     updateFraming();
     window.addEventListener('resize', updateFraming);
 
-    // 7. Single-Shot Connection Sequence for Preloader
-    // - 0.00s - 0.52s: Dual 3D arrows glide inward and reveal from tips
-    // - 0.52s - 0.58s: Rapid swoop into central connection
-    // - 0.58s: Connected! Impact settle & spring lock
-    // - 0.85s: Preloader initiates silky fade out
-    // - 1.40s: Preloader completely removed, revealing full website
+    // 7. Exact Dual-Arrow Approach & Snapping Sequence for Preloader
+    // - 0.00s - 0.52s: Dual 3D arrows glide inward and reveal from tips (invisible -> 100% visible)
+    // - 0.52s - 0.60s: Lightning-fast swoop into central connection!
+    // - 0.60s - 0.82s: Tactile impact bounce & upward lift settle
+    // - 0.82s - 1.15s: 100% full, solid, authentic static hold (user clearly sees the connected arrows)
+    // - 1.15s: Preloader initiates silky smooth fade-out to reveal the website
+    // - 1.55s: Preloader completely removed from DOM
     let animationFrameId: number;
     const startTime = performance.now();
     const MAX_SEPARATION_X = 40;
     const MAX_SEPARATION_Y = 5;
     const MAX_ROTATION_Z = 0.012;
-    const T_REVEAL = 0.5;
+    const T_REVEAL = 0.50;
     const T_CONNECT = 0.58;
 
-    const onLoadedCallback = onLoadedRef.current;
-    let hasConnectedTriggered = false;
+    let hasTriggeredFade = false;
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
@@ -248,8 +254,8 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
 
         symbolGroup.position.set(0, 0, 0);
         symbolGroup.scale.set(1.0, 1.0, 1.0);
-      } else {
-        // Phase 2: Connected! Tactile impact settle
+      } else if (elapsed < 0.82) {
+        // Phase 2: Connected! Tactile impact with upward lift & spring settle
         localPlaneLeft.constant = 500;
         localPlaneRight.constant = 500;
         leftGroup.position.set(0, 0, 0);
@@ -257,26 +263,31 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
         leftGroup.rotation.z = 0;
         rightGroup.rotation.z = 0;
 
-        if (!hasConnectedTriggered) {
-          hasConnectedTriggered = true;
-          setHasConnected(true);
-        }
-
-        const settleT = Math.min((elapsed - T_CONNECT) / 0.22, 1.0);
+        const settleT = (elapsed - T_CONNECT) / 0.24;
         const upwardLift = Math.sin(settleT * Math.PI) * Math.exp(-settleT * 2.5) * 4.8;
         symbolGroup.position.y = upwardLift;
 
         const bounce = Math.sin(settleT * Math.PI) * Math.exp(-settleT * 3.2) * 0.024;
         symbolGroup.scale.set(1.0 + bounce, 1.0 + bounce, 1.0 + bounce);
+      } else {
+        // Phase 3: Connected static hold
+        localPlaneLeft.constant = 500;
+        localPlaneRight.constant = 500;
+        leftGroup.position.set(0, 0, 0);
+        rightGroup.position.set(0, 0, 0);
+        leftGroup.rotation.z = 0;
+        rightGroup.rotation.z = 0;
+        symbolGroup.position.set(0, 0, 0);
+        symbolGroup.scale.set(1.0, 1.0, 1.0);
 
-        // At 0.85s: Trigger smooth fade out
-        if (elapsed >= 0.85 && !hasTriggeredExit) {
-          hasTriggeredExit = true;
+        // At 1.15s: trigger smooth fade out
+        if (elapsed >= 1.15 && !hasTriggeredFade) {
+          hasTriggeredFade = true;
           setIsFadingOut(true);
           setTimeout(() => {
             setIsRemoved(true);
-            if (onLoadedCallback) onLoadedCallback();
-          }, 550);
+            if (onLoadedRef.current) onLoadedRef.current();
+          }, 450);
         }
       }
 
@@ -294,14 +305,14 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
 
     animate();
 
-    // Fallback safety timeout (2.2s max)
+    // Safety timeout (2.5s)
     const fallbackTimer = setTimeout(() => {
       setIsFadingOut(true);
       setTimeout(() => {
         setIsRemoved(true);
-        if (onLoadedCallback) onLoadedCallback();
-      }, 550);
-    }, 2200);
+        if (onLoadedRef.current) onLoadedRef.current();
+      }, 450);
+    }, 2500);
 
     return () => {
       clearTimeout(fallbackTimer);
@@ -318,41 +329,19 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[99999] flex flex-col items-center justify-center transition-all duration-550 ease-out select-none ${
-        isFadingOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
-      } ${isDark ? 'bg-[#0b1324]' : 'bg-[#fafbfc]'}`}
-      style={{
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-      }}
+      className={`fixed inset-0 z-[99999] flex items-center justify-center select-none transition-opacity duration-450 ease-out ${
+        isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      } ${isDark ? 'bg-[#0b1324]' : 'bg-white'}`}
       aria-label="Loading Gaenr"
     >
-      {/* Ambient background glow orbs */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-blue-500/10 dark:bg-blue-400/15 rounded-full blur-3xl pointer-events-none" />
-      <div
-        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[200px] bg-cyan-400/20 rounded-full blur-2xl pointer-events-none transition-all duration-300 ${
-          hasConnected ? 'scale-125 opacity-70' : 'scale-90 opacity-20'
-        }`}
-      />
-
-      {/* 3D Pathway Symbol Animation Canvas */}
-      <div className="relative z-10 flex flex-col items-center justify-center">
+      {/* Exact 3D Pathway Symbol Canvas with ambient contact shadow */}
+      <div className="relative w-full max-w-[480px] h-[240px] sm:h-[280px] flex items-center justify-center">
+        {/* Soft ambient depth shadow directly beneath the 3D symbol */}
+        <div className="absolute w-[62%] sm:w-[50%] h-6 sm:h-7 bottom-2 sm:bottom-3 rounded-full bg-blue-900/18 dark:bg-cyan-500/25 blur-xl pointer-events-none transform scale-y-75" />
         <div
-          ref={canvasMountRef}
-          className="w-[320px] h-[190px] sm:w-[460px] sm:h-[250px] flex items-center justify-center overflow-visible"
+          ref={mountRef}
+          className="relative w-full h-full flex items-center justify-center pointer-events-auto select-none"
         />
-
-        {/* Minimalist Authentic Brand Pulse */}
-        <div
-          className={`flex items-center gap-2 mt-1 transition-all duration-500 ${
-            hasConnected ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-          }`}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#006eff] dark:bg-sky-400 animate-ping" />
-          <span className="text-[11px] font-bold tracking-[0.22em] uppercase text-slate-500 dark:text-slate-300 font-mono">
-            GAENR
-          </span>
-        </div>
       </div>
     </div>
   );

@@ -333,10 +333,10 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
             Expert Management
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Search, curate, and control public vs internal status for all verified experts.
           </p>
         </div>
@@ -351,28 +351,28 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="glass-panel border border-slate-200/90 dark:border-white/10 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         {/* Search profiles by code/service */}
-        <div className="flex items-center gap-2.5 flex-1 max-w-md bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2">
+        <div className="flex items-center gap-2.5 flex-1 max-w-md bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2">
           <Search className="w-4 h-4 text-slate-400 shrink-0" />
           <input
             type="text"
             placeholder="Search by code (e.g. 8K2N9X4P), service, or skill..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none"
+            className="w-full bg-transparent text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none"
           />
         </div>
 
         {/* View public / draft status filter */}
         <div className="flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-xl border border-slate-200 dark:border-white/10">
             <button
               onClick={() => setStatusFilter('all')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
                 statusFilter === 'all'
-                  ? 'bg-white text-slate-900 shadow-2xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-[#131f37] text-slate-900 dark:text-white shadow-2xs font-bold border border-transparent dark:border-white/10'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               All ({freelancers.length})
@@ -381,8 +381,8 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
               onClick={() => setStatusFilter('public')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
                 statusFilter === 'public'
-                  ? 'bg-white text-emerald-700 shadow-2xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-[#131f37] text-emerald-700 dark:text-emerald-400 shadow-2xs font-bold border border-transparent dark:border-emerald-500/20'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Public ({freelancers.filter((f) => f.isPublic).length})
@@ -391,8 +391,8 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
               onClick={() => setStatusFilter('draft')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
                 statusFilter === 'draft'
-                  ? 'bg-white text-slate-800 shadow-2xs font-bold'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-[#131f37] text-slate-800 dark:text-slate-200 shadow-2xs font-bold border border-transparent dark:border-white/10'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Draft ({freelancers.filter((f) => !f.isPublic).length})
@@ -402,10 +402,10 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
       </div>
 
       {/* Profiles Table */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs">
+      <div className="glass-panel border border-slate-200/90 dark:border-white/10 rounded-2xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50/80 text-slate-500 font-mono uppercase text-[10px] tracking-wider border-b border-slate-200">
+            <thead className="bg-slate-50/80 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px] tracking-wider border-b border-slate-200 dark:border-white/10">
               <tr>
                 <th className="py-3 px-4">Expert</th>
                 <th className="py-3 px-3">Category</th>
@@ -415,7 +415,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                 <th className="py-3 px-4 w-48 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-white/5">
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-slate-400">
@@ -424,25 +424,25 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                 </tr>
               ) : (
                 filtered.map((fl) => (
-                  <tr key={fl.code} className="hover:bg-slate-50/70 transition-colors">
+                  <tr key={fl.code} className="hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
+                        <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
                           <AvatarGraphic id={fl.avatarId} size={30} />
                         </div>
                         <div className="min-w-0">
-                          <span className="font-mono font-bold text-slate-900 text-xs block truncate">
+                          <span className="font-mono font-bold text-slate-900 dark:text-white text-xs block truncate">
                             {fl.code}
                           </span>
-                          <span className="text-[10px] text-slate-400 truncate block">
+                          <span className="text-[10px] text-slate-400 block truncate">
                             {fl.name || 'Verified Expert'}
                           </span>
                         </div>
                       </div>
                     </td>
                     <td className="py-3 px-3">
-                      <div className="font-semibold text-slate-900 text-xs truncate max-w-[140px]">{fl.categoryTitle}</div>
-                      <div className="text-[10px] text-slate-500 capitalize">
+                      <div className="font-semibold text-slate-900 dark:text-slate-100 text-xs truncate max-w-[140px]">{fl.categoryTitle}</div>
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 capitalize">
                         {fl.category.replace('-', ' ')}
                       </div>
                     </td>
@@ -452,7 +452,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                           if (onSelectPortfolioProfile) onSelectPortfolioProfile(fl.code);
                           navigate('/manage/portfolio');
                         }}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-[#006eff] hover:bg-blue-100 transition-colors font-bold text-[11px] cursor-pointer"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-[#006eff] dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors font-bold text-[11px] cursor-pointer"
                         title="Manage portfolio deliverables"
                       >
                         <FolderKanban className="w-3 h-3" />
@@ -462,8 +462,8 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                     <td className="py-3 px-3 font-mono whitespace-nowrap text-center">
                       <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md border ${
                         fl.reviewsCount > 0
-                          ? 'text-amber-700 bg-amber-50/80 border-amber-200/60'
-                          : 'text-slate-500 bg-slate-50 border-slate-200'
+                          ? 'text-amber-700 dark:text-amber-300 bg-amber-50/80 dark:bg-amber-400/10 border-amber-200/60 dark:border-amber-400/25'
+                          : 'text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10'
                       }`}>
                         <Star className={`w-3 h-3 ${fl.reviewsCount > 0 ? 'fill-amber-400 text-amber-500' : 'text-slate-400'}`} />
                         <span>{fl.reviewsCount > 0 ? fl.rating.toFixed(1) : '0.0'}</span>
@@ -482,8 +482,8 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                         }}
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold transition-all cursor-pointer border shadow-2xs select-none active:scale-95 ${
                           fl.isPublic
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
-                            : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'
+                            ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/30 hover:bg-emerald-100 dark:hover:bg-emerald-500/20'
+                            : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10'
                         }`}
                         title={fl.isPublic ? "Click to set DRAFT (Hide from public)" : "Click to set PUBLIC (Live on website)"}
                       >
@@ -503,7 +503,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(fl)}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 hover:bg-[#006eff] text-[#006eff] hover:text-white border border-blue-200/80 hover:border-[#006eff] rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group"
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-500/10 hover:bg-[#006eff] dark:hover:bg-[#006eff] text-[#006eff] dark:text-blue-300 hover:text-white border border-blue-200/80 dark:border-blue-500/20 hover:border-[#006eff] rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group"
                           title="Edit expert profile credentials (ID is immutable)"
                         >
                           <Edit2 className="w-3 h-3 text-[#006eff] group-hover:text-white shrink-0 transition-colors" />
@@ -517,7 +517,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                             setSelectedIdCardExpert(fl);
                             setDownloadSuccess(false);
                           }}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 hover:bg-blue-100 text-[#006eff] border border-blue-200/80 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-[#006eff] dark:text-blue-300 border border-blue-200/80 dark:border-blue-500/20 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
                           title="View & download Digital ID Card"
                         >
                           <CreditCard className="w-3 h-3 text-[#006eff] shrink-0" />
@@ -531,7 +531,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                             setSelectedPortalExpert(fl);
                             setPortalCopied(false);
                           }}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-500/20 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
                           title="View & copy dedicated Portfolio Upload Portal link"
                         >
                           <Upload className="w-3 h-3 text-emerald-700 shrink-0" />
@@ -544,7 +544,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                             setSelectedReviewExpert(fl);
                             setCopied(false);
                           }}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 dark:bg-amber-500/10 hover:bg-amber-100 dark:hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-500/20 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
                           title="Generate unique client review link"
                         >
                           <Star className="w-3 h-3 fill-amber-400 text-amber-500 shrink-0" />
@@ -555,7 +555,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                         <button
                           type="button"
                           onClick={() => setExpertToDelete(fl)}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-200/80 hover:border-rose-600 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group"
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-600 dark:hover:bg-rose-600 text-rose-600 dark:text-rose-300 hover:text-white border border-rose-200/80 dark:border-rose-500/20 hover:border-rose-600 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-2xs active:scale-95 group"
                           title="Delete expert profile permanently"
                         >
                           <Trash2 className="w-3 h-3 text-rose-600 group-hover:text-white shrink-0 transition-colors" />
@@ -564,7 +564,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
 
                         <button
                           onClick={() => navigate(`/profile/${fl.code}`)}
-                          className="p-1.5 text-slate-400 hover:text-[#006eff] hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-lg transition-all cursor-pointer"
+                          className="p-1.5 text-slate-400 hover:text-[#006eff] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 border border-transparent hover:border-blue-100 dark:hover:border-blue-500/20 rounded-lg transition-all cursor-pointer"
                           title="View public live profile"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
