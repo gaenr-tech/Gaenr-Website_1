@@ -108,13 +108,13 @@ export const GaenrChatbot: React.FC = () => {
       return () => clearTimeout(stopTimer);
     }, 8000);
 
-    // Repeated playful bounce every 38 seconds (~30-50s as requested)
+    // Repeated playful bounce and wing fluttering every 25 seconds
     const interval = setInterval(() => {
       setIsJumping(true);
       setTimeout(() => {
         setIsJumping(false);
       }, 2000);
-    }, 38000);
+    }, 25000);
 
     return () => {
       clearTimeout(initialTimer);
@@ -1929,7 +1929,7 @@ ${taskData.description.trim()}`;
 
             {/* Custom Gaenr Butterfly AI Bot Avatar - High Contrast Royal Blue Disc */}
             <div className="relative w-8.5 h-8.5 rounded-full bg-gradient-to-tr from-[#002868] to-[#0048ba] flex items-center justify-center shrink-0 border border-blue-300/40 shadow-inner">
-              <GaenrBotAvatar size={24} />
+              <GaenrBotAvatar size={24} isFlapping={isJumping && !isHovered} />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full animate-ping" />
               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 border-2 border-[#006eff] rounded-full" />
             </div>

@@ -4,6 +4,7 @@ interface GaenrBotAvatarProps {
   className?: string;
   size?: number | string;
   color?: string;
+  isFlapping?: boolean;
 }
 
 /**
@@ -14,11 +15,13 @@ interface GaenrBotAvatarProps {
  *   so the facial features and eyes ("চোখ মুখ") are crystal-clear and adorable.
  * - Butterfly wings (ডানা) are sleek, compact, and balanced without overpowering the robot.
  * - Front-facing, perfectly symmetrical, one-color vector SVG.
+ * - Supports dynamic playful wing fluttering (isFlapping).
  */
 export const GaenrBotAvatar: React.FC<GaenrBotAvatarProps> = ({
   className = '',
   size = 24,
   color = '#ffffff',
+  isFlapping = false,
 }) => {
   const maskId = useId().replace(/:/g, '_');
 
@@ -48,45 +51,51 @@ export const GaenrBotAvatar: React.FC<GaenrBotAvatarProps> = ({
           />
 
           {/* ── Compact Wing Circuit Cuts (Negative Space) ── */}
-          {/* Left Upper Wing Circuit */}
-          <path
-            d="M 18 35 L 24 40 L 31 40"
-            stroke="#000000"
-            strokeWidth="2.0"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <circle cx="17.5" cy="34.5" r="2.0" fill="#000000" />
+          {/* Left Wing Circuits (Mask Group synchronized with wing flap) */}
+          <g className={isFlapping ? 'ginny-wing-left-flapping' : ''}>
+            {/* Left Upper Wing Circuit */}
+            <path
+              d="M 18 35 L 24 40 L 31 40"
+              stroke="#000000"
+              strokeWidth="2.0"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="17.5" cy="34.5" r="2.0" fill="#000000" />
 
-          {/* Left Lower Wing Circuit */}
-          <path
-            d="M 23 68 L 28 68 L 32 63"
-            stroke="#000000"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <circle cx="23" cy="68" r="1.8" fill="#000000" />
+            {/* Left Lower Wing Circuit */}
+            <path
+              d="M 23 68 L 28 68 L 32 63"
+              stroke="#000000"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="23" cy="68" r="1.8" fill="#000000" />
+          </g>
 
-          {/* Right Upper Wing Circuit */}
-          <path
-            d="M 82 35 L 76 40 L 69 40"
-            stroke="#000000"
-            strokeWidth="2.0"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <circle cx="82.5" cy="34.5" r="2.0" fill="#000000" />
+          {/* Right Wing Circuits (Mask Group synchronized with wing flap) */}
+          <g className={isFlapping ? 'ginny-wing-right-flapping' : ''}>
+            {/* Right Upper Wing Circuit */}
+            <path
+              d="M 82 35 L 76 40 L 69 40"
+              stroke="#000000"
+              strokeWidth="2.0"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="82.5" cy="34.5" r="2.0" fill="#000000" />
 
-          {/* Right Lower Wing Circuit */}
-          <path
-            d="M 77 68 L 72 68 L 68 63"
-            stroke="#000000"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <circle cx="77" cy="68" r="1.8" fill="#000000" />
+            {/* Right Lower Wing Circuit */}
+            <path
+              d="M 77 68 L 72 68 L 68 63"
+              stroke="#000000"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="77" cy="68" r="1.8" fill="#000000" />
+          </g>
 
           {/* ── Abdomen Segment Grooves ── */}
           <line
@@ -113,15 +122,21 @@ export const GaenrBotAvatar: React.FC<GaenrBotAvatarProps> = ({
       {/* ── Main Solid Filled Silhouette with Masked Details ── */}
       <g mask={`url(#bot-mask-${maskId})`} fill={color}>
         {/* Compact Symmetrical Butterfly Wings (Balanced Proportions) */}
-        {/* Left Upper Wing */}
-        <path d="M 32 40 C 22 26 14 24 10 32 C 6 41 14 54 33 56 Z" />
-        {/* Left Lower Wing */}
-        <path d="M 33 57 C 18 60 12 70 16 79 C 20 87 31 82 37 68 Z" />
+        {/* Left Wings Group (Animates independently during flutter) */}
+        <g className={isFlapping ? 'ginny-wing-left-flapping' : ''}>
+          {/* Left Upper Wing */}
+          <path d="M 32 40 C 22 26 14 24 10 32 C 6 41 14 54 33 56 Z" />
+          {/* Left Lower Wing */}
+          <path d="M 33 57 C 18 60 12 70 16 79 C 20 87 31 82 37 68 Z" />
+        </g>
 
-        {/* Right Upper Wing */}
-        <path d="M 68 40 C 78 26 86 24 90 32 C 94 41 86 54 67 56 Z" />
-        {/* Right Lower Wing */}
-        <path d="M 67 57 C 82 60 88 70 84 79 C 80 87 69 82 63 68 Z" />
+        {/* Right Wings Group (Animates independently during flutter) */}
+        <g className={isFlapping ? 'ginny-wing-right-flapping' : ''}>
+          {/* Right Upper Wing */}
+          <path d="M 68 40 C 78 26 86 24 90 32 C 94 41 86 54 67 56 Z" />
+          {/* Right Lower Wing */}
+          <path d="M 67 57 C 82 60 88 70 84 79 C 80 87 69 82 63 68 Z" />
+        </g>
 
         {/* Cyber Antennae with Bold Spheres */}
         <path

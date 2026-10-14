@@ -1572,6 +1572,33 @@ html.dark .min-h-screen {
   animation: ginnyBouncyJump 1.9s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
 }
 
+/* Ginny Isolated Butterfly Wings Flapping Animation (Flutter) */
+@keyframes ginnyWingFlapLeft {
+  0%, 100% {
+    transform: scaleX(1) rotate(0deg);
+  }
+  50% {
+    transform: scaleX(0.18) rotate(-16deg);
+  }
+}
 
+@keyframes ginnyWingFlapRight {
+  0%, 100% {
+    transform: scaleX(1) rotate(0deg);
+  }
+  50% {
+    transform: scaleX(0.18) rotate(16deg);
+  }
+}
 
+.ginny-wing-left-flapping {
+  transform-box: view-box;
+  transform-origin: 34px 52px;
+  animation: ginnyWingFlapLeft 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
 
+.ginny-wing-right-flapping {
+  transform-box: view-box;
+  transform-origin: 66px 52px;
+  animation: ginnyWingFlapRight 0.22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
