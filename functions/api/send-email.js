@@ -68,7 +68,13 @@ function getEmailFooter(siteUrl) {
           <img src="${siteUrl}/email-footer-icons/instagram.png?v=20261013" alt="Instagram" width="24" height="24" style="display:block;width:24px;height:24px;border:0;outline:none;" />
         </a>
       </td>
-      <!-- 8. Pinterest -->
+      <!-- 8. YouTube -->
+      <td align="center" valign="middle" width="28" style="width:28px;padding:0 2px;text-align:center;">
+        <a href="https://www.youtube.com/@gaenr" target="_blank" title="YouTube" style="display:inline-block;text-decoration:none;">
+          <img src="${siteUrl}/email-footer-icons/youtube.png?v=20261013" alt="YouTube" width="24" height="24" style="display:block;width:24px;height:24px;border:0;outline:none;" />
+        </a>
+      </td>
+      <!-- 9. Pinterest -->
       <td align="center" valign="middle" width="28" style="width:28px;padding:0 2px;text-align:center;">
         <a href="https://www.pinterest.com/gaenr_global/" target="_blank" title="Pinterest" style="display:inline-block;text-decoration:none;">
           <img src="${siteUrl}/email-footer-icons/pinterest.png?v=20261013" alt="Pinterest" width="24" height="24" style="display:block;width:24px;height:24px;border:0;outline:none;" />

@@ -161,7 +161,7 @@ const BLOG_POSTS: BlogPost[] = [
         },
       ],
       conclusion:
-        'Short-form editing is rhythm and storytelling compressed into 45 seconds. Master pacing and clients will line up for monthly content retainers.',
+        'Short-form editing is rhythm and storytelling compressed into 45 seconds. Master pacing and clients will line up for monthly content retainers. For visual breakdowns and retention masterclasses, subscribe to Gaenr on YouTube (@gaenr).',
     },
   },
   {

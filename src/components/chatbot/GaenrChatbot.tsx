@@ -1553,8 +1553,14 @@ ${taskData.description.trim()}`;
 
   const handleActionClick = (action: NonNullable<ChatMessage['actions']>[number]) => {
     if (action.actionType === 'navigate' && action.payload) {
-      navigate(action.payload);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (action.payload.startsWith('http://') || action.payload.startsWith('https://')) {
+        window.open(action.payload, '_blank', 'noopener,noreferrer');
+      } else {
+        navigate(action.payload);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else if (action.actionType === 'openExternal' && action.payload) {
+      window.open(action.payload, '_blank', 'noopener,noreferrer');
     } else if (action.actionType === 'openAssignModal') {
       openAssignTask();
     } else if (action.actionType === 'openApplyModal') {

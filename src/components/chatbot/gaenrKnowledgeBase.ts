@@ -40,7 +40,8 @@ export interface ChatMessage {
       | 'editTaskDetails'
       | 'selectEditField'
       | 'cancelTaskFlow'
-      | 'openWhatsAppUrl';
+      | 'openWhatsAppUrl'
+      | 'openExternal';
     payload?: string;
   }>;
 }
@@ -865,6 +866,36 @@ export function getLocalAIResponse(
       actions: [
         { label: 'হোয়াটসঅ্যাপে মেসেজ', actionType: 'openWhatsApp', payload: '01608922800' },
         { label: 'হটলাইনে কল করুন', actionType: 'callPhone', payload: '09647922800' },
+      ],
+    };
+  }
+
+  // 15b. Official YouTube Channel & Social Inquiries
+  const isYouTubeChannelQuery =
+    q.includes('youtube channel') ||
+    q.includes('youtube link') ||
+    q.includes('ইউটিউব চ্যানেল') ||
+    q.includes('ইউটিউব লিংক') ||
+    q.includes('@gaenr') ||
+    q.includes('subscribe') ||
+    ((q.includes('youtube') || q.includes('ইউটিউব')) &&
+      (q.includes('channel') || q.includes('চ্যানেল') || q.includes('link') || q.includes('লিংক') || q.includes('social') || q.includes('অফিসিয়াল') || q.includes('official')));
+
+  if (isYouTubeChannelQuery) {
+    if (isEn) {
+      return {
+        text: `▶️ Subscribe to **Gaenr's Official YouTube Channel** ([@gaenr](https://www.youtube.com/@gaenr)) for video breakdowns, client case studies, retention guides, and platform updates!`,
+        actions: [
+          { label: '▶️ Visit Gaenr YouTube', actionType: 'openExternal', payload: 'https://www.youtube.com/@gaenr' },
+          { label: '🎬 Video Editing Services', actionType: 'navigate', payload: '/services/video-editing' },
+        ],
+      };
+    }
+    return {
+      text: `▶️ ভিডিও এডিটিং ব্রেকডাউন, ক্লায়েন্ট কেস স্টাডি ও প্ল্যাটফর্ম আপডেটের জন্য আমাদের **অফিসিয়াল ইউটিউব চ্যানেল** সাবস্ক্রাইব করুন: **[@gaenr](https://www.youtube.com/@gaenr)**!`,
+      actions: [
+        { label: '▶️ Gaenr ইউটিউব চ্যানেল', actionType: 'openExternal', payload: 'https://www.youtube.com/@gaenr' },
+        { label: '🎬 ভিডিও এডিটিং সার্ভিস', actionType: 'navigate', payload: '/services/video-editing' },
       ],
     };
   }

@@ -254,6 +254,9 @@ const buildWelcomeEmail = (expert) => {
                 <a href="https://www.instagram.com/gaenr_global/" class="footer-icon-btn" title="Gaenr on Instagram" target="_blank">
                   <img src="${iconUrl('instagram')}" width="16" height="16" alt="Instagram" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
+                <a href="https://www.youtube.com/@gaenr" class="footer-icon-btn" title="Gaenr on YouTube" target="_blank">
+                  <img src="${iconUrl('youtube')}" width="16" height="16" alt="YouTube" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
                 <a href="https://x.com/gaenr_global" class="footer-icon-btn" title="Gaenr on X" target="_blank">
                   <img src="${iconUrl('x')}" width="16" height="16" alt="X" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
@@ -485,6 +488,9 @@ const buildOnboardingInviteEmail = ({ name, skill, applicationId }) => {
                 </a>
                 <a href="https://www.instagram.com/gaenr_global/" class="footer-icon-btn" title="Gaenr on Instagram" target="_blank">
                   <img src="${iconUrl('instagram')}" width="16" height="16" alt="Instagram" style="vertical-align:middle;display:inline-block;border:0;" />
+                </a>
+                <a href="https://www.youtube.com/@gaenr" class="footer-icon-btn" title="Gaenr on YouTube" target="_blank">
+                  <img src="${iconUrl('youtube')}" width="16" height="16" alt="YouTube" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
                 <a href="https://x.com/gaenr_global" class="footer-icon-btn" title="Gaenr on X" target="_blank">
                   <img src="${iconUrl('x')}" width="16" height="16" alt="X" style="vertical-align:middle;display:inline-block;border:0;" />

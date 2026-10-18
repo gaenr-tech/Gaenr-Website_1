@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { SERVICE_CATEGORIES } from '../data/mockData';
 import { ServiceSlug } from '../types';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 import {
   AnimatedSparkles,
   AnimatedPalette,
@@ -464,7 +464,38 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ slug }) =>
           </div>
         )}
 
-        {/* 3. Action Button: Assign Task */}
+        {/* 3. Gaenr Official YouTube Channel Showcase for Video Editing */}
+        {service.slug === 'video-editing' && (
+          <div className="rounded-2xl bg-gradient-to-r from-red-500/10 via-rose-500/5 to-transparent dark:from-red-950/30 dark:via-rose-950/10 border border-red-200/80 dark:border-red-500/30 p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 text-center sm:text-left">
+              <div className="w-12 h-12 rounded-2xl bg-[#FF0000] text-white flex items-center justify-center shadow-md shadow-red-500/25 shrink-0">
+                <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                  Watch Our Video Breakdowns &amp; Guides on YouTube
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Explore creative samples, retention storytelling, and tutorials on official <strong>@gaenr</strong>.
+                </p>
+              </div>
+            </div>
+
+            <a
+              href="https://www.youtube.com/@gaenr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FF0000] hover:bg-[#D90000] text-white text-xs font-bold transition-all shadow-md shadow-red-500/20 shrink-0 cursor-pointer"
+            >
+              <span>Visit @gaenr</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        )}
+
+        {/* 4. Action Button: Assign Task */}
         <div className="pt-4 flex justify-center">
           <button
             onClick={() => openAssignTask(undefined, service.slug)}
