@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ShieldCheck,
-  ExternalLink,
 } from 'lucide-react';
 import { TESTIMONIALS_DATA } from '../data/testimonialsData';
 
@@ -14,7 +13,6 @@ export const TestimonialsPage: React.FC = () => {
   const { currentRoute } = useApp();
   const [activeIndex, setActiveIndex] = useState(0);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
-  const [detectedLightBg, setDetectedLightBg] = useState<boolean | null>(null);
   const [isPaused, setIsPaused] = useState(false);
 
   const touchStartXRef = useRef<number | null>(null);
@@ -45,20 +43,19 @@ export const TestimonialsPage: React.FC = () => {
     setActiveIndex((prev) => (prev + 1) % total);
   }, [total]);
 
-  // Continuous auto-slide every 5 seconds (5000ms), paused on hover or when modal is open
+  // Continuous auto-slide every 3 seconds (3000ms), paused on hover or when modal is open
   useEffect(() => {
     if (isPaused || videoModalOpen) return;
 
     const timer = setInterval(() => {
       handleNext();
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(timer);
   }, [isPaused, videoModalOpen, handleNext]);
 
   // Touch handlers for mobile swipe
   const handleTouchStart = (e: React.TouchEvent) => {
-    setIsPaused(true);
     touchStartXRef.current = e.targetTouches[0].clientX;
   };
 
@@ -67,10 +64,7 @@ export const TestimonialsPage: React.FC = () => {
   };
 
   const handleTouchEnd = () => {
-    if (!touchStartXRef.current || !touchEndXRef.current) {
-      setIsPaused(false);
-      return;
-    }
+    if (!touchStartXRef.current || !touchEndXRef.current) return;
     const diff = touchStartXRef.current - touchEndXRef.current;
     if (diff > 45) {
       handleNext();
@@ -79,41 +73,7 @@ export const TestimonialsPage: React.FC = () => {
     }
     touchStartXRef.current = null;
     touchEndXRef.current = null;
-    setIsPaused(false);
   };
-
-  // Dynamically analyze image bottom luminance for contrast adaptation while keeping blurry view
-  useEffect(() => {
-    setDetectedLightBg(null);
-    if (!current?.imageUrl) return;
-
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = current.imageUrl;
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 40;
-        canvas.height = 40;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, img.naturalHeight * 0.75, img.naturalWidth, img.naturalHeight * 0.25, 0, 0, 40, 40);
-          const data = ctx.getImageData(0, 0, 40, 40).data;
-          let totalBrightness = 0;
-          for (let i = 0; i < data.length; i += 4) {
-            const b = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
-            totalBrightness += b;
-          }
-          const avg = totalBrightness / (data.length / 4);
-          setDetectedLightBg(avg > 140);
-        }
-      } catch {
-        // Fallback to static flag
-      }
-    };
-  }, [current?.imageUrl]);
-
-  const isLight = detectedLightBg !== null ? detectedLightBg : Boolean(current.isLightBg);
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#090d16] text-slate-800 dark:text-slate-200 antialiased space-y-12 sm:space-y-16 pb-16 transition-colors duration-300">
@@ -171,8 +131,8 @@ export const TestimonialsPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          FEATURED TESTIMONIAL SHOWCASE (Auto-slides every 5s, pauses on hover/touch)
-          - Left: Aspect 3:4 portrait photo card with glassmorphism "Watch Testimonial" button
+          FEATURED TESTIMONIAL SHOWCASE (Auto-slides every 3s, pauses on hover/touch)
+          - Left: Aspect 3:4 portrait photo card (Click directly to preview video)
           - Right: Stylized gradient quote mark, bold statement, author & official social icons
          ========================================================================= */}
       <section
@@ -184,12 +144,24 @@ export const TestimonialsPage: React.FC = () => {
         onTouchEnd={handleTouchEnd}
       >
         <div className="flex flex-col gap-12 md:flex-row items-center md:items-stretch">
-          {/* Left Column: Portrait Photo Card */}
-          <div className="relative mx-auto aspect-3/4 w-full max-w-xs overflow-hidden rounded-4xl bg-gray-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md shrink-0">
+          {/* Left Column: Portrait Photo Card (Directly clickable for video preview) */}
+          <div
+            onClick={() => setVideoModalOpen(true)}
+            role="button"
+            tabIndex={0}
+            aria-label={`Watch testimonial video of ${current.name}`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setVideoModalOpen(true);
+              }
+            }}
+            className="group relative mx-auto aspect-3/4 w-full max-w-xs overflow-hidden rounded-4xl bg-gray-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md shrink-0 cursor-pointer"
+          >
             <img
               alt={current.name}
               loading="lazy"
-              className="w-full h-full object-cover object-center transition-all duration-500"
+              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
               src={current.imageUrl}
               onError={(e) => {
                 const target = e.currentTarget;
@@ -199,35 +171,12 @@ export const TestimonialsPage: React.FC = () => {
               }}
             />
 
-            {/* Watch Testimonial Floating Frosted Glass Button:
-                - Exact same blurry glassmorphic view for everyone
-                - If background is light: writing & icon are dark
-                - Else: writing & icon are light
-            */}
-            <button
-              onClick={() => {
-                setIsPaused(true);
-                setVideoModalOpen(true);
-              }}
-              className="absolute bottom-8 left-1/2 flex w-[78%] -translate-x-1/2 cursor-pointer items-center justify-between rounded-full border-2 border-white/20 bg-white/20 px-5 py-3 text-center text-sm saturate-150 backdrop-blur-lg duration-200 hover:bg-white/35 active:scale-95 shadow-lg transition-all"
-            >
-              <p className={`font-semibold tracking-tight transition-colors ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                Watch Testimonial
-              </p>
-              <div
-                className={`size-5 shrink-0 rounded-full p-1 flex items-center justify-center transition-colors ${
-                  isLight
-                    ? 'bg-black/15 ring-1 ring-black/25'
-                    : 'bg-white/20 ring-1 ring-white/60'
-                }`}
-              >
-                <Play
-                  className={`size-2.5 ml-0.5 transition-colors ${
-                    isLight ? 'fill-slate-900 text-slate-900' : 'fill-white text-white'
-                  }`}
-                />
+            {/* Direct Video Play Badge Overlay */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-colors">
+              <div className="size-14 sm:size-16 rounded-full bg-white/95 dark:bg-slate-900/90 text-[#006eff] flex items-center justify-center shadow-xl backdrop-blur-md group-hover:scale-110 active:scale-95 transition-all">
+                <Play className="size-6 sm:size-7 ml-1 fill-[#006eff] text-[#006eff]" />
               </div>
-            </button>
+            </div>
           </div>
 
           {/* Right Column: Quote + Gradient Quotation Mark + Author Details */}
@@ -243,7 +192,7 @@ export const TestimonialsPage: React.FC = () => {
               >
                 <defs>
                   <linearGradient id="testimonial-linear-gradient" x1="4.75" y1="7.5" x2="4.75" y2="0" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stopColor="#8ec5ff" stopOpacity=".7" />
+                    <stop offset="0%" stopColor="#8ec5ff" stopOpacity=".7" />
                     <stop offset=".14" stopColor="#90c6ff" stopOpacity=".68" />
                     <stop offset=".29" stopColor="#98caff" stopOpacity=".63" />
                     <stop offset=".45" stopColor="#a5d1ff" stopOpacity=".55" />
@@ -274,7 +223,7 @@ export const TestimonialsPage: React.FC = () => {
                 </p>
               </div>
 
-              {/* Exact Official Social Media Icons from Reference HTML */}
+              {/* Exact Official Social Media Icons */}
               <div className="flex items-center gap-x-6">
                 {/* Facebook Button */}
                 <a
@@ -342,10 +291,7 @@ export const TestimonialsPage: React.FC = () => {
 
           {/* Previous Button */}
           <button
-            onClick={() => {
-              setIsPaused(true);
-              handlePrev();
-            }}
+            onClick={handlePrev}
             aria-label="Previous testimonial"
             className="flex size-7.5 shrink-0 items-center justify-center rounded-full border-2 border-gray-300 dark:border-slate-700 text-gray-600 dark:text-slate-300 duration-200 hover:border-gray-400 dark:hover:border-slate-500 active:scale-70 active:border-gray-400 cursor-pointer transition-all"
           >
@@ -357,10 +303,7 @@ export const TestimonialsPage: React.FC = () => {
             {TESTIMONIALS_DATA.map((_, idx) => (
               <button
                 key={idx}
-                onClick={() => {
-                  setIsPaused(true);
-                  setActiveIndex(idx);
-                }}
+                onClick={() => setActiveIndex(idx)}
                 aria-label={`Go to testimonial ${idx + 1}`}
                 className={`relative overflow-hidden rounded-full transition-all cursor-pointer ${
                   activeIndex === idx
@@ -373,10 +316,7 @@ export const TestimonialsPage: React.FC = () => {
 
           {/* Next Button */}
           <button
-            onClick={() => {
-              setIsPaused(true);
-              handleNext();
-            }}
+            onClick={handleNext}
             aria-label="Next testimonial"
             className="flex size-7.5 shrink-0 items-center justify-center rounded-full border-2 border-gray-300 dark:border-slate-700 text-gray-600 dark:text-slate-300 duration-200 hover:border-gray-400 dark:hover:border-slate-500 active:scale-70 active:border-gray-400 cursor-pointer transition-all"
           >
@@ -390,14 +330,11 @@ export const TestimonialsPage: React.FC = () => {
          ========================================================================= */}
       {videoModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-slate-950/80 backdrop-blur-xs animate-in fade-in"
-          onClick={() => {
-            setVideoModalOpen(false);
-            setIsPaused(false);
-          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-xs animate-in fade-in"
+          onClick={() => setVideoModalOpen(false)}
         >
           <div
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 text-slate-800 dark:text-white space-y-4 shadow-2xl animate-in zoom-in-95 transition-colors"
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 text-slate-900 dark:text-white space-y-4 shadow-2xl animate-in zoom-in-95 transition-colors"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -407,10 +344,7 @@ export const TestimonialsPage: React.FC = () => {
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">{current.videoTitle}</h3>
               </div>
               <button
-                onClick={() => {
-                  setVideoModalOpen(false);
-                  setIsPaused(false);
-                }}
+                onClick={() => setVideoModalOpen(false)}
                 className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 aria-label="Close modal"
               >
@@ -418,55 +352,31 @@ export const TestimonialsPage: React.FC = () => {
               </button>
             </div>
 
-            {/* Video / YouTube Preview Area */}
-            <div className="aspect-video bg-gradient-to-br from-slate-50 via-slate-100/80 to-blue-50/40 dark:from-[#0a1224] dark:via-slate-950 dark:to-[#080e1e] rounded-2xl flex flex-col items-center justify-center text-center p-6 border border-slate-200/90 dark:border-slate-800 space-y-3 relative overflow-hidden shadow-inner">
-              <a
-                href="https://www.youtube.com/@gaenr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#FF0000] hover:bg-[#D90000] text-white flex items-center justify-center shadow-lg shadow-red-500/25 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-                title="Watch on YouTube (@gaenr)"
-              >
-                <svg className="w-6 h-6 sm:w-7 sm:h-7 fill-current ml-0.5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                </svg>
-              </a>
+            {/* Video Preview Area (Original Style with Gaenr Blue Play Button) */}
+            <div className="aspect-video bg-slate-50 dark:bg-slate-950 rounded-2xl flex flex-col items-center justify-center text-center p-6 border border-slate-200 dark:border-slate-800 space-y-3 relative overflow-hidden">
+              <div className="w-16 h-16 rounded-full bg-[#006eff] text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer">
+                <Play className="w-7 h-7 fill-white text-white ml-1" />
+              </div>
               <div>
-                <p className="text-sm font-bold text-slate-800 dark:text-slate-100">YouTube Video Preview</p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Video Testimonial</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto mt-1">
-                  Watch {current.name} share their verified story and experience on Gaenr.
+                  Watch {current.name} share their journey and verified experience with Gaenr.
                 </p>
               </div>
-
-              <a
-                href="https://www.youtube.com/@gaenr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FF0000] hover:bg-[#D90000] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
-              >
-                <span>Watch on YouTube</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
             </div>
 
             {/* Client Quote Card */}
-            <div className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-3.5 border border-slate-200/80 dark:border-slate-800">
-              <p className="text-xs text-slate-600 dark:text-slate-300 italic leading-relaxed">
+            <div className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800">
+              <p className="text-xs text-slate-700 dark:text-slate-300 italic leading-relaxed">
                 "{current.fullQuote || current.quote}"
               </p>
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
-                Verified Client Story • Gaenr Official
-              </span>
+            <div className="flex justify-end pt-2">
               <button
-                onClick={() => {
-                  setVideoModalOpen(false);
-                  setIsPaused(false);
-                }}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white border border-slate-200 dark:border-transparent rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+                onClick={() => setVideoModalOpen(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
               >
                 Close Preview
               </button>
