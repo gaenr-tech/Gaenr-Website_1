@@ -278,7 +278,7 @@ export const HomePage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Check className="w-4 h-4 text-[#0256d0] dark:text-[#38bdf8] shrink-0" />
-                  <span>Verified Student Talent</span>
+                  <span>Verified Experts</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
