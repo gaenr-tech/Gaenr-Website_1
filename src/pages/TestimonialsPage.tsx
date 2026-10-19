@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Play,
@@ -7,52 +7,101 @@ import {
   ChevronRight,
   ShieldCheck,
 } from 'lucide-react';
-import { TESTIMONIALS_DATA } from '../data/testimonialsData';
+import { TESTIMONIALS_DATA, TestimonialItem } from '../data/testimonialsData';
 
 export const TestimonialsPage: React.FC = () => {
   const { currentRoute } = useApp();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [videoModalOpen, setVideoModalOpen] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const total = TESTIMONIALS_DATA.length;
 
+  // Seamless infinite carousel slides: [last, ...items, first]
+  const slides = useMemo(() => {
+    if (total === 0) return [];
+    return [TESTIMONIALS_DATA[total - 1], ...TESTIMONIALS_DATA, TESTIMONIALS_DATA[0]];
+  }, [total]);
+
+  // currentIndex in slides array (index 1 corresponds to TESTIMONIALS_DATA[0])
+  const [currentIndex, setCurrentIndex] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+
+  // Video preview modal state
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [selectedModalItem, setSelectedModalItem] = useState<TestimonialItem>(TESTIMONIALS_DATA[0]);
+
+  // Touch handlers for mobile swipe
   const touchStartXRef = useRef<number | null>(null);
   const touchEndXRef = useRef<number | null>(null);
 
-  // If user navigated with a specific testimonial ID or index in query
+  // Derive real active index in original array (0 to total - 1)
+  const activeDotIndex = (currentIndex - 1 + total) % total;
+
+  // Handle URL query parameters (?id=... or ?index=...)
   useEffect(() => {
     if (currentRoute.includes('?id=')) {
       const matchId = currentRoute.split('?id=')[1]?.split('&')[0];
       const foundIdx = TESTIMONIALS_DATA.findIndex((t) => t.id === matchId);
-      if (foundIdx !== -1) setActiveIndex(foundIdx);
+      if (foundIdx !== -1) {
+        setIsTransitioning(false);
+        setCurrentIndex(foundIdx + 1);
+      }
     } else if (currentRoute.includes('?index=')) {
       const idx = parseInt(currentRoute.split('?index=')[1]?.split('&')[0], 10);
-      if (!isNaN(idx) && idx >= 0 && idx < TESTIMONIALS_DATA.length) {
-        setActiveIndex(idx);
+      if (!isNaN(idx) && idx >= 0 && idx < total) {
+        setIsTransitioning(false);
+        setCurrentIndex(idx + 1);
       }
     }
-  }, [currentRoute]);
-
-  const current = TESTIMONIALS_DATA[activeIndex] || TESTIMONIALS_DATA[0];
-  const total = TESTIMONIALS_DATA.length;
-
-  const handlePrev = useCallback(() => {
-    setActiveIndex((prev) => (prev - 1 + total) % total);
-  }, [total]);
+  }, [currentRoute, total]);
 
   const handleNext = useCallback(() => {
-    setActiveIndex((prev) => (prev + 1) % total);
-  }, [total]);
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev + 1);
+  }, []);
 
-  // Continuous auto-slide every 3 seconds (3000ms), paused on hover or when modal is open
+  const handlePrev = useCallback(() => {
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev - 1);
+  }, []);
+
+  const handleDotClick = (idx: number) => {
+    setIsTransitioning(true);
+    setCurrentIndex(idx + 1);
+  };
+
+  // Re-enable smooth transition after silent teleport reset
   useEffect(() => {
-    if (isPaused || videoModalOpen) return;
+    if (!isTransitioning) {
+      const timeoutId = setTimeout(() => {
+        setIsTransitioning(true);
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isTransitioning]);
+
+  // Seamless infinite loop boundary teleport handler
+  const handleTransitionEnd = () => {
+    if (currentIndex >= total + 1) {
+      // Reached cloned first item at end: snap back to real first item
+      setIsTransitioning(false);
+      setCurrentIndex(1);
+    } else if (currentIndex <= 0) {
+      // Reached cloned last item at start: snap back to real last item
+      setIsTransitioning(false);
+      setCurrentIndex(total);
+    }
+  };
+
+  // Continuous rock-solid 3-second auto-slide timer
+  // Resets on each slide change so every slide gets exactly 3000ms
+  // Pauses ONLY when the video modal is open
+  useEffect(() => {
+    if (videoModalOpen) return;
 
     const timer = setInterval(() => {
       handleNext();
     }, 3000);
 
     return () => clearInterval(timer);
-  }, [isPaused, videoModalOpen, handleNext]);
+  }, [videoModalOpen, currentIndex, handleNext]);
 
   // Touch handlers for mobile swipe
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -64,7 +113,7 @@ export const TestimonialsPage: React.FC = () => {
   };
 
   const handleTouchEnd = () => {
-    if (!touchStartXRef.current || !touchEndXRef.current) return;
+    if (touchStartXRef.current === null || touchEndXRef.current === null) return;
     const diff = touchStartXRef.current - touchEndXRef.current;
     if (diff > 45) {
       handleNext();
@@ -78,11 +127,9 @@ export const TestimonialsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#090d16] text-slate-800 dark:text-slate-200 antialiased space-y-12 sm:space-y-16 pb-16 transition-colors duration-300">
       {/* =========================================================================
-          HERO BANNER: Exactly matching Service Page Cover
+          HERO BANNER: Matching Service Page Cover
           - Deep brand blue `#006eff`
-          - Pattern overlay with reduced opacity (from ServicesPage)
-          - Subtle radial geometric dot grid overlay
-          - Breadcrumb navigation
+          - Pattern overlay with reduced opacity
           - Clean headline and subtitle
          ========================================================================= */}
       <section className="relative w-full bg-gradient-to-br from-[#0048ba] via-[#006eff] to-[#003d99] py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center overflow-hidden isolate">
@@ -131,145 +178,179 @@ export const TestimonialsPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          FEATURED TESTIMONIAL SHOWCASE (Auto-slides every 3s, pauses on hover/touch)
-          - Left: Aspect 3:4 portrait photo card (Click directly to preview video)
+          FEATURED TESTIMONIAL SHOWCASE (Smooth 3s Sliding Carousel)
+          - Left: Aspect 3:4 portrait photo card with glassmorphism "Watch Testimonial" button
           - Right: Stylized gradient quote mark, bold statement, author & official social icons
          ========================================================================= */}
       <section
         className="mx-auto w-full max-w-5xl px-6"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="flex flex-col gap-12 md:flex-row items-center md:items-stretch">
-          {/* Left Column: Portrait Photo Card (Directly clickable for video preview) */}
+        <div className="overflow-hidden w-full">
           <div
-            onClick={() => setVideoModalOpen(true)}
-            role="button"
-            tabIndex={0}
-            aria-label={`Watch testimonial video of ${current.name}`}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setVideoModalOpen(true);
-              }
-            }}
-            className="group relative mx-auto aspect-3/4 w-full max-w-xs overflow-hidden rounded-4xl bg-gray-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md shrink-0 cursor-pointer"
+            className={`flex ${
+              isTransitioning
+                ? 'transition-transform duration-700 ease-in-out'
+                : 'transition-none'
+            }`}
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            onTransitionEnd={handleTransitionEnd}
           >
-            <img
-              alt={current.name}
-              loading="lazy"
-              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-              src={current.imageUrl}
-              onError={(e) => {
-                const target = e.currentTarget;
-                if (target.src !== current.fallbackUrl) {
-                  target.src = current.fallbackUrl;
-                }
-              }}
-            />
-
-            {/* Direct Video Play Badge Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/25 transition-colors">
-              <div className="size-14 sm:size-16 rounded-full bg-white/95 dark:bg-slate-900/90 text-[#006eff] flex items-center justify-center shadow-xl backdrop-blur-md group-hover:scale-110 active:scale-95 transition-all">
-                <Play className="size-6 sm:size-7 ml-1 fill-[#006eff] text-[#006eff]" />
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Quote + Gradient Quotation Mark + Author Details */}
-          <div className="flex flex-col justify-between gap-y-8 md:my-10 text-left flex-1">
-            <div className="relative pt-2">
-              {/* Giant Stylized Gradient Quotation Mark SVG */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-                fill="currentColor"
-                viewBox="0 0 9.5 7.5"
-                className="absolute top-0 left-0 -z-10 size-10 -translate-y-1/3 sm:size-12 pointer-events-none opacity-80"
-              >
-                <defs>
-                  <linearGradient id="testimonial-linear-gradient" x1="4.75" y1="7.5" x2="4.75" y2="0" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#8ec5ff" stopOpacity=".7" />
-                    <stop offset=".14" stopColor="#90c6ff" stopOpacity=".68" />
-                    <stop offset=".29" stopColor="#98caff" stopOpacity=".63" />
-                    <stop offset=".45" stopColor="#a5d1ff" stopOpacity=".55" />
-                    <stop offset=".6" stopColor="#b8daff" stopOpacity=".44" />
-                    <stop offset=".76" stopColor="#cfe6ff" stopOpacity=".29" />
-                    <stop offset=".91" stopColor="#ecf5ff" stopOpacity=".12" />
-                    <stop offset="1" stopColor="#fff" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <path
-                  fill="url(#testimonial-linear-gradient)"
-                  d="M7.28,7.5c-1,.03-2.09-.72-2.26-2.3v-.16s-.01,0-.01,0c-.1-1.66,1.06-3.93,3.59-5.02.12-.05.25,0,.32.1l.56.96c.07.12.03.27-.09.34,0,0,0,0,0,0-.86.48-1.52,1.24-1.92,2.15.6.11,1.02.35,1.31.68.33.38.45.85.45,1.26,0,1.11-.85,2-1.93,1.98M2.28,7.5c-1,.03-2.09-.72-2.26-2.3v-.16s-.01,0-.01,0C-.09,3.38,1.07,1.11,3.6.02c.12-.05.25,0,.32.1l.55.96c.07.12.03.27-.09.34,0,0,0,0,0,0-.86.48-1.52,1.24-1.92,2.15.6.11,1.02.35,1.31.68.33.38.45.85.45,1.26,0,1.11-.85,2-1.93,1.98"
-                />
-              </svg>
-
-              <h2 className="text-center text-xl font-medium md:text-start md:text-2xl text-slate-900 dark:text-white leading-snug">
-                {current.quote}
-              </h2>
-            </div>
-
-            <div className="flex flex-col items-center justify-between gap-y-6 md:flex-row pt-4 border-t border-slate-100 dark:border-slate-800/80">
-              <div className="flex flex-col items-center md:items-start space-y-0.5 text-center md:text-left">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white md:text-xl">
-                  {current.name}
-                </h3>
-                <p className="text-sm font-medium text-gray-500 dark:text-slate-400">
-                  {current.title} at {current.company}
-                </p>
-              </div>
-
-              {/* Exact Official Social Media Icons */}
-              <div className="flex items-center gap-x-6">
-                {/* Facebook Button */}
-                <a
-                  href={current.facebookUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook Profile"
-                  className="flex size-7 items-center justify-center rounded-xl border border-gray-300 dark:border-slate-700 text-gray-500 dark:text-slate-400 duration-200 hover:text-[#1877F2] dark:hover:text-[#1877F2] hover:border-[#1877F2] active:text-[#1877F2] transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    className="size-4 shrink-0"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4z"
+            {slides.map((item, idx) => (
+              <div key={idx} className="w-full shrink-0">
+                <div className="flex flex-col gap-12 md:flex-row items-center md:items-stretch">
+                  {/* Left Column: Portrait Photo Card with Watch Testimonial Button */}
+                  <div className="relative mx-auto aspect-3/4 w-full max-w-xs overflow-hidden rounded-4xl bg-gray-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md shrink-0">
+                    <img
+                      alt={item.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover object-center"
+                      src={item.imageUrl}
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src !== item.fallbackUrl) {
+                          target.src = item.fallbackUrl;
+                        }
+                      }}
                     />
-                  </svg>
-                </a>
 
-                {/* LinkedIn Button */}
-                <a
-                  href={current.linkedinUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn Profile"
-                  className="flex size-7 items-center justify-center rounded-xl border border-gray-300 dark:border-slate-700 text-gray-500 dark:text-slate-400 duration-200 hover:text-[#0077B5] dark:hover:text-[#0077B5] hover:border-[#0077B5] active:text-[#0077B5] transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    className="size-4 shrink-0"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M18.336 18.339h-2.665v-4.177c0-.996-.02-2.278-1.39-2.278c-1.389 0-1.601 1.084-1.601 2.205v4.25h-2.666V9.75h2.56v1.17h.035c.358-.674 1.228-1.387 2.528-1.387c2.7 0 3.2 1.778 3.2 4.092v4.714M7.004 8.575a1.546 1.546 0 0 1-1.548-1.549a1.548 1.548 0 1 1 1.547 1.549m1.336 9.764H5.667V9.75H8.34zM19.67 3H4.33C3.594 3 3 3.58 3 4.297v15.406C3 20.42 3.594 21 4.328 21h15.339C20.4 21 21 20.42 21 19.703V4.297C21 3.581 20.4 3 19.666 3z"
-                    />
-                  </svg>
-                </a>
+                    {/* Exact Original "Watch Testimonial" Frosted Glass Floating Button */}
+                    <button
+                      onClick={() => {
+                        setSelectedModalItem(item);
+                        setVideoModalOpen(true);
+                      }}
+                      className="absolute bottom-8 left-1/2 flex w-[78%] -translate-x-1/2 cursor-pointer items-center justify-between rounded-full border-2 border-white/20 bg-white/20 px-5 py-3 text-center text-sm saturate-150 backdrop-blur-lg duration-200 hover:bg-white/35 active:scale-95 shadow-lg transition-all"
+                    >
+                      <p
+                        className={`font-semibold tracking-tight transition-colors ${
+                          item.isLightBg ? 'text-slate-900' : 'text-white'
+                        }`}
+                      >
+                        Watch Testimonial
+                      </p>
+                      <div
+                        className={`size-5 shrink-0 rounded-full p-1 flex items-center justify-center transition-colors ${
+                          item.isLightBg
+                            ? 'bg-black/15 ring-1 ring-black/25'
+                            : 'bg-white/20 ring-1 ring-white/60'
+                        }`}
+                      >
+                        <Play
+                          className={`size-2.5 ml-0.5 transition-colors ${
+                            item.isLightBg
+                              ? 'fill-slate-900 text-slate-900'
+                              : 'fill-white text-white'
+                          }`}
+                        />
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Right Column: Quote + Gradient Quotation Mark + Author Details */}
+                  <div className="flex flex-col justify-between gap-y-8 md:my-10 text-left flex-1 md:pl-4">
+                    <div className="relative pt-2">
+                      {/* Giant Stylized Gradient Quotation Mark SVG */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                        fill="currentColor"
+                        viewBox="0 0 9.5 7.5"
+                        className="absolute top-0 left-0 -z-10 size-10 -translate-y-1/3 sm:size-12 pointer-events-none opacity-80"
+                      >
+                        <defs>
+                          <linearGradient
+                            id={`quote-grad-${idx}`}
+                            x1="4.75"
+                            y1="7.5"
+                            x2="4.75"
+                            y2="0"
+                            gradientUnits="userSpaceOnUse"
+                          >
+                            <stop offset="0" stopColor="#8ec5ff" stopOpacity=".7" />
+                            <stop offset=".14" stopColor="#90c6ff" stopOpacity=".68" />
+                            <stop offset=".29" stopColor="#98caff" stopOpacity=".63" />
+                            <stop offset=".45" stopColor="#a5d1ff" stopOpacity=".55" />
+                            <stop offset=".6" stopColor="#b8daff" stopOpacity=".44" />
+                            <stop offset=".76" stopColor="#cfe6ff" stopOpacity=".29" />
+                            <stop offset=".91" stopColor="#ecf5ff" stopOpacity=".12" />
+                            <stop offset="1" stopColor="#fff" stopOpacity="0" />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          fill={`url(#quote-grad-${idx})`}
+                          d="M7.28,7.5c-1,.03-2.09-.72-2.26-2.3v-.16s-.01,0-.01,0c-.1-1.66,1.06-3.93,3.59-5.02.12-.05.25,0,.32.1l.56.96c.07.12.03.27-.09.34,0,0,0,0,0,0-.86.48-1.52,1.24-1.92,2.15.6.11,1.02.35,1.31.68.33.38.45.85.45,1.26,0,1.11-.85,2-1.93,1.98M2.28,7.5c-1,.03-2.09-.72-2.26-2.3v-.16s-.01,0-.01,0C-.09,3.38,1.07,1.11,3.6.02c.12-.05.25,0,.32.1l.55.96c.07.12.03.27-.09.34,0,0,0,0,0,0-.86.48-1.52,1.24-1.92,2.15.6.11,1.02.35,1.31.68.33.38.45.85.45,1.26,0,1.11-.85,2-1.93,1.98"
+                        />
+                      </svg>
+
+                      <h2 className="text-center text-xl font-medium md:text-start md:text-2xl text-slate-900 dark:text-white leading-snug">
+                        {item.quote}
+                      </h2>
+                    </div>
+
+                    <div className="flex flex-col items-center justify-between gap-y-6 md:flex-row pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                      <div className="flex flex-col items-center md:items-start space-y-0.5 text-center md:text-left">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white md:text-xl">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm font-medium text-gray-500 dark:text-slate-400">
+                          {item.title} at {item.company}
+                        </p>
+                      </div>
+
+                      {/* Official Social Media Icons */}
+                      <div className="flex items-center gap-x-6">
+                        {/* Facebook Button */}
+                        <a
+                          href={item.facebookUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Facebook Profile"
+                          className="flex size-7 items-center justify-center rounded-xl border border-gray-300 dark:border-slate-700 text-gray-500 dark:text-slate-400 duration-200 hover:text-[#1877F2] dark:hover:text-[#1877F2] hover:border-[#1877F2] active:text-[#1877F2] transition-colors"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            className="size-4 shrink-0"
+                          >
+                            <path
+                              fill="currentColor"
+                              d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4z"
+                            />
+                          </svg>
+                        </a>
+
+                        {/* LinkedIn Button */}
+                        <a
+                          href={item.linkedinUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="LinkedIn Profile"
+                          className="flex size-7 items-center justify-center rounded-xl border border-gray-300 dark:border-slate-700 text-gray-500 dark:text-slate-400 duration-200 hover:text-[#0077B5] dark:hover:text-[#0077B5] hover:border-[#0077B5] active:text-[#0077B5] transition-colors"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            className="size-4 shrink-0"
+                          >
+                            <path
+                              fill="currentColor"
+                              d="M18.336 18.339h-2.665v-4.177c0-.996-.02-2.278-1.39-2.278c-1.389 0-1.601 1.084-1.601 2.205v4.25h-2.666V9.75h2.56v1.17h.035c.358-.674 1.228-1.387 2.528-1.387c2.7 0 3.2 1.778 3.2 4.092v4.714M7.004 8.575a1.546 1.546 0 0 1-1.548-1.549a1.548 1.548 0 1 1 1.547 1.549m1.336 9.764H5.667V9.75H8.34zM19.67 3H4.33C3.594 3 3 3.58 3 4.297v15.406C3 20.42 3.594 21 4.328 21h15.339C20.4 21 21 20.42 21 19.703V4.297C21 3.581 20.4 3 19.666 3z"
+                            />
+                          </svg>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -284,7 +365,7 @@ export const TestimonialsPage: React.FC = () => {
       <section className="mx-auto grid w-full max-w-4xl grid-cols-6 gap-12 px-6 pt-4">
         <div className="col-span-full flex w-full items-center justify-center gap-x-6">
           <p className="hidden w-12 text-center text-sm font-medium text-slate-500 dark:text-slate-400 md:block">
-            {activeIndex + 1} / {total}
+            {activeDotIndex + 1} / {total}
           </p>
 
           <div className="hidden h-0.5 w-full grow rounded-full bg-gray-200/60 dark:bg-slate-800 md:block" />
@@ -303,10 +384,10 @@ export const TestimonialsPage: React.FC = () => {
             {TESTIMONIALS_DATA.map((_, idx) => (
               <button
                 key={idx}
-                onClick={() => setActiveIndex(idx)}
+                onClick={() => handleDotClick(idx)}
                 aria-label={`Go to testimonial ${idx + 1}`}
                 className={`relative overflow-hidden rounded-full transition-all cursor-pointer ${
-                  activeIndex === idx
+                  activeDotIndex === idx
                     ? 'size-2.5 md:size-3 bg-[#006eff]'
                     : 'size-2 md:size-2.5 bg-gray-300 dark:bg-slate-700 hover:bg-gray-400 dark:hover:bg-slate-600'
                 }`}
@@ -326,7 +407,9 @@ export const TestimonialsPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          VIDEO TESTIMONIAL MODAL (Adapts dynamically to Light/White & Dark Modes)
+          VIDEO TESTIMONIAL MODAL (White Mode in light theme, Dark Mode in dark theme)
+          - Restored clean Gaenr blue play button system
+          - No separate 'Watch on YouTube' red button
          ========================================================================= */}
       {videoModalOpen && (
         <div
@@ -341,7 +424,9 @@ export const TestimonialsPage: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-[#006eff]" />
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white">{current.videoTitle}</h3>
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                  {selectedModalItem.videoTitle}
+                </h3>
               </div>
               <button
                 onClick={() => setVideoModalOpen(false)}
@@ -358,9 +443,11 @@ export const TestimonialsPage: React.FC = () => {
                 <Play className="w-7 h-7 fill-white text-white ml-1" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Video Testimonial</p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                  Video Testimonial
+                </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto mt-1">
-                  Watch {current.name} share their journey and verified experience with Gaenr.
+                  Watch {selectedModalItem.name} share their journey and verified experience with Gaenr.
                 </p>
               </div>
             </div>
@@ -368,7 +455,7 @@ export const TestimonialsPage: React.FC = () => {
             {/* Client Quote Card */}
             <div className="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800">
               <p className="text-xs text-slate-700 dark:text-slate-300 italic leading-relaxed">
-                "{current.fullQuote || current.quote}"
+                "{selectedModalItem.fullQuote || selectedModalItem.quote}"
               </p>
             </div>
 
