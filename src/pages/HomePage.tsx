@@ -248,7 +248,7 @@ export const HomePage: React.FC = () => {
                 </h1>
 
                 <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                  Assign projects with ease and get reliable results. Gaenr connects you with verified student experts who deliver efficiently, so you can focus on what matters.
+                  Assign your tasks and get reliable results. Gaenr connects you with verified experts who deliver efficiently, So you can focus on what matters.
                 </p>
               </div>
 
