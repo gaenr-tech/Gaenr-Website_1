@@ -22,7 +22,7 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
 
   const [isDownloaded, setIsDownloaded] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const expert = freelancers.find((f) => f.code.toUpperCase() === resolvedCode);
@@ -104,13 +104,6 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
     triggerDownload(`/api/id-card?code=${encodeURIComponent(resolvedCode)}`, `GAENR-ID-${resolvedCode}.png`);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleStartDownload();
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [resolvedCode]);
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-[#006eff] selection:text-white">
       {/* Top Header */}
@@ -142,8 +135,10 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
           <div className="relative mx-auto w-20 h-20 rounded-3xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-[#38bdf8] shadow-inner">
             {isDownloaded ? (
               <CheckCircle className="w-10 h-10 text-emerald-400 animate-in zoom-in-75 duration-200" />
+            ) : isGenerating ? (
+              <RefreshCw className="w-10 h-10 text-[#38bdf8] animate-spin" />
             ) : (
-              <Download className="w-10 h-10 animate-bounce duration-1000" />
+              <Download className="w-10 h-10 text-[#38bdf8]" />
             )}
           </div>
 
@@ -152,15 +147,15 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
               GAENR Verified Digital ID
             </span>
             <h1 className="text-2xl font-black text-white tracking-tight">
-              {isDownloaded ? 'ID Card Downloaded!' : 'Downloading Official ID Card'}
+              Official Expert ID Card
             </h1>
             <p className="text-xs font-mono font-bold text-[#38bdf8] tracking-widest text-lg">
               {resolvedCode}
             </p>
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto">
               {isDownloaded
-                ? 'Your high-resolution credential badge PNG has been saved to your device. Please store it securely.'
-                : 'Your high-resolution verified credential badge PNG is downloading automatically. Please wait a moment.'}
+                ? 'Official ID card has been downloaded to your device.'
+                : 'This is your official expert ID card. Click below to download directly to your device.'}
             </p>
           </div>
 
@@ -168,10 +163,25 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
           <div className="pt-2 space-y-3 relative z-10">
             <button
               onClick={handleStartDownload}
-              className="w-full py-3.5 px-6 rounded-xl bg-[#006eff] hover:bg-blue-600 text-white font-bold text-xs transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              disabled={isGenerating}
+              className="w-full py-3.5 px-6 rounded-xl bg-[#006eff] hover:bg-blue-600 active:bg-blue-700 disabled:opacity-75 text-white font-bold text-xs transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer !cursor-pointer active:scale-98 select-none"
             >
-              <RefreshCw className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
-              <span>{isDownloaded ? 'Click to Re-Download' : 'Download ID Card Now'}</span>
+              {isGenerating ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
+                  <span>Downloading...</span>
+                </>
+              ) : isDownloaded ? (
+                <>
+                  <CheckCircle className="w-4 h-4 text-emerald-300 shrink-0" />
+                  <span>Downloaded (Click to Re-Download)</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 shrink-0" />
+                  <span>Download Now</span>
+                </>
+              )}
             </button>
 
             <div className="flex items-center gap-3 pt-1">
