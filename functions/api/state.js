@@ -1,5 +1,3 @@
-import { neon } from '@neondatabase/serverless';
-
 const SENSITIVE_LOCAL_KEYS = [
   'gaenr_admin_logged',
   'gaenr_current_employee',
@@ -197,8 +195,13 @@ async function setD1State(db, finalState) {
 // ---------------------------------------------------------------------------
 // Neon Postgres Helpers (Fallback)
 // ---------------------------------------------------------------------------
+async function getPgSql(connectionString) {
+  const { neon } = await import('@neondatabase/serverless');
+  return neon(connectionString);
+}
+
 async function getPgState(connectionString) {
-  const sql = neon(connectionString);
+  const sql = await getPgSql(connectionString);
   await sql`
     CREATE TABLE IF NOT EXISTS gaenr_app_state (
       id integer PRIMARY KEY,
@@ -222,7 +225,7 @@ async function getPgState(connectionString) {
 }
 
 async function setPgState(connectionString, finalState) {
-  const sql = neon(connectionString);
+  const sql = await getPgSql(connectionString);
   await sql`
     CREATE TABLE IF NOT EXISTS gaenr_app_state (
       id integer PRIMARY KEY,

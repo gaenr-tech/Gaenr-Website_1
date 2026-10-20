@@ -1,5 +1,3 @@
-import { neon } from '@neondatabase/serverless';
-
 export async function onRequestOptions() {
   return new Response(null, {
     status: 204,
@@ -38,6 +36,7 @@ export async function onRequestGet({ request, env }) {
       } catch {}
       rawApps = state.gaenr_expert_applications;
     } else if (connectionString) {
+      const { neon } = await import('@neondatabase/serverless');
       const sql = neon(connectionString);
       const rows = await sql`SELECT state FROM gaenr_app_state WHERE id = 1 LIMIT 1`;
       const state = rows[0]?.state || {};

@@ -82,16 +82,47 @@ const diffArray = (previous: unknown[], next: unknown[]): ArrayChange | null => 
   return { key: '', upserts, deletes };
 };
 
-const isPrivilegedWriter = (): boolean => {
+export const isPrivilegedWriter = (): boolean => {
   try {
+    const isPathAdmin =
+      typeof window !== 'undefined' &&
+      (window.location.pathname.startsWith('/manage') ||
+        window.location.pathname.startsWith('/admin') ||
+        window.location.hash.includes('manage') ||
+        window.location.hash.includes('admin'));
     return (
+      isPathAdmin ||
       nativeStorage.getItem('gaenr_admin_logged') === 'true' ||
       window.sessionStorage.getItem('gaenr_admin_logged') === 'true' ||
+      window.sessionStorage.getItem('gaenr_admin_session') === 'active' ||
+      nativeStorage.getItem('gaenr_admin_session') === 'active' ||
       Boolean(nativeStorage.getItem('gaenr_current_employee')) ||
       Boolean(window.sessionStorage.getItem('gaenr_current_employee'))
     );
   } catch {
     return false;
+  }
+};
+
+export const syncKeyToRemote = async (key: string, value: string): Promise<boolean> => {
+  if (LOCAL_ONLY_KEYS.has(key)) return false;
+  pendingKeys.add(key);
+  try {
+    const body = JSON.stringify({ changes: { [key]: value } });
+    const res = await fetch(apiUrl(), {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
+      body,
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn(`[Gaenr] Direct sync failed for ${key}:`, err);
+    return false;
+  } finally {
+    setTimeout(() => pendingKeys.delete(key), 3000);
   }
 };
 
@@ -150,7 +181,7 @@ const queueRemoteMutation = (payload: { changes?: Record<string, string>; delete
     .then(() => fetch(apiUrl(), options))
     .then((response) => {
       if (!response.ok) throw new Error(`Remote storage write failed: ${response.status}`);
-      keys.forEach((key) => pendingKeys.delete(key));
+      affectedKeys.forEach((key) => pendingKeys.delete(key));
     })
     .catch((err) => {
       console.warn('[Gaenr] Remote storage mutation pending retry/offline:', err);
@@ -199,6 +230,16 @@ const refreshRemoteStorage = async () => {
       if (LOCAL_ONLY_KEYS.has(key) || pendingKeys.has(key)) return;
       const value = serializeValue(rawValue);
       const previous = nativeStorage.getItem(key);
+
+      // Never resurrect cleared experts from stale remote state
+      if (key === 'gaenr_freelancers' && value !== '[]') {
+        const isExplicitlyCleared = nativeStorage.getItem('gaenr_freelancers_cleared') === 'true';
+        if (isExplicitlyCleared) {
+          syncKeyToRemote('gaenr_freelancers', '[]');
+          return;
+        }
+      }
+
       if (previous === value) return;
       nativeSetItem.call(nativeStorage, key, value);
       window.dispatchEvent(new StorageEvent('storage', { key, oldValue: previous, newValue: value, storageArea: nativeStorage }));
@@ -224,6 +265,16 @@ export const initializeRemoteStorage = async () => {
         if (LOCAL_ONLY_KEYS.has(key)) return;
         const value = serializeValue(rawValue);
         const previous = nativeStorage.getItem(key);
+
+        // Never resurrect cleared experts from stale remote state
+        if (key === 'gaenr_freelancers' && value !== '[]') {
+          const isExplicitlyCleared = nativeStorage.getItem('gaenr_freelancers_cleared') === 'true';
+          if (isExplicitlyCleared) {
+            syncKeyToRemote('gaenr_freelancers', '[]');
+            return;
+          }
+        }
+
         nativeSetItem.call(nativeStorage, key, value);
         if (previous !== value) {
           window.dispatchEvent(
