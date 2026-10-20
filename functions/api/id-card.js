@@ -47,47 +47,25 @@ export async function onRequestGet(context) {
     });
   }
 
-  try {
-    if (env.DB) {
+  // Purge any legacy/invalid canvas entries from DB
+  if (env.DB) {
+    try {
       await initIdCardTable(env.DB);
-      const row = await env.DB
-        .prepare('SELECT image_data FROM gaenr_id_cards WHERE code = ?')
-        .bind(code)
-        .first();
-
-      if (row && row.image_data) {
-        const bytes = base64ToUint8Array(row.image_data);
-        return new Response(bytes, {
-          status: 200,
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'image/png',
-            'Content-Disposition': `attachment; filename="GAENR-ID-${code}.png"`,
-            'Cache-Control': 'public, max-age=86400, s-maxage=604800',
-          },
-        });
-      }
-    }
-  } catch (err) {
-    console.error('GET /api/id-card error:', err);
+      await env.DB.prepare("DELETE FROM gaenr_id_cards WHERE length(image_data) < 400000").run();
+    } catch {}
   }
 
-  // Fallback: If not found in id_cards table, check format query
-  const format = url.searchParams.get('format');
-  if (format === 'json') {
-    return new Response(
-      JSON.stringify({ error: 'ID card image not found for code ' + code }),
-      {
-        status: 404,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
-  }
-
-  // Seamless redirect: Direct user to the official frontend ID card download page
-  // where the card is rendered, automatically downloaded, and cached on server
+  // Authoritative behavior: Redirect directly to the official ID card download page
+  // so the user sees the real ExpertIdCard and downloads the exact backend card.
   const downloadUrl = new URL(`/download/id-card/${encodeURIComponent(code)}`, request.url).toString();
-  return Response.redirect(downloadUrl, 302);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      ...corsHeaders,
+      Location: downloadUrl,
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+    },
+  });
 }
 
 export async function onRequestPost(context) {

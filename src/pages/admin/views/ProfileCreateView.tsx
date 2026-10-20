@@ -409,11 +409,9 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         style={{
           position: 'fixed',
           top: 0,
-          left: 0,
+          left: '-9999px',
           width: '340px',
-          opacity: 0.001,
           pointerEvents: 'none',
-          zIndex: -9999,
         }}
         aria-hidden="true"
       >

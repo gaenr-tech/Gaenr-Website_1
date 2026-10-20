@@ -168,7 +168,7 @@ export const AvatarGraphic: React.FC<AvatarProps> = ({
         alt={title || 'Expert Avatar'}
         style={{ width: pixelSize, height: pixelSize }}
         className={`block aspect-square ${shapeClass} object-cover shrink-0 select-none ${className}`}
-        loading="lazy"
+        loading="eager"
       />
     );
   }
@@ -191,7 +191,7 @@ export const AvatarGraphic: React.FC<AvatarProps> = ({
             img.src = exact.fallbackUrl;
           }
         }}
-        loading="lazy"
+        loading="eager"
       />
     );
   }
@@ -223,7 +223,7 @@ export const AvatarGraphic: React.FC<AvatarProps> = ({
           img.src = spec.fallbackUrl;
         }
       }}
-      loading="lazy"
+      loading="eager"
     />
   );
 };
@@ -251,7 +251,7 @@ export const VerifiedBadge3D: React.FC<VerifiedBadge3DProps> = ({
       title={title}
       style={{ width: pixelSize, height: pixelSize }}
       className={`inline-block aspect-square object-contain shrink-0 select-none drop-shadow-[0_0_10px_rgba(59,130,246,0.85)] filter ${className}`}
-      loading="lazy"
+      loading="eager"
     />
   );
 };

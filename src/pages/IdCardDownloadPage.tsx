@@ -76,29 +76,17 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
   };
 
   const handleStartDownload = async () => {
-    // 1. Direct download using the exact backend ExpertIdCard DOM element
+    // Direct download using the exact backend ExpertIdCard DOM element
     if (cardRef.current) {
       try {
         const success = await downloadIdCardBadge(cardRef.current, effectiveExpert);
         if (success) {
           setIsDownloaded(true);
-          return;
         }
       } catch (err) {
         console.warn('DOM card download warning:', err);
       }
     }
-
-    // 2. Direct server fallback if available
-    const a = document.createElement('a');
-    a.href = `/api/id-card?code=${encodeURIComponent(resolvedCode)}&format=binary`;
-    a.download = `GAENR-ID-${resolvedCode}.png`;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      if (document.body.contains(a)) document.body.removeChild(a);
-    }, 200);
-    setIsDownloaded(true);
   };
 
   return (

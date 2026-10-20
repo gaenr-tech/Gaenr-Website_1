@@ -203,38 +203,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. If an exact browser-rendered snapshot exists, serve it directly
+    // Purge any corrupted legacy canvas entries from Postgres
     try {
-      const cardRows = await sql`SELECT image_data FROM gaenr_id_cards WHERE code = ${code} LIMIT 1`;
-      if (cardRows[0]?.image_data) {
-        const raw = cardRows[0].image_data;
-        const base64Data = raw.includes(',') ? raw.split(',')[1] : raw;
-        const imageBuffer = Buffer.from(base64Data, 'base64');
-        res.setHeader('Content-Type', 'image/png');
-        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
-        if (url.searchParams.get('download') === '1') {
-          res.setHeader('Content-Disposition', `attachment; filename="GAENR-ID-${code}.png"`);
-        }
-        return res.status(200).send(imageBuffer);
-      }
+      await sql`DELETE FROM gaenr_id_cards WHERE length(image_data) < 400000`;
     } catch {}
 
-    const rows = await sql`SELECT state->>'gaenr_freelancers' AS list FROM gaenr_app_state WHERE id = 1`;
-    let experts = [];
-    try { experts = JSON.parse(rows[0]?.list || '[]'); } catch { experts = []; }
-    const expert = experts.find((item) => item?.code === code);
-    if (!expert) return sendError(res, 404, 'Expert not found');
-
-    const png = await generateIdCardPng(expert);
-
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300');
-    if (url.searchParams.get('download') === '1') {
-      res.setHeader('Content-Disposition', `attachment; filename="GAENR-ID-${code}.png"`);
-    }
-    return res.status(200).send(png);
+    // Redirect user directly to the official ID card download page
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.redirect(302, `${SITE_URL}/download/id-card/${encodeURIComponent(code)}`);
   } catch (error) {
     console.error('id-card error:', error);
-    return sendError(res, 500, 'Failed to render ID card');
+    return sendError(res, 500, 'Failed to process ID card request');
   }
 }

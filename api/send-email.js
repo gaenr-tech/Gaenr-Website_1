@@ -11,8 +11,7 @@ const send = (res, status, body) => res.status(status).setHeader('Cache-Control'
 const buildWelcomeEmail = (expert) => {
   const name = expert.name?.trim() || 'there';
   const profileUrl = `${SITE_URL}/experts/${encodeURIComponent(expert.code)}`;
-  const idCardUrl = `${SITE_URL}/api/id-card?code=${encodeURIComponent(expert.code)}`;
-  const idCardDownloadUrl = `${idCardUrl}&download=1`;
+  const idCardDownloadUrl = `${SITE_URL}/download/id-card/${encodeURIComponent(expert.code)}`;
   const uploadToken = expert.uploadToken || expert.code;
   const uploadPortalUrl = `${SITE_URL}/u/${encodeURIComponent(uploadToken)}`;
   const logoUrl = `${SITE_URL}/logo.svg`;
