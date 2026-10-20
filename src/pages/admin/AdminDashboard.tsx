@@ -83,6 +83,7 @@ export const AdminDashboard: React.FC = () => {
     categories: categoriesList,
     updateCategories: handleUpdateCategories,
     taskAssignments,
+    submitTaskAssignment,
     updateTaskStatus,
     updateTaskAssignment,
     deleteTaskAssignment,
@@ -1291,6 +1292,7 @@ export const AdminDashboard: React.FC = () => {
               onUpdateStatus={updateTaskStatus}
               onUpdateTask={updateTaskAssignment}
               onDeleteTask={deleteTaskAssignment}
+              onAddTask={submitTaskAssignment}
               showToast={showToast}
             />
           )}
