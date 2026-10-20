@@ -248,6 +248,32 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
     if (isSubmitting) return;
 
+    if (!isFormValid) {
+      showToast(`Please complete mandatory fields: ${missingFields.join(', ')}`, 'error');
+      let targetId = '';
+      if (!isValidCategory) targetId = 'service-category';
+      else if (!isValidMediaType) targetId = 'media-type';
+      else if (!isValidAvatar) targetId = 'avatar-selection';
+      else if (!isValidSkills) targetId = 'skills-section';
+      else if (!isValidGender) targetId = 'expert-gender';
+      else if (!isValidAddress) targetId = 'expert-address';
+      else if (!isValidEmail) targetId = 'expert-private-email';
+      else if (!isValidContact) targetId = 'expert-contact-number';
+      else if (!isValidPaymentMethod) targetId = 'expert-payment-method';
+      else if (!isValidPaymentDetails) targetId = 'expert-payment-details';
+
+      if (targetId) {
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          if ('focus' in el && typeof (el as HTMLElement).focus === 'function') {
+            (el as HTMLElement).focus();
+          }
+        }
+      }
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
@@ -1203,31 +1229,31 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               title={
                 isFormValid
                   ? 'Click to register and publish this expert profile live to Gaenr directory'
-                  : 'Click to create and publish this expert profile live'
+                  : `Please fill required fields: ${missingFields.join(', ')}`
               }
               style={{
                 cursor: isSubmitting ? 'wait' : 'pointer',
               }}
               className={`w-full sm:w-auto px-7 py-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 select-none border cursor-pointer !cursor-pointer active:scale-95 ${
                 isFormValid
-                  ? 'bg-[#006eff] hover:bg-blue-600 active:bg-blue-700 text-white border-blue-600 shadow-md shadow-blue-500/30 ring-2 ring-blue-500/20 hover:-translate-y-0.5 active:translate-y-0'
-                  : 'bg-[#006eff]/80 hover:bg-[#006eff] active:bg-blue-700 text-white border-blue-500/60 shadow-xs hover:shadow-md'
+                  ? 'bg-[#006eff] hover:bg-[#0056cc] active:bg-blue-700 text-white border-blue-600 shadow-lg shadow-blue-500/25 ring-2 ring-blue-500/20 hover:-translate-y-0.5 active:translate-y-0'
+                  : 'bg-slate-200/90 dark:bg-slate-800/90 text-slate-400 dark:text-slate-500 border-slate-300 dark:border-slate-700 opacity-60 backdrop-blur-xs hover:opacity-80'
               }`}
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                  <span>Creating &amp; Publishing Live Profile...</span>
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0 pointer-events-none" />
+                  <span className="pointer-events-none">Creating &amp; Publishing Live Profile...</span>
                 </>
               ) : isFormValid ? (
                 <>
-                  <Sparkles className="w-4 h-4 text-white shrink-0" />
-                  <span>Create Expert Profile</span>
+                  <Sparkles className="w-4 h-4 text-white shrink-0 pointer-events-none" />
+                  <span className="pointer-events-none">Create Expert Profile</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-white shrink-0" />
-                  <span>Create Expert Profile</span>
+                  <Sparkles className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0 pointer-events-none" />
+                  <span className="pointer-events-none">Create Expert Profile</span>
                 </>
               )}
             </button>

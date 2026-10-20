@@ -229,14 +229,10 @@ const AppContent: React.FC = () => {
       <div
         className={`min-h-screen flex flex-col font-sans selection:bg-[#006eff] selection:text-white bg-slate-100/70 dark:bg-[#0b1324] ${isAdminLoggedIn ? 'text-slate-800 dark:text-slate-100' : 'text-slate-900 dark:text-white'}`}
       >
-        <SitePreloader />
         <AdminDashboard />
 
-        {/* Global AI Chatbot */}
-        <GaenrChatbot />
-
-        {/* Toast Notification Container - Strictly single notification */}
-        <div className="fixed bottom-24 right-5 z-[110] flex flex-col gap-2 pointer-events-none">
+        {/* Toast Notification Container - In Operations, place at top right so it never overlaps table actions */}
+        <div className="fixed top-5 right-5 z-[110] flex flex-col gap-2 pointer-events-none">
           {toasts.slice(-1).map((toast) => (
             <div
               key={toast.id}
