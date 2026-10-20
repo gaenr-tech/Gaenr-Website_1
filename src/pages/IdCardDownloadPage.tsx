@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { GaenrLogo } from '../components/common/GaenrLogo';
 import { FreelancerProfile } from '../types';
-import { generateInstantIdCardPng } from '../utils/instantIdCardCanvas';
+import { ExpertIdCard } from '../components/common/ExpertIdCard';
+import { downloadIdCardBadge } from '../utils/downloadIdCardImage';
 import { Download, CheckCircle, ArrowRight, ExternalLink, ShieldCheck } from 'lucide-react';
 
 interface IdCardDownloadPageProps {
@@ -21,15 +22,47 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
   ).toUpperCase();
 
   const [isDownloaded, setIsDownloaded] = useState(false);
-  const expert = freelancers.find((f) => f.code.toUpperCase() === resolvedCode);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  const effectiveExpert: FreelancerProfile = expert || {
+  const expert = freelancers.find((f) => f.code.toUpperCase() === resolvedCode);
+  const [remoteExpert, setRemoteExpert] = useState<FreelancerProfile | null>(null);
+
+  // Fetch authoritative expert profile from remote store if opened on an external device/incognito
+  useEffect(() => {
+    if (expert) return;
+    let isMounted = true;
+    const fetchExpert = async () => {
+      try {
+        const apiBase = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+        const res = await fetch(`${apiBase}/api/state?_t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          const raw = data?.state?.gaenr_freelancers;
+          if (raw) {
+            const list: FreelancerProfile[] = typeof raw === 'string' ? JSON.parse(raw) : raw;
+            const found = list.find((fl) => fl.code.toUpperCase() === resolvedCode.toUpperCase());
+            if (found && isMounted) {
+              setRemoteExpert(found);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch remote state for ID card:', err);
+      }
+    };
+    fetchExpert();
+    return () => {
+      isMounted = false;
+    };
+  }, [resolvedCode, expert]);
+
+  const effectiveExpert: FreelancerProfile = expert || remoteExpert || {
     id: `fl_${resolvedCode}`,
     code: resolvedCode,
     name: '',
     category: 'graphic_creative',
     categoryTitle: 'Verified Expert',
-    avatarId: 'avatar-1',
+    avatarId: 'avatar-youth-m1',
     completedProjects: 0,
     rating: 0,
     reviewsCount: 0,
@@ -42,39 +75,30 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
     dateAdded: new Date().toISOString(),
   };
 
-  const triggerDownload = (url: string, filename: string) => {
+  const handleStartDownload = async () => {
+    // 1. Direct download using the exact backend ExpertIdCard DOM element
+    if (cardRef.current) {
+      try {
+        const success = await downloadIdCardBadge(cardRef.current, effectiveExpert);
+        if (success) {
+          setIsDownloaded(true);
+          return;
+        }
+      } catch (err) {
+        console.warn('DOM card download warning:', err);
+      }
+    }
+
+    // 2. Direct server fallback if available
     const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
+    a.href = `/api/id-card?code=${encodeURIComponent(resolvedCode)}&format=binary`;
+    a.download = `GAENR-ID-${resolvedCode}.png`;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
       if (document.body.contains(a)) document.body.removeChild(a);
     }, 200);
     setIsDownloaded(true);
-  };
-
-  const handleStartDownload = async () => {
-    try {
-      // 1. Generate ultra-crisp ID Card PNG immediately in ~15ms via HTML5 Canvas
-      const dataUrl = await generateInstantIdCardPng(effectiveExpert);
-      if (dataUrl) {
-        triggerDownload(dataUrl, `GAENR-ID-${resolvedCode}.png`);
-
-        // Background sync to server so server cache also has it
-        fetch('/api/id-card', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: resolvedCode, imageData: dataUrl }),
-        }).catch(() => {});
-        return;
-      }
-    } catch (err) {
-      console.warn('Canvas generator note:', err);
-    }
-
-    // 2. Direct server fallback if canvas unavailable
-    triggerDownload(`/api/id-card?code=${encodeURIComponent(resolvedCode)}&format=binary`, `GAENR-ID-${resolvedCode}.png`);
   };
 
   return (
@@ -99,39 +123,31 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
         </div>
       </header>
 
-      {/* Main Download Card */}
-      <main className="flex-1 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-8 sm:p-10 shadow-2xl text-center space-y-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Badge Icon */}
-          <div className="relative mx-auto w-20 h-20 rounded-3xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-[#38bdf8] shadow-inner">
-            {isDownloaded ? (
-              <CheckCircle className="w-10 h-10 text-emerald-400 animate-in zoom-in-75 duration-200" />
-            ) : (
-              <Download className="w-10 h-10 text-[#38bdf8]" />
-            )}
-          </div>
-
-          <div className="space-y-2 relative z-10">
+      {/* Main Download Section */}
+      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 my-auto">
+        <div className="max-w-md w-full text-center space-y-5">
+          {/* Header text */}
+          <div className="space-y-1.5">
             <span className="text-[11px] font-mono tracking-widest uppercase px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-300 font-bold inline-block">
               GAENR Verified Digital ID
             </span>
-            <h1 className="text-2xl font-black text-white tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Official Expert ID Card
             </h1>
-            <p className="text-xs font-mono font-bold text-[#38bdf8] tracking-widest text-lg">
-              {resolvedCode}
-            </p>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto">
+            <p className="text-xs text-slate-400">
               {isDownloaded
                 ? 'Official ID card has been downloaded to your device.'
-                : 'This is your official expert ID card. Click below to download directly to your device.'}
+                : 'Your official credential card is displayed below. Click the button to download directly.'}
             </p>
           </div>
 
+          {/* Exact Backend Digital ID Card Rendered Visibly */}
+          <div className="flex justify-center transition-transform hover:scale-[1.01] duration-300">
+            <ExpertIdCard ref={cardRef} freelancer={effectiveExpert} />
+          </div>
+
           {/* Action Buttons */}
-          <div className="pt-2 space-y-3 relative z-10">
+          <div className="space-y-3 pt-1 max-w-[340px] mx-auto w-full">
             <button
               onClick={handleStartDownload}
               className={`w-full py-3.5 px-6 rounded-xl font-bold text-xs transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer !cursor-pointer active:scale-98 select-none ${
@@ -148,12 +164,12 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
               ) : (
                 <>
                   <Download className="w-4 h-4 shrink-0" />
-                  <span>Download Now</span>
+                  <span>Download ID Card</span>
                 </>
               )}
             </button>
 
-            <div className="flex items-center gap-3 pt-1">
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate(`/experts/${resolvedCode}`)}
                 className="flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"

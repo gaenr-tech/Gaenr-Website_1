@@ -83,18 +83,22 @@ export async function captureIdCardDataUrl(
       await document.fonts.ready;
     }
 
-    // 2. Ensure all images inside the element are fully loaded & decoded
+    // 2. Ensure all images inside the element are fully loaded & decoded (with safety timeout so it never hangs)
     const images = Array.from(cardElement.querySelectorAll('img'));
-    await Promise.all(
-      images.map(
-        (img) =>
-          new Promise((resolve) => {
-            if (img.complete) return resolve(true);
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(true);
-          })
-      )
-    );
+    await Promise.race([
+      Promise.all(
+        images.map(
+          (img) =>
+            new Promise((resolve) => {
+              if (img.complete) return resolve(true);
+              img.onload = () => resolve(true);
+              img.onerror = () => resolve(true);
+              setTimeout(() => resolve(true), 400);
+            })
+        )
+      ),
+      new Promise((resolve) => setTimeout(resolve, 600)),
+    ]);
 
     const dataUrl = await domToPng(cardElement, {
       scale: 3,
