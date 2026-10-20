@@ -203,6 +203,11 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
       return;
     }
 
+    if (privateEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(privateEmail.trim())) {
+      showToast('Please enter a valid private email address or leave it blank', 'error');
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
@@ -218,7 +223,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           const selectedType = mediaType || (isImage ? 'image' : 'website');
           return {
             id: `port-${Date.now()}-${idx}`,
-            title: p.title.trim() || 'Deliverable Project',
+            title: p.title.trim() || `Deliverable Sample #${idx + 1}`,
             category,
             description: p.description.trim() || `Verified deliverable for ${generatedCode}.`,
             tools,
@@ -267,21 +272,22 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
       addFreelancer(newProfile);
 
-      // Email the expert at the address entered in "Private Email" (runs in the background)
+      // Email the expert in the background (fire-and-forget so UI navigation is never blocked)
       if (newProfile.privateEmail) {
-        let capturedCardDataUrl: string | null = null;
-        if (cardPreviewRef.current) {
+        const cardNode = cardPreviewRef.current;
+        (async () => {
           try {
-            capturedCardDataUrl = await captureIdCardDataUrl(cardPreviewRef.current);
-          } catch (captureErr) {
-            console.warn('ID card capture fallback:', captureErr);
+            let capturedCardDataUrl: string | null = null;
+            if (cardNode) {
+              capturedCardDataUrl = await captureIdCardDataUrl(cardNode);
+            }
+            await sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile);
+          } catch (e) {
+            console.warn('Background welcome email note:', e);
           }
-        }
-
-        sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile).catch((e) => {
-          console.warn('Background welcome email note:', e);
-        });
+        })();
       }
+
       navigate('/manage/profiles');
     } catch (err) {
       console.error(err);
@@ -360,7 +366,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+      <form noValidate onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
         {/* Unique Expert Code & Selected Avatar Banner */}
         <div className="p-4 sm:p-5 bg-white border border-slate-200/90 rounded-2xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5 sm:gap-4 min-w-0">
@@ -623,11 +629,10 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
                     {/* Deliverable Item Title */}
                     <div>
                       <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                        Deliverable Item Title <span className="text-rose-500">*</span>
+                        Deliverable Item Title <span className="text-slate-400 font-normal">(Optional)</span>
                       </label>
                       <input
                         type="text"
-                        required
                         placeholder="e.g. Modern Fintech Brand Identity & Logo Guidelines"
                         value={item.title}
                         onChange={(e) =>
@@ -917,7 +922,6 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               <input
                 id="expert-real-name"
                 type="text"
-                required
                 placeholder="e.g. Tanvir Hasan"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -1026,10 +1030,9 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
             <div className="sm:col-span-2">
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Payment Details (Account Number / Routing / Instructions) <span className="text-rose-500">*</span>
+                Payment Details (Account Number / Routing / Instructions) <span className="text-slate-400 font-normal">(Optional)</span>
               </label>
               <textarea
-                required
                 rows={4}
                 placeholder="e.g.&#10;Account Name: Tanvir Ahmed&#10;Account Number: 01700-000000 / 150.120.3456&#10;Bank / Branch: Dutch Bangla Bank, Banani Branch&#10;Routing Number: 090271234"
                 value={paymentDetails}
@@ -1037,7 +1040,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-[#006eff] focus:outline-none transition-all font-mono shadow-2xs leading-relaxed"
               />
               <p className="text-[11px] text-slate-400 mt-1">
-                Multi-line statement enabled. Specify full bank instructions, routing numbers, or account instructions.
+                Multi-line statement enabled. Specify full bank instructions, routing numbers, or account instructions (can also be updated later).
               </p>
             </div>
           </div>
