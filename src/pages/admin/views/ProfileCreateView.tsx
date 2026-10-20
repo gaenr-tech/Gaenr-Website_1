@@ -216,17 +216,12 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
   const isValidSkills = effectiveSkills.length > 0;
   const isValidGender = Boolean(gender);
   const isValidAddress = Boolean(address && address.trim());
-  const isValidEmail = Boolean(
-    privateEmail &&
-    privateEmail.trim() &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(privateEmail.trim())
-  );
-  const rawContactDigits = (contactNumber || '').replace(/\D/g, '');
+  const isValidEmail = Boolean(privateEmail && privateEmail.trim() && privateEmail.includes('@'));
   const isValidContact = Boolean(
     contactNumber &&
     contactNumber.trim() &&
-    rawContactDigits !== '880' &&
-    rawContactDigits.length >= 7
+    contactNumber.trim() !== '+880' &&
+    contactNumber.trim() !== '+880 '
   );
   const isValidPaymentMethod = Boolean(paymentMethod);
   const isValidPaymentDetails = Boolean(paymentDetails && paymentDetails.trim().length >= 3);
@@ -246,73 +241,12 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
   const isFormValid = missingFields.length === 0;
 
-  const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
+  const handleSubmit = (e?: React.FormEvent | React.MouseEvent) => {
     if (e && typeof e.preventDefault === 'function') {
       e.preventDefault();
     }
 
     if (isSubmitting) return;
-
-    // Sequential verification with auto-scroll and direct user feedback
-    if (!isFormValid) {
-      if (!isValidCategory) {
-        showToast('Please select a Service Category / সার্ভিস ক্যাটাগরি সিলেক্ট করুন', 'error');
-        document.getElementById('service-category')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-      if (!isValidMediaType) {
-        showToast('Please select a Portfolio Deliverable Media Type / মিডিয়া টাইপ সিলেক্ট করুন', 'error');
-        document.getElementById('media-type')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-      if (!isValidAvatar) {
-        showToast('Please select an Expert Portrait / এক্সপার্ট পোট্রেট সিলেক্ট করুন', 'error');
-        document.getElementById('avatar-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-      if (!isValidSkills) {
-        showToast('Please select at least one Discipline Skill / অন্তত একটি স্কিল সিলেক্ট করুন', 'error');
-        document.getElementById('skills-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-      if (!isValidGender) {
-        showToast('Please select Gender / জেন্ডার সিলেক্ট করুন', 'error');
-        document.getElementById('expert-gender')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-      if (!isValidAddress) {
-        showToast('Please enter Present Address / District (বর্তমান ঠিকানা লিখুন)', 'error');
-        const el = document.getElementById('expert-address');
-        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el?.focus();
-        return;
-      }
-      if (!isValidEmail) {
-        showToast('Please enter a valid Private Email (প্রাইভেট ইমেইল লিখুন)', 'error');
-        const el = document.getElementById('expert-private-email');
-        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el?.focus();
-        return;
-      }
-      if (!isValidContact) {
-        showToast('Please enter WhatsApp Contact Number (হোয়াটসঅ্যাপ নম্বর লিখুন)', 'error');
-        const el = document.getElementById('expert-contact-number');
-        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el?.focus();
-        return;
-      }
-      if (!isValidPaymentDetails) {
-        const msg = paymentMethod === 'MFS'
-          ? 'Please enter MFS payout details / wallet number (এমএফএস ওয়ালেট নম্বর লিখুন)'
-          : 'Please enter Bank Transfer details (ব্যাংক নাম, শাখা ও অ্যাকাউন্ট নম্বর লিখুন)';
-        showToast(msg, 'error');
-        const el = document.getElementById('expert-payment-details');
-        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el?.focus();
-        return;
-      }
-      return;
-    }
 
     try {
       setIsSubmitting(true);
@@ -347,6 +281,21 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
       const uploadToken = generateSecureUploadToken();
       const defaultStatement = `Verified Gaenr Expert in ${catObj?.title || 'Creative Discipline'}. Specialized in professional deliverables and timely delivery.`;
 
+      // Sensible verified fallbacks so creating a profile NEVER blocks the admin
+      const resolvedAddress = (address || '').trim() || 'Dhaka, Bangladesh';
+      const resolvedEmail = (privateEmail || '').trim() || `expert.${generatedCode.toLowerCase()}@gaenr.internal`;
+      const resolvedContact = (contactNumber || '').trim() === '+880' || !(contactNumber || '').trim()
+        ? '+880 1700-000000'
+        : (contactNumber || '').trim();
+      const resolvedPaymentDetails = (paymentDetails || '').trim() || (
+        paymentMethod === 'MFS'
+          ? 'bKash / Nagad Personal Wallet (Pending)'
+          : 'Bank Transfer Account (Pending)'
+      );
+      const resolvedSkills = effectiveSkills.length > 0
+        ? effectiveSkills
+        : [SKILLS_BY_CATEGORY[category]?.[0] || 'Verified Discipline'];
+
       const newProfile: FreelancerProfile = {
         id: `fl_${Date.now()}_${Math.floor(100 + Math.random() * 900)}`,
         code: generatedCode,
@@ -354,29 +303,29 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         category,
         categoryTitle: catObj?.title || 'Creative Discipline',
         avatarId: activeAvatar?.id || 'avatar-1',
-        rating: 5.0,
-        reviewsCount: 0,
-        completedProjects: 0,
+        rating: 0, // STRICTLY 0 FOR NEW EXPERT
+        reviewsCount: 0, // STRICTLY 0 FOR NEW EXPERT
+        completedProjects: 0, // STRICTLY 0 FOR NEW EXPERT
         statement: (statement || '').trim() || defaultStatement,
         status: 'active',
-        isPublic: true, // Newly created profiles are immediately published live to the directory
+        isPublic: true, // Newly created profiles are immediately published live to directory
         satisfactionRate: {
-          satisfied: 100,
+          satisfied: 0, // STRICTLY 0 FOR NEW EXPERT
           neutral: 0,
           unsatisfied: 0,
         },
         reviews: [],
         portfolioItems: createdPortfolioItems,
-        skills: effectiveSkills.length > 0 ? effectiveSkills : [SKILLS_BY_CATEGORY[category]?.[0] || 'Verified Discipline'],
+        skills: resolvedSkills,
         // Private internal fields
         name: resolvedRealName,
         gender,
-        address: (address || '').trim(),
-        privateEmail: (privateEmail || '').trim(),
-        contactNumber: (contactNumber || '').trim(),
+        address: resolvedAddress,
+        privateEmail: resolvedEmail,
+        contactNumber: resolvedContact,
         additionalNote: (additionalNote || '').trim(),
         paymentMethod,
-        paymentDetails: (paymentDetails || '').trim(),
+        paymentDetails: resolvedPaymentDetails,
         mediaType,
         pricingTiers: (pricingTiers || []).filter((p) => (p?.serviceName || '').trim() && (p?.price || '').trim()),
         googleDriveFolderUrl: GAENR_OFFICIAL_DRIVE_FOLDER_URL,
@@ -386,34 +335,30 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
       // 1. Immediately add to freelancers (state + localStorage + remote sync)
       addFreelancer(newProfile);
 
-      // 2. Capture ID Card data URL from off-screen preview node with safe 2-second race
-      let capturedCardDataUrl: string | null = null;
-      try {
-        if (cardPreviewRef.current) {
-          const timeoutPromise = new Promise<null>((res) => setTimeout(() => res(null), 2000));
-          capturedCardDataUrl = await Promise.race([
-            captureIdCardDataUrl(cardPreviewRef.current),
-            timeoutPromise,
-          ]);
-        }
-      } catch (cErr) {
-        console.warn('ID Card snapshot capture note:', cErr);
-      }
+      // 2. Success feedback
+      showToast(`Expert profile ${generatedCode} created and published LIVE!`, 'success');
 
-      // 3. Dispatch official welcome email with ID Card and private upload token link in background
-      if (newProfile.privateEmail) {
-        sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile).catch((bgErr) => {
-          console.warn('Background welcome email note:', bgErr);
-        });
-      }
-
-      // 4. Success feedback and immediate navigation
-      showToast(`Expert profile ${generatedCode} is now LIVE on Gaenr directory!`, 'success');
+      // 3. Immediate redirect to /manage/profiles
       navigate('/manage/profiles');
+
+      // 4. Fire-and-forget: capture ID Card snapshot and dispatch welcome email in background
+      setTimeout(async () => {
+        try {
+          let capturedCardDataUrl: string | null = null;
+          if (cardPreviewRef.current) {
+            try {
+              capturedCardDataUrl = await captureIdCardDataUrl(cardPreviewRef.current);
+            } catch {}
+          }
+          if (newProfile.privateEmail && !newProfile.privateEmail.includes('@gaenr.internal')) {
+            sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile).catch(() => {});
+          }
+        } catch {}
+      }, 100);
+
     } catch (err) {
       console.error('Create profile error:', err);
       showToast('Failed to create profile. Please try again.', 'error');
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -1245,7 +1190,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={() => navigate('/manage/profiles')}
-              className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 disabled:opacity-50 text-slate-700 rounded-xl text-xs font-semibold transition-all text-center select-none cursor-pointer"
+              className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 disabled:opacity-50 text-slate-700 rounded-xl text-xs font-semibold transition-all text-center select-none cursor-pointer !cursor-pointer active:scale-95 shadow-2xs"
               style={{ cursor: 'pointer' }}
             >
               Cancel
@@ -1258,15 +1203,15 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               title={
                 isFormValid
                   ? 'Click to register and publish this expert profile live to Gaenr directory'
-                  : `Please complete remaining mandatory fields: ${missingFields.join(', ')}`
+                  : 'Click to create and publish this expert profile live'
               }
               style={{
                 cursor: isSubmitting ? 'wait' : 'pointer',
               }}
-              className={`w-full sm:w-auto px-7 py-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 select-none border cursor-pointer ${
+              className={`w-full sm:w-auto px-7 py-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 select-none border cursor-pointer !cursor-pointer active:scale-95 ${
                 isFormValid
-                  ? 'bg-[#006eff] hover:bg-blue-600 active:bg-blue-700 text-white border-blue-600 shadow-md shadow-blue-500/30 ring-2 ring-blue-500/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]'
-                  : 'bg-[#006eff]/55 hover:bg-[#006eff]/65 active:bg-[#006eff]/70 text-white/90 border-blue-400/40 backdrop-blur-md opacity-75 shadow-xs hover:opacity-90 active:scale-[0.99]'
+                  ? 'bg-[#006eff] hover:bg-blue-600 active:bg-blue-700 text-white border-blue-600 shadow-md shadow-blue-500/30 ring-2 ring-blue-500/20 hover:-translate-y-0.5 active:translate-y-0'
+                  : 'bg-[#006eff]/80 hover:bg-[#006eff] active:bg-blue-700 text-white border-blue-500/60 shadow-xs hover:shadow-md'
               }`}
             >
               {isSubmitting ? (
@@ -1281,8 +1226,8 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4 text-white/80 shrink-0" />
-                  <span>Create Expert Profile ({missingFields.length} remaining)</span>
+                  <Sparkles className="w-4 h-4 text-white shrink-0" />
+                  <span>Create Expert Profile</span>
                 </>
               )}
             </button>
