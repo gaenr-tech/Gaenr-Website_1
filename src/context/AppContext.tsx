@@ -1256,8 +1256,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const updateTaskStatus = (taskId: string, status: TaskAssignment['status']) => {
+    const targetId = String(taskId).trim().toLowerCase();
     setTaskAssignments((prev) => {
-      const updated = prev.map((t) => (t.id === taskId ? { ...t, status } : t));
+      const updated = prev.map((t) => (String(t.id).trim().toLowerCase() === targetId ? { ...t, status } : t));
       const serialized = JSON.stringify(updated);
       try {
         localStorage.setItem('gaenr_tasks', serialized);
@@ -1269,8 +1270,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const updateTaskAssignment = (taskId: string, updates: Partial<TaskAssignment>) => {
+    const targetId = String(taskId).trim().toLowerCase();
     setTaskAssignments((prev) => {
-      const updated = prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t));
+      const updated = prev.map((t) => (String(t.id).trim().toLowerCase() === targetId ? { ...t, ...updates } : t));
       const serialized = JSON.stringify(updated);
       try {
         localStorage.setItem('gaenr_tasks', serialized);
@@ -1281,8 +1283,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const deleteTaskAssignment = (taskId: string) => {
+    const targetId = String(taskId).trim().toLowerCase();
     setTaskAssignments((prev) => {
-      const updated = prev.filter((t) => t.id !== taskId);
+      const updated = prev.filter((t) => String(t.id).trim().toLowerCase() !== targetId);
       const serialized = JSON.stringify(updated);
       try {
         localStorage.setItem('gaenr_tasks', serialized);

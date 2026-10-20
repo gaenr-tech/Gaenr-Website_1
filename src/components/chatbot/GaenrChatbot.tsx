@@ -1573,6 +1573,8 @@ ${taskData.description.trim()}`;
       window.open(`tel:${number.replace(/\D/g, '')}`, '_self');
     } else if (action.actionType === 'openWhatsAppUrl' && action.payload) {
       window.open(action.payload, '_blank');
+    } else if ((action.actionType as any) === 'openExternal' && action.payload) {
+      window.open(action.payload, '_blank');
     } else if (action.actionType === 'promptTaskOptions') {
       const isBn = language === 'bn';
       setMessages((prev) => [

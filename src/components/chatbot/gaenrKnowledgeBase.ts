@@ -385,7 +385,8 @@ export function getLocalAIResponse(
       | 'editTaskDetails'
       | 'selectEditField'
       | 'cancelTaskFlow'
-      | 'openWhatsAppUrl';
+      | 'openWhatsAppUrl'
+      | 'openExternal';
     payload?: string;
   }>;
 } {
