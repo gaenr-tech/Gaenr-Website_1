@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { GaenrLogo } from '../components/common/GaenrLogo';
-import { ExpertIdCard } from '../components/common/ExpertIdCard';
-import { captureIdCardDataUrl } from '../utils/downloadIdCardImage';
-import { Download, CheckCircle, ArrowRight, ExternalLink, ShieldCheck, RefreshCw } from 'lucide-react';
+import { FreelancerProfile } from '../types';
+import { generateInstantIdCardPng } from '../utils/instantIdCardCanvas';
+import { Download, CheckCircle, ArrowRight, ExternalLink, ShieldCheck } from 'lucide-react';
 
 interface IdCardDownloadPageProps {
   code?: string;
@@ -21,10 +21,6 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
   ).toUpperCase();
 
   const [isDownloaded, setIsDownloaded] = useState(false);
-  const [downloadError, setDownloadError] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
   const expert = freelancers.find((f) => f.code.toUpperCase() === resolvedCode);
 
   const effectiveExpert: FreelancerProfile = expert || {
@@ -56,52 +52,29 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
       if (document.body.contains(a)) document.body.removeChild(a);
     }, 200);
     setIsDownloaded(true);
-    setIsGenerating(false);
   };
 
   const handleStartDownload = async () => {
-    setIsGenerating(true);
-    setDownloadError(null);
-
-    // 1. Try downloading directly from /api/id-card?code=...
     try {
-      const res = await fetch(`/api/id-card?code=${encodeURIComponent(resolvedCode)}&format=binary`);
-      const contentType = res.headers.get('content-type') || '';
-      if (res.ok && contentType.includes('image')) {
-        const blob = await res.blob();
-        if (blob && blob.size > 1000) {
-          const blobUrl = URL.createObjectURL(blob);
-          triggerDownload(blobUrl, `GAENR-ID-${resolvedCode}.png`);
-          return;
-        }
+      // 1. Generate ultra-crisp ID Card PNG immediately in ~15ms via HTML5 Canvas
+      const dataUrl = await generateInstantIdCardPng(effectiveExpert);
+      if (dataUrl) {
+        triggerDownload(dataUrl, `GAENR-ID-${resolvedCode}.png`);
+
+        // Background sync to server so server cache also has it
+        fetch('/api/id-card', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: resolvedCode, imageData: dataUrl }),
+        }).catch(() => {});
+        return;
       }
-    } catch {
-      // Fallback to client-side capture
+    } catch (err) {
+      console.warn('Canvas generator note:', err);
     }
 
-    // 2. Client-side Canvas Capture fallback using ExpertIdCard component
-    if (cardRef.current) {
-      try {
-        await new Promise((r) => setTimeout(r, 250));
-        const dataUrl = await captureIdCardDataUrl(cardRef.current);
-        if (dataUrl) {
-          // Sync to server in background
-          fetch('/api/id-card', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: resolvedCode, imageData: dataUrl }),
-          }).catch(() => {});
-
-          triggerDownload(dataUrl, `GAENR-ID-${resolvedCode}.png`);
-          return;
-        }
-      } catch (err: any) {
-        console.warn('Client card render error:', err);
-      }
-    }
-
-    // Direct link fallback
-    triggerDownload(`/api/id-card?code=${encodeURIComponent(resolvedCode)}`, `GAENR-ID-${resolvedCode}.png`);
+    // 2. Direct server fallback if canvas unavailable
+    triggerDownload(`/api/id-card?code=${encodeURIComponent(resolvedCode)}&format=binary`, `GAENR-ID-${resolvedCode}.png`);
   };
 
   return (
@@ -135,8 +108,6 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
           <div className="relative mx-auto w-20 h-20 rounded-3xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-[#38bdf8] shadow-inner">
             {isDownloaded ? (
               <CheckCircle className="w-10 h-10 text-emerald-400 animate-in zoom-in-75 duration-200" />
-            ) : isGenerating ? (
-              <RefreshCw className="w-10 h-10 text-[#38bdf8] animate-spin" />
             ) : (
               <Download className="w-10 h-10 text-[#38bdf8]" />
             )}
@@ -163,17 +134,15 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
           <div className="pt-2 space-y-3 relative z-10">
             <button
               onClick={handleStartDownload}
-              disabled={isGenerating}
-              className="w-full py-3.5 px-6 rounded-xl bg-[#006eff] hover:bg-blue-600 active:bg-blue-700 disabled:opacity-75 text-white font-bold text-xs transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer !cursor-pointer active:scale-98 select-none"
+              className={`w-full py-3.5 px-6 rounded-xl font-bold text-xs transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer !cursor-pointer active:scale-98 select-none ${
+                isDownloaded
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/25'
+                  : 'bg-[#006eff] hover:bg-blue-600 active:bg-blue-700 text-white shadow-blue-500/25'
+              }`}
             >
-              {isGenerating ? (
+              {isDownloaded ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
-                  <span>Downloading...</span>
-                </>
-              ) : isDownloaded ? (
-                <>
-                  <CheckCircle className="w-4 h-4 text-emerald-300 shrink-0" />
+                  <CheckCircle className="w-4 h-4 text-emerald-100 shrink-0" />
                   <span>Downloaded (Click to Re-Download)</span>
                 </>
               ) : (
@@ -203,13 +172,6 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
           </div>
         </div>
       </main>
-
-      {/* Hidden Offscreen Render for Instant Client-Side DOM Capture */}
-      <div className="fixed -left-[9999px] -top-[9999px] pointer-events-none opacity-0" aria-hidden="true">
-        <div ref={cardRef}>
-          <ExpertIdCard freelancer={effectiveExpert} />
-        </div>
-      </div>
 
       {/* Footer */}
       <footer className="border-t border-slate-900 px-6 py-4 text-center text-xs text-slate-600">
