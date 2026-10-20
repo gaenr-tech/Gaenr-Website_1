@@ -349,7 +349,7 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          SECTION 3: WE'RE STILL BUILDING, BUT YOU CAN START TODAY
+          SECTION 3: LET'S GROW TOGETHER
           - Mobile: Visual on top, then Headline, then Body text & CTA
           - Desktop: Visual on the Left, Headline and Text on the Right
          ========================================================================= */}
@@ -367,8 +367,7 @@ export const HomePage: React.FC = () => {
             {/* Text Content: Below visual on mobile, Right on desktop */}
             <div className="order-2 lg:order-2 lg:col-span-6 max-w-xl text-left space-y-4 lg:pl-4">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-slate-900 dark:text-white">
-                We're Still Building <br />
-                <span className="text-[#0256d0] dark:text-[#38bdf8]">But You Can Start Today</span>
+                Let's <span className="text-[#0256d0] dark:text-[#38bdf8]">Grow Together</span>
               </h2>
 
               <div className="space-y-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
