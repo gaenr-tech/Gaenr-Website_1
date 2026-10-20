@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useApp } from '../../../context/AppContext';
+import { useApp, GAENR_OFFICIAL_DRIVE_FOLDER_URL } from '../../../context/AppContext';
 import { sendExpertWelcomeEmail } from '../../../utils/email';
 import { ExpertIdCard } from '../../../components/common/ExpertIdCard';
 import { captureIdCardDataUrl } from '../../../utils/downloadIdCardImage';
@@ -29,6 +29,16 @@ import {
 } from 'lucide-react';
 
 import { CustomSelect, SelectOption } from '../../../components/common/CustomSelect';
+
+export const SKILLS_BY_CATEGORY: Record<string, string[]> = {
+  'graphics-design': ['Logo Design', 'Brand Guidelines', 'Social Media Posts', 'Packaging', 'Vector Art', 'Illustrator', 'Photoshop'],
+  'content-writing': ['SEO Articles', 'Website Copywriting', 'UX Copy', 'Blog Posts', 'Product Descriptions', 'Proofreading'],
+  'video-editing': ['Short-form Reels', 'YouTube Long-form', 'Color Grading', 'Sound Design', 'Motion Graphics', 'Premiere Pro'],
+  'wordpress-website': ['Custom WordPress Theme', 'WooCommerce Setup', 'bKash Gateway Integration', 'Elementor', 'Page Speed (90+)', 'Tailwind CSS'],
+  'presentation-slide-design': ['Pitch Decks', 'Investor Slides', 'Keynote', 'PowerPoint', 'Infographics', 'Financial Charts'],
+  'ux-ui-design': ['Figma Design System', 'Mobile App UX', 'Wireframing', 'Interactive Prototypes', 'SaaS Dashboard', 'Usability Audits'],
+  'ad-running': ['Meta Ads Manager', 'Google Search Ads', 'Audience Retargeting', 'A/B Creative Testing', 'Pixel Setup', 'Campaign Analytics'],
+};
 
 interface InitialPortfolioInput {
   id: string;
@@ -65,7 +75,10 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
   const [gender, setGender] = useState<'Male' | 'Female' | 'Third Gender'>('Male');
   const [address, setAddress] = useState('');
   const [skillsInput, setSkillsInput] = useState('');
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>(() => {
+    const initialCat = (categories[0]?.slug as ServiceSlug) || 'graphics-design';
+    return [SKILLS_BY_CATEGORY[initialCat]?.[0] || 'Logo Design'];
+  });
   const [privateEmail, setPrivateEmail] = useState('');
   const [contactNumber, setContactNumber] = useState('+880 ');
   const [additionalNote, setAdditionalNote] = useState('');
@@ -74,6 +87,18 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialPortfolio, setInitialPortfolio] = useState<InitialPortfolioInput[]>([]);
   const deliverableFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCategoryChange = (newCat: ServiceSlug) => {
+    setCategory(newCat);
+    const prevCatSkills = SKILLS_BY_CATEGORY[category] || [];
+    const isSingleDefault = selectedSkills.length === 1 && prevCatSkills.includes(selectedSkills[0]);
+    if (isSingleDefault || selectedSkills.length === 0) {
+      const newSkills = SKILLS_BY_CATEGORY[newCat] || [];
+      if (newSkills.length > 0) {
+        setSelectedSkills([newSkills[0]]);
+      }
+    }
+  };
 
   const handleDeliverableFileUpload = (file: File) => {
     const reader = new FileReader();
@@ -118,18 +143,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
     );
   };
 
-  // Suggested skills by category
-  const skillsByCategory: Record<string, string[]> = {
-    'graphics-design': ['Logo Design', 'Brand Guidelines', 'Social Media Posts', 'Packaging', 'Vector Art', 'Illustrator', 'Photoshop'],
-    'content-writing': ['SEO Articles', 'Website Copywriting', 'UX Copy', 'Blog Posts', 'Product Descriptions', 'Proofreading'],
-    'video-editing': ['Short-form Reels', 'YouTube Long-form', 'Color Grading', 'Sound Design', 'Motion Graphics', 'Premiere Pro'],
-    'wordpress-website': ['Custom WordPress Theme', 'WooCommerce Setup', 'bKash Gateway Integration', 'Elementor', 'Page Speed (90+)', 'Tailwind CSS'],
-    'presentation-slide-design': ['Pitch Decks', 'Investor Slides', 'Keynote', 'PowerPoint', 'Infographics', 'Financial Charts'],
-    'ux-ui-design': ['Figma Design System', 'Mobile App UX', 'Wireframing', 'Interactive Prototypes', 'SaaS Dashboard', 'Usability Audits'],
-    'ad-running': ['Meta Ads Manager', 'Google Search Ads', 'Audience Retargeting', 'A/B Creative Testing', 'Pixel Setup', 'Campaign Analytics'],
-  };
-
-  const suggestedSkills = skillsByCategory[category] || ['Communication', 'Fast Delivery', 'Problem Solving'];
+  const suggestedSkills = SKILLS_BY_CATEGORY[category] || ['Communication', 'Fast Delivery', 'Problem Solving'];
 
   const handleToggleSkill = (skill: string) => {
     if (selectedSkills.includes(skill)) {
@@ -191,10 +205,15 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
   const cardPreviewRef = useRef<HTMLDivElement>(null);
 
   // 1. Mandatory Form Validity Tracking (Real-time reactivity for button state and styling)
+  const effectiveSkills = [
+    ...selectedSkills,
+    ...(skillsInput.trim() && !selectedSkills.includes(skillsInput.trim()) ? [skillsInput.trim()] : []),
+  ];
+
   const isValidCategory = Boolean(category);
   const isValidMediaType = Boolean(mediaType);
   const isValidAvatar = Boolean(activeAvatar && activeAvatar.id);
-  const isValidSkills = Boolean(selectedSkills && selectedSkills.length > 0);
+  const isValidSkills = effectiveSkills.length > 0;
   const isValidGender = Boolean(gender);
   const isValidAddress = Boolean(address && address.trim());
   const isValidEmail = Boolean(
@@ -207,10 +226,10 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
     contactNumber &&
     contactNumber.trim() &&
     rawContactDigits !== '880' &&
-    rawContactDigits.length >= 8
+    rawContactDigits.length >= 7
   );
   const isValidPaymentMethod = Boolean(paymentMethod);
-  const isValidPaymentDetails = Boolean(paymentDetails && paymentDetails.trim());
+  const isValidPaymentDetails = Boolean(paymentDetails && paymentDetails.trim().length >= 3);
 
   const missingFields: string[] = [];
   if (!isValidCategory) missingFields.push('Service Category');
@@ -308,7 +327,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           const isImage = trimmedUrl.startsWith('data:image') || trimmedUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)($|\?)/i);
           const tools = (p?.toolsInput || '').trim()
             ? p.toolsInput.split(',').map((t) => t.trim()).filter(Boolean)
-            : selectedSkills.length > 0 ? selectedSkills.slice(0, 3) : ['Verified Toolset'];
+            : effectiveSkills.length > 0 ? effectiveSkills.slice(0, 3) : ['Verified Toolset'];
           const selectedType = mediaType || (isImage ? 'image' : 'website');
           return {
             id: `port-${Date.now()}-${idx}`,
@@ -325,27 +344,30 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           };
         });
 
+      const uploadToken = generateSecureUploadToken();
+      const defaultStatement = `Verified Gaenr Expert in ${catObj?.title || 'Creative Discipline'}. Specialized in professional deliverables and timely delivery.`;
+
       const newProfile: FreelancerProfile = {
-        id: `fl-${Date.now()}`,
+        id: `fl_${Date.now()}_${Math.floor(100 + Math.random() * 900)}`,
         code: generatedCode,
-        uploadToken: generateSecureUploadToken(),
+        uploadToken,
         category,
         categoryTitle: catObj?.title || 'Creative Discipline',
         avatarId: activeAvatar?.id || 'avatar-1',
-        rating: 0.0,
+        rating: 5.0,
         reviewsCount: 0,
         completedProjects: 0,
-        statement: (statement || '').trim(),
+        statement: (statement || '').trim() || defaultStatement,
         status: 'active',
-        isPublic: true, // Newly created profiles are immediately published to the directory
+        isPublic: true, // Newly created profiles are immediately published live to the directory
         satisfactionRate: {
-          satisfied: 0,
+          satisfied: 100,
           neutral: 0,
           unsatisfied: 0,
         },
         reviews: [],
         portfolioItems: createdPortfolioItems,
-        skills: selectedSkills,
+        skills: effectiveSkills.length > 0 ? effectiveSkills : [SKILLS_BY_CATEGORY[category]?.[0] || 'Verified Discipline'],
         // Private internal fields
         name: resolvedRealName,
         gender,
@@ -357,27 +379,36 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         paymentDetails: (paymentDetails || '').trim(),
         mediaType,
         pricingTiers: (pricingTiers || []).filter((p) => (p?.serviceName || '').trim() && (p?.price || '').trim()),
+        googleDriveFolderUrl: GAENR_OFFICIAL_DRIVE_FOLDER_URL,
+        dateAdded: new Date().toISOString(),
       };
 
+      // 1. Immediately add to freelancers (state + localStorage + remote sync)
       addFreelancer(newProfile);
 
-      // Email the expert in the background (fire-and-forget so UI navigation is never blocked)
-      if (newProfile.privateEmail) {
-        const cardNode = cardPreviewRef.current;
-        (async () => {
-          try {
-            let capturedCardDataUrl: string | null = null;
-            if (cardNode) {
-              capturedCardDataUrl = await captureIdCardDataUrl(cardNode);
-            }
-            await sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile);
-          } catch (bgErr) {
-            console.warn('Background welcome email note:', bgErr);
-          }
-        })();
+      // 2. Capture ID Card data URL from off-screen preview node with safe 2-second race
+      let capturedCardDataUrl: string | null = null;
+      try {
+        if (cardPreviewRef.current) {
+          const timeoutPromise = new Promise<null>((res) => setTimeout(() => res(null), 2000));
+          capturedCardDataUrl = await Promise.race([
+            captureIdCardDataUrl(cardPreviewRef.current),
+            timeoutPromise,
+          ]);
+        }
+      } catch (cErr) {
+        console.warn('ID Card snapshot capture note:', cErr);
       }
 
-      showToast(`Expert profile ${generatedCode} created successfully!`, 'success');
+      // 3. Dispatch official welcome email with ID Card and private upload token link in background
+      if (newProfile.privateEmail) {
+        sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile).catch((bgErr) => {
+          console.warn('Background welcome email note:', bgErr);
+        });
+      }
+
+      // 4. Success feedback and immediate navigation
+      showToast(`Expert profile ${generatedCode} is now LIVE on Gaenr directory!`, 'success');
       navigate('/manage/profiles');
     } catch (err) {
       console.error('Create profile error:', err);
@@ -407,7 +438,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           freelancer={{
             id: 'preview_card',
             code: generatedCode,
-            name: name.trim() || 'Verified Expert',
+            name: name.trim() || '',
             category,
             categoryTitle: catObj?.title || 'Verified Expert',
             avatarId: activeAvatar.id,
@@ -504,7 +535,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               </label>
               <CustomSelect
                 value={category}
-                onChange={(val) => setCategory(val as ServiceSlug)}
+                onChange={(val) => handleCategoryChange(val as ServiceSlug)}
                 options={categories.map((c) => ({
                   value: c.slug,
                   label: c.title,
@@ -1133,12 +1164,39 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                {paymentMethod === 'MFS'
-                  ? 'MFS Payout Details (Wallet Number / Provider / Account Type)'
-                  : 'Bank Transfer Details (Bank Name / Branch / Account / Routing)'}{' '}
-                <span className="text-rose-500">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
+                <label className="block text-xs font-bold text-slate-700">
+                  {paymentMethod === 'MFS'
+                    ? 'MFS Payout Details (Wallet Number / Provider / Account Type)'
+                    : 'Bank Transfer Details (Bank Name / Branch / Account / Routing)'}{' '}
+                  <span className="text-rose-500">*</span>
+                </label>
+                {paymentMethod === 'MFS' && (
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentDetails((prev) => prev ? `${prev}\nbKash (Personal): ` : 'bKash (Personal): ')}
+                      className="text-[10px] px-2 py-0.5 rounded-md bg-pink-50 text-pink-700 border border-pink-200 hover:bg-pink-100 font-bold font-mono transition-colors cursor-pointer"
+                    >
+                      + bKash
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentDetails((prev) => prev ? `${prev}\nNagad (Personal): ` : 'Nagad (Personal): ')}
+                      className="text-[10px] px-2 py-0.5 rounded-md bg-orange-50 text-orange-700 border border-orange-200 hover:bg-orange-100 font-bold font-mono transition-colors cursor-pointer"
+                    >
+                      + Nagad
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentDetails((prev) => prev ? `${prev}\nRocket (Personal): ` : 'Rocket (Personal): ')}
+                      className="text-[10px] px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 font-bold font-mono transition-colors cursor-pointer"
+                    >
+                      + Rocket
+                    </button>
+                  </div>
+                )}
+              </div>
               <textarea
                 id="expert-payment-details"
                 rows={4}
@@ -1167,13 +1225,13 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
             {isFormValid ? (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold text-[11px]">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>All mandatory fields completed — ready to create expert profile</span>
+                <span>All mandatory fields completed — ready to create live expert profile</span>
               </div>
             ) : (
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200/80 font-medium text-[11px]">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200/80 font-medium text-[11px]">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
                 <span>
-                  {missingFields.length} mandatory field{missingFields.length > 1 ? 's' : ''} remaining: <strong className="font-semibold text-amber-800">{missingFields.slice(0, 3).join(', ')}{missingFields.length > 3 ? '...' : ''}</strong>
+                  {missingFields.length} mandatory field{missingFields.length > 1 ? 's' : ''} remaining: <strong className="font-semibold text-amber-900">{missingFields.slice(0, 3).join(', ')}{missingFields.length > 3 ? '...' : ''}</strong>
                 </span>
               </div>
             )}
@@ -1187,7 +1245,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={() => navigate('/manage/profiles')}
-              className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 disabled:opacity-50 text-slate-700 rounded-xl text-xs font-semibold transition-all text-center select-none"
+              className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 disabled:opacity-50 text-slate-700 rounded-xl text-xs font-semibold transition-all text-center select-none cursor-pointer"
               style={{ cursor: 'pointer' }}
             >
               Cancel
@@ -1199,31 +1257,31 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               onClick={handleSubmit}
               title={
                 isFormValid
-                  ? 'Click to register and publish this expert profile'
+                  ? 'Click to register and publish this expert profile live to Gaenr directory'
                   : `Please complete remaining mandatory fields: ${missingFields.join(', ')}`
               }
               style={{
-                cursor: isSubmitting ? 'wait' : isFormValid ? 'pointer' : 'not-allowed',
+                cursor: isSubmitting ? 'wait' : 'pointer',
               }}
-              className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 select-none border ${
+              className={`w-full sm:w-auto px-7 py-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 select-none border cursor-pointer ${
                 isFormValid
-                  ? 'bg-[#006eff] hover:bg-blue-600 active:bg-blue-700 text-white border-blue-600 shadow-md shadow-blue-500/25 ring-2 ring-blue-500/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]'
-                  : 'bg-slate-100/90 hover:bg-slate-200/80 text-slate-400 border-slate-300/80 opacity-60 backdrop-blur-xs'
+                  ? 'bg-[#006eff] hover:bg-blue-600 active:bg-blue-700 text-white border-blue-600 shadow-md shadow-blue-500/30 ring-2 ring-blue-500/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]'
+                  : 'bg-[#006eff]/55 hover:bg-[#006eff]/65 active:bg-[#006eff]/70 text-white/90 border-blue-400/40 backdrop-blur-md opacity-75 shadow-xs hover:opacity-90 active:scale-[0.99]'
               }`}
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                  <span>Creating Expert Profile...</span>
+                  <span>Creating &amp; Publishing Live Profile...</span>
                 </>
               ) : isFormValid ? (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-white shrink-0" />
+                  <Sparkles className="w-4 h-4 text-white shrink-0" />
                   <span>Create Expert Profile</span>
                 </>
               ) : (
                 <>
-                  <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <Sparkles className="w-4 h-4 text-white/80 shrink-0" />
                   <span>Create Expert Profile ({missingFields.length} remaining)</span>
                 </>
               )}
