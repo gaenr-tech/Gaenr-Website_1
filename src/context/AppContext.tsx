@@ -1212,7 +1212,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       pricingNotes: taskData.pricingNotes,
       assignedVia: taskData.assignedVia || 'website_modal',
     };
-    setTaskAssignments((prev) => [newTask, ...prev]);
+    setTaskAssignments((prev) => {
+      const updated = [newTask, ...prev];
+      const serialized = JSON.stringify(updated);
+      try {
+        localStorage.setItem('gaenr_tasks', serialized);
+      } catch {}
+      syncKeyToRemote('gaenr_tasks', serialized);
+      return updated;
+    });
 
     // Also bridge to OperationalTask for internal ops tracking!
     const newOpTask: OperationalTask = {
@@ -1248,20 +1256,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const updateTaskStatus = (taskId: string, status: TaskAssignment['status']) => {
-    setTaskAssignments((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status } : t))
-    );
+    setTaskAssignments((prev) => {
+      const updated = prev.map((t) => (t.id === taskId ? { ...t, status } : t));
+      const serialized = JSON.stringify(updated);
+      try {
+        localStorage.setItem('gaenr_tasks', serialized);
+      } catch {}
+      syncKeyToRemote('gaenr_tasks', serialized);
+      return updated;
+    });
+    showToast(`Task status updated to ${status.replace('_', ' ')}`, 'success');
   };
 
   const updateTaskAssignment = (taskId: string, updates: Partial<TaskAssignment>) => {
-    setTaskAssignments((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t))
-    );
+    setTaskAssignments((prev) => {
+      const updated = prev.map((t) => (t.id === taskId ? { ...t, ...updates } : t));
+      const serialized = JSON.stringify(updated);
+      try {
+        localStorage.setItem('gaenr_tasks', serialized);
+      } catch {}
+      syncKeyToRemote('gaenr_tasks', serialized);
+      return updated;
+    });
   };
 
   const deleteTaskAssignment = (taskId: string) => {
-    setTaskAssignments((prev) => prev.filter((t) => t.id !== taskId));
-    showToast('Task record deleted', 'info');
+    setTaskAssignments((prev) => {
+      const updated = prev.filter((t) => t.id !== taskId);
+      const serialized = JSON.stringify(updated);
+      try {
+        localStorage.setItem('gaenr_tasks', serialized);
+      } catch {}
+      syncKeyToRemote('gaenr_tasks', serialized);
+      return updated;
+    });
+    showToast('Task record deleted successfully', 'info');
   };
 
   const submitFeedback = (fbData: Omit<FeedbackSubmission, 'id' | 'createdAt'>) => {
