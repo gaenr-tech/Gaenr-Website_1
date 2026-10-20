@@ -190,6 +190,43 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
   const cardPreviewRef = useRef<HTMLDivElement>(null);
 
+  // 1. Mandatory Form Validity Tracking (Real-time reactivity for button state and styling)
+  const isValidCategory = Boolean(category);
+  const isValidMediaType = Boolean(mediaType);
+  const isValidAvatar = Boolean(activeAvatar && activeAvatar.id);
+  const isValidSkills = Boolean(selectedSkills && selectedSkills.length > 0);
+  const isValidGender = Boolean(gender);
+  const isValidAddress = Boolean(address && address.trim());
+  const isValidEmail = Boolean(
+    privateEmail &&
+    privateEmail.trim() &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(privateEmail.trim())
+  );
+  const rawContactDigits = (contactNumber || '').replace(/\D/g, '');
+  const isValidContact = Boolean(
+    contactNumber &&
+    contactNumber.trim() &&
+    rawContactDigits !== '880' &&
+    rawContactDigits.length >= 8
+  );
+  const isValidPaymentMethod = Boolean(paymentMethod);
+  const isValidPaymentDetails = Boolean(paymentDetails && paymentDetails.trim());
+
+  const missingFields: string[] = [];
+  if (!isValidCategory) missingFields.push('Service Category');
+  if (!isValidMediaType) missingFields.push('Media Type');
+  if (!isValidAvatar) missingFields.push('Expert Portrait');
+  if (!isValidSkills) missingFields.push('Discipline Skills');
+  if (!isValidGender) missingFields.push('Gender');
+  if (!isValidAddress) missingFields.push('Present Address');
+  if (!isValidEmail) missingFields.push('Private Email');
+  if (!isValidContact) missingFields.push('WhatsApp Contact');
+  if (!isValidPaymentMethod || !isValidPaymentDetails) {
+    missingFields.push(paymentMethod === 'MFS' ? 'MFS Wallet Details' : 'Bank Transfer Details');
+  }
+
+  const isFormValid = missingFields.length === 0;
+
   const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
     if (e && typeof e.preventDefault === 'function') {
       e.preventDefault();
@@ -197,90 +234,64 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
     if (isSubmitting) return;
 
-    // 1. Mandatory: Service Category
-    if (!category) {
-      showToast('Please select a Service Category / সার্ভিস ক্যাটাগরি সিলেক্ট করুন', 'error');
-      document.getElementById('service-category')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    // 2. Mandatory: Portfolio Deliverable Media Type
-    if (!mediaType) {
-      showToast('Please select a Portfolio Deliverable Media Type / মিডিয়া টাইপ সিলেক্ট করুন', 'error');
-      document.getElementById('media-type')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    // 3. Mandatory: Expert Avatar Portrait
-    if (!activeAvatar || !activeAvatar.id) {
-      showToast('Please select an Expert Portrait / এক্সপার্ট পোট্রেট সিলেক্ট করুন', 'error');
-      document.getElementById('avatar-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    // 4. Mandatory: Compliance Competencies & Discipline Skills
-    if (!selectedSkills || selectedSkills.length === 0) {
-      showToast('Please select at least one Discipline Skill / অন্তত একটি স্কিল সিলেক্ট করুন', 'error');
-      document.getElementById('skills-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    // 5. Mandatory: Gender
-    if (!gender) {
-      showToast('Please select Gender / জেন্ডার সিলেক্ট করুন', 'error');
-      document.getElementById('expert-gender')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    // 6. Mandatory: Present Address
-    if (!address || !address.trim()) {
-      showToast('Please enter Present Address / District (বর্তমান ঠিকানা লিখুন)', 'error');
-      const el = document.getElementById('expert-address');
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el?.focus();
-      return;
-    }
-
-    // 7. Mandatory: Private Mail
-    if (!privateEmail || !privateEmail.trim()) {
-      showToast('Please enter Private Email (প্রাইভেট ইমেইল লিখুন)', 'error');
-      const el = document.getElementById('expert-private-email');
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el?.focus();
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(privateEmail.trim())) {
-      showToast('Please enter a valid email address (e.g. name@domain.com)', 'error');
-      const el = document.getElementById('expert-private-email');
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el?.focus();
-      return;
-    }
-
-    // 8. Mandatory: Contact Number (WhatsApp)
-    const rawContactDigits = contactNumber.replace(/[\s+-]/g, '');
-    if (!contactNumber || !contactNumber.trim() || rawContactDigits === '880' || rawContactDigits.length < 8) {
-      showToast('Please enter WhatsApp Contact Number (হোয়াটসঅ্যাপ নম্বর লিখুন)', 'error');
-      const el = document.getElementById('expert-contact-number');
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el?.focus();
-      return;
-    }
-
-    // 9. Mandatory: Payment Method & Details
-    if (!paymentMethod) {
-      showToast('Please select a Payment Payout Method (পেমেন্ট মেথড সিলেক্ট করুন)', 'error');
-      document.getElementById('expert-payment-method')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    if (!paymentDetails || !paymentDetails.trim()) {
-      const msg = paymentMethod === 'MFS'
-        ? 'Please enter MFS payout details / wallet number (এমএফএস ওয়ালেট নম্বর লিখুন)'
-        : 'Please enter Bank Transfer details (ব্যাংক নাম, শাখা ও অ্যাকাউন্ট নম্বর লিখুন)';
-      showToast(msg, 'error');
-      const el = document.getElementById('expert-payment-details');
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el?.focus();
+    // Sequential verification with auto-scroll and direct user feedback
+    if (!isFormValid) {
+      if (!isValidCategory) {
+        showToast('Please select a Service Category / সার্ভিস ক্যাটাগরি সিলেক্ট করুন', 'error');
+        document.getElementById('service-category')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      if (!isValidMediaType) {
+        showToast('Please select a Portfolio Deliverable Media Type / মিডিয়া টাইপ সিলেক্ট করুন', 'error');
+        document.getElementById('media-type')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      if (!isValidAvatar) {
+        showToast('Please select an Expert Portrait / এক্সপার্ট পোট্রেট সিলেক্ট করুন', 'error');
+        document.getElementById('avatar-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      if (!isValidSkills) {
+        showToast('Please select at least one Discipline Skill / অন্তত একটি স্কিল সিলেক্ট করুন', 'error');
+        document.getElementById('skills-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      if (!isValidGender) {
+        showToast('Please select Gender / জেন্ডার সিলেক্ট করুন', 'error');
+        document.getElementById('expert-gender')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      if (!isValidAddress) {
+        showToast('Please enter Present Address / District (বর্তমান ঠিকানা লিখুন)', 'error');
+        const el = document.getElementById('expert-address');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el?.focus();
+        return;
+      }
+      if (!isValidEmail) {
+        showToast('Please enter a valid Private Email (প্রাইভেট ইমেইল লিখুন)', 'error');
+        const el = document.getElementById('expert-private-email');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el?.focus();
+        return;
+      }
+      if (!isValidContact) {
+        showToast('Please enter WhatsApp Contact Number (হোয়াটসঅ্যাপ নম্বর লিখুন)', 'error');
+        const el = document.getElementById('expert-contact-number');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el?.focus();
+        return;
+      }
+      if (!isValidPaymentDetails) {
+        const msg = paymentMethod === 'MFS'
+          ? 'Please enter MFS payout details / wallet number (এমএফএস ওয়ালেট নম্বর লিখুন)'
+          : 'Please enter Bank Transfer details (ব্যাংক নাম, শাখা ও অ্যাকাউন্ট নম্বর লিখুন)';
+        showToast(msg, 'error');
+        const el = document.getElementById('expert-payment-details');
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el?.focus();
+        return;
+      }
       return;
     }
 
@@ -1149,32 +1160,75 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           </div>
         </div>
 
-        {/* Form Actions */}
-        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-3">
-          <button
-            type="button"
-            disabled={isSubmitting}
-            onClick={() => navigate('/manage/profiles')}
-            className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-700 rounded-xl text-xs font-semibold transition-colors cursor-pointer text-center"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            id="btn-create-expert-profile"
-            disabled={isSubmitting}
-            onClick={handleSubmit}
-            className="w-full sm:w-auto px-6 py-2.5 bg-[#006eff] hover:bg-blue-600 active:scale-[0.98] disabled:opacity-60 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 transition-all cursor-pointer flex items-center justify-center gap-2 select-none"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-                <span>Creating Expert Profile...</span>
-              </>
+        {/* Form Actions with Dynamic Live Validation Feedback */}
+        <div className="pt-4 border-t border-slate-200/80 space-y-3">
+          {/* Validation Status Indicator Pill */}
+          <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+            {isFormValid ? (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold text-[11px]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>All mandatory fields completed — ready to create expert profile</span>
+              </div>
             ) : (
-              <span>Create Expert Profile</span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200/80 font-medium text-[11px]">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+                <span>
+                  {missingFields.length} mandatory field{missingFields.length > 1 ? 's' : ''} remaining: <strong className="font-semibold text-amber-800">{missingFields.slice(0, 3).join(', ')}{missingFields.length > 3 ? '...' : ''}</strong>
+                </span>
+              </div>
             )}
-          </button>
+            <span className="text-[11px] text-slate-400 font-mono">
+              {isFormValid ? 'Status: 100% Ready' : `Progress: ${9 - missingFields.length} of 9 completed`}
+            </span>
+          </div>
+
+          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
+            <button
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => navigate('/manage/profiles')}
+              className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 disabled:opacity-50 text-slate-700 rounded-xl text-xs font-semibold transition-all text-center select-none"
+              style={{ cursor: 'pointer' }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              id="btn-create-expert-profile"
+              disabled={isSubmitting}
+              onClick={handleSubmit}
+              title={
+                isFormValid
+                  ? 'Click to register and publish this expert profile'
+                  : `Please complete remaining mandatory fields: ${missingFields.join(', ')}`
+              }
+              style={{
+                cursor: isSubmitting ? 'wait' : isFormValid ? 'pointer' : 'not-allowed',
+              }}
+              className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 select-none border ${
+                isFormValid
+                  ? 'bg-[#006eff] hover:bg-blue-600 active:bg-blue-700 text-white border-blue-600 shadow-md shadow-blue-500/25 ring-2 ring-blue-500/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]'
+                  : 'bg-slate-100/90 hover:bg-slate-200/80 text-slate-400 border-slate-300/80 opacity-60 backdrop-blur-xs'
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                  <span>Creating Expert Profile...</span>
+                </>
+              ) : isFormValid ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-white shrink-0" />
+                  <span>Create Expert Profile</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span>Create Expert Profile ({missingFields.length} remaining)</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </form>
     </div>
