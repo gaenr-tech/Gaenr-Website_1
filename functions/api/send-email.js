@@ -283,7 +283,7 @@ export async function onRequestPost({ request, env }) {
       const profileUrl = `${siteUrl}/experts/${encodeURIComponent(code)}`;
       const uploadToken = payload.expert?.uploadToken || code;
       const uploadPortalUrl = `${siteUrl}/u/${encodeURIComponent(uploadToken)}`;
-      const idCardDownloadUrl = `${siteUrl}/api/id-card?code=${encodeURIComponent(code)}`;
+      const idCardDownloadUrl = `${siteUrl}/download/id-card/${encodeURIComponent(code)}`;
 
       subject = 'Your GAENR Expert Profile is Live';
       text = `Hi ${name},\n\nCongratulations! Your verified expert profile (${code}) is now active and live on Gaenr.\n\nDownload ID Card: ${idCardDownloadUrl}\nUpload Portfolios: ${uploadPortalUrl}\nView Profile: ${profileUrl}\n\nTeam GAENR`;

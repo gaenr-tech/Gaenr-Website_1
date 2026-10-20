@@ -72,14 +72,22 @@ export async function onRequestGet(context) {
     console.error('GET /api/id-card error:', err);
   }
 
-  // Fallback: If not found in id_cards table, redirect to public live profile or return 404
-  return new Response(
-    JSON.stringify({ error: 'ID card image not found for code ' + code }),
-    {
-      status: 404,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    }
-  );
+  // Fallback: If not found in id_cards table, check format query
+  const format = url.searchParams.get('format');
+  if (format === 'json') {
+    return new Response(
+      JSON.stringify({ error: 'ID card image not found for code ' + code }),
+      {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
+  // Seamless redirect: Direct user to the official frontend ID card download page
+  // where the card is rendered, automatically downloaded, and cached on server
+  const downloadUrl = new URL(`/download/id-card/${encodeURIComponent(code)}`, request.url).toString();
+  return Response.redirect(downloadUrl, 302);
 }
 
 export async function onRequestPost(context) {

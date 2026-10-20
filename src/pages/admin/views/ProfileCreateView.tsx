@@ -241,7 +241,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
   const isFormValid = missingFields.length === 0;
 
-  const handleSubmit = (e?: React.FormEvent | React.MouseEvent) => {
+  const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
     if (e && typeof e.preventDefault === 'function') {
       e.preventDefault();
     }
@@ -358,33 +358,46 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         dateAdded: new Date().toISOString(),
       };
 
-      // 1. Immediately add to freelancers (state + localStorage + remote sync)
+      // 1. Capture ID Card high-resolution PNG snapshot while element is mounted in DOM
+      let capturedCardDataUrl: string | null = null;
+      if (cardPreviewRef.current) {
+        try {
+          capturedCardDataUrl = await captureIdCardDataUrl(cardPreviewRef.current);
+        } catch (captureErr) {
+          console.warn('ID Card capture error:', captureErr);
+        }
+      }
+
+      // 2. Immediately cache ID Card to Cloudflare /api/id-card
+      if (capturedCardDataUrl) {
+        try {
+          fetch('/api/id-card', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: generatedCode, imageData: capturedCardDataUrl }),
+          }).catch(() => {});
+        } catch {}
+      }
+
+      // 3. Immediately add to freelancers (state + localStorage + remote sync)
       addFreelancer(newProfile);
 
-      // 2. Success feedback
+      // 4. Send official welcome email with attached ID Card & verified download link
+      if (newProfile.privateEmail && !newProfile.privateEmail.includes('@gaenr.internal')) {
+        sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile).catch((err) => {
+          console.warn('Welcome email error:', err);
+        });
+      }
+
+      // 5. Success feedback
       showToast(`Expert profile ${generatedCode} created and published LIVE!`, 'success');
 
-      // 3. Immediate redirect to /manage/profiles
+      // 6. Navigate to /manage/profiles
       navigate('/manage/profiles');
-
-      // 4. Fire-and-forget: capture ID Card snapshot and dispatch welcome email in background
-      setTimeout(async () => {
-        try {
-          let capturedCardDataUrl: string | null = null;
-          if (cardPreviewRef.current) {
-            try {
-              capturedCardDataUrl = await captureIdCardDataUrl(cardPreviewRef.current);
-            } catch {}
-          }
-          if (newProfile.privateEmail && !newProfile.privateEmail.includes('@gaenr.internal')) {
-            sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile).catch(() => {});
-          }
-        } catch {}
-      }, 100);
-
     } catch (err) {
       console.error('Create profile error:', err);
       showToast('Failed to create profile. Please try again.', 'error');
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -416,11 +429,11 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
             completedProjects: 0,
             rating: 0,
             reviewsCount: 0,
-            satisfactionRate: { satisfied: 100, neutral: 0, unsatisfied: 0 },
+            satisfactionRate: { satisfied: 0, neutral: 0, unsatisfied: 0 },
             reviews: [],
             portfolioItems: [],
             isPublic: true,
-            skills: selectedSkills,
+            skills: resolvedSkills,
             status: 'active',
             dateAdded: new Date().toISOString(),
             gender,

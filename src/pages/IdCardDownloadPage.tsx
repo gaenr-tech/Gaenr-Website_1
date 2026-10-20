@@ -27,6 +27,25 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
 
   const expert = freelancers.find((f) => f.code.toUpperCase() === resolvedCode);
 
+  const effectiveExpert: FreelancerProfile = expert || {
+    id: `fl_${resolvedCode}`,
+    code: resolvedCode,
+    name: '',
+    category: 'graphic_creative',
+    categoryTitle: 'Verified Expert',
+    avatarId: 'avatar-1',
+    completedProjects: 0,
+    rating: 0,
+    reviewsCount: 0,
+    satisfactionRate: { satisfied: 0, neutral: 0, unsatisfied: 0 },
+    reviews: [],
+    portfolioItems: [],
+    isPublic: true,
+    skills: ['Verified Discipline'],
+    status: 'active',
+    dateAdded: new Date().toISOString(),
+  };
+
   const triggerDownload = (url: string, filename: string) => {
     const a = document.createElement('a');
     a.href = url;
@@ -46,8 +65,9 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
 
     // 1. Try downloading directly from /api/id-card?code=...
     try {
-      const res = await fetch(`/api/id-card?code=${encodeURIComponent(resolvedCode)}`);
-      if (res.ok) {
+      const res = await fetch(`/api/id-card?code=${encodeURIComponent(resolvedCode)}&format=binary`);
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('image')) {
         const blob = await res.blob();
         if (blob && blob.size > 1000) {
           const blobUrl = URL.createObjectURL(blob);
@@ -176,11 +196,9 @@ export const IdCardDownloadPage: React.FC<IdCardDownloadPageProps> = ({ code: pr
 
       {/* Hidden Offscreen Render for Instant Client-Side DOM Capture */}
       <div className="fixed -left-[9999px] -top-[9999px] pointer-events-none opacity-0" aria-hidden="true">
-        {expert && (
-          <div ref={cardRef}>
-            <ExpertIdCard freelancer={expert} />
-          </div>
-        )}
+        <div ref={cardRef}>
+          <ExpertIdCard freelancer={effectiveExpert} />
+        </div>
       </div>
 
       {/* Footer */}
