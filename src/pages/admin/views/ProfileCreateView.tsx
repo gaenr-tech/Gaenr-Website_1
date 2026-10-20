@@ -190,26 +190,17 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
   const cardPreviewRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!name.trim()) {
-      showToast('Please enter the expert real name for internal records', 'error');
-      const nameEl = document.getElementById('expert-real-name');
-      if (nameEl) {
-        nameEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        nameEl.focus();
-      }
-      return;
+  const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
     }
 
-    if (privateEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(privateEmail.trim())) {
-      showToast('Please enter a valid private email address or leave it blank', 'error');
-      return;
-    }
+    if (isSubmitting) return;
 
     try {
       setIsSubmitting(true);
+
+      const resolvedRealName = name.trim() || activeAvatar?.name || `Expert ${generatedCode}`;
 
       // Map initial portfolio items entered by admin (if any)
       const createdPortfolioItems: PortfolioItem[] = initialPortfolio
@@ -242,7 +233,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         uploadToken: generateSecureUploadToken(),
         category,
         categoryTitle: catObj?.title || 'Creative Discipline',
-        avatarId: activeAvatar.id,
+        avatarId: activeAvatar?.id || 'avatar-1',
         rating: 0.0,
         reviewsCount: 0,
         completedProjects: 0,
@@ -258,7 +249,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         portfolioItems: createdPortfolioItems,
         skills: selectedSkills,
         // Private internal fields
-        name: name.trim(),
+        name: resolvedRealName,
         gender,
         address: address.trim(),
         privateEmail: privateEmail.trim(),
@@ -282,16 +273,17 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               capturedCardDataUrl = await captureIdCardDataUrl(cardNode);
             }
             await sendExpertWelcomeEmail(generatedCode, capturedCardDataUrl, newProfile);
-          } catch (e) {
-            console.warn('Background welcome email note:', e);
+          } catch (bgErr) {
+            console.warn('Background welcome email note:', bgErr);
           }
         })();
       }
 
+      showToast(`Expert profile ${generatedCode} created successfully!`, 'success');
       navigate('/manage/profiles');
     } catch (err) {
-      console.error(err);
-      showToast('Failed to create profile. Please check required fields.', 'error');
+      console.error('Create profile error:', err);
+      showToast('Failed to create profile. Please try again.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -917,12 +909,12 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Expert Real Name <span className="text-rose-500">*</span>
+                Expert Real Name <span className="text-slate-400 font-normal">(Optional - defaults to portrait name)</span>
               </label>
               <input
                 id="expert-real-name"
                 type="text"
-                placeholder="e.g. Tanvir Hasan"
+                placeholder={activeAvatar?.name ? `e.g. ${activeAvatar.name}` : 'e.g. Tanvir Hasan'}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-[#006eff] focus:outline-none transition-all shadow-2xs"
@@ -1003,14 +995,14 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           <div className="border-b border-slate-100 pb-3 flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-[#006eff]" />
             <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
-              8. Payout &amp; Banking Credentials
+              8. Payout &amp; Payment Credentials (MFS / Bank Transfer)
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
             <div className="sm:col-span-2">
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Payment Method <span className="text-rose-500">*</span>
+                Payment Payout Method <span className="text-rose-500">*</span>
               </label>
               <CustomSelect
                 value={paymentMethod}
@@ -1018,11 +1010,11 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
                 options={[
                   {
                     value: 'MFS',
-                    label: 'MFS',
+                    label: 'MFS (bKash / Nagad / Rocket)',
                   },
                   {
                     value: 'Bank Transfer',
-                    label: 'Bank Transfer',
+                    label: 'Bank Transfer (Traditional Bank Account)',
                   },
                 ]}
               />
@@ -1030,17 +1022,26 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
             <div className="sm:col-span-2">
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Payment Details (Account Number / Routing / Instructions) <span className="text-slate-400 font-normal">(Optional)</span>
+                {paymentMethod === 'MFS'
+                  ? 'MFS Payout Details (Wallet Number / Provider / Account Type)'
+                  : 'Bank Transfer Details (Bank Name / Branch / Account / Routing)'}{' '}
+                <span className="text-slate-400 font-normal">(Optional)</span>
               </label>
               <textarea
                 rows={4}
-                placeholder="e.g.&#10;Account Name: Tanvir Ahmed&#10;Account Number: 01700-000000 / 150.120.3456&#10;Bank / Branch: Dutch Bangla Bank, Banani Branch&#10;Routing Number: 090271234"
+                placeholder={
+                  paymentMethod === 'MFS'
+                    ? 'e.g.\nProvider: bKash (Personal) / Nagad / Rocket\nWallet Number: 01700-000000\nAccount Holder Name: Tanvir Hasan'
+                    : 'e.g.\nBank Name: Dutch Bangla Bank / BRAC Bank / City Bank\nBranch Name: Banani Branch, Dhaka\nAccount Name: Tanvir Hasan\nAccount Number: 150.120.345678\nRouting Number: 090271234'
+                }
                 value={paymentDetails}
                 onChange={(e) => setPaymentDetails(e.target.value)}
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-[#006eff] focus:outline-none transition-all font-mono shadow-2xs leading-relaxed"
               />
               <p className="text-[11px] text-slate-400 mt-1">
-                Multi-line statement enabled. Specify full bank instructions, routing numbers, or account instructions (can also be updated later).
+                {paymentMethod === 'MFS'
+                  ? 'Multi-line details supported. Specify MFS provider (bKash/Nagad/Rocket), personal/merchant, and mobile wallet number (can also be updated later).'
+                  : 'Multi-line statement enabled. Specify bank name, branch, account number, and routing details (can also be updated later).'}
               </p>
             </div>
           </div>
@@ -1057,9 +1058,10 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
             Cancel
           </button>
           <button
-            type="submit"
+            type="button"
             disabled={isSubmitting}
-            className="w-full sm:w-auto px-6 py-2.5 bg-[#006eff] hover:bg-blue-600 disabled:opacity-60 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+            onClick={handleSubmit}
+            className="w-full sm:w-auto px-6 py-2.5 bg-[#006eff] hover:bg-blue-600 active:scale-[0.98] disabled:opacity-60 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>
