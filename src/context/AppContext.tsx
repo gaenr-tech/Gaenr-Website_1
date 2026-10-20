@@ -94,6 +94,7 @@ interface AppContextType {
   addFreelancer: (newFl: FreelancerProfile) => void;
   updateFreelancer: (code: string, updates: Partial<FreelancerProfile>) => void;
   deleteFreelancer: (code: string) => boolean;
+  deleteAllFreelancers: () => boolean;
   toggleFreelancerVisibility: (code: string) => void;
   addExpertReview: (
     code: string,
@@ -247,161 +248,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
 
       const saved = localStorage.getItem('gaenr_freelancers');
-      if (saved) {
-        const parsed: FreelancerProfile[] = JSON.parse(saved);
-
-        let hasChanges = false;
-        const updated = parsed.map((fl) => {
-          let updatedFl = { ...fl };
-
-          // Ensure valid avatar: preserve chosen avatar if valid in RAW_AVATAR_SPECS, else assign recommended student avatar
-          const hasValidAvatar = RAW_AVATAR_SPECS.some((s) => s.id === fl.avatarId);
-          if (!hasValidAvatar) {
-            const categoryAvatar = getCategoryAvatar(
-              fl.category,
-              updatedFl.code,
-              fl.gender
-            );
-            updatedFl.avatarId = categoryAvatar.id;
-            hasChanges = true;
-          }
-
-          // If an expert has 0 reviews, ensure rating is accurately 0.0
-          if ((!fl.reviewsCount || fl.reviewsCount === 0) && (!fl.reviews || fl.reviews.length === 0)) {
-            if (fl.rating !== 0.0 || fl.reviewsCount !== 0) {
-              updatedFl.rating = 0.0;
-              updatedFl.reviewsCount = 0;
-              hasChanges = true;
-            }
-          }
-
-          // Strip fake "Professional Studio Tools" fallback from existing deliverables
-          if (updatedFl.portfolioItems && updatedFl.portfolioItems.length > 0) {
-            const cleanedPort = updatedFl.portfolioItems.map((p: any) => ({
-              ...p,
-              tools: (p.tools || []).filter((t: string) => t !== 'Professional Studio Tools'),
-            }));
-            if (JSON.stringify(cleanedPort) !== JSON.stringify(updatedFl.portfolioItems)) {
-              updatedFl.portfolioItems = cleanedPort;
-              hasChanges = true;
-            }
-          }
-
-          // Clean legacy auto-generated dummy statement on custom test profiles
-          if (
-            updatedFl.id?.startsWith('fl-') &&
-            updatedFl.statement &&
-            updatedFl.statement.includes('is an authorized Gaenr-verified specialist in')
-          ) {
-            updatedFl.statement = '';
-            hasChanges = true;
-          }
-
-          // Clean legacy dummy portfolio items that have no URL AND no real title/description content
-          // NOTE: Curated portfolio items without URLs are valid — they use category-specific visual cards
-          if (updatedFl.id?.startsWith('fl-') && updatedFl.portfolioItems && updatedFl.portfolioItems.length > 0) {
-            const realPort = updatedFl.portfolioItems.filter((p: any) => {
-              // Keep if it has a real URL link
-              if (p.mediaUrl || p.imageUrl || p.externalUrl) return true;
-              // Keep curated items that have a meaningful title and description (not auto-generated dummies)
-              const hasTitle = p.title && p.title.trim().length > 0 &&
-                !p.title.startsWith('Portfolio Item') &&
-                !p.title.startsWith('Untitled');
-              const hasDesc = p.description && p.description.trim().length > 5;
-              return hasTitle && hasDesc;
+      if (saved !== null) {
+        try {
+          const parsed: FreelancerProfile[] = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            // Strictly respect saved state — even if empty []!
+            // Never re-seed or resurrect deleted profiles.
+            return parsed.map((fl) => {
+              const updatedFl = { ...fl };
+              if (!updatedFl.uploadToken) {
+                updatedFl.uploadToken = generateSecureUploadToken();
+              }
+              return updatedFl;
             });
-            if (realPort.length !== updatedFl.portfolioItems.length) {
-              updatedFl.portfolioItems = realPort;
-              hasChanges = true;
-            }
           }
-
-          // Restore curated portfolio items for baseline freelancers whose portfolio was
-          // accidentally emptied by the previous buggy filter (items without URLs).
-          // If portfolio is now empty but the initial data has curated items for this ID, restore them.
-          if (updatedFl.id?.startsWith('fl-') && (!updatedFl.portfolioItems || updatedFl.portfolioItems.length === 0)) {
-            const initialMatch = INITIAL_FREELANCERS.find((f) => f.id === updatedFl.id);
-            if (initialMatch && initialMatch.portfolioItems && initialMatch.portfolioItems.length > 0) {
-              updatedFl.portfolioItems = initialMatch.portfolioItems;
-              hasChanges = true;
-            }
-          }
-
-          // If presentation slide specialist fl-ps-1 still has legacy drive link in cache, update to clean slide image asset
-          if (updatedFl.id === 'fl-ps-1' && (updatedFl.portfolioItems || []).some((p: any) => p.mediaUrl?.includes('drive.google.com'))) {
-            const initialMatch = INITIAL_FREELANCERS.find((f) => f.id === 'fl-ps-1');
-            if (initialMatch?.portfolioItems) {
-              updatedFl.portfolioItems = initialMatch.portfolioItems;
-              hasChanges = true;
-            }
-          }
-
-          // Normalize bKash Personal to bKash
-          if (updatedFl.paymentMethod === 'bKash Personal') {
-            updatedFl.paymentMethod = 'bKash';
-            hasChanges = true;
-          }
-
-          // Ensure canonical skills and baseline profiles preserve user-uploaded portfolio items!
-          const initMatch = updatedFl.id?.startsWith('fl-')
-            ? INITIAL_FREELANCERS.find((f) => f.id === updatedFl.id)
-            : undefined;
-          if (initMatch) {
-            updatedFl.code = initMatch.code;
-            updatedFl.skills = initMatch.skills;
-            updatedFl.keywords = initMatch.keywords;
-
-            const existingItems = updatedFl.portfolioItems || [];
-            const initialIds = new Set((initMatch.portfolioItems || []).map((p) => p.id));
-            // Retain all user-uploaded items (items whose ID is not part of the initial static template)
-            const userUploadedItems = existingItems.filter((p) => !initialIds.has(p.id));
-
-            // Merge: User uploaded items stay at the front, followed by canonical template items
-            const mergedItems = [...userUploadedItems, ...(initMatch.portfolioItems || [])];
-            if (JSON.stringify(mergedItems) !== JSON.stringify(existingItems)) {
-              updatedFl.portfolioItems = mergedItems;
-              hasChanges = true;
-            }
-          }
-
-          // Ensure secure high-entropy uploadToken exists (privacy from public expert IDs)
-          if (!updatedFl.uploadToken) {
-            updatedFl.uploadToken = generateSecureUploadToken();
-            hasChanges = true;
-          }
-
-          return updatedFl;
-        });
-
-        if (parsed.length === 0) {
-          const initialWithTokens = INITIAL_FREELANCERS.map((f) => ({
-            ...f,
-            uploadToken: f.uploadToken || generateSecureUploadToken(),
-          }));
-          try {
-            localStorage.setItem('gaenr_freelancers', JSON.stringify(initialWithTokens));
-          } catch {}
-          return initialWithTokens;
-        }
-
-        // Ensure any profile from INITIAL_FREELANCERS that is missing in saved state is merged
-        for (const initFl of INITIAL_FREELANCERS) {
-          if (!updated.some((f) => f.id === initFl.id || f.code === initFl.code)) {
-            updated.unshift({
-              ...initFl,
-              uploadToken: initFl.uploadToken || generateSecureUploadToken(),
-            });
-            hasChanges = true;
-          }
-        }
-
-        if (hasChanges) {
-          try {
-            localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
-          } catch {}
-        }
-        return updated;
+        } catch {}
       }
+
       const initialWithTokens = INITIAL_FREELANCERS.map((f) => ({
         ...f,
         uploadToken: f.uploadToken || generateSecureUploadToken(),
@@ -411,10 +274,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       } catch {}
       return initialWithTokens;
     } catch {
-      return INITIAL_FREELANCERS.map((f) => ({
-        ...f,
-        uploadToken: f.uploadToken || generateSecureUploadToken(),
-      }));
+      return [];
     }
   });
 
@@ -977,14 +837,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const deleteFreelancer = (code: string): boolean => {
+    const clean = code.trim().toLowerCase();
     setFreelancers((prev) => {
-      const updated = prev.filter((fl) => fl.code !== code);
+      const updated = prev.filter(
+        (fl) => fl.code.toLowerCase() !== clean && fl.id.toLowerCase() !== clean
+      );
       try {
         localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
       } catch {}
       return updated;
     });
-    showToast(`Expert profile ${code} deleted successfully`, 'info');
+    showToast(`Expert profile ${code} permanently deleted`, 'info');
+    return true;
+  };
+
+  const deleteAllFreelancers = (): boolean => {
+    setFreelancers(() => {
+      const updated: FreelancerProfile[] = [];
+      try {
+        localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    showToast('All expert profiles permanently removed', 'info');
     return true;
   };
 
@@ -1492,13 +1367,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return updated;
       });
 
-      setExpertApplications((prev) =>
-        prev.map((a) =>
+      setExpertApplications((prev) => {
+        const updated = prev.map((a) =>
           a.id === id
             ? { ...a, status: 'onboarded', convertedExpertCode: generatedCode, uploadToken: uploadToken }
             : a
-        )
-      );
+        );
+        try {
+          localStorage.setItem('gaenr_expert_applications', JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
 
       // Trigger official welcome email in 100% English with ID card badge and upload portal link
       if (targetApp.email) {
@@ -1512,9 +1391,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     if (newStatus === 'approved') {
-      setExpertApplications((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, status: 'approved' } : a))
-      );
+      setExpertApplications((prev) => {
+        const updated = prev.map((a) => (a.id === id ? { ...a, status: 'approved' } : a));
+        try {
+          localStorage.setItem('gaenr_expert_applications', JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
 
       // Trigger automated onboarding invitation email directly to applicant
       if (targetApp.email) {
@@ -1527,9 +1410,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return;
     }
 
-    setExpertApplications((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
-    );
+    setExpertApplications((prev) => {
+      const updated = prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a));
+      try {
+        localStorage.setItem('gaenr_expert_applications', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
     showToast(`Status updated to ${newStatus}`, 'info');
   };
 
@@ -1648,6 +1535,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addFreelancer,
         updateFreelancer,
         deleteFreelancer,
+        deleteAllFreelancers,
         toggleFreelancerVisibility,
         addExpertReview,
         confirmExpertDelivery,

@@ -96,7 +96,17 @@ const isPrivilegedWriter = (): boolean => {
 };
 
 const queueRemoteMutation = (payload: { changes?: Record<string, string>; deletedKeys?: string[]; arrayChanges?: ArrayChange[] }) => {
-  if (!hydrated || !isPrivilegedWriter()) return;
+  if (!hydrated) return;
+
+  const targetKeys = [
+    ...Object.keys(payload.changes || {}),
+    ...(payload.deletedKeys || []),
+    ...(payload.arrayChanges || []).map((change) => change.key),
+  ];
+
+  const GUEST_WRITABLE = new Set(['gaenr_tasks', 'gaenr_expert_applications', 'gaenr_feedbacks']);
+  const isAllowed = isPrivilegedWriter() || (targetKeys.length > 0 && targetKeys.every((k) => GUEST_WRITABLE.has(k)));
+  if (!isAllowed) return;
 
   const safeChanges: Record<string, string> = {};
   for (const [k, v] of Object.entries(payload.changes || {})) {
@@ -115,12 +125,12 @@ const queueRemoteMutation = (payload: { changes?: Record<string, string>; delete
     arrayChanges: safeArrayChanges.length > 0 ? safeArrayChanges : undefined,
   };
 
-  const keys = [
+  const affectedKeys = [
     ...Object.keys(cleanPayload.changes || {}),
     ...(cleanPayload.deletedKeys || []),
     ...(cleanPayload.arrayChanges || []).map((change) => change.key),
   ];
-  keys.forEach((key) => pendingKeys.add(key));
+  affectedKeys.forEach((key) => pendingKeys.add(key));
 
   const body = JSON.stringify(cleanPayload);
   const options: RequestInit = {
@@ -213,37 +223,18 @@ export const initializeRemoteStorage = async () => {
       Object.entries(remoteState).forEach(([key, rawValue]) => {
         if (LOCAL_ONLY_KEYS.has(key)) return;
         const value = serializeValue(rawValue);
-
-        // Smart merge for arrays so local additions are never lost or wiped by older server state
-        if (key === 'gaenr_freelancers' || key === 'gaenr_expert_applications' || key === 'gaenr_feedbacks') {
-          const localVal = nativeStorage.getItem(key);
-          const localParsed = parseArray(localVal);
-          const remoteParsed = parseArray(value);
-          if (Array.isArray(localParsed) && Array.isArray(remoteParsed)) {
-            const mergedMap = new Map<string, unknown>();
-            // Remote items first
-            remoteParsed.forEach((item) => mergedMap.set(identity(item), item));
-            let localAdditionsFound = false;
-            // Retain any local additions
-            localParsed.forEach((item) => {
-              const k = identity(item);
-              if (!mergedMap.has(k)) {
-                mergedMap.set(k, item);
-                localAdditionsFound = true;
-              }
-            });
-            const mergedArray = Array.from(mergedMap.values());
-            const mergedStr = JSON.stringify(mergedArray);
-            nativeSetItem.call(nativeStorage, key, mergedStr);
-            if (localAdditionsFound && isPrivilegedWriter()) {
-              // Immediately sync the merged state to enrich remote database
-              queueRemoteMutation({ changes: { [key]: mergedStr } });
-            }
-            return;
-          }
-        }
-
+        const previous = nativeStorage.getItem(key);
         nativeSetItem.call(nativeStorage, key, value);
+        if (previous !== value) {
+          window.dispatchEvent(
+            new StorageEvent('storage', {
+              key,
+              oldValue: previous,
+              newValue: value,
+              storageArea: nativeStorage,
+            })
+          );
+        }
       });
     } else if (isPrivilegedWriter()) {
       // One-time migration: only an authorized admin seeds the shared store.

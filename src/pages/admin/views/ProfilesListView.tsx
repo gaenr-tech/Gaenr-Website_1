@@ -123,6 +123,7 @@ interface ProfilesListViewProps {
   avatars?: AvatarAsset[];
   onUpdateFreelancer?: (code: string, updates: Partial<FreelancerProfile>) => void;
   onDeleteFreelancer?: (code: string) => void;
+  onDeleteAllFreelancers?: () => void;
   showToast?: (msg: string, type?: 'success' | 'error' | 'info') => void;
 }
 
@@ -135,6 +136,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
   avatars = [],
   onUpdateFreelancer,
   onDeleteFreelancer,
+  onDeleteAllFreelancers,
   showToast,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -147,6 +149,7 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [expertToDelete, setExpertToDelete] = useState<FreelancerProfile | null>(null);
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handleConfirmDelete = (code: string) => {
@@ -340,14 +343,27 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
             Search, curate, and control public vs internal status for all verified experts.
           </p>
         </div>
-        {/* Link to Create Profile */}
-        <button
-          onClick={() => navigate('/manage/profiles/new')}
-          className="px-4 py-2 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-500/20 flex items-center gap-2 cursor-pointer shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create Expert Profile</span>
-        </button>
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 shrink-0">
+          {freelancers.length > 0 && onDeleteAllFreelancers && (
+            <button
+              type="button"
+              onClick={() => setShowDeleteAllModal(true)}
+              className="px-3.5 py-2 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+              title="Permanently remove all expert profiles from system and cloud database"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Clear All Experts ({freelancers.length})</span>
+            </button>
+          )}
+          <button
+            onClick={() => navigate('/manage/profiles/new')}
+            className="px-4 py-2 bg-[#006eff] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-500/20 flex items-center gap-2 cursor-pointer shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Expert Profile</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -1558,6 +1574,45 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
               >
                 <Trash2 className="w-4 h-4" />
                 <span>Yes, Delete Profile</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete All Confirmation Modal */}
+      {showDeleteAllModal && onDeleteAllFreelancers && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#131f37] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 dark:border-white/10 text-center">
+            <div className="w-14 h-14 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-100 dark:border-rose-900/40 shadow-inner">
+              <Trash2 className="w-7 h-7" />
+            </div>
+
+            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2">Delete ALL Expert Profiles?</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+              Are you sure you want to permanently delete all{' '}
+              <span className="font-bold text-slate-800 dark:text-white">{freelancers.length}</span> expert profiles?
+              This will erase them from both this device and the cloud database. This action cannot be undone.
+            </p>
+
+            <div className="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteAllModal(false)}
+                className="px-5 py-2.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onDeleteAllFreelancers();
+                  setShowDeleteAllModal(false);
+                }}
+                className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-600/20 cursor-pointer flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Yes, Delete All Experts</span>
               </button>
             </div>
           </div>

@@ -75,6 +75,7 @@ export const AdminDashboard: React.FC = () => {
     addFreelancer,
     updateFreelancer,
     deleteFreelancer,
+    deleteAllFreelancers,
     toggleFreelancerVisibility,
     avatars,
     addAvatar,
@@ -359,12 +360,7 @@ export const AdminDashboard: React.FC = () => {
 
   // State: Update single freelancer (e.g. portfolio media updates)
   const handleUpdateFreelancer = (updated: FreelancerProfile) => {
-    const list = freelancers.map((f) => (f.code === updated.code ? updated : f));
-    try {
-      localStorage.setItem('gaenr_freelancers', JSON.stringify(list));
-    } catch {}
-    // Trigger window storage event or reload state
-    window.dispatchEvent(new Event('storage'));
+    updateFreelancer(updated.code, updated);
   };
 
   // Login form state — starts empty, never pre-filled
@@ -1211,6 +1207,7 @@ export const AdminDashboard: React.FC = () => {
               avatars={avatars}
               onUpdateFreelancer={updateFreelancer}
               onDeleteFreelancer={deleteFreelancer}
+              onDeleteAllFreelancers={deleteAllFreelancers}
               showToast={showToast}
             />
           )}
