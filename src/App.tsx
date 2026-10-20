@@ -274,7 +274,8 @@ const AppContent: React.FC = () => {
       className="min-h-screen flex flex-col text-slate-900 selection:bg-blue-600 selection:text-white"
       style={{ backgroundColor: branding.backgroundColor || '#fafbfc' }}
     >
-      <SitePreloader />
+      {/* Site Preloader - Only on public pages, never on /manage admin routes */}
+      {!currentRoute.startsWith('/manage') && <SitePreloader />}
       {/* Top Bar Header adhering to 3-zone contract */}
       <Header />
 
@@ -283,15 +284,15 @@ const AppContent: React.FC = () => {
         {renderCurrentPage()}
       </main>
 
-      {/* Footer */}
-      <Footer />
+      {/* Footer - Only on public pages */}
+      {!currentRoute.startsWith('/manage') && <Footer />}
 
       {/* Global Modals */}
       <AssignTaskModal />
       <ApplyExpertModal />
 
-      {/* Global AI Chatbot */}
-      <GaenrChatbot />
+      {/* Global AI Chatbot - Only on public pages */}
+      {!currentRoute.startsWith('/manage') && <GaenrChatbot />}
 
       {/* Toast Notification Container - Strictly single notification, clean auto-dismissing */}
       <div className="fixed bottom-24 right-5 z-[110] flex flex-col gap-2 pointer-events-none">

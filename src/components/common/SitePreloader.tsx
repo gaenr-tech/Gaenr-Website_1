@@ -336,15 +336,15 @@ export const SitePreloader: React.FC<SitePreloaderProps> = ({ onLoaded }) => {
   return (
     <div
       className={`fixed inset-0 z-[99999] flex items-center justify-center select-none transition-opacity duration-500 ease-out ${
-        isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        isFadingOut ? 'opacity-0 pointer-events-none hidden' : 'opacity-100'
       } ${isDark ? 'bg-[#0b1324]' : 'bg-white'}`}
       aria-label="Loading Gaenr"
     >
       {/* Authentic 3D Pathway Symbol Canvas */}
-      <div className="relative w-full max-w-[480px] h-[240px] sm:h-[280px] flex items-center justify-center">
+      <div className={`relative w-full max-w-[480px] h-[240px] sm:h-[280px] flex items-center justify-center ${isFadingOut ? 'pointer-events-none' : ''}`}>
         <div
           ref={mountRef}
-          className="relative w-full h-full flex items-center justify-center pointer-events-auto select-none"
+          className={`relative w-full h-full flex items-center justify-center select-none ${isFadingOut ? 'pointer-events-none' : 'pointer-events-auto'}`}
         />
       </div>
     </div>

@@ -628,16 +628,16 @@ export const TaskAssignmentsView: React.FC<TaskAssignmentsViewProps> = ({
                         <button
                           type="button"
                           onClick={(e) => handleOpenPriceModal(t, e)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer !cursor-pointer select-none active:scale-95 shadow-2xs group ${
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all cursor-pointer !cursor-pointer select-none active:scale-95 shadow-2xs group relative ${
                             priceFormatted
                               ? 'bg-emerald-50 hover:bg-emerald-600 text-emerald-800 hover:text-white dark:bg-emerald-950/40 dark:hover:bg-emerald-600 dark:text-emerald-300 dark:hover:text-white border-emerald-200 dark:border-emerald-800 font-bold'
                               : 'bg-blue-50 hover:bg-[#006eff] text-[#006eff] hover:text-white dark:bg-blue-950/40 dark:hover:bg-[#006eff] dark:text-blue-300 dark:hover:text-white border-blue-200/80 dark:border-blue-800 font-semibold text-xs'
                           }`}
                           title="Click to set or update task price"
                         >
-                          <DollarSign className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
-                          <span>{priceFormatted || '+ Set Price'}</span>
-                          <Edit2 className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-opacity" />
+                          <DollarSign className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity pointer-events-none shrink-0" />
+                          <span className="pointer-events-none">{priceFormatted || '+ Set Price'}</span>
+                          <Edit2 className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity pointer-events-none shrink-0" />
                         </button>
                       </td>
 
@@ -648,11 +648,11 @@ export const TaskAssignmentsView: React.FC<TaskAssignmentsViewProps> = ({
                           <button
                             type="button"
                             onClick={(e) => handleOpenDetailModal(t, e)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#006eff] hover:bg-[#0056cc] text-white shadow-xs transition-all cursor-pointer !cursor-pointer active:scale-95 select-none"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#006eff] hover:bg-[#0056cc] text-white shadow-xs transition-all cursor-pointer !cursor-pointer active:scale-95 select-none relative"
                             title="View Full Task Brief"
                           >
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>View</span>
+                            <Eye className="w-3.5 h-3.5 pointer-events-none shrink-0" />
+                            <span className="pointer-events-none">View</span>
                           </button>
 
                           {/* Quick WhatsApp Action */}
@@ -662,11 +662,11 @@ export const TaskAssignmentsView: React.FC<TaskAssignmentsViewProps> = ({
                               target="_blank"
                               rel="noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white dark:bg-emerald-950/40 dark:hover:bg-emerald-600 dark:text-emerald-300 dark:hover:text-white border border-emerald-200 dark:border-emerald-800 transition-all cursor-pointer !cursor-pointer active:scale-95 shadow-2xs select-none"
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white dark:bg-emerald-950/40 dark:hover:bg-emerald-600 dark:text-emerald-300 dark:hover:text-white border border-emerald-200 dark:border-emerald-800 transition-all cursor-pointer !cursor-pointer active:scale-95 shadow-2xs select-none relative"
                               title="Chat with client directly on WhatsApp"
                             >
-                              <MessageCircle className="w-3.5 h-3.5" />
-                              <span className="hidden xl:inline">WhatsApp</span>
+                              <MessageCircle className="w-3.5 h-3.5 pointer-events-none shrink-0" />
+                              <span className="hidden xl:inline pointer-events-none">WhatsApp</span>
                             </a>
                           )}
 
@@ -674,11 +674,11 @@ export const TaskAssignmentsView: React.FC<TaskAssignmentsViewProps> = ({
                           <button
                             type="button"
                             onClick={(e) => handleOpenDeleteConfirm(t, e)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white dark:bg-rose-950/40 dark:hover:bg-rose-600 dark:text-rose-400 dark:hover:text-white border border-rose-200 dark:border-rose-900/60 transition-all cursor-pointer !cursor-pointer active:scale-95 shadow-2xs select-none"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white dark:bg-rose-950/40 dark:hover:bg-rose-600 dark:text-rose-400 dark:hover:text-white border border-rose-200 dark:border-rose-900/60 transition-all cursor-pointer !cursor-pointer active:scale-95 shadow-2xs select-none relative"
                             title="Delete Task Record"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            <span>Delete</span>
+                            <Trash2 className="w-3.5 h-3.5 pointer-events-none shrink-0" />
+                            <span className="pointer-events-none">Delete</span>
                           </button>
                         </div>
                       </td>
@@ -699,7 +699,7 @@ export const TaskAssignmentsView: React.FC<TaskAssignmentsViewProps> = ({
           onClick={(e) => {
             if (e.target === e.currentTarget) setSelectedTask(null);
           }}
-          className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+          className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
         >
           <div
             className="bg-white dark:bg-[#0d1627] rounded-3xl max-w-xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-white/10 p-5 sm:p-6 space-y-5 relative z-10"
@@ -900,7 +900,7 @@ export const TaskAssignmentsView: React.FC<TaskAssignmentsViewProps> = ({
           onClick={(e) => {
             if (e.target === e.currentTarget) setPricingTask(null);
           }}
-          className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+          className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
         >
           <div
             className="bg-white dark:bg-[#0d1627] rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-white/10 p-6 space-y-5 relative z-10"
@@ -1024,7 +1024,7 @@ export const TaskAssignmentsView: React.FC<TaskAssignmentsViewProps> = ({
           onClick={(e) => {
             if (e.target === e.currentTarget) setTaskToDelete(null);
           }}
-          className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div
             className="bg-white dark:bg-[#0d1627] rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-white/10 space-y-4 relative z-10"
