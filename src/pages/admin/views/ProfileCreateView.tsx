@@ -197,26 +197,113 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
     if (isSubmitting) return;
 
+    // 1. Mandatory: Service Category
+    if (!category) {
+      showToast('Please select a Service Category / সার্ভিস ক্যাটাগরি সিলেক্ট করুন', 'error');
+      document.getElementById('service-category')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // 2. Mandatory: Portfolio Deliverable Media Type
+    if (!mediaType) {
+      showToast('Please select a Portfolio Deliverable Media Type / মিডিয়া টাইপ সিলেক্ট করুন', 'error');
+      document.getElementById('media-type')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // 3. Mandatory: Expert Avatar Portrait
+    if (!activeAvatar || !activeAvatar.id) {
+      showToast('Please select an Expert Portrait / এক্সপার্ট পোট্রেট সিলেক্ট করুন', 'error');
+      document.getElementById('avatar-selection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // 4. Mandatory: Compliance Competencies & Discipline Skills
+    if (!selectedSkills || selectedSkills.length === 0) {
+      showToast('Please select at least one Discipline Skill / অন্তত একটি স্কিল সিলেক্ট করুন', 'error');
+      document.getElementById('skills-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // 5. Mandatory: Gender
+    if (!gender) {
+      showToast('Please select Gender / জেন্ডার সিলেক্ট করুন', 'error');
+      document.getElementById('expert-gender')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // 6. Mandatory: Present Address
+    if (!address || !address.trim()) {
+      showToast('Please enter Present Address / District (বর্তমান ঠিকানা লিখুন)', 'error');
+      const el = document.getElementById('expert-address');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.focus();
+      return;
+    }
+
+    // 7. Mandatory: Private Mail
+    if (!privateEmail || !privateEmail.trim()) {
+      showToast('Please enter Private Email (প্রাইভেট ইমেইল লিখুন)', 'error');
+      const el = document.getElementById('expert-private-email');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.focus();
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(privateEmail.trim())) {
+      showToast('Please enter a valid email address (e.g. name@domain.com)', 'error');
+      const el = document.getElementById('expert-private-email');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.focus();
+      return;
+    }
+
+    // 8. Mandatory: Contact Number (WhatsApp)
+    const rawContactDigits = contactNumber.replace(/[\s+-]/g, '');
+    if (!contactNumber || !contactNumber.trim() || rawContactDigits === '880' || rawContactDigits.length < 8) {
+      showToast('Please enter WhatsApp Contact Number (হোয়াটসঅ্যাপ নম্বর লিখুন)', 'error');
+      const el = document.getElementById('expert-contact-number');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.focus();
+      return;
+    }
+
+    // 9. Mandatory: Payment Method & Details
+    if (!paymentMethod) {
+      showToast('Please select a Payment Payout Method (পেমেন্ট মেথড সিলেক্ট করুন)', 'error');
+      document.getElementById('expert-payment-method')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    if (!paymentDetails || !paymentDetails.trim()) {
+      const msg = paymentMethod === 'MFS'
+        ? 'Please enter MFS payout details / wallet number (এমএফএস ওয়ালেট নম্বর লিখুন)'
+        : 'Please enter Bank Transfer details (ব্যাংক নাম, শাখা ও অ্যাকাউন্ট নম্বর লিখুন)';
+      showToast(msg, 'error');
+      const el = document.getElementById('expert-payment-details');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.focus();
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
-      const resolvedRealName = name.trim();
+      const resolvedRealName = (name || '').trim(); // Blank if not provided!
 
-      // Map initial portfolio items entered by admin (if any)
-      const createdPortfolioItems: PortfolioItem[] = initialPortfolio
-        .filter((p) => p.title.trim() || p.mediaUrl.trim())
+      // Map initial portfolio items entered by admin (completely optional - safely mapped)
+      const createdPortfolioItems: PortfolioItem[] = (initialPortfolio || [])
+        .filter((p) => (p?.title || '').trim() || (p?.mediaUrl || '').trim())
         .map((p, idx) => {
-          const trimmedUrl = p.mediaUrl.trim();
+          const trimmedUrl = (p?.mediaUrl || '').trim();
           const isImage = trimmedUrl.startsWith('data:image') || trimmedUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)($|\?)/i);
-          const tools = p.toolsInput.trim()
+          const tools = (p?.toolsInput || '').trim()
             ? p.toolsInput.split(',').map((t) => t.trim()).filter(Boolean)
             : selectedSkills.length > 0 ? selectedSkills.slice(0, 3) : ['Verified Toolset'];
           const selectedType = mediaType || (isImage ? 'image' : 'website');
           return {
             id: `port-${Date.now()}-${idx}`,
-            title: p.title.trim() || `Deliverable Sample #${idx + 1}`,
+            title: (p?.title || '').trim() || `Deliverable Sample #${idx + 1}`,
             category,
-            description: p.description.trim() || `Verified deliverable for ${generatedCode}.`,
+            description: (p?.description || '').trim() || `Verified deliverable for ${generatedCode}.`,
             tools,
             previewType: selectedType as DeliverableType,
             accentColor: '#006eff',
@@ -237,7 +324,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         rating: 0.0,
         reviewsCount: 0,
         completedProjects: 0,
-        statement: statement.trim(),
+        statement: (statement || '').trim(),
         status: 'active',
         isPublic: true, // Newly created profiles are immediately published to the directory
         satisfactionRate: {
@@ -251,14 +338,14 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         // Private internal fields
         name: resolvedRealName,
         gender,
-        address: address.trim(),
-        privateEmail: privateEmail.trim(),
-        contactNumber: contactNumber.trim(),
-        additionalNote: additionalNote.trim(),
+        address: (address || '').trim(),
+        privateEmail: (privateEmail || '').trim(),
+        contactNumber: (contactNumber || '').trim(),
+        additionalNote: (additionalNote || '').trim(),
         paymentMethod,
-        paymentDetails: paymentDetails.trim(),
+        paymentDetails: (paymentDetails || '').trim(),
         mediaType,
-        pricingTiers: pricingTiers.filter((p) => p.serviceName.trim() && p.price.trim()),
+        pricingTiers: (pricingTiers || []).filter((p) => (p?.serviceName || '').trim() && (p?.price || '').trim()),
       };
 
       addFreelancer(newProfile);
@@ -400,7 +487,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 pt-1">
-            <div>
+            <div id="service-category">
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Service Category <span className="text-rose-500">*</span>
               </label>
@@ -414,7 +501,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               />
             </div>
 
-            <div>
+            <div id="media-type">
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Portfolio Deliverable Media Type <span className="text-rose-500">*</span>
               </label>
@@ -428,12 +515,12 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         </div>
 
         {/* Card 2: Choose Expert Avatar Portrait */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div id="avatar-selection" className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
           <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#006eff]" />
               <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
-                2. Choose Expert Avatar Portrait
+                2. Choose Expert Avatar Portrait <span className="text-rose-500">*</span>
               </h2>
             </div>
             {selectedAvatarId && selectedAvatarId !== autoAvatar.id && (
@@ -448,7 +535,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           </div>
 
           <p className="text-xs text-slate-500 leading-relaxed">
-            Standardized 3D student portraits with uniform studio backdrop. Any expert can choose any avatar.
+            Standardized 3D student portraits with uniform studio backdrop. Selection is mandatory (one is auto-selected by default).
           </p>
 
           {/* 10 Avatar Options Grid */}
@@ -508,8 +595,8 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           </div>
         </div>
 
-        {/* Card 3: Initial Portfolio Deliverables / Work Samples (Optional) */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        {/* Card 3: Initial Portfolio Deliverables / Work Samples (100% Optional) */}
+        <div id="portfolio-section" className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
           <input
             ref={deliverableFileInputRef}
             type="file"
@@ -524,9 +611,14 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <FolderKanban className="w-4 h-4 text-[#006eff]" />
-              <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
-                3. Portfolio Deliverables &amp; Work Samples (Optional)
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
+                  3. Portfolio Deliverables &amp; Work Samples
+                </h2>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 font-bold uppercase">
+                  100% Optional
+                </span>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -563,9 +655,9 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           <div className="p-3 bg-blue-50/50 border border-blue-200/60 rounded-xl text-xs text-slate-600 flex items-start gap-2.5">
             <Sparkles className="w-4 h-4 text-[#006eff] shrink-0 mt-0.5" />
             <div className="space-y-0.5">
-              <span className="font-bold text-slate-900 block">Private Creator Deliverable Vault</span>
+              <span className="font-bold text-slate-900 block">Private Creator Deliverable Vault (Optional during creation)</span>
               <p className="text-[11px] text-slate-500 leading-relaxed">
-                Deliverables can be uploaded directly here or added anytime by the expert using their private cryptographic upload link (generated automatically without exposing their public ID). No manual cloud drive folder setup is required.
+                This section is completely optional during profile creation. You can skip this entire section and create the expert profile immediately. Deliverables can be added anytime later by the expert or admin using their private cryptographic upload link.
               </p>
             </div>
           </div>
@@ -573,9 +665,9 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           {initialPortfolio.length === 0 ? (
             <div className="p-8 border border-dashed border-slate-200 rounded-2xl text-center space-y-2 bg-slate-50/50">
               <FolderKanban className="w-8 h-8 text-slate-400 mx-auto" />
-              <p className="text-xs font-semibold text-slate-700">No deliverables added yet</p>
+              <p className="text-xs font-semibold text-slate-700">No deliverables added yet (Optional)</p>
               <p className="text-[11px] text-slate-400">
-                Click "Direct File Upload" above to attach work files now, or upload them later via the Creator Portal.
+                You can create this expert profile right now without adding any files or links, or attach work samples anytime later.
               </p>
             </div>
           ) : (
@@ -753,16 +845,16 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         </div>
 
         {/* Card 4: Competencies & Discipline Skills */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div id="skills-section" className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
           <div className="border-b border-slate-100 pb-3 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#006eff]" />
             <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
-              4. Competencies &amp; Discipline Skills
+              4. Competencies &amp; Discipline Skills <span className="text-rose-500">*</span>
             </h2>
           </div>
 
           <p className="text-xs text-slate-500 leading-relaxed">
-            Select authentic skills and software competencies. Only chosen competencies will appear as badges on the expert's card.
+            Select authentic skills and software competencies. At least 1 discipline skill is required. Only chosen competencies will appear as badges on the expert's card.
           </p>
 
           <div className="space-y-3 pt-1">
@@ -797,7 +889,12 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-[#006eff] focus:outline-none transition-all shadow-2xs"
               />
               <p className="text-[11px] text-slate-400 mt-1">
-                Selected skills ({selectedSkills.length}): {selectedSkills.length > 0 ? selectedSkills.join(', ') : 'None'}
+                Selected skills ({selectedSkills.length}):{' '}
+                {selectedSkills.length > 0 ? (
+                  <span className="text-slate-700 font-medium">{selectedSkills.join(', ')}</span>
+                ) : (
+                  <span className="text-rose-500 font-semibold">None (Please select at least 1 skill *)</span>
+                )}
               </p>
             </div>
           </div>
@@ -808,7 +905,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           <div className="border-b border-slate-100 pb-3 flex items-center gap-2">
             <FileText className="w-4 h-4 text-[#006eff]" />
             <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
-              5. Public Profile Statement &amp; Bio
+              5. Public Profile Statement &amp; Bio <span className="text-slate-400 font-normal text-xs ml-1">(Optional)</span>
             </h2>
           </div>
 
@@ -832,7 +929,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
             <div className="flex items-center gap-2">
               <CreditCard className="w-4 h-4 text-[#006eff]" />
               <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
-                6. Service Pricing &amp; Deliverable Rates
+                6. Service Pricing &amp; Deliverable Rates <span className="text-slate-400 font-normal text-xs ml-1">(Optional)</span>
               </h2>
             </div>
             <button
@@ -898,7 +995,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         </div>
 
         {/* Card 7: Private Legal Info */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div id="expert-legal-section" className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
           <div className="border-b border-slate-100 pb-3 flex items-center gap-2">
             <User className="w-4 h-4 text-[#006eff]" />
             <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
@@ -909,7 +1006,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Expert Real Name <span className="text-slate-400 font-normal">(Optional)</span>
+                Expert Real Name <span className="text-slate-400 font-normal text-xs ml-1">(Optional - leave blank if not provided)</span>
               </label>
               <input
                 id="expert-real-name"
@@ -921,7 +1018,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               />
             </div>
 
-            <div>
+            <div id="expert-gender">
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Gender <span className="text-rose-500">*</span>
               </label>
@@ -938,9 +1035,10 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Present Address / District
+                Present Address / District <span className="text-rose-500">*</span>
               </label>
               <input
+                id="expert-address"
                 type="text"
                 placeholder="e.g. Dhanmondi, Dhaka"
                 value={address}
@@ -951,9 +1049,10 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Private Email
+                Private Email <span className="text-rose-500">*</span>
               </label>
               <input
+                id="expert-private-email"
                 type="email"
                 placeholder="e.g. tanvir@gmail.com"
                 value={privateEmail}
@@ -964,9 +1063,10 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Contact Number (WhatsApp)
+                Contact Number (WhatsApp) <span className="text-rose-500">*</span>
               </label>
               <input
+                id="expert-contact-number"
                 type="tel"
                 placeholder="+880 1700 000000"
                 value={contactNumber}
@@ -977,9 +1077,10 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Additional Note (Internal Vetting)
+                Additional Note (Internal Vetting) <span className="text-slate-400 font-normal text-xs ml-1">(Optional)</span>
               </label>
               <input
+                id="expert-additional-note"
                 type="text"
                 placeholder="e.g. University student, 3 years experience"
                 value={additionalNote}
@@ -991,16 +1092,16 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
         </div>
 
         {/* Card 8: Payment Credentials */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+        <div id="expert-payout-section" className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
           <div className="border-b border-slate-100 pb-3 flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-[#006eff]" />
             <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-mono">
-              8. Payout &amp; Payment Credentials (MFS / Bank Transfer)
+              8. Payout &amp; Payment Credentials (MFS / Bank Transfer) <span className="text-rose-500">*</span>
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-            <div className="sm:col-span-2">
+            <div id="expert-payment-method" className="sm:col-span-2">
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Payment Payout Method <span className="text-rose-500">*</span>
               </label>
@@ -1025,14 +1126,15 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
                 {paymentMethod === 'MFS'
                   ? 'MFS Payout Details (Wallet Number / Provider / Account Type)'
                   : 'Bank Transfer Details (Bank Name / Branch / Account / Routing)'}{' '}
-                <span className="text-slate-400 font-normal">(Optional)</span>
+                <span className="text-rose-500">*</span>
               </label>
               <textarea
+                id="expert-payment-details"
                 rows={4}
                 placeholder={
                   paymentMethod === 'MFS'
-                    ? 'e.g.\nProvider: bKash (Personal) / Nagad / Rocket\nWallet Number: 01700-000000\nAccount Holder Name: Tanvir Hasan'
-                    : 'e.g.\nBank Name: Dutch Bangla Bank / BRAC Bank / City Bank\nBranch Name: Banani Branch, Dhaka\nAccount Name: Tanvir Hasan\nAccount Number: 150.120.345678\nRouting Number: 090271234'
+                    ? 'e.g.\nProvider: bKash (Personal) / Nagad / Rocket\nWallet Number: 01700-000000\nAccount Holder Name: (Optional)'
+                    : 'e.g.\nBank Name: Dutch Bangla Bank / BRAC Bank / City Bank\nBranch Name: Banani Branch, Dhaka\nAccount Name: Account Holder Name\nAccount Number: 150.120.345678\nRouting Number: 090271234'
                 }
                 value={paymentDetails}
                 onChange={(e) => setPaymentDetails(e.target.value)}
@@ -1040,8 +1142,8 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
               />
               <p className="text-[11px] text-slate-400 mt-1">
                 {paymentMethod === 'MFS'
-                  ? 'Multi-line details supported. Specify MFS provider (bKash/Nagad/Rocket), personal/merchant, and mobile wallet number (can also be updated later).'
-                  : 'Multi-line statement enabled. Specify bank name, branch, account number, and routing details (can also be updated later).'}
+                  ? 'Multi-line details supported. Specify MFS provider (bKash/Nagad/Rocket), personal/merchant, and mobile wallet number.'
+                  : 'Multi-line statement enabled. Specify bank name, branch, account number, and routing details.'}
               </p>
             </div>
           </div>
@@ -1059,9 +1161,10 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           </button>
           <button
             type="button"
+            id="btn-create-expert-profile"
             disabled={isSubmitting}
             onClick={handleSubmit}
-            className="w-full sm:w-auto px-6 py-2.5 bg-[#006eff] hover:bg-blue-600 active:scale-[0.98] disabled:opacity-60 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-2.5 bg-[#006eff] hover:bg-blue-600 active:scale-[0.98] disabled:opacity-60 text-white rounded-xl text-xs font-bold shadow-sm shadow-blue-500/20 transition-all cursor-pointer flex items-center justify-center gap-2 select-none"
           >
             {isSubmitting ? (
               <>
