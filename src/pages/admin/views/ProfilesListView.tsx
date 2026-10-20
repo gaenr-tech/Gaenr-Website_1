@@ -450,9 +450,11 @@ export const ProfilesListView: React.FC<ProfilesListViewProps> = ({
                           <span className="font-mono font-bold text-slate-900 dark:text-[#38bdf8] text-xs block truncate">
                             {fl.code}
                           </span>
-                          <span className="text-[10px] text-slate-400 block truncate">
-                            {fl.name || 'Verified Expert'}
-                          </span>
+                          {fl.name?.trim() ? (
+                            <span className="text-[10px] text-slate-400 block truncate">
+                              {fl.name}
+                            </span>
+                          ) : null}
                         </div>
                       </div>
                     </td>

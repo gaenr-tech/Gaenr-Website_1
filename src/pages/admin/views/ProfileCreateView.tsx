@@ -200,7 +200,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
     try {
       setIsSubmitting(true);
 
-      const resolvedRealName = name.trim() || activeAvatar?.name || `Expert ${generatedCode}`;
+      const resolvedRealName = name.trim();
 
       // Map initial portfolio items entered by admin (if any)
       const createdPortfolioItems: PortfolioItem[] = initialPortfolio
@@ -909,12 +909,12 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Expert Real Name <span className="text-slate-400 font-normal">(Optional - defaults to portrait name)</span>
+                Expert Real Name <span className="text-slate-400 font-normal">(Optional)</span>
               </label>
               <input
                 id="expert-real-name"
                 type="text"
-                placeholder={activeAvatar?.name ? `e.g. ${activeAvatar.name}` : 'e.g. Tanvir Hasan'}
+                placeholder="Enter real name (leave empty if not provided)"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:border-[#006eff] focus:outline-none transition-all shadow-2xs"

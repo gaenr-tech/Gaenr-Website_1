@@ -315,7 +315,7 @@ export const DirectoryManageView: React.FC<DirectoryManageViewProps> = ({
 
                     {/* View Private Legal Name & Gender */}
                     <td className="py-3.5 px-4">
-                      <div className="font-bold text-slate-900 dark:text-white">{fl.name || 'Verified Specialist'}</div>
+                      <div className="font-bold text-slate-900 dark:text-white">{fl.name || '—'}</div>
                       <div className="text-[10px] text-slate-400 dark:text-slate-400 font-medium">
                         {fl.gender || 'Not specified'}
                       </div>
