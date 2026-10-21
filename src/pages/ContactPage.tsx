@@ -314,7 +314,7 @@ export const ContactPage: React.FC = () => {
               <div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">Official Email</h3>
                 <span className="block text-base sm:text-lg font-bold text-slate-900 dark:text-white hover:text-[#4f46e5] dark:hover:text-indigo-400 mt-1 break-all transition-colors duration-200 no-underline select-all cursor-default">
-                  contact@gmail.com
+                  hello@gaenr.com
                 </span>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   Send your inquiries, briefs, or project documentation directly to our official inbox.
@@ -324,14 +324,14 @@ export const ContactPage: React.FC = () => {
 
             <div className="pt-2 flex items-center gap-2">
               <a
-                href="mailto:contact@gmail.com"
+                href="mailto:hello@gaenr.com"
                 className="flex-1 py-2.5 px-3 text-center text-xs font-medium text-white bg-[#4f46e5] hover:bg-[#4338ca] rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
               >
                 <Mail className="w-4 h-4" />
                 <span>Send Email</span>
               </a>
               <button
-                onClick={() => handleCopy('contact@gmail.com', 'email')}
+                onClick={() => handleCopy('hello@gaenr.com', 'email')}
                 title="Copy email address"
                 className="p-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/8 transition-colors cursor-pointer"
               >

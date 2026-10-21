@@ -143,7 +143,7 @@ export const mergeState = (currentState, payload) => {
 export const handleSendEmail = async (payload) => {
   const type = payload?.type || 'welcome';
   const resendApiKey = process.env.RESEND_API_KEY;
-  const emailFrom = process.env.EMAIL_FROM || 'Gaenr <contact@gaenr.com>';
+  const emailFrom = process.env.EMAIL_FROM || 'Gaenr <hello@gaenr.com>';
   const webhookUrl = process.env.VITE_GOOGLE_DRIVE_WEBHOOK_URL;
   const siteUrl = (process.env.APP_URL || process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
 

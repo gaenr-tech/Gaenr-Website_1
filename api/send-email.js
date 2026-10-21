@@ -31,7 +31,7 @@ const buildWelcomeEmail = (expert) => {
     '',
     'Team Gaenr',
     'Website: https://gaenr.com',
-    'Email: contact@gaenr.com',
+    'Email: hello@gaenr.com',
     'Phone: 09647 922 800',
     'WhatsApp: https://wa.me/8801608922800',
   ].join('\n');
@@ -231,7 +231,7 @@ const buildWelcomeEmail = (expert) => {
                 <a href="https://gaenr.com" class="footer-icon-btn" title="Gaenr Website" target="_blank">
                   <img src="${iconUrl('globe')}" width="18" height="18" alt="Website" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
-                <a href="mailto:contact@gaenr.com" class="footer-icon-btn" title="Email Gaenr">
+                <a href="mailto:hello@gaenr.com" class="footer-icon-btn" title="Email Gaenr">
                   <img src="${iconUrl('mail')}" width="18" height="18" alt="Email" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
                 <a href="tel:09647922800" class="footer-icon-btn" title="Call Gaenr">
@@ -336,7 +336,7 @@ const buildOnboardingInviteEmail = ({ name, skill, applicationId }) => {
     'Best regards,',
     'Team Gaenr',
     'Website: https://gaenr.com',
-    'Email: contact@gaenr.com',
+    'Email: hello@gaenr.com',
     'Phone: 09647 922 800',
     'WhatsApp: https://wa.me/8801608922800',
   ].join('\n');
@@ -466,7 +466,7 @@ const buildOnboardingInviteEmail = ({ name, skill, applicationId }) => {
                 <a href="https://gaenr.com" class="footer-icon-btn" title="Gaenr Website" target="_blank">
                   <img src="${iconUrl('globe')}" width="18" height="18" alt="Website" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
-                <a href="mailto:contact@gaenr.com" class="footer-icon-btn" title="Email Gaenr">
+                <a href="mailto:hello@gaenr.com" class="footer-icon-btn" title="Email Gaenr">
                   <img src="${iconUrl('mail')}" width="18" height="18" alt="Email" style="vertical-align:middle;display:inline-block;border:0;" />
                 </a>
                 <a href="tel:09647922800" class="footer-icon-btn" title="Call Gaenr">

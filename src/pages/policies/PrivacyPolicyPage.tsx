@@ -337,7 +337,7 @@ export const PrivacyPolicyPage: React.FC = () => {
                   </h3>
                 </div>
                 <p className="pl-3.5 text-slate-600 dark:text-slate-300 leading-relaxed">
-                  You have the right to access, update, or ask us to delete your personal information. You can request changes at any time by contacting our support team at <a href="mailto:contact@gmail.com" className="text-[#006eff] dark:text-blue-400 hover:underline font-semibold inline-flex items-center gap-1"><Mail className="w-3.5 h-3.5 inline" /> contact@gmail.com</a>.
+                  You have the right to access, update, or ask us to delete your personal information. You can request changes at any time by contacting our support team at <a href="mailto:hello@gaenr.com" className="text-[#006eff] dark:text-blue-400 hover:underline font-semibold inline-flex items-center gap-1"><Mail className="w-3.5 h-3.5 inline" /> hello@gaenr.com</a>.
                 </p>
               </div>
             </div>

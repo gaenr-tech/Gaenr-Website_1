@@ -40,7 +40,7 @@ function getEmailFooter(siteUrl) {
       </td>
       <!-- 3. Email -->
       <td align="center" valign="middle" width="28" style="width:28px;padding:0 2px;text-align:center;">
-        <a href="mailto:contact@gmail.com" title="Email: contact@gmail.com" style="display:inline-block;text-decoration:none;">
+        <a href="mailto:hello@gaenr.com" title="Email: hello@gaenr.com" style="display:inline-block;text-decoration:none;">
           <img src="${siteUrl}/email-footer-icons/mail.png?v=20261013" alt="Email" width="24" height="24" style="display:block;width:24px;height:24px;border:0;outline:none;" />
         </a>
       </td>
@@ -173,7 +173,7 @@ export async function onRequestPost({ request, env }) {
     const type = payload?.type || 'welcome';
     const siteUrl = (env.APP_URL || env.SITE_URL || 'https://gaenr.com').replace(/\/$/, '');
     const resendApiKey = env.RESEND_API_KEY;
-    const emailFrom = env.EMAIL_FROM || 'Gaenr <contact@gmail.com>';
+    const emailFrom = env.EMAIL_FROM || 'Gaenr <hello@gaenr.com>';
     const webhookUrl = env.VITE_GOOGLE_DRIVE_WEBHOOK_URL;
 
     let recipient = '';
@@ -216,7 +216,7 @@ export async function onRequestPost({ request, env }) {
 
       html = buildFullEmailHtml({ siteUrl, bodyHtml });
 
-      // Automatically dispatch high-priority Operations Alert Email to contact@gmail.com
+      // Automatically dispatch high-priority Operations Alert Email to hello@gaenr.com
       if (resendApiKey) {
         const cleanWa = (payload.whatsapp || '').replace(/[^0-9]/g, '');
         const opsSubject = `🚨 [NEW EXPERT APPLICATION] ${name} - ${skill}`;
@@ -246,9 +246,9 @@ export async function onRequestPost({ request, env }) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: emailFrom.includes('@gmail.com') ? 'Gaenr <contact@gaenr.com>' : emailFrom,
-            reply_to: recipient || 'contact@gmail.com',
-            to: ['contact@gmail.com'],
+            from: emailFrom.includes('@gmail.com') ? 'Gaenr <hello@gaenr.com>' : emailFrom,
+            reply_to: recipient || 'hello@gaenr.com',
+            to: ['hello@gaenr.com'],
             subject: opsSubject,
             html: opsHtml,
           }),
@@ -256,7 +256,7 @@ export async function onRequestPost({ request, env }) {
       }
 
     } else if (type === 'ops_alert') {
-      recipient = 'contact@gmail.com';
+      recipient = 'hello@gaenr.com';
       const alertTitle = payload.title || payload.subject || 'Platform Operations Notification';
       subject = `🚨 [GAENR OPS] ${alertTitle}`;
       text = `GAENR Operations Alert: ${alertTitle}\n\nTime: ${new Date().toISOString()}`;
@@ -369,7 +369,7 @@ export async function onRequestPost({ request, env }) {
           },
           body: JSON.stringify({
             from: fromAddress,
-            reply_to: 'contact@gmail.com',
+            reply_to: 'hello@gaenr.com',
             to: [recipient],
             subject,
             html,
@@ -379,9 +379,9 @@ export async function onRequestPost({ request, env }) {
         });
 
         // Resend requires a domain verified in Resend to send. If fromAddress is unverified
-        // (e.g. @gmail.com), retry with verified domain fallback while keeping reply_to: contact@gmail.com
+        // (e.g. @gmail.com), retry with verified domain fallback while keeping reply_to: hello@gaenr.com
         if (!res.ok && fromAddress.includes('@gmail.com')) {
-          const verifiedFallbackFrom = 'Gaenr <contact@gaenr.com>';
+          const verifiedFallbackFrom = 'Gaenr <hello@gaenr.com>';
           const retryRes = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -390,7 +390,7 @@ export async function onRequestPost({ request, env }) {
             },
             body: JSON.stringify({
               from: verifiedFallbackFrom,
-              reply_to: 'contact@gmail.com',
+              reply_to: 'hello@gaenr.com',
               to: [recipient],
               subject,
               html,
@@ -424,7 +424,7 @@ export async function onRequestPost({ request, env }) {
           body: JSON.stringify({
             action: 'send_email',
             to: recipient,
-            reply_to: 'contact@gmail.com',
+            reply_to: 'hello@gaenr.com',
             subject,
             html,
             text,

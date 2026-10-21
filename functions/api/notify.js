@@ -252,7 +252,7 @@ export async function onRequestPost({ request, env }) {
       }
     }
 
-    // 3. Dispatch Instant Operations Email Alert to contact@gmail.com
+    // 3. Dispatch Instant Operations Email Alert to hello@gaenr.com
     let emailDispatched = false;
     if (resendApiKey) {
       try {
@@ -339,9 +339,9 @@ export async function onRequestPost({ request, env }) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'Gaenr System <contact@gaenr.com>',
-            reply_to: data?.email || 'contact@gmail.com',
-            to: ['contact@gmail.com'],
+            from: 'Gaenr System <hello@gaenr.com>',
+            reply_to: data?.email || 'hello@gaenr.com',
+            to: ['hello@gaenr.com'],
             subject: alertSubject,
             html: emailHtml,
           }),

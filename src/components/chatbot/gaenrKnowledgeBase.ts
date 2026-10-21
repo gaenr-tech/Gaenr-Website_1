@@ -855,7 +855,7 @@ export function getLocalAIResponse(
   ) {
     if (isEn) {
       return {
-        text: `📞 **Mirpur Office:** 10/A, 15/13, Mirpur, Dhaka. Hotline: 09647 922 800 | WhatsApp: 01608 922 800 | Email: contact@gmail.com | Hours: 10 AM – 10 PM.`,
+        text: `📞 **Mirpur Office:** 10/A, 15/13, Mirpur, Dhaka. Hotline: 09647 922 800 | WhatsApp: 01608 922 800 | Email: hello@gaenr.com | Hours: 10 AM – 10 PM.`,
         actions: [
           { label: 'Chat on WhatsApp', actionType: 'openWhatsApp', payload: '01608922800' },
           { label: 'Call Hotline', actionType: 'callPhone', payload: '09647922800' },
@@ -863,7 +863,7 @@ export function getLocalAIResponse(
       };
     }
     return {
-      text: `📞 **মিরপুর অফিস:** ১০/এ, ১৫/১৩, মিরপুর, ঢাকা। হটলাইন: 09647 922 800 | হোয়াটসঅ্যাপ: 01608 922 800 | ইমেইল: contact@gmail.com | সময়: সকাল ১০টা – রাত ১০টা।`,
+      text: `📞 **মিরপুর অফিস:** ১০/এ, ১৫/১৩, মিরপুর, ঢাকা। হটলাইন: 09647 922 800 | হোয়াটসঅ্যাপ: 01608 922 800 | ইমেইল: hello@gaenr.com | সময়: সকাল ১০টা – রাত ১০টা।`,
       actions: [
         { label: 'হোয়াটসঅ্যাপে মেসেজ', actionType: 'openWhatsApp', payload: '01608922800' },
         { label: 'হটলাইনে কল করুন', actionType: 'callPhone', payload: '09647922800' },
