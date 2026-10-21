@@ -24,7 +24,12 @@ import { INITIAL_FREELANCERS, INITIAL_AVATARS, SERVICE_CATEGORIES } from '../dat
 import { getCategoryAvatar, RAW_AVATAR_SPECS } from '../components/common/Avatars';
 import { generateSecureUploadToken, generateUniqueExpertCode } from '../utils/security';
 import { sendExpertWelcomeEmail, sendExpertOnboardingInviteEmail } from '../utils/email';
-import { syncKeyToRemote } from '../utils/remoteStorage';
+import {
+  syncKeyToRemote,
+  getDeletedExpertCodes,
+  recordDeletedExpertCode,
+  unrecordDeletedExpertCode,
+} from '../utils/remoteStorage';
 
 export const GAENR_OFFICIAL_DRIVE_FOLDER_URL =
   'https://drive.google.com/drive/folders/13TfzgSRtRCy2ubOU4fyFEg_NEGZLonDO?usp=sharing';
@@ -235,27 +240,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
-  // Freelancers — start from empty; clear any old sample data from localStorage
+  // Freelancers — persistent official experts store (filtering out any explicitly deleted codes)
   const [freelancers, setFreelancers] = useState<FreelancerProfile[]>(() => {
     try {
-      if (localStorage.getItem('gaenr_freelancers_cleared') === 'true') {
-        return [];
-      }
+      try {
+        localStorage.removeItem('gaenr_freelancers_cleared');
+      } catch {}
 
       const saved = localStorage.getItem('gaenr_freelancers');
       if (saved !== null) {
         try {
           const parsed: FreelancerProfile[] = JSON.parse(saved);
           if (Array.isArray(parsed)) {
-            // Strictly respect saved state — even if empty []!
-            // Never re-seed or resurrect deleted profiles.
-            return parsed.map((fl) => {
-              const updatedFl = { ...fl };
-              if (!updatedFl.uploadToken) {
-                updatedFl.uploadToken = generateSecureUploadToken();
-              }
-              return updatedFl;
-            });
+            const deleted = getDeletedExpertCodes();
+            return parsed
+              .filter((fl) => fl && fl.code && !deleted.has(String(fl.code).trim().toUpperCase()))
+              .map((fl) => {
+                const updatedFl = { ...fl };
+                if (!updatedFl.uploadToken) {
+                  updatedFl.uploadToken = generateSecureUploadToken();
+                }
+                return updatedFl;
+              });
           }
         } catch {}
       }
@@ -584,14 +590,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       try {
         const key = e?.key;
         if (!key || key === 'gaenr_freelancers') {
-          if (localStorage.getItem('gaenr_freelancers_cleared') === 'true') {
-            setFreelancers([]);
-          } else {
-            const raw = localStorage.getItem('gaenr_freelancers');
-            if (raw) {
+          const raw = localStorage.getItem('gaenr_freelancers');
+          if (raw) {
+            try {
               const parsed = JSON.parse(raw);
-              if (Array.isArray(parsed)) setFreelancers(parsed);
-            }
+              if (Array.isArray(parsed)) {
+                const deleted = getDeletedExpertCodes();
+                setFreelancers(parsed.filter((fl) => fl && fl.code && !deleted.has(String(fl.code).trim().toUpperCase())));
+              }
+            } catch {}
           }
         }
         if (!key || key === 'gaenr_avatars') {
@@ -807,56 +814,67 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...newFl,
       uploadToken: newFl.uploadToken || generateSecureUploadToken(),
     };
+    unrecordDeletedExpertCode(safeFl.code);
+
+    let updated: FreelancerProfile[] = [];
     setFreelancers((prev) => {
-      const updated = [safeFl, ...prev];
-      const serialized = JSON.stringify(updated);
-      try {
-        localStorage.removeItem('gaenr_freelancers_cleared');
-        localStorage.setItem('gaenr_freelancers', serialized);
-      } catch {}
-      syncKeyToRemote('gaenr_freelancers', serialized);
+      const existing = (prev || []).filter(
+        (fl) => fl.code.toUpperCase() !== safeFl.code.toUpperCase() && fl.id !== safeFl.id
+      );
+      updated = [safeFl, ...existing];
       return updated;
     });
+
+    const currentList = updated.length > 0 ? updated : [safeFl];
+    const serialized = JSON.stringify(currentList);
+    try {
+      localStorage.removeItem('gaenr_freelancers_cleared');
+      localStorage.setItem('gaenr_freelancers', serialized);
+    } catch {}
+    syncKeyToRemote('gaenr_freelancers', serialized);
     showToast(`Expert profile ${newFl.code} created successfully`, 'success');
   };
 
   const updateFreelancer = (code: string, updates: Partial<FreelancerProfile>) => {
+    let updated: FreelancerProfile[] = [];
     setFreelancers((prev) => {
-      const updated = prev.map((fl) => (fl.code === code ? { ...fl, ...updates } : fl));
-      const serialized = JSON.stringify(updated);
-      try {
-        localStorage.setItem('gaenr_freelancers', serialized);
-      } catch {}
-      syncKeyToRemote('gaenr_freelancers', serialized);
+      updated = prev.map((fl) => (fl.code === code ? { ...fl, ...updates } : fl));
       return updated;
     });
+    const serialized = JSON.stringify(updated);
+    try {
+      localStorage.setItem('gaenr_freelancers', serialized);
+    } catch {}
+    syncKeyToRemote('gaenr_freelancers', serialized);
     showToast(`Profile ${code} updated successfully`, 'success');
   };
 
   const deleteFreelancer = (code: string): boolean => {
     const clean = code.trim().toLowerCase();
+    recordDeletedExpertCode(code);
+
+    let updated: FreelancerProfile[] = [];
     setFreelancers((prev) => {
-      const updated = prev.filter(
+      updated = prev.filter(
         (fl) => fl.code.toLowerCase() !== clean && fl.id.toLowerCase() !== clean
       );
-      const serialized = JSON.stringify(updated);
-      try {
-        if (updated.length === 0) {
-          localStorage.setItem('gaenr_freelancers_cleared', 'true');
-        }
-        localStorage.setItem('gaenr_freelancers', serialized);
-      } catch {}
-      syncKeyToRemote('gaenr_freelancers', serialized);
       return updated;
     });
+    const serialized = JSON.stringify(updated);
+    try {
+      localStorage.setItem('gaenr_freelancers', serialized);
+    } catch {}
+    syncKeyToRemote('gaenr_freelancers', serialized);
     showToast(`Expert profile ${code} permanently deleted`, 'info');
     return true;
   };
 
   const deleteAllFreelancers = (): boolean => {
+    freelancers.forEach((fl) => {
+      if (fl?.code) recordDeletedExpertCode(fl.code);
+    });
     setFreelancers([]);
     try {
-      localStorage.setItem('gaenr_freelancers_cleared', 'true');
       localStorage.setItem('gaenr_freelancers', '[]');
     } catch {}
     syncKeyToRemote('gaenr_freelancers', '[]');
@@ -866,19 +884,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const toggleFreelancerVisibility = (code: string) => {
     let nextPublicState = false;
+    let updated: FreelancerProfile[] = [];
     setFreelancers((prev) => {
       const target = prev.find((fl) => fl.code === code);
       nextPublicState = target ? !target.isPublic : true;
-      const updated = prev.map((fl) =>
+      updated = prev.map((fl) =>
         fl.code === code ? { ...fl, isPublic: nextPublicState } : fl
       );
-      const serialized = JSON.stringify(updated);
-      try {
-        localStorage.setItem('gaenr_freelancers', serialized);
-      } catch {}
-      syncKeyToRemote('gaenr_freelancers', serialized);
       return updated;
     });
+    const serialized = JSON.stringify(updated);
+    try {
+      localStorage.setItem('gaenr_freelancers', serialized);
+    } catch {}
+    syncKeyToRemote('gaenr_freelancers', serialized);
     showToast(
       `Expert profile ${code} is now ${nextPublicState ? 'PUBLIC (Live on Website)' : 'DRAFT (Hidden from Public)'}`,
       nextPublicState ? 'success' : 'info'
@@ -1416,7 +1435,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       // Trigger official welcome email in 100% English with ID card badge and upload portal link
       if (targetApp.email) {
-        sendExpertWelcomeEmail(generatedCode, cardImage || null, newProfile).catch((err) => {
+        sendExpertWelcomeEmail(generatedCode, cardImage || null, newProfile).catch((err: any) => {
           console.warn('Welcome email dispatch note:', err);
         });
       }
@@ -1436,7 +1455,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       // Trigger automated onboarding invitation email directly to applicant
       if (targetApp.email) {
-        sendExpertOnboardingInviteEmail(targetApp).catch((err) => {
+        sendExpertOnboardingInviteEmail(targetApp).catch((err: any) => {
           console.warn('Onboarding invite email dispatch note:', err);
         });
       }

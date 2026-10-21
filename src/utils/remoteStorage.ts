@@ -20,7 +20,13 @@ const LOCAL_ONLY_KEYS = new Set([
   'gaenr_admin_session',
   'gaenr_theme',
   'gaenr_device_theme',
+  'gaenr_deleted_expert_codes',
+  'gaenr_freelancers_cleared',
 ]);
+
+try {
+  nativeStorage.removeItem('gaenr_freelancers_cleared');
+} catch {}
 
 const apiUrl = () => {
   const configured = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
@@ -104,6 +110,93 @@ export const isPrivilegedWriter = (): boolean => {
   }
 };
 
+export const getDeletedExpertCodes = (): Set<string> => {
+  try {
+    const raw = nativeStorage.getItem('gaenr_deleted_expert_codes');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return new Set(parsed.map((c: string) => String(c).trim().toUpperCase()));
+      }
+    }
+  } catch {}
+  return new Set();
+};
+
+export const recordDeletedExpertCode = (code: string) => {
+  try {
+    const clean = code.trim().toUpperCase();
+    const set = getDeletedExpertCodes();
+    set.add(clean);
+    nativeStorage.setItem('gaenr_deleted_expert_codes', JSON.stringify(Array.from(set)));
+  } catch {}
+};
+
+export const unrecordDeletedExpertCode = (code: string) => {
+  try {
+    const clean = code.trim().toUpperCase();
+    const set = getDeletedExpertCodes();
+    if (set.has(clean)) {
+      set.delete(clean);
+      nativeStorage.setItem('gaenr_deleted_expert_codes', JSON.stringify(Array.from(set)));
+    }
+  } catch {}
+};
+
+export const clearAllDeletedExpertCodes = () => {
+  try {
+    nativeStorage.removeItem('gaenr_deleted_expert_codes');
+  } catch {}
+};
+
+export const mergeFreelancersState = (
+  localRaw: string | null,
+  remoteRaw: string | null
+): { mergedSerialized: string; shouldPushToRemote: boolean } => {
+  const deletedCodes = getDeletedExpertCodes();
+
+  let localList: any[] = [];
+  try {
+    const parsed = localRaw ? JSON.parse(localRaw) : [];
+    if (Array.isArray(parsed)) localList = parsed;
+  } catch {}
+
+  let remoteList: any[] = [];
+  try {
+    const parsed = remoteRaw ? JSON.parse(remoteRaw) : [];
+    if (Array.isArray(parsed)) remoteList = parsed;
+  } catch {}
+
+  // Filter out any explicitly deleted experts
+  localList = localList.filter((fl) => fl && fl.code && !deletedCodes.has(String(fl.code).trim().toUpperCase()));
+  remoteList = remoteList.filter((fl) => fl && fl.code && !deletedCodes.has(String(fl.code).trim().toUpperCase()));
+
+  const map = new Map<string, any>();
+  // 1. Remote items first
+  remoteList.forEach((fl) => {
+    const key = String(fl.code || fl.id || '').trim().toUpperCase();
+    if (key) map.set(key, fl);
+  });
+
+  // 2. Local items merge in (local items preserve any locally added/edited profiles)
+  let localHasNew = false;
+  localList.forEach((fl) => {
+    const key = String(fl.code || fl.id || '').trim().toUpperCase();
+    if (key) {
+      if (!map.has(key)) {
+        localHasNew = true;
+      }
+      map.set(key, fl);
+    }
+  });
+
+  const merged = Array.from(map.values());
+  const mergedSerialized = JSON.stringify(merged);
+  const shouldPushToRemote = localHasNew || (remoteList.length !== merged.length);
+
+  return { mergedSerialized, shouldPushToRemote };
+};
+
 export const syncKeyToRemote = async (key: string, value: string): Promise<boolean> => {
   if (LOCAL_ONLY_KEYS.has(key)) return false;
   pendingKeys.add(key);
@@ -122,7 +215,7 @@ export const syncKeyToRemote = async (key: string, value: string): Promise<boole
     console.warn(`[Gaenr] Direct sync failed for ${key}:`, err);
     return false;
   } finally {
-    setTimeout(() => pendingKeys.delete(key), 3000);
+    setTimeout(() => pendingKeys.delete(key), 8000);
   }
 };
 
@@ -181,7 +274,9 @@ const queueRemoteMutation = (payload: { changes?: Record<string, string>; delete
     .then(() => fetch(apiUrl(), options))
     .then((response) => {
       if (!response.ok) throw new Error(`Remote storage write failed: ${response.status}`);
-      affectedKeys.forEach((key) => pendingKeys.delete(key));
+      setTimeout(() => {
+        affectedKeys.forEach((key) => pendingKeys.delete(key));
+      }, 8000);
     })
     .catch((err) => {
       console.warn('[Gaenr] Remote storage mutation pending retry/offline:', err);
@@ -231,13 +326,24 @@ const refreshRemoteStorage = async () => {
       const value = serializeValue(rawValue);
       const previous = nativeStorage.getItem(key);
 
-      // Never resurrect cleared experts from stale remote state
-      if (key === 'gaenr_freelancers' && value !== '[]') {
-        const isExplicitlyCleared = nativeStorage.getItem('gaenr_freelancers_cleared') === 'true';
-        if (isExplicitlyCleared) {
-          syncKeyToRemote('gaenr_freelancers', '[]');
-          return;
+      // Smart merge for experts to never wipe out locally added profiles
+      if (key === 'gaenr_freelancers') {
+        const { mergedSerialized, shouldPushToRemote } = mergeFreelancersState(previous, value);
+        if (previous !== mergedSerialized) {
+          nativeSetItem.call(nativeStorage, key, mergedSerialized);
+          window.dispatchEvent(
+            new StorageEvent('storage', {
+              key,
+              oldValue: previous,
+              newValue: mergedSerialized,
+              storageArea: nativeStorage,
+            })
+          );
         }
+        if (shouldPushToRemote && isPrivilegedWriter()) {
+          syncKeyToRemote(key, mergedSerialized);
+        }
+        return;
       }
 
       if (previous === value) return;
@@ -266,13 +372,24 @@ export const initializeRemoteStorage = async () => {
         const value = serializeValue(rawValue);
         const previous = nativeStorage.getItem(key);
 
-        // Never resurrect cleared experts from stale remote state
-        if (key === 'gaenr_freelancers' && value !== '[]') {
-          const isExplicitlyCleared = nativeStorage.getItem('gaenr_freelancers_cleared') === 'true';
-          if (isExplicitlyCleared) {
-            syncKeyToRemote('gaenr_freelancers', '[]');
-            return;
+        // Smart merge for experts to never wipe out locally added profiles
+        if (key === 'gaenr_freelancers') {
+          const { mergedSerialized, shouldPushToRemote } = mergeFreelancersState(previous, value);
+          if (previous !== mergedSerialized) {
+            nativeSetItem.call(nativeStorage, key, mergedSerialized);
+            window.dispatchEvent(
+              new StorageEvent('storage', {
+                key,
+                oldValue: previous,
+                newValue: mergedSerialized,
+                storageArea: nativeStorage,
+              })
+            );
           }
+          if (shouldPushToRemote && isPrivilegedWriter()) {
+            syncKeyToRemote(key, mergedSerialized);
+          }
+          return;
         }
 
         nativeSetItem.call(nativeStorage, key, value);
