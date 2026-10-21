@@ -431,7 +431,7 @@ export const ProfileCreateView: React.FC<ProfileCreateViewProps> = ({
             reviews: [],
             portfolioItems: [],
             isPublic: true,
-            skills: resolvedSkills,
+            skills: effectiveSkills.length > 0 ? effectiveSkills : ['Verified Discipline'],
             status: 'active',
             dateAdded: new Date().toISOString(),
             gender,

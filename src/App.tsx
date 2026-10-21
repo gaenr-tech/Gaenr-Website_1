@@ -204,6 +204,9 @@ const AppContent: React.FC = () => {
       case '/admin':
       case '/manage/profiles':
       case '/manage/profiles/new':
+      case '/manage/create-profile':
+      case '/manage/create-expert':
+      case '/manage/new-expert':
       case '/manage/portfolio':
       case '/manage/categories':
       case '/manage/skills':
@@ -211,6 +214,9 @@ const AppContent: React.FC = () => {
       case '/manage/avatars':
       case '/manage/branding':
       case '/manage/settings':
+      case '/manage/tasks':
+      case '/manage/applications':
+      case '/manage/feedbacks':
         return <AdminDashboard />;
       case '/':
       default:

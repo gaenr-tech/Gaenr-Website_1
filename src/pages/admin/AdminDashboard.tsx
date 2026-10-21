@@ -101,8 +101,17 @@ export const AdminDashboard: React.FC = () => {
 
   // Helper to map route to tab
   const getTabFromRoute = (route: string): SitemapTab => {
-    const clean = route.split('#')[0].split('?')[0];
-    if (clean === '/manage/profiles/new') return 'profiles_new';
+    const clean = route.split('#')[0].split('?')[0].replace(/\/+$/, '');
+    if (
+      clean === '/manage/profiles/new' ||
+      clean === '/manage/create-profile' ||
+      clean === '/manage/create-expert' ||
+      clean === '/manage/new-expert' ||
+      clean === '/manage/new-profile' ||
+      clean === '/admin/profiles/new' ||
+      clean === '/admin/create-profile' ||
+      clean === '/admin/create-expert'
+    ) return 'profiles_new';
     if (clean === '/manage/profiles' || clean === '/manage/portfolio') return 'profiles';
     if (clean === '/manage/categories') return 'categories';
     if (clean === '/manage/skills') return 'skills';
