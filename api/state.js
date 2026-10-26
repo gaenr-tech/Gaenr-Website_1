@@ -91,6 +91,26 @@ export default async function handler(req, res) {
       delete currentState[key];
     }
 
+    // Explicit clear all freelancers command
+    if (req.body?.clearFreelancers === true) {
+      currentState['gaenr_freelancers'] = '[]';
+    }
+
+    // Explicit delete expert codes command
+    if (Array.isArray(req.body?.deletedExpertCodes) && req.body.deletedExpertCodes.length > 0) {
+      const deleteCodesSet = new Set(req.body.deletedExpertCodes.map((c) => String(c).trim().toUpperCase()));
+      let existingList = [];
+      try {
+        const raw = currentState['gaenr_freelancers'];
+        existingList = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : []);
+      } catch {}
+      if (Array.isArray(existingList)) {
+        currentState['gaenr_freelancers'] = JSON.stringify(
+          existingList.filter((fl) => fl && fl.code && !deleteCodesSet.has(String(fl.code).trim().toUpperCase()))
+        );
+      }
+    }
+
     if (incomingState && typeof incomingState === 'object' && !Array.isArray(incomingState)) {
       if (Object.keys(currentState).length === 0) {
         for (const [key, value] of Object.entries(incomingState)) {
@@ -98,7 +118,13 @@ export default async function handler(req, res) {
           currentState[key] = typeof value === 'string' ? value : JSON.stringify(value);
         }
       }
-    } else if ((!changes || typeof changes !== 'object' || Array.isArray(changes)) && arrayChanges.length === 0 && deletedKeys.length === 0) {
+    } else if (
+      (!changes || typeof changes !== 'object' || Array.isArray(changes)) &&
+      arrayChanges.length === 0 &&
+      deletedKeys.length === 0 &&
+      !req.body?.clearFreelancers &&
+      !req.body?.deletedExpertCodes
+    ) {
       return send(res, 400, { error: 'Expected state, changes, arrayChanges, or deletedKeys' });
     }
 
@@ -124,7 +150,7 @@ export default async function handler(req, res) {
       const getItemKey = (item) => {
         if (!item) return '';
         if (typeof item === 'object') {
-          if (item.code) return `code:${item.code}`;
+          if (item.code) return `code:${String(item.code).trim().toUpperCase()}`;
           if (item.id) return `id:${item.id}`;
         }
         return `val:${JSON.stringify(item)}`;
@@ -141,7 +167,7 @@ export default async function handler(req, res) {
         const k = getItemKey(item);
         if (deleteSet.has(k)) continue;
         if (upsertMap.has(k)) {
-          merged.push(upsertMap.get(k));
+          merged.push({ ...item, ...upsertMap.get(k) });
           upsertMap.delete(k);
         } else {
           merged.push(item);
@@ -154,10 +180,51 @@ export default async function handler(req, res) {
       currentState[key] = JSON.stringify(merged);
     }
 
-    // Process general key-value changes
+    // Process general key-value changes with smart merge for lists
     if (changes && typeof changes === 'object' && !Array.isArray(changes)) {
       for (const [key, value] of Object.entries(changes)) {
         if (typeof key !== 'string' || SENSITIVE_LOCAL_KEYS.includes(key)) continue;
+
+        // Smart merge for experts array
+        if (key === 'gaenr_freelancers') {
+          if (req.body?.clearFreelancers === true) {
+            currentState[key] = '[]';
+            continue;
+          }
+          let incomingItems = [];
+          try {
+            incomingItems = typeof value === 'string' ? JSON.parse(value) : (Array.isArray(value) ? value : []);
+          } catch {}
+
+          let existingItems = [];
+          try {
+            const rawVal = currentState[key];
+            existingItems = typeof rawVal === 'string' ? JSON.parse(rawVal) : (Array.isArray(rawVal) ? rawVal : []);
+          } catch {}
+
+          if (Array.isArray(incomingItems) && Array.isArray(existingItems)) {
+            const expertMap = new Map();
+            for (const fl of existingItems) {
+              if (fl && fl.code) {
+                expertMap.set(String(fl.code).trim().toUpperCase(), fl);
+              }
+            }
+            for (const incoming of incomingItems) {
+              if (incoming && incoming.code) {
+                const codeKey = String(incoming.code).trim().toUpperCase();
+                const existing = expertMap.get(codeKey);
+                if (existing) {
+                  expertMap.set(codeKey, { ...existing, ...incoming });
+                } else {
+                  expertMap.set(codeKey, incoming);
+                }
+              }
+            }
+            currentState[key] = JSON.stringify(Array.from(expertMap.values()));
+            continue;
+          }
+        }
+
         currentState[key] = typeof value === 'string' ? value : JSON.stringify(value);
       }
     }

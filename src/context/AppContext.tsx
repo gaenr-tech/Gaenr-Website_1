@@ -26,9 +26,8 @@ import { generateSecureUploadToken, generateUniqueExpertCode } from '../utils/se
 import { sendExpertWelcomeEmail, sendExpertOnboardingInviteEmail } from '../utils/email';
 import {
   syncKeyToRemote,
-  getDeletedExpertCodes,
-  recordDeletedExpertCode,
-  unrecordDeletedExpertCode,
+  deleteExpertFromRemote,
+  clearAllExpertsFromRemote,
 } from '../utils/remoteStorage';
 
 export const GAENR_OFFICIAL_DRIVE_FOLDER_URL =
@@ -240,10 +239,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
-  // Freelancers — persistent official experts store (filtering out any explicitly deleted codes)
+  // Freelancers — persistent official experts store directly mirrored with Cloudflare D1
   const [freelancers, setFreelancers] = useState<FreelancerProfile[]>(() => {
     try {
       try {
+        localStorage.removeItem('gaenr_deleted_expert_codes');
         localStorage.removeItem('gaenr_freelancers_cleared');
       } catch {}
 
@@ -252,9 +252,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         try {
           const parsed: FreelancerProfile[] = JSON.parse(saved);
           if (Array.isArray(parsed)) {
-            const deleted = getDeletedExpertCodes();
             return parsed
-              .filter((fl) => fl && fl.code && !deleted.has(String(fl.code).trim().toUpperCase()))
+              .filter((fl) => fl && fl.code)
               .map((fl) => {
                 const updatedFl = { ...fl };
                 if (!updatedFl.uploadToken) {
@@ -595,8 +594,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             try {
               const parsed = JSON.parse(raw);
               if (Array.isArray(parsed)) {
-                const deleted = getDeletedExpertCodes();
-                setFreelancers(parsed.filter((fl) => fl && fl.code && !deleted.has(String(fl.code).trim().toUpperCase())));
+                setFreelancers(parsed.filter((fl) => fl && fl.code));
               }
             } catch {}
           }
@@ -814,7 +812,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...newFl,
       uploadToken: newFl.uploadToken || generateSecureUploadToken(),
     };
-    unrecordDeletedExpertCode(safeFl.code);
 
     let updated: FreelancerProfile[] = [];
     setFreelancers((prev) => {
@@ -851,7 +848,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const deleteFreelancer = (code: string): boolean => {
     const clean = code.trim().toLowerCase();
-    recordDeletedExpertCode(code);
+    deleteExpertFromRemote(code);
 
     let updated: FreelancerProfile[] = [];
     setFreelancers((prev) => {
@@ -870,14 +867,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const deleteAllFreelancers = (): boolean => {
-    freelancers.forEach((fl) => {
-      if (fl?.code) recordDeletedExpertCode(fl.code);
-    });
     setFreelancers([]);
     try {
       localStorage.setItem('gaenr_freelancers', '[]');
     } catch {}
-    syncKeyToRemote('gaenr_freelancers', '[]');
+    clearAllExpertsFromRemote();
     showToast('All expert profiles permanently removed', 'info');
     return true;
   };
@@ -962,9 +956,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         fl.code.toLowerCase() === code.toLowerCase() ? updatedExpert : fl
       );
 
+      const serialized = JSON.stringify(updatedAll);
       try {
-        localStorage.setItem('gaenr_freelancers', JSON.stringify(updatedAll));
+        localStorage.setItem('gaenr_freelancers', serialized);
       } catch {}
+      syncKeyToRemote('gaenr_freelancers', serialized);
 
       return updatedAll;
     });
@@ -994,9 +990,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         fl.code.toLowerCase() === code.toLowerCase() ? updatedExpert : fl
       );
 
+      const serialized = JSON.stringify(updatedAll);
       try {
-        localStorage.setItem('gaenr_freelancers', JSON.stringify(updatedAll));
+        localStorage.setItem('gaenr_freelancers', serialized);
       } catch {}
+      syncKeyToRemote('gaenr_freelancers', serialized);
 
       return updatedAll;
     });
@@ -1412,25 +1410,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         portfolioItems: [], // Crucial Rule: Profile starts clean; application portfolio is NOT published to live profile.
       };
 
+      let updatedFreelancers: FreelancerProfile[] = [];
       setFreelancers((prev) => {
         const cleanPrev = prev.filter((f) => f.code !== generatedCode && f.id !== newProfile.id);
-        const updated = [newProfile, ...cleanPrev];
+        updatedFreelancers = [newProfile, ...cleanPrev];
+        const serialized = JSON.stringify(updatedFreelancers);
         try {
-          localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
+          localStorage.setItem('gaenr_freelancers', serialized);
         } catch {}
-        return updated;
+        syncKeyToRemote('gaenr_freelancers', serialized);
+        return updatedFreelancers;
       });
 
+      let updatedApps: ExpertApplication[] = [];
       setExpertApplications((prev) => {
-        const updated = prev.map((a) =>
+        updatedApps = prev.map((a) =>
           a.id === id
             ? { ...a, status: 'onboarded', convertedExpertCode: generatedCode, uploadToken: uploadToken }
             : a
         );
+        const serialized = JSON.stringify(updatedApps);
         try {
-          localStorage.setItem('gaenr_expert_applications', JSON.stringify(updated));
+          localStorage.setItem('gaenr_expert_applications', serialized);
         } catch {}
-        return updated;
+        syncKeyToRemote('gaenr_expert_applications', serialized);
+        return updatedApps;
       });
 
       // Trigger official welcome email in 100% English with ID card badge and upload portal link
@@ -1529,6 +1533,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addExpertPortfolioItem = (expertCode: string, item: PortfolioItem) => {
+    let updatedList: FreelancerProfile[] = [];
     setFreelancers((prev) => {
       const updated = prev.map((fl) => {
         if (fl.code.toLowerCase() === expertCode.toLowerCase()) {
@@ -1539,14 +1544,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
         return fl;
       });
+      updatedList = updated;
+      const serialized = JSON.stringify(updated);
       try {
-        localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
+        localStorage.setItem('gaenr_freelancers', serialized);
       } catch {}
       return updated;
     });
+    if (updatedList.length > 0) {
+      syncKeyToRemote('gaenr_freelancers', JSON.stringify(updatedList));
+    }
   };
 
   const deleteExpertPortfolioItem = (expertCode: string, itemId: string) => {
+    let updatedList: FreelancerProfile[] = [];
     setFreelancers((prev) => {
       const updated = prev.map((fl) => {
         if (fl.code.toLowerCase() === expertCode.toLowerCase()) {
@@ -1557,11 +1568,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
         return fl;
       });
+      updatedList = updated;
+      const serialized = JSON.stringify(updated);
       try {
-        localStorage.setItem('gaenr_freelancers', JSON.stringify(updated));
+        localStorage.setItem('gaenr_freelancers', serialized);
       } catch {}
       return updated;
     });
+    if (updatedList.length > 0) {
+      syncKeyToRemote('gaenr_freelancers', JSON.stringify(updatedList));
+    }
     showToast('Portfolio item removed', 'info');
   };
 

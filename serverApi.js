@@ -58,6 +58,26 @@ export const mergeState = (currentState, payload) => {
     delete state[k];
   }
 
+  // Explicit clear all freelancers command
+  if (payload.clearFreelancers === true) {
+    state['gaenr_freelancers'] = '[]';
+  }
+
+  // Explicit delete expert codes command
+  if (Array.isArray(payload.deletedExpertCodes) && payload.deletedExpertCodes.length > 0) {
+    const deleteCodesSet = new Set(payload.deletedExpertCodes.map((c) => String(c).trim().toUpperCase()));
+    let existingList = [];
+    try {
+      const raw = state['gaenr_freelancers'];
+      existingList = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : []);
+    } catch {}
+    if (Array.isArray(existingList)) {
+      state['gaenr_freelancers'] = JSON.stringify(
+        existingList.filter((fl) => fl && fl.code && !deleteCodesSet.has(String(fl.code).trim().toUpperCase()))
+      );
+    }
+  }
+
   // 1. Full state snapshot
   if (payload.state && typeof payload.state === 'object' && !Array.isArray(payload.state)) {
     for (const [k, v] of Object.entries(payload.state)) {
@@ -89,7 +109,7 @@ export const mergeState = (currentState, payload) => {
       const getItemKey = (item) => {
         if (!item) return '';
         if (typeof item === 'object') {
-          if (item.code) return `code:${item.code}`;
+          if (item.code) return `code:${String(item.code).trim().toUpperCase()}`;
           if (item.id) return `id:${item.id}`;
         }
         return `val:${JSON.stringify(item)}`;
@@ -104,7 +124,7 @@ export const mergeState = (currentState, payload) => {
         const k = getItemKey(item);
         if (deleteSet.has(k)) continue;
         if (upsertMap.has(k)) {
-          merged.push(upsertMap.get(k));
+          merged.push({ ...item, ...upsertMap.get(k) });
           upsertMap.delete(k);
         } else {
           merged.push(item);
@@ -118,10 +138,51 @@ export const mergeState = (currentState, payload) => {
     }
   }
 
-  // 3. Key-value changes
+  // 3. Key-value changes with smart merge for lists
   if (payload.changes && typeof payload.changes === 'object' && !Array.isArray(payload.changes)) {
     for (const [k, v] of Object.entries(payload.changes)) {
       if (typeof k !== 'string' || SENSITIVE_LOCAL_KEYS.includes(k)) continue;
+
+      // Smart merge for experts array
+      if (k === 'gaenr_freelancers') {
+        if (payload.clearFreelancers === true) {
+          state[k] = '[]';
+          continue;
+        }
+        let incomingItems = [];
+        try {
+          incomingItems = typeof v === 'string' ? JSON.parse(v) : (Array.isArray(v) ? v : []);
+        } catch {}
+
+        let existingItems = [];
+        try {
+          const rawVal = state[k];
+          existingItems = typeof rawVal === 'string' ? JSON.parse(rawVal) : (Array.isArray(rawVal) ? rawVal : []);
+        } catch {}
+
+        if (Array.isArray(incomingItems) && Array.isArray(existingItems)) {
+          const expertMap = new Map();
+          for (const fl of existingItems) {
+            if (fl && fl.code) {
+              expertMap.set(String(fl.code).trim().toUpperCase(), fl);
+            }
+          }
+          for (const incoming of incomingItems) {
+            if (incoming && incoming.code) {
+              const codeKey = String(incoming.code).trim().toUpperCase();
+              const existing = expertMap.get(codeKey);
+              if (existing) {
+                expertMap.set(codeKey, { ...existing, ...incoming });
+              } else {
+                expertMap.set(codeKey, incoming);
+              }
+            }
+          }
+          state[k] = JSON.stringify(Array.from(expertMap.values()));
+          continue;
+        }
+      }
+
       state[k] = typeof v === 'string' ? v : JSON.stringify(v);
     }
   }

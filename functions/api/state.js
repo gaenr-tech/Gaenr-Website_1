@@ -299,6 +299,26 @@ export async function onRequestPut({ request, env }) {
       delete currentState[key];
     }
 
+    // Explicit clear all freelancers command
+    if (payload.clearFreelancers === true) {
+      currentState['gaenr_freelancers'] = '[]';
+    }
+
+    // Explicit delete expert codes command
+    if (Array.isArray(payload.deletedExpertCodes) && payload.deletedExpertCodes.length > 0) {
+      const deleteCodesSet = new Set(payload.deletedExpertCodes.map((c) => String(c).trim().toUpperCase()));
+      let existingList = [];
+      try {
+        const raw = currentState['gaenr_freelancers'];
+        existingList = typeof raw === 'string' ? JSON.parse(raw) : (Array.isArray(raw) ? raw : []);
+      } catch {}
+      if (Array.isArray(existingList)) {
+        currentState['gaenr_freelancers'] = JSON.stringify(
+          existingList.filter((fl) => fl && fl.code && !deleteCodesSet.has(String(fl.code).trim().toUpperCase()))
+        );
+      }
+    }
+
     // 1. Full snapshot
     if (payload.state && typeof payload.state === 'object' && !Array.isArray(payload.state)) {
       for (const [key, value] of Object.entries(payload.state)) {
@@ -307,10 +327,82 @@ export async function onRequestPut({ request, env }) {
       }
     }
 
-    // 2. Changes
+    // 2. Changes with Smart Merging for multi-device synchronization
     if (payload.changes && typeof payload.changes === 'object' && !Array.isArray(payload.changes)) {
       for (const [key, value] of Object.entries(payload.changes)) {
         if (typeof key !== 'string' || SENSITIVE_LOCAL_KEYS.includes(key)) continue;
+
+        // Smart merge for experts array to prevent any device from wiping out another device's data
+        if (key === 'gaenr_freelancers') {
+          if (payload.clearFreelancers === true) {
+            currentState[key] = '[]';
+            continue;
+          }
+          let incomingItems = [];
+          try {
+            incomingItems = typeof value === 'string' ? JSON.parse(value) : (Array.isArray(value) ? value : []);
+          } catch {}
+
+          let existingItems = [];
+          try {
+            const rawVal = currentState[key];
+            existingItems = typeof rawVal === 'string' ? JSON.parse(rawVal) : (Array.isArray(rawVal) ? rawVal : []);
+          } catch {}
+
+          if (Array.isArray(incomingItems) && Array.isArray(existingItems)) {
+            const expertMap = new Map();
+            // Start with existing DB items
+            for (const fl of existingItems) {
+              if (fl && fl.code) {
+                expertMap.set(String(fl.code).trim().toUpperCase(), fl);
+              }
+            }
+            // Merge incoming items (updating existing or appending new)
+            for (const incoming of incomingItems) {
+              if (incoming && incoming.code) {
+                const codeKey = String(incoming.code).trim().toUpperCase();
+                const existing = expertMap.get(codeKey);
+                if (existing) {
+                  expertMap.set(codeKey, { ...existing, ...incoming });
+                } else {
+                  expertMap.set(codeKey, incoming);
+                }
+              }
+            }
+            currentState[key] = JSON.stringify(Array.from(expertMap.values()));
+            continue;
+          }
+        }
+
+        // Smart merge for tasks, feedbacks, and applications
+        if (key === 'gaenr_tasks' || key === 'gaenr_feedbacks' || key === 'gaenr_expert_applications') {
+          let incomingItems = [];
+          try {
+            incomingItems = typeof value === 'string' ? JSON.parse(value) : (Array.isArray(value) ? value : []);
+          } catch {}
+
+          let existingItems = [];
+          try {
+            const rawVal = currentState[key];
+            existingItems = typeof rawVal === 'string' ? JSON.parse(rawVal) : (Array.isArray(rawVal) ? rawVal : []);
+          } catch {}
+
+          if (Array.isArray(incomingItems) && Array.isArray(existingItems) && existingItems.length > 0) {
+            const itemMap = new Map();
+            for (const it of existingItems) {
+              const k = it?.id || JSON.stringify(it);
+              itemMap.set(k, it);
+            }
+            for (const incoming of incomingItems) {
+              const k = incoming?.id || JSON.stringify(incoming);
+              const prev = itemMap.get(k);
+              itemMap.set(k, prev ? { ...prev, ...incoming } : incoming);
+            }
+            currentState[key] = JSON.stringify(Array.from(itemMap.values()));
+            continue;
+          }
+        }
+
         currentState[key] = typeof value === 'string' ? value : JSON.stringify(value);
       }
     }
@@ -338,7 +430,7 @@ export async function onRequestPut({ request, env }) {
         const getItemKey = (item) => {
           if (!item) return '';
           if (typeof item === 'object') {
-            if (item.code) return `code:${item.code}`;
+            if (item.code) return `code:${String(item.code).trim().toUpperCase()}`;
             if (item.id) return `id:${item.id}`;
           }
           return `val:${JSON.stringify(item)}`;
@@ -353,7 +445,7 @@ export async function onRequestPut({ request, env }) {
           const k = getItemKey(item);
           if (deleteSet.has(k)) continue;
           if (upsertMap.has(k)) {
-            merged.push(upsertMap.get(k));
+            merged.push({ ...item, ...upsertMap.get(k) });
             upsertMap.delete(k);
           } else {
             merged.push(item);

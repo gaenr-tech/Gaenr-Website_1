@@ -20,11 +20,11 @@ const LOCAL_ONLY_KEYS = new Set([
   'gaenr_admin_session',
   'gaenr_theme',
   'gaenr_device_theme',
-  'gaenr_deleted_expert_codes',
-  'gaenr_freelancers_cleared',
 ]);
 
+// Purge any legacy tombstone keys that blocked experts on client devices
 try {
+  nativeStorage.removeItem('gaenr_deleted_expert_codes');
   nativeStorage.removeItem('gaenr_freelancers_cleared');
 } catch {}
 
@@ -110,51 +110,16 @@ export const isPrivilegedWriter = (): boolean => {
   }
 };
 
-export const getDeletedExpertCodes = (): Set<string> => {
-  try {
-    const raw = nativeStorage.getItem('gaenr_deleted_expert_codes');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        return new Set(parsed.map((c: string) => String(c).trim().toUpperCase()));
-      }
-    }
-  } catch {}
-  return new Set();
-};
-
-export const recordDeletedExpertCode = (code: string) => {
-  try {
-    const clean = code.trim().toUpperCase();
-    const set = getDeletedExpertCodes();
-    set.add(clean);
-    nativeStorage.setItem('gaenr_deleted_expert_codes', JSON.stringify(Array.from(set)));
-  } catch {}
-};
-
-export const unrecordDeletedExpertCode = (code: string) => {
-  try {
-    const clean = code.trim().toUpperCase();
-    const set = getDeletedExpertCodes();
-    if (set.has(clean)) {
-      set.delete(clean);
-      nativeStorage.setItem('gaenr_deleted_expert_codes', JSON.stringify(Array.from(set)));
-    }
-  } catch {}
-};
-
-export const clearAllDeletedExpertCodes = () => {
-  try {
-    nativeStorage.removeItem('gaenr_deleted_expert_codes');
-  } catch {}
-};
-
+/**
+ * Authoritative merge for experts:
+ * Remote database state is the single source of truth.
+ * If local state has a brand new expert created on this device that hasn't synced yet,
+ * we preserve it and push it to remote. Otherwise, remote database wins.
+ */
 export const mergeFreelancersState = (
   localRaw: string | null,
   remoteRaw: string | null
 ): { mergedSerialized: string; shouldPushToRemote: boolean } => {
-  const deletedCodes = getDeletedExpertCodes();
-
   let localList: any[] = [];
   try {
     const parsed = localRaw ? JSON.parse(localRaw) : [];
@@ -167,34 +132,61 @@ export const mergeFreelancersState = (
     if (Array.isArray(parsed)) remoteList = parsed;
   } catch {}
 
-  // Filter out any explicitly deleted experts
-  localList = localList.filter((fl) => fl && fl.code && !deletedCodes.has(String(fl.code).trim().toUpperCase()));
-  remoteList = remoteList.filter((fl) => fl && fl.code && !deletedCodes.has(String(fl.code).trim().toUpperCase()));
-
   const map = new Map<string, any>();
-  // 1. Remote items first
+  // 1. Remote items first (authoritative database state)
   remoteList.forEach((fl) => {
-    const key = String(fl.code || fl.id || '').trim().toUpperCase();
+    const key = String(fl?.code || fl?.id || '').trim().toUpperCase();
     if (key) map.set(key, fl);
   });
 
-  // 2. Local items merge in (local items preserve any locally added/edited profiles)
+  // 2. Check if local has any freshly added item not yet known to server
   let localHasNew = false;
   localList.forEach((fl) => {
-    const key = String(fl.code || fl.id || '').trim().toUpperCase();
-    if (key) {
-      if (!map.has(key)) {
-        localHasNew = true;
-      }
+    const key = String(fl?.code || fl?.id || '').trim().toUpperCase();
+    if (key && !map.has(key)) {
+      localHasNew = true;
       map.set(key, fl);
     }
   });
 
   const merged = Array.from(map.values());
   const mergedSerialized = JSON.stringify(merged);
-  const shouldPushToRemote = localHasNew || (remoteList.length !== merged.length);
+  return { mergedSerialized, shouldPushToRemote: localHasNew };
+};
 
-  return { mergedSerialized, shouldPushToRemote };
+export const deleteExpertFromRemote = async (code: string): Promise<boolean> => {
+  try {
+    const clean = code.trim().toUpperCase();
+    const res = await fetch(apiUrl(), {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
+      body: JSON.stringify({ deletedExpertCodes: [clean] }),
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn('[Gaenr] Delete expert failed:', err);
+    return false;
+  }
+};
+
+export const clearAllExpertsFromRemote = async (): Promise<boolean> => {
+  try {
+    const res = await fetch(apiUrl(), {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
+      body: JSON.stringify({ clearFreelancers: true }),
+    });
+    return res.ok;
+  } catch (err) {
+    console.warn('[Gaenr] Clear all experts failed:', err);
+    return false;
+  }
 };
 
 export const syncKeyToRemote = async (key: string, value: string): Promise<boolean> => {
