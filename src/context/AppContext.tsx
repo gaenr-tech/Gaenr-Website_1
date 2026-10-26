@@ -28,6 +28,7 @@ import {
   syncKeyToRemote,
   deleteExpertFromRemote,
   clearAllExpertsFromRemote,
+  markExpertCodeAsPendingCreation,
 } from '../utils/remoteStorage';
 
 export const GAENR_OFFICIAL_DRIVE_FOLDER_URL =
@@ -812,6 +813,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...newFl,
       uploadToken: newFl.uploadToken || generateSecureUploadToken(),
     };
+    markExpertCodeAsPendingCreation(safeFl.code);
 
     let updated: FreelancerProfile[] = [];
     setFreelancers((prev) => {
@@ -1410,6 +1412,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         portfolioItems: [], // Crucial Rule: Profile starts clean; application portfolio is NOT published to live profile.
       };
 
+      markExpertCodeAsPendingCreation(generatedCode);
       let updatedFreelancers: FreelancerProfile[] = [];
       setFreelancers((prev) => {
         const cleanPrev = prev.filter((f) => f.code !== generatedCode && f.id !== newProfile.id);

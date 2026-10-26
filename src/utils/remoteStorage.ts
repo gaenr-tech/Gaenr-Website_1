@@ -110,11 +110,44 @@ export const isPrivilegedWriter = (): boolean => {
   }
 };
 
+export const getPendingCreatedExpertCodes = (): Set<string> => {
+  try {
+    const raw = nativeStorage.getItem('gaenr_pending_created_codes');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return new Set(parsed.map((c: string) => String(c).trim().toUpperCase()));
+      }
+    }
+  } catch {}
+  return new Set();
+};
+
+export const markExpertCodeAsPendingCreation = (code: string) => {
+  try {
+    const clean = code.trim().toUpperCase();
+    const set = getPendingCreatedExpertCodes();
+    set.add(clean);
+    nativeStorage.setItem('gaenr_pending_created_codes', JSON.stringify(Array.from(set)));
+  } catch {}
+};
+
+export const clearPendingCreatedExpertCode = (code: string) => {
+  try {
+    const clean = code.trim().toUpperCase();
+    const set = getPendingCreatedExpertCodes();
+    if (set.has(clean)) {
+      set.delete(clean);
+      nativeStorage.setItem('gaenr_pending_created_codes', JSON.stringify(Array.from(set)));
+    }
+  } catch {}
+};
+
 /**
  * Authoritative merge for experts:
  * Remote database state is the single source of truth.
- * If local state has a brand new expert created on this device that hasn't synced yet,
- * we preserve it and push it to remote. Otherwise, remote database wins.
+ * Only local profiles that were explicitly created on this device and are awaiting sync
+ * are preserved. All other profiles strictly mirror the remote database (preventing zombie resurrection).
  */
 export const mergeFreelancersState = (
   localRaw: string | null,
@@ -132,18 +165,25 @@ export const mergeFreelancersState = (
     if (Array.isArray(parsed)) remoteList = parsed;
   } catch {}
 
+  const pendingCreated = getPendingCreatedExpertCodes();
   const map = new Map<string, any>();
+
   // 1. Remote items first (authoritative database state)
   remoteList.forEach((fl) => {
     const key = String(fl?.code || fl?.id || '').trim().toUpperCase();
-    if (key) map.set(key, fl);
+    if (key) {
+      map.set(key, fl);
+      if (pendingCreated.has(key)) {
+        clearPendingCreatedExpertCode(key);
+      }
+    }
   });
 
-  // 2. Check if local has any freshly added item not yet known to server
+  // 2. Only preserve local items that were explicitly created locally and haven't synced yet
   let localHasNew = false;
   localList.forEach((fl) => {
     const key = String(fl?.code || fl?.id || '').trim().toUpperCase();
-    if (key && !map.has(key)) {
+    if (key && !map.has(key) && pendingCreated.has(key)) {
       localHasNew = true;
       map.set(key, fl);
     }
