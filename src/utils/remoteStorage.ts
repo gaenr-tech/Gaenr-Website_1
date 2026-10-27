@@ -94,8 +94,12 @@ export const isPrivilegedWriter = (): boolean => {
       typeof window !== 'undefined' &&
       (window.location.pathname.startsWith('/manage') ||
         window.location.pathname.startsWith('/admin') ||
+        window.location.pathname.startsWith('/u/') ||
+        window.location.pathname.startsWith('/p-upload/') ||
+        window.location.pathname.startsWith('/expert-portfolio-upload/') ||
         window.location.hash.includes('manage') ||
-        window.location.hash.includes('admin'));
+        window.location.hash.includes('admin') ||
+        window.location.hash.includes('/u/'));
     return (
       isPathAdmin ||
       nativeStorage.getItem('gaenr_admin_logged') === 'true' ||

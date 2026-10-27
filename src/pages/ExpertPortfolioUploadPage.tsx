@@ -24,6 +24,9 @@ import {
   Image as ImageIcon,
   Globe,
   Link2,
+  Camera,
+  Check,
+  X,
 } from 'lucide-react';
 
 interface ExpertPortfolioUploadPageProps {
@@ -41,6 +44,7 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
     isAdminLoggedIn,
     addExpertPortfolioItem,
     deleteExpertPortfolioItem,
+    updateFreelancer,
     navigate,
     showToast,
   } = useApp();
@@ -81,6 +85,28 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatusMsg, setUploadStatusMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 3D Avatar Selection State
+  const [showAvatarPicker, setShowAvatarPicker] = useState<boolean>(false);
+  const [isSavingAvatar, setIsSavingAvatar] = useState<string | null>(null);
+
+  const handleSelectAvatar = (avatarId: string) => {
+    if (!expert) return;
+    if (expert.avatarId === avatarId) {
+      showToast('This avatar is already active on your profile', 'info');
+      return;
+    }
+    setIsSavingAvatar(avatarId);
+    try {
+      updateFreelancer(expert.code, { avatarId });
+      const matched = RAW_AVATAR_SPECS.find((a) => a.id === avatarId);
+      showToast(`Avatar updated to ${matched?.name || 'new avatar'}! Saved live to your profile.`, 'success');
+    } catch {
+      showToast('Failed to update avatar. Please try again.', 'error');
+    } finally {
+      setIsSavingAvatar(null);
+    }
+  };
 
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
@@ -320,15 +346,24 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
         {/* Creator Workspace Header Profile Card */}
         <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            {/* Avatar with Verified Badge Halfway Inside, Halfway Outside */}
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#006eff] to-cyan-400 p-[2.5px] shrink-0 shadow-lg shadow-blue-500/20">
-              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-slate-900">
+            {/* Interactive 3D Avatar with Hover Overlay & Verified Badge */}
+            <button
+              type="button"
+              onClick={() => setShowAvatarPicker((prev) => !prev)}
+              className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#006eff] to-cyan-400 p-[2.5px] shrink-0 shadow-lg shadow-blue-500/20 group cursor-pointer text-left transition-transform hover:scale-105"
+              title="Click to change your 3D avatar"
+            >
+              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-slate-900 relative">
                 <AvatarGraphic
                   id={expert.avatarId}
                   size="100%"
                   className="w-full h-full object-cover rounded-full"
                   title={expert.code}
                 />
+                <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity rounded-full flex flex-col items-center justify-center text-white backdrop-blur-[1px]">
+                  <Camera className="w-5 h-5 drop-shadow" />
+                  <span className="text-[9px] font-bold mt-0.5 tracking-tight uppercase">Change</span>
+                </div>
               </div>
               <div
                 className="absolute bottom-[2px] right-[2px] sm:bottom-[3px] sm:right-[3px] z-10"
@@ -336,7 +371,8 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
               >
                 <VerifiedBadge3D size={26} className="drop-shadow-[0_0_8px_rgba(0,110,255,0.85)]" />
               </div>
-            </div>
+            </button>
+
             <div className="space-y-1.5">
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-mono">
@@ -353,12 +389,25 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
                 </span>
               </div>
               <p className="text-xs text-slate-500 max-w-xl leading-relaxed">
-                Welcome to your creator workspace. Upload your project deliverables directly below. Deliverables are verified and showcased on your live client profile.
+                Welcome to your creator workspace. You can choose from Gaenr&apos;s 10 official 3D avatars and upload your verified project deliverables below.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center">
+          <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center flex-wrap">
+            <button
+              type="button"
+              onClick={() => setShowAvatarPicker((prev) => !prev)}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                showAvatarPicker
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20'
+                  : 'bg-white hover:bg-blue-50 text-[#006eff] border-blue-200 shadow-xs'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{showAvatarPicker ? 'Hide Avatar Selector' : 'Change 3D Avatar'}</span>
+            </button>
+
             <button
               onClick={() => navigate(`/profile/${expert.code}`)}
               className="px-4 py-2 bg-[#006eff] hover:bg-[#005cd4] text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-1.5 cursor-pointer"
@@ -368,6 +417,110 @@ export const ExpertPortfolioUploadPage: React.FC<ExpertPortfolioUploadPageProps>
             </button>
           </div>
         </div>
+
+        {/* 10-Avatar Selector Panel */}
+        {showAvatarPicker && (
+          <div className="bg-white border-2 border-blue-500/30 rounded-3xl p-6 sm:p-7 shadow-lg shadow-blue-500/5 space-y-5 animate-in fade-in duration-200">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#006eff] flex items-center justify-center">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900">
+                      Choose Your Official 3D Avatar (10 Exclusive Styles)
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Select any of Gaenr&apos;s 10 curated 3D student avatars. Your selection updates your public profile, directory card, and creator workspace instantly.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAvatarPicker(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                title="Close avatar picker"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5 sm:gap-4">
+              {RAW_AVATAR_SPECS.map((spec) => {
+                const isCurrent =
+                  expert.avatarId === spec.id ||
+                  (!expert.avatarId && spec.id === 'avatar-youth-m1');
+                const isSaving = isSavingAvatar === spec.id;
+
+                return (
+                  <button
+                    key={spec.id}
+                    type="button"
+                    disabled={isSaving}
+                    onClick={() => handleSelectAvatar(spec.id)}
+                    className={`group relative rounded-2xl p-3 flex flex-col items-center text-center transition-all cursor-pointer border text-left ${
+                      isCurrent
+                        ? 'bg-blue-50/70 border-[#006eff] shadow-sm ring-2 ring-[#006eff]/20'
+                        : 'bg-white hover:bg-slate-50/80 border-slate-200 hover:border-blue-300 hover:shadow-xs'
+                    }`}
+                  >
+                    {/* Active Checkmark Pill on Top-Right */}
+                    {isCurrent && (
+                      <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#006eff] text-white flex items-center justify-center shadow-xs">
+                        <Check className="w-3 h-3 stroke-[3]" />
+                      </div>
+                    )}
+
+                    {/* Avatar Circle */}
+                    <div
+                      className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full p-1 transition-transform group-hover:scale-105 ${
+                        isCurrent
+                          ? 'bg-gradient-to-tr from-[#006eff] to-cyan-400 shadow-md shadow-blue-500/25'
+                          : 'bg-slate-100 group-hover:bg-blue-100'
+                      }`}
+                    >
+                      <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-slate-900">
+                        <AvatarGraphic
+                          id={spec.id}
+                          size="100%"
+                          className="w-full h-full object-cover rounded-full"
+                          title={spec.name}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Avatar Name & Style Tag */}
+                    <div className="mt-2.5 space-y-1 w-full">
+                      <div className="text-xs font-bold text-slate-800 flex items-center justify-center gap-1">
+                        <span>{spec.name}</span>
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <span className="text-[10px] font-semibold text-slate-500 capitalize bg-slate-100 px-2 py-0.5 rounded-full">
+                          {spec.gender} Style
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Status Pill */}
+                    <div className="mt-2.5 w-full">
+                      <span
+                        className={`block w-full py-1 rounded-lg text-[11px] font-bold transition-colors ${
+                          isCurrent
+                            ? 'bg-[#006eff] text-white'
+                            : 'bg-slate-100 group-hover:bg-blue-50 text-slate-700 group-hover:text-[#006eff]'
+                        }`}
+                      >
+                        {isSaving ? 'Saving...' : isCurrent ? 'Active Avatar' : 'Select Avatar'}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Two-Column: Direct File Upload on Left, Live Instant Preview on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
