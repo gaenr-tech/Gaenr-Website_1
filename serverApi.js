@@ -143,7 +143,7 @@ export const mergeState = (currentState, payload) => {
     for (const [k, v] of Object.entries(payload.changes)) {
       if (typeof k !== 'string' || SENSITIVE_LOCAL_KEYS.includes(k)) continue;
 
-      // Smart merge for experts array
+      // Authoritative update for experts: precisely stores what admin added or deleted
       if (k === 'gaenr_freelancers') {
         if (payload.clearFreelancers === true) {
           state[k] = '[]';
@@ -154,37 +154,19 @@ export const mergeState = (currentState, payload) => {
           incomingItems = typeof v === 'string' ? JSON.parse(v) : (Array.isArray(v) ? v : []);
         } catch {}
 
-        let existingItems = [];
-        try {
-          const rawVal = state[k];
-          existingItems = typeof rawVal === 'string' ? JSON.parse(rawVal) : (Array.isArray(rawVal) ? rawVal : []);
-        } catch {}
-
-        if (Array.isArray(incomingItems) && Array.isArray(existingItems)) {
+        if (Array.isArray(incomingItems)) {
+          if (incomingItems.length === 0 && payload.clearFreelancers !== true) {
+            // Ignore empty array changes unless explicitly requested via clearFreelancers
+            continue;
+          }
           const deleteCodesSet = Array.isArray(payload.deletedExpertCodes) && payload.deletedExpertCodes.length > 0
             ? new Set(payload.deletedExpertCodes.map((c) => String(c).trim().toUpperCase()))
             : null;
-          const expertMap = new Map();
-          for (const fl of existingItems) {
-            if (fl && fl.code) {
-              const codeKey = String(fl.code).trim().toUpperCase();
-              if (deleteCodesSet && deleteCodesSet.has(codeKey)) continue;
-              expertMap.set(codeKey, fl);
-            }
+          let finalItems = incomingItems.filter((fl) => fl && fl.code);
+          if (deleteCodesSet) {
+            finalItems = finalItems.filter((fl) => !deleteCodesSet.has(String(fl.code).trim().toUpperCase()));
           }
-          for (const incoming of incomingItems) {
-            if (incoming && incoming.code) {
-              const codeKey = String(incoming.code).trim().toUpperCase();
-              if (deleteCodesSet && deleteCodesSet.has(codeKey)) continue;
-              const existing = expertMap.get(codeKey);
-              if (existing) {
-                expertMap.set(codeKey, { ...existing, ...incoming });
-              } else {
-                expertMap.set(codeKey, incoming);
-              }
-            }
-          }
-          state[k] = JSON.stringify(Array.from(expertMap.values()));
+          state[k] = JSON.stringify(finalItems);
           continue;
         }
       }

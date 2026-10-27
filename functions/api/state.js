@@ -327,30 +327,25 @@ export async function onRequestPut({ request, env }) {
       for (const [key, value] of Object.entries(payload.state)) {
         if (SENSITIVE_LOCAL_KEYS.includes(key)) continue;
 
-        if (key === 'gaenr_freelancers' && currentState[key] && currentState[key] !== '[]') {
+        if (key === 'gaenr_freelancers') {
+          if (payload.clearFreelancers === true) {
+            currentState[key] = '[]';
+            continue;
+          }
           let incomingItems = [];
           try {
             incomingItems = typeof value === 'string' ? JSON.parse(value) : (Array.isArray(value) ? value : []);
           } catch {}
-          let existingItems = [];
-          try {
-            const rawVal = currentState[key];
-            existingItems = typeof rawVal === 'string' ? JSON.parse(rawVal) : (Array.isArray(rawVal) ? rawVal : []);
-          } catch {}
-          if (Array.isArray(incomingItems) && Array.isArray(existingItems) && existingItems.length > 0) {
-            const expertMap = new Map();
-            for (const fl of existingItems) {
-              if (fl && fl.code) expertMap.set(String(fl.code).trim().toUpperCase(), fl);
+          if (Array.isArray(incomingItems)) {
+            if (incomingItems.length === 0 && payload.clearFreelancers !== true) {
+              // Ignore empty array snapshot unless explicitly requested via clearFreelancers
+              continue;
             }
-            for (const incoming of incomingItems) {
-              if (incoming && incoming.code) {
-                const codeKey = String(incoming.code).trim().toUpperCase();
-                if (deleteCodesSet && deleteCodesSet.has(codeKey)) continue;
-                const existing = expertMap.get(codeKey);
-                expertMap.set(codeKey, existing ? { ...existing, ...incoming } : incoming);
-              }
+            let finalItems = incomingItems.filter((fl) => fl && fl.code);
+            if (deleteCodesSet) {
+              finalItems = finalItems.filter((fl) => !deleteCodesSet.has(String(fl.code).trim().toUpperCase()));
             }
-            currentState[key] = JSON.stringify(Array.from(expertMap.values()));
+            currentState[key] = JSON.stringify(finalItems);
             continue;
           }
         }
@@ -359,12 +354,12 @@ export async function onRequestPut({ request, env }) {
       }
     }
 
-    // 2. Changes with Smart Merging for multi-device synchronization
+    // 2. Changes with Authoritative Freelancers Updates
     if (payload.changes && typeof payload.changes === 'object' && !Array.isArray(payload.changes)) {
       for (const [key, value] of Object.entries(payload.changes)) {
         if (typeof key !== 'string' || SENSITIVE_LOCAL_KEYS.includes(key)) continue;
 
-        // Smart merge for experts array to prevent any device from wiping out another device's data
+        // Authoritative update for experts: precisely stores what admin added or deleted
         if (key === 'gaenr_freelancers') {
           if (payload.clearFreelancers === true) {
             currentState[key] = '[]';
@@ -375,36 +370,16 @@ export async function onRequestPut({ request, env }) {
             incomingItems = typeof value === 'string' ? JSON.parse(value) : (Array.isArray(value) ? value : []);
           } catch {}
 
-          let existingItems = [];
-          try {
-            const rawVal = currentState[key];
-            existingItems = typeof rawVal === 'string' ? JSON.parse(rawVal) : (Array.isArray(rawVal) ? rawVal : []);
-          } catch {}
-
-          if (Array.isArray(incomingItems) && Array.isArray(existingItems)) {
-            const expertMap = new Map();
-            // Start with existing DB items
-            for (const fl of existingItems) {
-              if (fl && fl.code) {
-                const codeKey = String(fl.code).trim().toUpperCase();
-                if (deleteCodesSet && deleteCodesSet.has(codeKey)) continue;
-                expertMap.set(codeKey, fl);
-              }
+          if (Array.isArray(incomingItems)) {
+            if (incomingItems.length === 0 && payload.clearFreelancers !== true) {
+              // Ignore empty array changes unless explicitly requested via clearFreelancers
+              continue;
             }
-            // Merge incoming items (updating existing or appending new)
-            for (const incoming of incomingItems) {
-              if (incoming && incoming.code) {
-                const codeKey = String(incoming.code).trim().toUpperCase();
-                if (deleteCodesSet && deleteCodesSet.has(codeKey)) continue;
-                const existing = expertMap.get(codeKey);
-                if (existing) {
-                  expertMap.set(codeKey, { ...existing, ...incoming });
-                } else {
-                  expertMap.set(codeKey, incoming);
-                }
-              }
+            let finalItems = incomingItems.filter((fl) => fl && fl.code);
+            if (deleteCodesSet) {
+              finalItems = finalItems.filter((fl) => !deleteCodesSet.has(String(fl.code).trim().toUpperCase()));
             }
-            currentState[key] = JSON.stringify(Array.from(expertMap.values()));
+            currentState[key] = JSON.stringify(finalItems);
             continue;
           }
         }

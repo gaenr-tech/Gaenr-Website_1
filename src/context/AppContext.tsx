@@ -498,7 +498,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
+  const isFreelancersInitRef = useRef(true);
   useEffect(() => {
+    if (isFreelancersInitRef.current) {
+      isFreelancersInitRef.current = false;
+      return;
+    }
     try {
       localStorage.setItem('gaenr_freelancers', JSON.stringify(freelancers));
     } catch {}
@@ -849,13 +854,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const deleteFreelancer = (code: string): boolean => {
-    const clean = code.trim().toLowerCase();
-    deleteExpertFromRemote(code);
+    const clean = code.trim().toUpperCase();
 
     let updated: FreelancerProfile[] = [];
     setFreelancers((prev) => {
       updated = prev.filter(
-        (fl) => fl.code.toLowerCase() !== clean && fl.id.toLowerCase() !== clean
+        (fl) => fl.code.toUpperCase() !== clean && fl.id !== clean
       );
       return updated;
     });
@@ -863,7 +867,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     try {
       localStorage.setItem('gaenr_freelancers', serialized);
     } catch {}
-    syncKeyToRemote('gaenr_freelancers', serialized);
+
+    // Atomic remote deletion: sends both deletedExpertCodes and the clean new array in ONE request
+    deleteExpertFromRemote(clean, updated);
     showToast(`Expert profile ${code} permanently deleted`, 'info');
     return true;
   };

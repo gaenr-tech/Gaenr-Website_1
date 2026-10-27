@@ -194,16 +194,26 @@ export const mergeFreelancersState = (
   return { mergedSerialized, shouldPushToRemote: localHasNew };
 };
 
-export const deleteExpertFromRemote = async (code: string): Promise<boolean> => {
+export const deleteExpertFromRemote = async (code: string, updatedList?: any[]): Promise<boolean> => {
   try {
     const clean = code.trim().toUpperCase();
+    const payload: Record<string, any> = {
+      deletedExpertCodes: [clean],
+    };
+    if (Array.isArray(updatedList)) {
+      payload.changes = {
+        gaenr_freelancers: JSON.stringify(
+          updatedList.filter((fl) => fl && fl.code && String(fl.code).trim().toUpperCase() !== clean)
+        ),
+      };
+    }
     const res = await fetch(apiUrl(), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
       },
-      body: JSON.stringify({ deletedExpertCodes: [clean] }),
+      body: JSON.stringify(payload),
     });
     return res.ok;
   } catch (err) {
@@ -220,7 +230,7 @@ export const clearAllExpertsFromRemote = async (): Promise<boolean> => {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
       },
-      body: JSON.stringify({ clearFreelancers: true }),
+      body: JSON.stringify({ clearFreelancers: true, changes: { gaenr_freelancers: '[]' } }),
     });
     return res.ok;
   } catch (err) {
@@ -247,7 +257,7 @@ export const syncKeyToRemote = async (key: string, value: string): Promise<boole
     console.warn(`[Gaenr] Direct sync failed for ${key}:`, err);
     return false;
   } finally {
-    setTimeout(() => pendingKeys.delete(key), 8000);
+    setTimeout(() => pendingKeys.delete(key), 400);
   }
 };
 
@@ -308,7 +318,7 @@ const queueRemoteMutation = (payload: { changes?: Record<string, string>; delete
       if (!response.ok) throw new Error(`Remote storage write failed: ${response.status}`);
       setTimeout(() => {
         affectedKeys.forEach((key) => pendingKeys.delete(key));
-      }, 8000);
+      }, 400);
     })
     .catch((err) => {
       console.warn('[Gaenr] Remote storage mutation pending retry/offline:', err);
