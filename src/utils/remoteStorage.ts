@@ -336,7 +336,11 @@ const installMirror = () => {
       nativeSetItem.call(this, key, value);
       if (this !== nativeStorage || LOCAL_ONLY_KEYS.has(key)) return;
 
-      // Always push the full updated value to remote storage so server state is 100% authoritative
+      // Do NOT auto-push gaenr_freelancers via monkey-patched setItem.
+      // gaenr_freelancers is explicitly and intentionally synced via dedicated actions
+      // (addFreelancer, updateFreelancer, deleteExpertFromRemote, clearAllExpertsFromRemote).
+      if (key === 'gaenr_freelancers') return;
+
       queueRemoteMutation({ changes: { [key]: value } });
     },
   });
@@ -368,22 +372,18 @@ const refreshRemoteStorage = async () => {
       const value = serializeValue(rawValue);
       const previous = nativeStorage.getItem(key);
 
-      // Smart merge for experts to never wipe out locally added profiles
+      // Strictly adopt authoritative remote state for experts (read-only; never pushes old local cache to server)
       if (key === 'gaenr_freelancers') {
-        const { mergedSerialized, shouldPushToRemote } = mergeFreelancersState(previous, value);
-        if (previous !== mergedSerialized) {
-          nativeSetItem.call(nativeStorage, key, mergedSerialized);
+        if (previous !== value) {
+          nativeSetItem.call(nativeStorage, key, value);
           window.dispatchEvent(
             new StorageEvent('storage', {
               key,
               oldValue: previous,
-              newValue: mergedSerialized,
+              newValue: value,
               storageArea: nativeStorage,
             })
           );
-        }
-        if (shouldPushToRemote && isPrivilegedWriter()) {
-          syncKeyToRemote(key, mergedSerialized);
         }
         return;
       }
@@ -414,22 +414,18 @@ export const initializeRemoteStorage = async () => {
         const value = serializeValue(rawValue);
         const previous = nativeStorage.getItem(key);
 
-        // Smart merge for experts to never wipe out locally added profiles
+        // Strictly adopt authoritative remote state for experts (read-only; never pushes old local cache to server)
         if (key === 'gaenr_freelancers') {
-          const { mergedSerialized, shouldPushToRemote } = mergeFreelancersState(previous, value);
-          if (previous !== mergedSerialized) {
-            nativeSetItem.call(nativeStorage, key, mergedSerialized);
+          nativeSetItem.call(nativeStorage, key, value);
+          if (previous !== value) {
             window.dispatchEvent(
               new StorageEvent('storage', {
                 key,
                 oldValue: previous,
-                newValue: mergedSerialized,
+                newValue: value,
                 storageArea: nativeStorage,
               })
             );
-          }
-          if (shouldPushToRemote && isPrivilegedWriter()) {
-            syncKeyToRemote(key, mergedSerialized);
           }
           return;
         }
