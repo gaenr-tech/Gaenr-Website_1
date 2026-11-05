@@ -22,7 +22,8 @@ interface ThemeableObjects {
   dotMat: THREE.PointsMaterial;
   hubMats: THREE.MeshBasicMaterial[];
   ringMats: THREE.MeshBasicMaterial[];
-  arcMats: THREE.LineBasicMaterial[];
+  baseArcMats: THREE.LineBasicMaterial[];
+  streamMats: THREE.LineBasicMaterial[];
   pulseMats: { mat: THREE.MeshBasicMaterial; isEven: boolean }[];
   orbitRingMat: THREE.MeshBasicMaterial;
 }
@@ -112,14 +113,20 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
     mat.needsUpdate = true;
   });
 
-  // Harmonious Great-Circle Connection Arcs
-  objs.arcMats.forEach((mat) => {
+  // Persistent Faint Base Arcs (Underlying Global Constellation Grid)
+  objs.baseArcMats.forEach((mat) => {
     mat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
-    mat.opacity = isDark ? 0.65 : 0.38;
+    mat.opacity = isDark ? 0.20 : 0.12;
     mat.needsUpdate = true;
   });
 
-  // Traveling Light Pulses
+  // Dynamic Stream Arc Materials
+  objs.streamMats.forEach((mat) => {
+    mat.opacity = isDark ? 0.95 : 0.85;
+    mat.needsUpdate = true;
+  });
+
+  // Traveling Light Pulses (Beads)
   objs.pulseMats.forEach(({ mat, isEven }) => {
     mat.color.setHex(isDark ? (isEven ? 0xffffff : 0x00ffff) : (isEven ? 0x006eff : 0x0284c7));
     mat.needsUpdate = true;
@@ -173,47 +180,54 @@ const HUBS: CityHub[] = [
   { id: 'santiago', name: 'Santiago', lat: -33.4489, lon: -70.6693 },
 ];
 
-// Harmonious geodesic network routes forming a balanced, eye-soothing constellation pattern
-const NETWORK_ROUTES: [string, string][] = [
-  // Trans-Pacific Golden Highway
-  ['tokyo', 'honolulu'],
-  ['honolulu', 'sf'],
-  ['sydney', 'honolulu'],
+/**
+ * Harmonious, scheduled global network transmission sequence.
+ * Structured into 4 orchestrated waves spanning the entire planet in an 8.0-second master cycle.
+ * Data packets flow continuously across continents like a synchronized global relay.
+ */
+interface TimedRoute {
+  id: string;
+  from: string;
+  to: string;
+  startTime: number; // Seconds within the 8.0s master cycle
+  duration: number;  // Transit duration in seconds
+}
 
-  // Asia-Pacific & East Asia Ring
-  ['singapore', 'sydney'],
-  ['singapore', 'tokyo'],
-  ['tokyo', 'seoul'],
-  ['seoul', 'dhaka'],
-  ['dhaka', 'singapore'],
+const CYCLE_DURATION = 8.0;
 
-  // South Asia, Middle East & Africa Corridor
-  ['dhaka', 'mumbai'],
-  ['mumbai', 'dubai'],
-  ['dhaka', 'dubai'],
-  ['dubai', 'nairobi'],
-  ['nairobi', 'capetown'],
+const TIMED_ROUTES: TimedRoute[] = [
+  // Wave 1: South Asia & Asia-Pacific Relay (t = 0.0s - 2.4s)
+  { id: 'r1', from: 'dhaka', to: 'singapore', startTime: 0.0, duration: 1.5 },
+  { id: 'r2', from: 'dhaka', to: 'dubai', startTime: 0.2, duration: 1.6 },
+  { id: 'r3', from: 'singapore', to: 'tokyo', startTime: 0.8, duration: 1.5 },
+  { id: 'r4', from: 'singapore', to: 'sydney', startTime: 1.0, duration: 1.7 },
+  { id: 'r5', from: 'tokyo', to: 'seoul', startTime: 1.4, duration: 1.1 },
 
-  // Eurasia & Europe Arteries
-  ['dubai', 'zurich'],
-  ['zurich', 'london'],
-  ['london', 'reykjavik'],
+  // Wave 2: Trans-Pacific Highway & Americas Spine (t = 2.0s - 4.4s)
+  { id: 'r6', from: 'tokyo', to: 'honolulu', startTime: 2.0, duration: 1.8 },
+  { id: 'r7', from: 'sydney', to: 'honolulu', startTime: 2.2, duration: 1.8 },
+  { id: 'r8', from: 'honolulu', to: 'sf', startTime: 2.8, duration: 1.7 },
+  { id: 'r9', from: 'sf', to: 'vancouver', startTime: 3.5, duration: 1.2 },
+  { id: 'r10', from: 'sf', to: 'ny', startTime: 3.7, duration: 1.7 },
+  { id: 'r11', from: 'sf', to: 'santiago', startTime: 3.9, duration: 2.0 },
+  { id: 'r12', from: 'ny', to: 'saopaulo', startTime: 4.2, duration: 1.9 },
 
-  // Trans-Atlantic Super-Highway
-  ['reykjavik', 'ny'],
-  ['london', 'ny'],
+  // Wave 3: Trans-Atlantic & Euro-African Relay (t = 4.4s - 6.4s)
+  { id: 'r13', from: 'ny', to: 'london', startTime: 4.6, duration: 1.8 },
+  { id: 'r14', from: 'ny', to: 'reykjavik', startTime: 4.8, duration: 1.5 },
+  { id: 'r15', from: 'reykjavik', to: 'london', startTime: 5.4, duration: 1.2 },
+  { id: 'r16', from: 'saopaulo', to: 'capetown', startTime: 5.1, duration: 2.0 },
+  { id: 'r17', from: 'london', to: 'zurich', startTime: 5.5, duration: 1.2 },
+  { id: 'r18', from: 'saopaulo', to: 'santiago', startTime: 5.3, duration: 1.4 },
 
-  // Pan-American Network
-  ['vancouver', 'sf'],
-  ['sf', 'ny'],
-  ['vancouver', 'ny'],
-  ['ny', 'saopaulo'],
-  ['saopaulo', 'santiago'],
-  ['santiago', 'sf'],
-
-  // Southern Oceans Strategic Bridges
-  ['saopaulo', 'capetown'],
-  ['capetown', 'mumbai'],
+  // Wave 4: Eurasian Crossroads & Convergence Back to Gaenr HQ (t = 5.9s - 8.0s)
+  { id: 'r19', from: 'zurich', to: 'dubai', startTime: 5.9, duration: 1.7 },
+  { id: 'r20', from: 'dubai', to: 'nairobi', startTime: 6.1, duration: 1.5 },
+  { id: 'r21', from: 'nairobi', to: 'capetown', startTime: 6.5, duration: 1.6 },
+  { id: 'r22', from: 'capetown', to: 'mumbai', startTime: 6.4, duration: 1.9 },
+  { id: 'r23', from: 'dubai', to: 'mumbai', startTime: 6.6, duration: 1.4 },
+  { id: 'r24', from: 'mumbai', to: 'dhaka', startTime: 6.9, duration: 1.4 },
+  { id: 'r25', from: 'seoul', to: 'dhaka', startTime: 6.7, duration: 1.5 },
 ];
 
 function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector3 {
@@ -243,6 +257,21 @@ function getGreatCirclePoint(
 }
 
 /**
+ * Determines current progress [0, 1] of a route within the looping master cycle.
+ * Returns -1 if the route is currently inactive/dormant.
+ * Wraps seamlessly across the cycle boundary without discontinuity.
+ */
+function getRouteProgress(t: number, start: number, duration: number, cycle: number): number {
+  const normTime = t % cycle;
+  let elapsed = normTime - start;
+  if (elapsed < 0) elapsed += cycle;
+  if (elapsed <= duration) {
+    return elapsed / duration;
+  }
+  return -1;
+}
+
+/**
  * Boundaryless Transparent 3D Global Connection Visual.
  * - 100% transparent PNG feel: no borders, no boxes, no edge cutoffs.
  * - Decentralized full-mesh talent network connecting hubs across all continents.
@@ -250,6 +279,10 @@ function getGreatCirclePoint(
  */
 export const Hero3DCanvas: React.FC = () => {
   const { isDark } = useTheme();
+  const isDarkRef = useRef(isDark);
+  useEffect(() => {
+    isDarkRef.current = isDark;
+  }, [isDark]);
   const mountRef = useRef<HTMLDivElement>(null);
   const themeObjectsRef = useRef<ThemeableObjects | null>(null);
 
@@ -413,7 +446,7 @@ export const Hero3DCanvas: React.FC = () => {
     // Global Hub Pins with Pulse Rings
     const hubMap = new Map<string, THREE.Vector3>();
     const hubsGroup = new THREE.Group();
-    const pulseRings: { mesh: THREE.Mesh; index: number; isHQ: boolean }[] = [];
+    const pulseRings: { mesh: THREE.Mesh; hubId: string; index: number; isHQ: boolean }[] = [];
     const hubMats: THREE.MeshBasicMaterial[] = [];
     const ringMats: THREE.MeshBasicMaterial[] = [];
 
@@ -448,13 +481,14 @@ export const Hero3DCanvas: React.FC = () => {
 
       pulseRings.push({
         mesh: ringMesh,
+        hubId: hub.id,
         index: hubIdx,
         isHQ,
       });
 
       // Special secondary concentric beacon ring for Gaenr HQ (Dhaka)
       if (isHQ) {
-        const hqRingGeo = new THREE.RingGeometry(0.042, 0.062, 24);
+        const hqRingGeo = new THREE.RingGeometry(0.042, 0.064, 24);
         const hqRingMat = new THREE.MeshBasicMaterial({
           color: 0x38bdf8,
           side: THREE.DoubleSide,
@@ -469,6 +503,7 @@ export const Hero3DCanvas: React.FC = () => {
 
         pulseRings.push({
           mesh: hqRingMesh,
+          hubId: 'dhaka',
           index: hubIdx + 0.5,
           isHQ: true,
         });
@@ -476,25 +511,31 @@ export const Hero3DCanvas: React.FC = () => {
     });
     globeGroup.add(hubsGroup);
 
-    // Geodesic Great-Circle Connection Arcs with Harmonic Elevation
+    // Geodesic Great-Circle Connection Arcs with Timed Transmission Beams
     const arcsGroup = new THREE.Group();
-    interface ArcData {
+
+    interface ActiveStreamArc {
+      route: TimedRoute;
       norm1: THREE.Vector3;
       axis: THREE.Vector3;
       angle: number;
       maxLift: number;
+      colorAttr: THREE.BufferAttribute;
+      colorArray: Float32Array;
       pulseMesh: THREE.Mesh;
-      progress: number;
-      speed: number;
-      direction: 1 | -1;
+      segments: number;
+      beamLength: number;
+      isActive: boolean;
     }
-    const arcsData: ArcData[] = [];
-    const arcMats: THREE.LineBasicMaterial[] = [];
+
+    const activeArcs: ActiveStreamArc[] = [];
+    const baseArcMats: THREE.LineBasicMaterial[] = [];
+    const streamMats: THREE.LineBasicMaterial[] = [];
     const pulseMats: { mat: THREE.MeshBasicMaterial; isEven: boolean }[] = [];
 
-    NETWORK_ROUTES.forEach(([fromId, toId], idx) => {
-      const fromPos = hubMap.get(fromId);
-      const toPos = hubMap.get(toId);
+    TIMED_ROUTES.forEach((route, idx) => {
+      const fromPos = hubMap.get(route.from);
+      const toPos = hubMap.get(route.to);
       if (!fromPos || !toPos) return;
 
       const norm1 = fromPos.clone().normalize();
@@ -512,41 +553,61 @@ export const Hero3DCanvas: React.FC = () => {
       const maxLift = Math.min(Math.max(angle * 0.16, 0.08), 0.26) * GLOBE_RADIUS;
 
       // Sample 48 points along the great circle with harmonic elevation
-      const curvePoints: THREE.Vector3[] = [];
       const segments = 48;
+      const curvePoints: THREE.Vector3[] = [];
       for (let i = 0; i <= segments; i++) {
         const t = i / segments;
         curvePoints.push(getGreatCirclePoint(norm1, axis, angle, GLOBE_RADIUS, maxLift, t));
       }
 
-      const arcGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
-      const arcMat = new THREE.LineBasicMaterial({
+      // 1. Persistent Faint Base Guide Track (Shows Global Constellation Grid)
+      const baseGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
+      const baseMat = new THREE.LineBasicMaterial({
         color: 0x006eff,
         transparent: true,
-        opacity: 0.38,
+        opacity: 0.12,
       });
-      arcMats.push(arcMat);
-      const arcLine = new THREE.Line(arcGeo, arcMat);
-      arcsGroup.add(arcLine);
+      baseArcMats.push(baseMat);
+      const baseLine = new THREE.Line(baseGeo, baseMat);
+      arcsGroup.add(baseLine);
 
-      // Glowing traveling light pulse packet along each route
+      // 2. Active Luminous Comet Stream Line (Illuminates During Scheduled Transmissions)
+      const streamGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
+      const colorArray = new Float32Array((segments + 1) * 3);
+      const colorAttr = new THREE.BufferAttribute(colorArray, 3);
+      streamGeo.setAttribute('color', colorAttr);
+
+      const streamMat = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.95,
+      });
+      streamMats.push(streamMat);
+      const streamLine = new THREE.Line(streamGeo, streamMat);
+      arcsGroup.add(streamLine);
+
+      // 3. Glowing Photon Bead Travelling at the Head of the Transmission
       const pulseGeo = new THREE.SphereGeometry(0.034, 12, 12);
       const pulseMat = new THREE.MeshBasicMaterial({
         color: idx % 2 === 0 ? 0x006eff : 0x0284c7,
       });
       pulseMats.push({ mat: pulseMat, isEven: idx % 2 === 0 });
       const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
+      pulseMesh.visible = false;
       arcsGroup.add(pulseMesh);
 
-      arcsData.push({
+      activeArcs.push({
+        route,
         norm1,
         axis,
         angle,
         maxLift,
+        colorAttr,
+        colorArray,
         pulseMesh,
-        progress: (idx / NETWORK_ROUTES.length) % 1.0,
-        speed: 0.0022 + (idx % 4) * 0.0005,
-        direction: idx % 2 === 0 ? 1 : -1,
+        segments,
+        beamLength: 0.32,
+        isActive: false,
       });
     });
     globeGroup.add(arcsGroup);
@@ -577,7 +638,8 @@ export const Hero3DCanvas: React.FC = () => {
       dotMat,
       hubMats,
       ringMats,
-      arcMats,
+      baseArcMats,
+      streamMats,
       pulseMats,
       orbitRingMat,
     };
@@ -591,32 +653,82 @@ export const Hero3DCanvas: React.FC = () => {
       animationFrameId = requestAnimationFrame(animate);
 
       const now = performance.now() * 0.001;
+      const isDarkNow = isDarkRef.current;
 
       // Smooth ambient rotation
-      globeGroup.rotation.y += 0.0018;
+      globeGroup.rotation.y += 0.0016;
 
-      // Smooth, tranquil ripple wave expansion on hub rings (zero jarring reset)
-      pulseRings.forEach((pr) => {
-        const phase = ((now * 0.55 + pr.index * 0.14) % 1.0);
-        const s = 1.0 + phase * 1.5;
-        pr.mesh.scale.set(s, s, 1);
-        const mat = pr.mesh.material as THREE.MeshBasicMaterial;
-        mat.opacity = Math.sin(phase * Math.PI) * (pr.isHQ ? 0.95 : 0.75);
+      // Arrival flare tracker for destination nodes
+      const hubFlares = new Map<string, number>();
+
+      // Update Scheduled Active Streams
+      activeArcs.forEach((arc) => {
+        const progress = getRouteProgress(now, arc.route.startTime, arc.route.duration, CYCLE_DURATION);
+
+        if (progress < 0) {
+          if (arc.isActive) {
+            arc.colorArray.fill(0);
+            arc.colorAttr.needsUpdate = true;
+            arc.pulseMesh.visible = false;
+            arc.isActive = false;
+          }
+          return;
+        }
+
+        arc.isActive = true;
+        arc.pulseMesh.visible = true;
+
+        // Position photon bead at head of transmission
+        const headPt = getGreatCirclePoint(arc.norm1, arc.axis, arc.angle, GLOBE_RADIUS, arc.maxLift, progress);
+        arc.pulseMesh.position.copy(headPt);
+        const pScale = 0.9 + Math.sin(progress * Math.PI) * 0.35;
+        arc.pulseMesh.scale.set(pScale, pScale, pScale);
+
+        // Arrival flare on destination hub as beam nears target
+        if (progress >= 0.86) {
+          const flareIntensity = Math.sin(((progress - 0.86) / 0.14) * Math.PI);
+          const prevFlare = hubFlares.get(arc.route.to) || 0;
+          hubFlares.set(arc.route.to, Math.max(prevFlare, flareIntensity));
+        }
+
+        // Calculate vertex colors along the comet beam
+        const L = arc.beamLength;
+        const headR = isDarkNow ? 1.0 : 0.0;
+        const headG = isDarkNow ? 1.0 : 0.75;
+        const headB = isDarkNow ? 1.0 : 1.0;
+
+        const tailR = isDarkNow ? 0.0 : 0.0;
+        const tailG = isDarkNow ? 0.45 : 0.25;
+        const tailB = isDarkNow ? 0.85 : 0.70;
+
+        for (let j = 0; j <= arc.segments; j++) {
+          const s = j / arc.segments;
+          const d = progress - s;
+
+          if (d >= 0 && d <= L) {
+            const t = d / L;
+            const fade = Math.pow(1 - t, 1.6);
+            arc.colorArray[j * 3 + 0] = (headR * (1 - t) + tailR * t) * fade;
+            arc.colorArray[j * 3 + 1] = (headG * (1 - t) + tailG * t) * fade;
+            arc.colorArray[j * 3 + 2] = (headB * (1 - t) + tailB * t) * fade;
+          } else {
+            arc.colorArray[j * 3 + 0] = 0;
+            arc.colorArray[j * 3 + 1] = 0;
+            arc.colorArray[j * 3 + 2] = 0;
+          }
+        }
+        arc.colorAttr.needsUpdate = true;
       });
 
-      // Animate photon pulses along great-circle arcs with gentle breathing scaling
-      arcsData.forEach((arc) => {
-        if (arc.direction === 1) {
-          arc.progress += arc.speed;
-          if (arc.progress > 1) arc.progress = 0;
-        } else {
-          arc.progress -= arc.speed;
-          if (arc.progress < 0) arc.progress = 1;
-        }
-        const point = getGreatCirclePoint(arc.norm1, arc.axis, arc.angle, GLOBE_RADIUS, arc.maxLift, arc.progress);
-        arc.pulseMesh.position.copy(point);
-        const pScale = 0.85 + Math.sin(arc.progress * Math.PI) * 0.35;
-        arc.pulseMesh.scale.set(pScale, pScale, pScale);
+      // Smooth, tranquil ripple wave expansion on hub rings with destination arrival flares
+      pulseRings.forEach((pr) => {
+        const phase = ((now * 0.55 + pr.index * 0.14) % 1.0);
+        const flare = hubFlares.get(pr.hubId) || 0;
+        const s = 1.0 + phase * 1.5 + flare * 0.5;
+        pr.mesh.scale.set(s, s, 1);
+        const mat = pr.mesh.material as THREE.MeshBasicMaterial;
+        const baseOpacity = Math.sin(phase * Math.PI) * (pr.isHQ ? 0.95 : 0.75);
+        mat.opacity = Math.min(1.0, baseOpacity + flare * 0.4);
       });
 
       // Subtle breathing float oscillation
