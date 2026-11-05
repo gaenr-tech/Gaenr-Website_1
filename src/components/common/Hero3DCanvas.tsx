@@ -33,7 +33,7 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
   objs.ambientLight.intensity = isDark ? 3.4 : 2.2;
 
   // Blue Directional Light
-  objs.blueLight.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.blueLight.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
   objs.blueLight.intensity = isDark ? 4.5 : 3.2;
 
   // Cyan Directional Light
@@ -41,42 +41,42 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
   objs.cyanLight.intensity = isDark ? 3.5 : 2.0;
 
   // Core Globe Sphere
-  objs.coreMat.color.setHex(isDark ? 0x0369a1 : 0x0256d0);
-  objs.coreMat.emissive.setHex(isDark ? 0x0284c7 : 0x023680);
+  objs.coreMat.color.setHex(isDark ? 0x0369a1 : 0x006eff);
+  objs.coreMat.emissive.setHex(isDark ? 0x0284c7 : 0x0047ab);
   objs.coreMat.specular.setHex(isDark ? 0x38bdf8 : 0x60a5fa);
   objs.coreMat.shininess = isDark ? 65 : 35;
-  objs.coreMat.opacity = isDark ? 0.28 : 0.1;
+  objs.coreMat.opacity = isDark ? 0.28 : 0.09;
   objs.coreMat.needsUpdate = true;
 
   // Atmospheric Corona Halo
-  objs.haloMat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.haloMat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
   objs.haloMat.opacity = isDark ? 0.35 : 0.12;
   objs.haloMat.needsUpdate = true;
 
   // Latitude Rings
   objs.latLineMats.forEach(({ mat, isEquator }) => {
-    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
-    mat.opacity = isDark ? (isEquator ? 0.70 : 0.35) : (isEquator ? 0.35 : 0.15);
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
+    mat.opacity = isDark ? (isEquator ? 0.65 : 0.30) : (isEquator ? 0.30 : 0.12);
     mat.needsUpdate = true;
   });
 
   // Longitude Rings
   objs.lonLineMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
-    mat.opacity = isDark ? 0.32 : 0.14;
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
+    mat.opacity = isDark ? 0.28 : 0.12;
     mat.needsUpdate = true;
   });
 
   // Continental Matrix Particles
-  objs.dotMat.size = isDark ? 0.046 : 0.034;
-  objs.dotMat.opacity = isDark ? 0.98 : 0.7;
+  objs.dotMat.size = isDark ? 0.044 : 0.032;
+  objs.dotMat.opacity = isDark ? 0.95 : 0.65;
   objs.dotMat.needsUpdate = true;
 
   const colorAttr = objs.dotGeo.getAttribute('color') as THREE.BufferAttribute;
   if (colorAttr) {
     const arr = colorAttr.array as Float32Array;
     const count = arr.length / 3;
-    const cBlue = new THREE.Color(0x0256d0);
+    const cBlue = new THREE.Color(0x006eff);
     const cCyan = new THREE.Color(0x38bdf8);
     const cNeon = new THREE.Color(0x00ffff);
     const cWhite = new THREE.Color(0xffffff);
@@ -102,114 +102,118 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
 
   // City Hub Pins
   objs.hubMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+    mat.color.setHex(isDark ? 0x00ffff : 0x006eff);
     mat.needsUpdate = true;
   });
 
   // City Hub Pulse Waves
   objs.ringMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x00ffff : 0x38bdf8);
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x0284c7);
     mat.needsUpdate = true;
   });
 
-  // Multi-continent Connection Arcs
+  // Harmonious Great-Circle Connection Arcs
   objs.arcMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
-    mat.opacity = isDark ? 0.80 : 0.45;
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
+    mat.opacity = isDark ? 0.65 : 0.38;
     mat.needsUpdate = true;
   });
 
   // Traveling Light Pulses
   objs.pulseMats.forEach(({ mat, isEven }) => {
-    mat.color.setHex(isDark ? (isEven ? 0xffffff : 0x00ffff) : (isEven ? 0x0256d0 : 0x0084ff));
+    mat.color.setHex(isDark ? (isEven ? 0xffffff : 0x00ffff) : (isEven ? 0x006eff : 0x0284c7));
     mat.needsUpdate = true;
   });
 
   // Orbital Ring
-  objs.orbitRingMat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
-  objs.orbitRingMat.opacity = isDark ? 0.38 : 0.16;
+  objs.orbitRingMat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
+  objs.orbitRingMat.opacity = isDark ? 0.35 : 0.15;
   objs.orbitRingMat.needsUpdate = true;
 }
 
-// Global talent & client innovation hubs spread across all continents of the world
+// 18 Harmoniously distributed global innovation hubs spanning all hemispheres & longitudes
+// Mathematically distributed to prevent clustering while maintaining genuine global representation
 const HUBS: CityHub[] = [
-  // South Asia
+  // South Asia (Gaenr HQ Talent Hub)
   { id: 'dhaka', name: 'Dhaka', lat: 23.8103, lon: 90.4125 },
   { id: 'mumbai', name: 'Mumbai', lat: 19.076, lon: 72.8777 },
 
-  // East & Southeast Asia
+  // Southeast & East Asia
   { id: 'singapore', name: 'Singapore', lat: 1.3521, lon: 103.8198 },
   { id: 'tokyo', name: 'Tokyo', lat: 35.6762, lon: 139.6503 },
   { id: 'seoul', name: 'Seoul', lat: 37.5665, lon: 126.978 },
-  { id: 'bangkok', name: 'Bangkok', lat: 13.7563, lon: 100.5018 },
-
-  // Middle East & Africa
-  { id: 'dubai', name: 'Dubai', lat: 25.2048, lon: 55.2708 },
-  { id: 'cairo', name: 'Cairo', lat: 30.0444, lon: 31.2357 },
-  { id: 'nairobi', name: 'Nairobi', lat: -1.2921, lon: 36.8219 },
-  { id: 'capetown', name: 'Cape Town', lat: -33.9249, lon: 18.4241 },
-  { id: 'lagos', name: 'Lagos', lat: 6.5244, lon: 3.3792 },
-
-  // Europe
-  { id: 'london', name: 'London', lat: 51.5074, lon: -0.1278 },
-  { id: 'berlin', name: 'Berlin', lat: 52.52, lon: 13.405 },
-  { id: 'paris', name: 'Paris', lat: 48.8566, lon: 2.3522 },
-  { id: 'stockholm', name: 'Stockholm', lat: 59.3293, lon: 18.0686 },
-
-  // North America
-  { id: 'ny', name: 'New York', lat: 40.7128, lon: -74.006 },
-  { id: 'sf', name: 'San Francisco', lat: 37.7749, lon: -122.4194 },
-  { id: 'toronto', name: 'Toronto', lat: 43.6532, lon: -79.3832 },
-  { id: 'chicago', name: 'Chicago', lat: 41.8781, lon: -87.6298 },
-
-  // South America
-  { id: 'saopaulo', name: 'São Paulo', lat: -23.5505, lon: -46.6333 },
-  { id: 'buenosaires', name: 'Buenos Aires', lat: -34.6037, lon: -58.3816 },
-  { id: 'bogota', name: 'Bogotá', lat: 4.711, lon: -74.0721 },
 
   // Oceania
   { id: 'sydney', name: 'Sydney', lat: -33.8688, lon: 151.2093 },
-  { id: 'melbourne', name: 'Melbourne', lat: -37.8136, lon: 144.9631 },
+
+  // Pacific Ocean Bridge (Balances Pacific hemisphere)
+  { id: 'honolulu', name: 'Honolulu', lat: 21.3069, lon: -157.8583 },
+
+  // North America
+  { id: 'sf', name: 'San Francisco', lat: 37.7749, lon: -122.4194 },
+  { id: 'vancouver', name: 'Vancouver', lat: 49.2827, lon: -123.1207 },
+  { id: 'ny', name: 'New York', lat: 40.7128, lon: -74.006 },
+
+  // North Atlantic Bridge
+  { id: 'reykjavik', name: 'Reykjavik', lat: 64.1466, lon: -21.9426 },
+
+  // Europe
+  { id: 'london', name: 'London', lat: 51.5074, lon: -0.1278 },
+  { id: 'zurich', name: 'Zurich', lat: 47.3769, lon: 8.5417 },
+
+  // Middle East
+  { id: 'dubai', name: 'Dubai', lat: 25.2048, lon: 55.2708 },
+
+  // Africa
+  { id: 'nairobi', name: 'Nairobi', lat: -1.2921, lon: 36.8219 },
+  { id: 'capetown', name: 'Cape Town', lat: -33.9249, lon: 18.4241 },
+
+  // South America
+  { id: 'saopaulo', name: 'São Paulo', lat: -23.5505, lon: -46.6333 },
+  { id: 'santiago', name: 'Santiago', lat: -33.4489, lon: -70.6693 },
 ];
 
-// Globally distributed network routes connecting all continents without clustering
+// Harmonious geodesic network routes forming a balanced, eye-soothing constellation pattern
 const NETWORK_ROUTES: [string, string][] = [
-  // Trans-Atlantic & Pan-American
-  ['sf', 'ny'],
-  ['ny', 'london'],
-  ['london', 'paris'],
-  ['paris', 'berlin'],
-  ['berlin', 'stockholm'],
-  ['toronto', 'chicago'],
-  ['chicago', 'sf'],
-  ['ny', 'bogota'],
-  ['bogota', 'saopaulo'],
-  ['saopaulo', 'buenosaires'],
-  ['saopaulo', 'lagos'],
+  // Trans-Pacific Golden Highway
+  ['tokyo', 'honolulu'],
+  ['honolulu', 'sf'],
+  ['sydney', 'honolulu'],
 
-  // Africa & Middle East
-  ['lagos', 'capetown'],
-  ['capetown', 'nairobi'],
-  ['nairobi', 'cairo'],
-  ['cairo', 'dubai'],
-  ['dubai', 'london'],
-
-  // Middle East & South Asia
-  ['dubai', 'mumbai'],
-  ['mumbai', 'dhaka'],
-  ['dhaka', 'london'],
-  ['dhaka', 'singapore'],
-  ['dhaka', 'bangkok'],
-
-  // Asia-Pacific & Oceania
+  // Asia-Pacific & East Asia Ring
+  ['singapore', 'sydney'],
   ['singapore', 'tokyo'],
   ['tokyo', 'seoul'],
-  ['seoul', 'sf'],
-  ['singapore', 'sydney'],
-  ['sydney', 'melbourne'],
-  ['sydney', 'sf'],
-  ['tokyo', 'sf'],
-  ['bangkok', 'singapore'],
+  ['seoul', 'dhaka'],
+  ['dhaka', 'singapore'],
+
+  // South Asia, Middle East & Africa Corridor
+  ['dhaka', 'mumbai'],
+  ['mumbai', 'dubai'],
+  ['dhaka', 'dubai'],
+  ['dubai', 'nairobi'],
+  ['nairobi', 'capetown'],
+
+  // Eurasia & Europe Arteries
+  ['dubai', 'zurich'],
+  ['zurich', 'london'],
+  ['london', 'reykjavik'],
+
+  // Trans-Atlantic Super-Highway
+  ['reykjavik', 'ny'],
+  ['london', 'ny'],
+
+  // Pan-American Network
+  ['vancouver', 'sf'],
+  ['sf', 'ny'],
+  ['vancouver', 'ny'],
+  ['ny', 'saopaulo'],
+  ['saopaulo', 'santiago'],
+  ['santiago', 'sf'],
+
+  // Southern Oceans Strategic Bridges
+  ['saopaulo', 'capetown'],
+  ['capetown', 'mumbai'],
 ];
 
 function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector3 {
@@ -219,6 +223,23 @@ function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector
   const z = radius * Math.sin(phi) * Math.sin(theta);
   const y = radius * Math.cos(phi);
   return new THREE.Vector3(x, y, z);
+}
+
+/**
+ * Calculates an exact point along a spherical great-circle arc with harmonic parabolic elevation.
+ * This guarantees mathematically pure curvature with zero kink, zero dip, and graceful cresting.
+ */
+function getGreatCirclePoint(
+  norm1: THREE.Vector3,
+  axis: THREE.Vector3,
+  angle: number,
+  radius: number,
+  maxLift: number,
+  t: number
+): THREE.Vector3 {
+  const pt = norm1.clone().applyAxisAngle(axis, angle * t);
+  const altitude = Math.sin(t * Math.PI) * maxLift;
+  return pt.multiplyScalar(radius + altitude);
 }
 
 /**
@@ -392,30 +413,32 @@ export const Hero3DCanvas: React.FC = () => {
     // Global Hub Pins with Pulse Rings
     const hubMap = new Map<string, THREE.Vector3>();
     const hubsGroup = new THREE.Group();
-    const pulseRings: { mesh: THREE.Mesh; maxScale: number; speed: number }[] = [];
+    const pulseRings: { mesh: THREE.Mesh; index: number; isHQ: boolean }[] = [];
     const hubMats: THREE.MeshBasicMaterial[] = [];
     const ringMats: THREE.MeshBasicMaterial[] = [];
 
-    HUBS.forEach((hub) => {
+    HUBS.forEach((hub, hubIdx) => {
       const pos = latLonToVector3(hub.lat, hub.lon, GLOBE_RADIUS);
       hubMap.set(hub.id, pos);
+      const isHQ = hub.id === 'dhaka';
 
-      const hubGeo = new THREE.SphereGeometry(0.045, 16, 16);
+      // Pin Marker Core
+      const hubGeo = new THREE.SphereGeometry(isHQ ? 0.046 : 0.036, 16, 16);
       const hubMat = new THREE.MeshBasicMaterial({
-        color: 0x0256d0,
+        color: 0x006eff,
       });
       hubMats.push(hubMat);
       const hubMesh = new THREE.Mesh(hubGeo, hubMat);
       hubMesh.position.copy(pos);
       hubsGroup.add(hubMesh);
 
-      // Expanding pulse ring on each hub
-      const ringGeo = new THREE.RingGeometry(0.015, 0.038, 20);
+      // Expanding pulse wave ring on each hub
+      const ringGeo = new THREE.RingGeometry(0.016, 0.040, 24);
       const ringMat = new THREE.MeshBasicMaterial({
-        color: 0x38bdf8,
+        color: isHQ ? 0x00ffff : 0x0284c7,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.8,
+        opacity: 0.75,
       });
       ringMats.push(ringMat);
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
@@ -425,16 +448,41 @@ export const Hero3DCanvas: React.FC = () => {
 
       pulseRings.push({
         mesh: ringMesh,
-        maxScale: 2.2,
-        speed: 0.02 + Math.random() * 0.01,
+        index: hubIdx,
+        isHQ,
       });
+
+      // Special secondary concentric beacon ring for Gaenr HQ (Dhaka)
+      if (isHQ) {
+        const hqRingGeo = new THREE.RingGeometry(0.042, 0.062, 24);
+        const hqRingMat = new THREE.MeshBasicMaterial({
+          color: 0x38bdf8,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.85,
+        });
+        ringMats.push(hqRingMat);
+        const hqRingMesh = new THREE.Mesh(hqRingGeo, hqRingMat);
+        hqRingMesh.position.copy(pos);
+        hqRingMesh.lookAt(pos.clone().multiplyScalar(2));
+        hubsGroup.add(hqRingMesh);
+
+        pulseRings.push({
+          mesh: hqRingMesh,
+          index: hubIdx + 0.5,
+          isHQ: true,
+        });
+      }
     });
     globeGroup.add(hubsGroup);
 
-    // Decentralized Multi-point Connection Arcs
+    // Geodesic Great-Circle Connection Arcs with Harmonic Elevation
     const arcsGroup = new THREE.Group();
     interface ArcData {
-      curve: THREE.CubicBezierCurve3;
+      norm1: THREE.Vector3;
+      axis: THREE.Vector3;
+      angle: number;
+      maxLift: number;
       pulseMesh: THREE.Mesh;
       progress: number;
       speed: number;
@@ -449,41 +497,55 @@ export const Hero3DCanvas: React.FC = () => {
       const toPos = hubMap.get(toId);
       if (!fromPos || !toPos) return;
 
-      const distance = fromPos.distanceTo(toPos);
-      const mid = fromPos.clone().add(toPos).multiplyScalar(0.5);
-      // Elevation kept within compact range so arcs never touch viewport edges
-      const elevation = GLOBE_RADIUS + Math.min(distance * 0.35, 0.42);
+      const norm1 = fromPos.clone().normalize();
+      const norm2 = toPos.clone().normalize();
+      const angle = norm1.angleTo(norm2);
 
-      const ctrl1 = fromPos.clone().lerp(mid, 0.45).normalize().multiplyScalar(elevation);
-      const ctrl2 = toPos.clone().lerp(mid, 0.45).normalize().multiplyScalar(elevation);
+      let axis = new THREE.Vector3().crossVectors(norm1, norm2);
+      if (axis.lengthSq() < 1e-6) {
+        axis.set(0, 1, 0);
+      } else {
+        axis.normalize();
+      }
 
-      const curve = new THREE.CubicBezierCurve3(fromPos, ctrl1, ctrl2, toPos);
-      const curvePoints = curve.getPoints(36);
+      // Parabolic altitude lift proportional to distance, capped to preserve viewport boundary
+      const maxLift = Math.min(Math.max(angle * 0.16, 0.08), 0.26) * GLOBE_RADIUS;
+
+      // Sample 48 points along the great circle with harmonic elevation
+      const curvePoints: THREE.Vector3[] = [];
+      const segments = 48;
+      for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        curvePoints.push(getGreatCirclePoint(norm1, axis, angle, GLOBE_RADIUS, maxLift, t));
+      }
 
       const arcGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
       const arcMat = new THREE.LineBasicMaterial({
-        color: 0x0256d0,
+        color: 0x006eff,
         transparent: true,
-        opacity: 0.45,
+        opacity: 0.38,
       });
       arcMats.push(arcMat);
       const arcLine = new THREE.Line(arcGeo, arcMat);
       arcsGroup.add(arcLine);
 
       // Glowing traveling light pulse packet along each route
-      const pulseGeo = new THREE.SphereGeometry(0.038, 12, 12);
+      const pulseGeo = new THREE.SphereGeometry(0.034, 12, 12);
       const pulseMat = new THREE.MeshBasicMaterial({
-        color: idx % 2 === 0 ? 0x0256d0 : 0x0084ff,
+        color: idx % 2 === 0 ? 0x006eff : 0x0284c7,
       });
       pulseMats.push({ mat: pulseMat, isEven: idx % 2 === 0 });
       const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
       arcsGroup.add(pulseMesh);
 
       arcsData.push({
-        curve,
+        norm1,
+        axis,
+        angle,
+        maxLift,
         pulseMesh,
-        progress: (idx / NETWORK_ROUTES.length) * 0.95,
-        speed: 0.004 + (idx % 4) * 0.002,
+        progress: (idx / NETWORK_ROUTES.length) % 1.0,
+        speed: 0.0022 + (idx % 4) * 0.0005,
         direction: idx % 2 === 0 ? 1 : -1,
       });
     });
@@ -492,10 +554,10 @@ export const Hero3DCanvas: React.FC = () => {
     // Subtle orbital ring safely contained within viewport
     const orbitRingGeo = new THREE.RingGeometry(GLOBE_RADIUS * 1.2, GLOBE_RADIUS * 1.215, 64);
     const orbitRingMat = new THREE.MeshBasicMaterial({
-      color: 0x0256d0,
+      color: 0x006eff,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.16,
+      opacity: 0.15,
     });
     const orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
     orbitRing.rotation.x = Math.PI / 2.2;
@@ -528,22 +590,21 @@ export const Hero3DCanvas: React.FC = () => {
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
+      const now = performance.now() * 0.001;
+
       // Smooth ambient rotation
-      globeGroup.rotation.y += 0.002;
+      globeGroup.rotation.y += 0.0018;
 
-      // Animate hub pulse rings
+      // Smooth, tranquil ripple wave expansion on hub rings (zero jarring reset)
       pulseRings.forEach((pr) => {
-        pr.mesh.scale.x += pr.speed;
-        pr.mesh.scale.y += pr.speed;
+        const phase = ((now * 0.55 + pr.index * 0.14) % 1.0);
+        const s = 1.0 + phase * 1.5;
+        pr.mesh.scale.set(s, s, 1);
         const mat = pr.mesh.material as THREE.MeshBasicMaterial;
-        mat.opacity = Math.max(0, 1 - pr.mesh.scale.x / pr.maxScale);
-
-        if (pr.mesh.scale.x >= pr.maxScale) {
-          pr.mesh.scale.set(1, 1, 1);
-        }
+        mat.opacity = Math.sin(phase * Math.PI) * (pr.isHQ ? 0.95 : 0.75);
       });
 
-      // Animate pulses along routes (bidirectional flow across the globe)
+      // Animate photon pulses along great-circle arcs with gentle breathing scaling
       arcsData.forEach((arc) => {
         if (arc.direction === 1) {
           arc.progress += arc.speed;
@@ -552,13 +613,14 @@ export const Hero3DCanvas: React.FC = () => {
           arc.progress -= arc.speed;
           if (arc.progress < 0) arc.progress = 1;
         }
-        const point = arc.curve.getPoint(arc.progress);
+        const point = getGreatCirclePoint(arc.norm1, arc.axis, arc.angle, GLOBE_RADIUS, arc.maxLift, arc.progress);
         arc.pulseMesh.position.copy(point);
+        const pScale = 0.85 + Math.sin(arc.progress * Math.PI) * 0.35;
+        arc.pulseMesh.scale.set(pScale, pScale, pScale);
       });
 
       // Subtle breathing float oscillation
-      const time = Date.now() * 0.001;
-      globeGroup.position.y = Math.sin(time) * 0.025;
+      globeGroup.position.y = Math.sin(now * 0.8) * 0.02;
 
       renderer.render(scene, camera);
     };
