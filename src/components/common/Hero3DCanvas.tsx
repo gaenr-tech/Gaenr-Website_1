@@ -34,50 +34,50 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
   objs.ambientLight.intensity = isDark ? 3.4 : 2.2;
 
   // Blue Directional Light
-  objs.blueLight.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
-  objs.blueLight.intensity = isDark ? 4.5 : 3.2;
+  objs.blueLight.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.blueLight.intensity = isDark ? 4.5 : 3.4;
 
   // Cyan Directional Light
   objs.cyanLight.color.setHex(isDark ? 0x00ffff : 0x38bdf8);
-  objs.cyanLight.intensity = isDark ? 3.5 : 2.0;
+  objs.cyanLight.intensity = isDark ? 3.5 : 2.2;
 
-  // Core Globe Sphere
-  objs.coreMat.color.setHex(isDark ? 0x0369a1 : 0x006eff);
-  objs.coreMat.emissive.setHex(isDark ? 0x0284c7 : 0x0047ab);
+  // Core Globe Sphere - rich 3D sphere volume, specular gloss & natural hemisphere occlusion
+  objs.coreMat.color.setHex(isDark ? 0x0369a1 : 0x0256d0);
+  objs.coreMat.emissive.setHex(isDark ? 0x0284c7 : 0x023680);
   objs.coreMat.specular.setHex(isDark ? 0x38bdf8 : 0x60a5fa);
-  objs.coreMat.shininess = isDark ? 65 : 35;
-  objs.coreMat.opacity = isDark ? 0.28 : 0.09;
+  objs.coreMat.shininess = isDark ? 65 : 45;
+  objs.coreMat.opacity = isDark ? 0.32 : 0.22;
   objs.coreMat.needsUpdate = true;
 
   // Atmospheric Corona Halo
-  objs.haloMat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
-  objs.haloMat.opacity = isDark ? 0.35 : 0.12;
+  objs.haloMat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.haloMat.opacity = isDark ? 0.35 : 0.16;
   objs.haloMat.needsUpdate = true;
 
   // Latitude Rings
   objs.latLineMats.forEach(({ mat, isEquator }) => {
-    mat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
-    mat.opacity = isDark ? (isEquator ? 0.65 : 0.30) : (isEquator ? 0.30 : 0.12);
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+    mat.opacity = isDark ? (isEquator ? 0.70 : 0.35) : (isEquator ? 0.35 : 0.15);
     mat.needsUpdate = true;
   });
 
   // Longitude Rings
   objs.lonLineMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
-    mat.opacity = isDark ? 0.28 : 0.12;
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+    mat.opacity = isDark ? 0.32 : 0.14;
     mat.needsUpdate = true;
   });
 
   // Continental Matrix Particles
-  objs.dotMat.size = isDark ? 0.044 : 0.032;
-  objs.dotMat.opacity = isDark ? 0.95 : 0.65;
+  objs.dotMat.size = isDark ? 0.046 : 0.034;
+  objs.dotMat.opacity = isDark ? 0.98 : 0.70;
   objs.dotMat.needsUpdate = true;
 
   const colorAttr = objs.dotGeo.getAttribute('color') as THREE.BufferAttribute;
   if (colorAttr) {
     const arr = colorAttr.array as Float32Array;
     const count = arr.length / 3;
-    const cBlue = new THREE.Color(0x006eff);
+    const cBlue = new THREE.Color(0x0256d0);
     const cCyan = new THREE.Color(0x38bdf8);
     const cNeon = new THREE.Color(0x00ffff);
     const cWhite = new THREE.Color(0xffffff);
@@ -103,20 +103,20 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
 
   // City Hub Pins
   objs.hubMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x00ffff : 0x006eff);
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
     mat.needsUpdate = true;
   });
 
   // City Hub Pulse Waves
   objs.ringMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x38bdf8 : 0x0284c7);
+    mat.color.setHex(isDark ? 0x00ffff : 0x38bdf8);
     mat.needsUpdate = true;
   });
 
   // Persistent Faint Base Arcs (Underlying Global Constellation Grid)
   objs.baseArcMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
-    mat.opacity = isDark ? 0.20 : 0.12;
+    mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+    mat.opacity = isDark ? 0.25 : 0.16;
     mat.needsUpdate = true;
   });
 
@@ -128,13 +128,13 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
 
   // Traveling Light Pulses (Beads)
   objs.pulseMats.forEach(({ mat, isEven }) => {
-    mat.color.setHex(isDark ? (isEven ? 0xffffff : 0x00ffff) : (isEven ? 0x006eff : 0x0284c7));
+    mat.color.setHex(isDark ? (isEven ? 0xffffff : 0x00ffff) : (isEven ? 0x0256d0 : 0x0084ff));
     mat.needsUpdate = true;
   });
 
   // Orbital Ring
-  objs.orbitRingMat.color.setHex(isDark ? 0x38bdf8 : 0x006eff);
-  objs.orbitRingMat.opacity = isDark ? 0.35 : 0.15;
+  objs.orbitRingMat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.orbitRingMat.opacity = isDark ? 0.38 : 0.16;
   objs.orbitRingMat.needsUpdate = true;
 }
 
@@ -316,15 +316,15 @@ export const Hero3DCanvas: React.FC = () => {
     renderer.setClearColor(0x000000, 0); // 100% transparent background
     container.appendChild(renderer.domElement);
 
-    // Lighting
+    // Lighting - angled key & rim directional lights producing prominent 3D spherical shading
     const ambientLight = new THREE.AmbientLight(0xffffff, 2.2);
     scene.add(ambientLight);
 
-    const blueLight = new THREE.DirectionalLight(0x0256d0, 3.2);
+    const blueLight = new THREE.DirectionalLight(0x0256d0, 3.4);
     blueLight.position.set(4, 3, 4);
     scene.add(blueLight);
 
-    const cyanLight = new THREE.DirectionalLight(0x38bdf8, 2.0);
+    const cyanLight = new THREE.DirectionalLight(0x38bdf8, 2.2);
     cyanLight.position.set(-4, -1, 3);
     scene.add(cyanLight);
 
@@ -337,26 +337,26 @@ export const Hero3DCanvas: React.FC = () => {
     // Sized comfortably to fit inside camera frustum with >20% boundary clearance
     const GLOBE_RADIUS = 1.32;
 
-    // Inner Translucent Core Sphere
-    const coreGeo = new THREE.SphereGeometry(GLOBE_RADIUS * 0.98, 48, 48);
+    // Inner Translucent Core Sphere - gives rich 3D sphere volume, specular gloss & natural hemisphere occlusion
+    const coreGeo = new THREE.SphereGeometry(GLOBE_RADIUS * 0.985, 48, 48);
     const coreMat = new THREE.MeshPhongMaterial({
       color: 0x0256d0,
       emissive: 0x023680,
       specular: 0x60a5fa,
-      shininess: 35,
+      shininess: 45,
       transparent: true,
-      opacity: 0.1,
+      opacity: 0.22,
     });
     const coreMesh = new THREE.Mesh(coreGeo, coreMat);
     globeGroup.add(coreMesh);
 
-    // Soft Atmospheric Halo
-    const haloGeo = new THREE.SphereGeometry(GLOBE_RADIUS * 1.025, 32, 32);
+    // Soft Atmospheric Halo (Fresnel planetary edge glow)
+    const haloGeo = new THREE.SphereGeometry(GLOBE_RADIUS * 1.03, 32, 32);
     const haloMat = new THREE.MeshBasicMaterial({
       color: 0x0256d0,
       side: THREE.BackSide,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.16,
     });
     const haloMesh = new THREE.Mesh(haloGeo, haloMat);
     globeGroup.add(haloMesh);
@@ -438,7 +438,7 @@ export const Hero3DCanvas: React.FC = () => {
       size: 0.034,
       vertexColors: true,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.70,
     });
     const pointsMesh = new THREE.Points(dotGeo, dotMat);
     globeGroup.add(pointsMesh);
@@ -456,9 +456,9 @@ export const Hero3DCanvas: React.FC = () => {
       const isHQ = hub.id === 'dhaka';
 
       // Pin Marker Core
-      const hubGeo = new THREE.SphereGeometry(isHQ ? 0.046 : 0.036, 16, 16);
+      const hubGeo = new THREE.SphereGeometry(isHQ ? 0.046 : 0.038, 16, 16);
       const hubMat = new THREE.MeshBasicMaterial({
-        color: 0x006eff,
+        color: 0x0256d0,
       });
       hubMats.push(hubMat);
       const hubMesh = new THREE.Mesh(hubGeo, hubMat);
@@ -468,7 +468,7 @@ export const Hero3DCanvas: React.FC = () => {
       // Expanding pulse wave ring on each hub
       const ringGeo = new THREE.RingGeometry(0.016, 0.040, 24);
       const ringMat = new THREE.MeshBasicMaterial({
-        color: isHQ ? 0x00ffff : 0x0284c7,
+        color: isHQ ? 0x00ffff : 0x38bdf8,
         side: THREE.DoubleSide,
         transparent: true,
         opacity: 0.75,
@@ -488,7 +488,7 @@ export const Hero3DCanvas: React.FC = () => {
 
       // Special secondary concentric beacon ring for Gaenr HQ (Dhaka)
       if (isHQ) {
-        const hqRingGeo = new THREE.RingGeometry(0.042, 0.064, 24);
+        const hqRingGeo = new THREE.RingGeometry(0.044, 0.066, 24);
         const hqRingMat = new THREE.MeshBasicMaterial({
           color: 0x38bdf8,
           side: THREE.DoubleSide,
@@ -550,7 +550,7 @@ export const Hero3DCanvas: React.FC = () => {
       }
 
       // Parabolic altitude lift proportional to distance, capped to preserve viewport boundary
-      const maxLift = Math.min(Math.max(angle * 0.16, 0.08), 0.26) * GLOBE_RADIUS;
+      const maxLift = Math.min(Math.max(angle * 0.18, 0.10), 0.28) * GLOBE_RADIUS;
 
       // Sample 48 points along the great circle with harmonic elevation
       const segments = 48;
@@ -563,9 +563,9 @@ export const Hero3DCanvas: React.FC = () => {
       // 1. Persistent Faint Base Guide Track (Shows Global Constellation Grid)
       const baseGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
       const baseMat = new THREE.LineBasicMaterial({
-        color: 0x006eff,
+        color: 0x0256d0,
         transparent: true,
-        opacity: 0.12,
+        opacity: 0.16,
       });
       baseArcMats.push(baseMat);
       const baseLine = new THREE.Line(baseGeo, baseMat);
@@ -587,9 +587,9 @@ export const Hero3DCanvas: React.FC = () => {
       arcsGroup.add(streamLine);
 
       // 3. Glowing Photon Bead Travelling at the Head of the Transmission
-      const pulseGeo = new THREE.SphereGeometry(0.034, 12, 12);
+      const pulseGeo = new THREE.SphereGeometry(0.036, 12, 12);
       const pulseMat = new THREE.MeshBasicMaterial({
-        color: idx % 2 === 0 ? 0x006eff : 0x0284c7,
+        color: idx % 2 === 0 ? 0x0256d0 : 0x0084ff,
       });
       pulseMats.push({ mat: pulseMat, isEven: idx % 2 === 0 });
       const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
@@ -615,10 +615,10 @@ export const Hero3DCanvas: React.FC = () => {
     // Subtle orbital ring safely contained within viewport
     const orbitRingGeo = new THREE.RingGeometry(GLOBE_RADIUS * 1.2, GLOBE_RADIUS * 1.215, 64);
     const orbitRingMat = new THREE.MeshBasicMaterial({
-      color: 0x006eff,
+      color: 0x0256d0,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.15,
+      opacity: 0.16,
     });
     const orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
     orbitRing.rotation.x = Math.PI / 2.2;
@@ -691,15 +691,15 @@ export const Hero3DCanvas: React.FC = () => {
           hubFlares.set(arc.route.to, Math.max(prevFlare, flareIntensity));
         }
 
-        // Calculate vertex colors along the comet beam
+        // Calculate vertex colors along the comet beam using exact signature palette
         const L = arc.beamLength;
-        const headR = isDarkNow ? 1.0 : 0.0;
-        const headG = isDarkNow ? 1.0 : 0.75;
-        const headB = isDarkNow ? 1.0 : 1.0;
+        const headR = isDarkNow ? 1.0 : 0.22;
+        const headG = isDarkNow ? 1.0 : 0.74;
+        const headB = isDarkNow ? 1.0 : 0.97;
 
-        const tailR = isDarkNow ? 0.0 : 0.0;
-        const tailG = isDarkNow ? 0.45 : 0.25;
-        const tailB = isDarkNow ? 0.85 : 0.70;
+        const tailR = isDarkNow ? 0.0 : 0.008;
+        const tailG = isDarkNow ? 0.45 : 0.337;
+        const tailB = isDarkNow ? 0.85 : 0.816;
 
         for (let j = 0; j <= arc.segments; j++) {
           const s = j / arc.segments;
