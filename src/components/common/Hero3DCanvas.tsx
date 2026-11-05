@@ -677,7 +677,7 @@ export const Hero3DCanvas: React.FC = () => {
     themeObjectsRef.current = themeObjs;
     applyThemeToObjects(themeObjs, isDark);
 
-    // 5. INTERACTIVE 3D FLEXIBLE ROTATION WITH MOBILE SCROLL-THROUGH
+    // 5. INTERACTIVE 3D ROTATION & 100% UNCONSTRAINED MOBILE PAGE SCROLL
     let isDragging = false;
     let prevPointerX = 0;
     let prevPointerY = 0;
@@ -685,12 +685,6 @@ export const Hero3DCanvas: React.FC = () => {
     let velocityY = 0;
     let targetTiltX = 0;
     let targetTiltY = 0;
-
-    // Mobile touch directional disambiguation
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let isTouchActive = false;
-    let touchIntent: 'undetermined' | 'scroll' | 'rotate' = 'undetermined';
 
     const startDrag = (clientX: number, clientY: number) => {
       isDragging = true;
@@ -711,7 +705,6 @@ export const Hero3DCanvas: React.FC = () => {
         const deltaX = clientX - prevPointerX;
         const deltaY = clientY - prevPointerY;
 
-        // Agile, flexible touch sensitivity for effortless rotation
         const sensitivity = 0.0085;
         velocityX = deltaX * sensitivity;
         velocityY = deltaY * sensitivity;
@@ -726,14 +719,11 @@ export const Hero3DCanvas: React.FC = () => {
 
     const endDrag = () => {
       isDragging = false;
-      isTouchActive = false;
-      touchIntent = 'undetermined';
     };
 
-    // Desktop Mouse / Pointer Events: full mouse drag rotation
+    // Desktop Mouse Events: Click & drag to rotate freely
     const onPointerDown = (e: PointerEvent) => {
-      if (e.pointerType !== 'mouse') return; // Touch handled by native touch listener for scroll freedom
-      if (e.button !== 0) return;
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
       startDrag(e.clientX, e.clientY);
       try {
         container.setPointerCapture(e.pointerId);
@@ -753,80 +743,65 @@ export const Hero3DCanvas: React.FC = () => {
       } catch {}
     };
 
-    const onPointerCancel = () => {
-      endDrag();
-    };
+    // Mobile Touch Handling:
+    // Pure 100% passive listeners, ZERO preventDefault, touch-action pan-y!
+    // Page scrolling down or up is NEVER blocked or delayed!
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let prevTouchX = 0;
+    let isHorizontalSwipe = false;
+    let touchDetermined = false;
 
-    // Mobile Touch Events with Smart Gesture Disambiguation:
-    // - Vertical swipe (|deltaY| > |deltaX|): Allows full, natural page scrolling down/up!
-    // - Horizontal swipe (|deltaX| >= |deltaY|): Rotates the 3D globe fluidly!
     const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        const t = e.touches[0];
-        touchStartX = t.clientX;
-        touchStartY = t.clientY;
-        prevPointerX = t.clientX;
-        prevPointerY = t.clientY;
-        isTouchActive = true;
-        touchIntent = 'undetermined';
-      }
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+      prevTouchX = t.clientX;
+      isHorizontalSwipe = false;
+      touchDetermined = false;
+      velocityX = 0;
     };
 
     const onTouchMove = (e: TouchEvent) => {
-      if (!isTouchActive || e.touches.length !== 1) return;
+      if (e.touches.length !== 1) return;
       const t = e.touches[0];
+      const dx = t.clientX - touchStartX;
+      const dy = t.clientY - touchStartY;
 
-      if (touchIntent === 'undetermined') {
-        const diffX = Math.abs(t.clientX - touchStartX);
-        const diffY = Math.abs(t.clientY - touchStartY);
-
-        // Small 7px deadzone to discern intent
-        if (diffX > 7 || diffY > 7) {
-          if (diffY > diffX) {
-            // User is swiping vertically to scroll down the page!
-            touchIntent = 'scroll';
-            isDragging = false;
-            return; // Let the browser handle native vertical page scrolling
-          } else {
-            // User is swiping horizontally to spin the globe!
-            touchIntent = 'rotate';
-            startDrag(t.clientX, t.clientY);
-          }
-        } else {
-          return; // Within deadzone
+      if (!touchDetermined) {
+        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+          touchDetermined = true;
+          // Only track for globe spin if gesture is predominantly horizontal (left/right)
+          isHorizontalSwipe = Math.abs(dx) > Math.abs(dy) * 1.2;
         }
       }
 
-      if (touchIntent === 'scroll') {
-        // Do NOT prevent default, allowing native vertical page scrolling down/up
-        return;
-      }
-
-      if (touchIntent === 'rotate') {
-        if (e.cancelable) {
-          e.preventDefault(); // Prevent page scroll jitter only while actively rotating the globe
-        }
-        moveDrag(t.clientX, t.clientY);
+      if (isHorizontalSwipe) {
+        const deltaX = t.clientX - prevTouchX;
+        velocityX = deltaX * 0.0075;
+        globeGroup.rotation.y += velocityX;
+        prevTouchX = t.clientX;
       }
     };
 
     const onTouchEnd = () => {
-      endDrag();
+      isHorizontalSwipe = false;
+      touchDetermined = false;
     };
 
-    // Allow vertical scrolling (pan-y) so page scrolling is never blocked on mobile
+    // Enforce native browser vertical scrolling
     renderer.domElement.style.touchAction = 'pan-y';
     container.style.touchAction = 'pan-y';
 
     container.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', onPointerCancel);
 
     container.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: false });
-    window.addEventListener('touchend', onTouchEnd);
-    window.addEventListener('touchcancel', onTouchEnd);
+    container.addEventListener('touchmove', onTouchMove, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', onTouchEnd, { passive: true });
 
     // Animation Loop
     let animationFrameId: number;
@@ -953,11 +928,10 @@ export const Hero3DCanvas: React.FC = () => {
       container.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerCancel);
       container.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener('touchcancel', onTouchEnd);
+      container.removeEventListener('touchmove', onTouchMove);
+      container.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('touchcancel', onTouchEnd);
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
@@ -968,10 +942,15 @@ export const Hero3DCanvas: React.FC = () => {
 
   return (
     <div
-      className="relative w-full aspect-square max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] mx-auto flex items-center justify-center bg-transparent select-none touch-pan-y cursor-grab active:cursor-grabbing"
+      className="relative w-full aspect-square max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] mx-auto flex items-center justify-center bg-transparent select-none cursor-grab active:cursor-grabbing"
+      style={{ touchAction: 'pan-y' }}
       title="Touch or drag to rotate the 3D globe"
     >
-      <div ref={mountRef} className="w-full h-full bg-transparent flex items-center justify-center touch-pan-y select-none" />
+      <div
+        ref={mountRef}
+        className="w-full h-full bg-transparent flex items-center justify-center select-none"
+        style={{ touchAction: 'pan-y' }}
+      />
       <HeroGlobeMessages />
     </div>
   );
