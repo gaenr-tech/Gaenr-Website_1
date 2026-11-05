@@ -57,17 +57,17 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
   objs.haloMat.opacity = isDark ? 0.22 : 0.12;
   objs.haloMat.needsUpdate = true;
 
-  // Latitude Coordinate Rings (Less Opacity)
+  // Latitude Coordinate Rings (Ultra-faint, whisper-soft)
   objs.latLineMats.forEach(({ mat, isEquator }) => {
-    mat.color.setHex(isDark ? 0x2563eb : 0x0256d0);
-    mat.opacity = isDark ? (isEquator ? 0.22 : 0.08) : (isEquator ? 0.15 : 0.06);
+    mat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
+    mat.opacity = isDark ? (isEquator ? 0.08 : 0.03) : (isEquator ? 0.05 : 0.02);
     mat.needsUpdate = true;
   });
 
-  // Longitude Coordinate Rings (Less Opacity)
+  // Longitude Coordinate Rings (Ultra-faint, whisper-soft)
   objs.lonLineMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x2563eb : 0x0256d0);
-    mat.opacity = isDark ? 0.12 : 0.06;
+    mat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
+    mat.opacity = isDark ? 0.04 : 0.02;
     mat.needsUpdate = true;
   });
 
@@ -88,8 +88,8 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
   });
 
   objs.pillarMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x3b82f6 : 0x0256d0);
-    mat.opacity = isDark ? 0.40 : 0.30;
+    mat.color.setHex(isDark ? 0x60a5fa : 0x3b82f6);
+    mat.opacity = isDark ? 0.30 : 0.20;
     mat.needsUpdate = true;
   });
 
@@ -101,20 +101,20 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
   // City Hub Radar Pulse Rings
   objs.ringMats.forEach((mat) => {
     mat.color.setHex(isDark ? 0x3b82f6 : 0x0256d0);
-    mat.opacity = isDark ? 0.45 : 0.35;
+    mat.opacity = isDark ? 0.40 : 0.28;
     mat.needsUpdate = true;
   });
 
-  // Persistent Base Arcs - Less Opacity & Blueish
+  // Persistent Base Arcs - Ultra-low opacity, whisper-soft ethereal guide lines
   objs.baseArcMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x2563eb : 0x0256d0);
-    mat.opacity = isDark ? 0.12 : 0.08;
+    mat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
+    mat.opacity = isDark ? 0.04 : 0.025;
     mat.needsUpdate = true;
   });
 
-  // Dynamic Stream Arc Materials - Soft, Translucent & Blueish
+  // Dynamic Stream Arc Materials - Soft, Translucent & Glowing
   objs.streamMats.forEach((mat) => {
-    mat.opacity = isDark ? 0.55 : 0.45;
+    mat.opacity = isDark ? 0.45 : 0.35;
     mat.needsUpdate = true;
   });
 
@@ -124,9 +124,9 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
     mat.needsUpdate = true;
   });
 
-  // Orbital Ring
-  objs.orbitRingMat.color.setHex(isDark ? 0x2563eb : 0x0256d0);
-  objs.orbitRingMat.opacity = isDark ? 0.16 : 0.10;
+  // Orbital Ring - Ultra-subtle
+  objs.orbitRingMat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
+  objs.orbitRingMat.opacity = isDark ? 0.06 : 0.03;
   objs.orbitRingMat.needsUpdate = true;
 }
 
@@ -336,9 +336,10 @@ export const Hero3DCanvas: React.FC = () => {
       }
       ringGeo.setFromPoints(points);
       const ringMat = new THREE.LineBasicMaterial({
-        color: 0x0256d0,
+        color: 0x60a5fa,
         transparent: true,
-        opacity: lat === 0 ? 0.15 : 0.06,
+        opacity: lat === 0 ? 0.05 : 0.02,
+        blending: THREE.AdditiveBlending,
       });
       latLineMats.push({ mat: ringMat, isEquator: lat === 0 });
       gridLinesGroup.add(new THREE.Line(ringGeo, ringMat));
@@ -357,9 +358,10 @@ export const Hero3DCanvas: React.FC = () => {
       }
       lonRingGeo.setFromPoints(points);
       const ringMat = new THREE.LineBasicMaterial({
-        color: 0x0256d0,
+        color: 0x60a5fa,
         transparent: true,
-        opacity: 0.06,
+        opacity: 0.02,
+        blending: THREE.AdditiveBlending,
       });
       lonLineMats.push(ringMat);
       const lineMesh = new THREE.Line(lonRingGeo, ringMat);
@@ -439,9 +441,10 @@ export const Hero3DCanvas: React.FC = () => {
       // Vertical 3D Laser Pillar Line - Soft Opacity & Blueish
       const pillarGeo = new THREE.BufferGeometry().setFromPoints([surfacePos, tipPos]);
       const pillarMat = new THREE.LineBasicMaterial({
-        color: isHQ ? 0x3b82f6 : 0x0256d0,
+        color: isHQ ? 0x3b82f6 : 0x60a5fa,
         transparent: true,
-        opacity: isHQ ? 0.50 : 0.30,
+        opacity: isHQ ? 0.35 : 0.20,
+        blending: THREE.AdditiveBlending,
       });
       pillarMats.push(pillarMat);
       beaconsGroup.add(new THREE.Line(pillarGeo, pillarMat));
@@ -583,11 +586,12 @@ export const Hero3DCanvas: React.FC = () => {
       const baseGeo = new THREE.BufferGeometry();
       baseGeo.setAttribute('position', posAttr);
 
-      // Base Track Line - Very low opacity (0.08) for delicate subtle elegance
+      // Base Track Line - Ultra-low opacity (0.025) with additive blending to eliminate dark lines
       const baseMat = new THREE.LineBasicMaterial({
-        color: 0x0256d0,
+        color: 0x60a5fa,
         transparent: true,
-        opacity: 0.08,
+        opacity: 0.025,
+        blending: THREE.AdditiveBlending,
       });
       baseArcMats.push(baseMat);
       arcsGroup.add(new THREE.Line(baseGeo, baseMat));
@@ -600,7 +604,7 @@ export const Hero3DCanvas: React.FC = () => {
       const streamMat = new THREE.LineBasicMaterial({
         vertexColors: true,
         transparent: true,
-        opacity: 0.45,
+        opacity: 0.35,
         blending: THREE.AdditiveBlending,
       });
       streamMats.push(streamMat);
@@ -639,10 +643,11 @@ export const Hero3DCanvas: React.FC = () => {
     // Subtle orbital ring framing the 3D planet (Faint Blueish)
     const orbitRingGeo = new THREE.RingGeometry(GLOBE_RADIUS * 1.2, GLOBE_RADIUS * 1.215, 64);
     const orbitRingMat = new THREE.MeshBasicMaterial({
-      color: 0x0256d0,
+      color: 0x60a5fa,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.10,
+      opacity: 0.03,
+      blending: THREE.AdditiveBlending,
     });
     const orbitRing = new THREE.Mesh(orbitRingGeo, orbitRingMat);
     orbitRing.rotation.x = Math.PI / 2.2;
