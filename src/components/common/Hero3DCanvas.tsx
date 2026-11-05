@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { HeroGlobeMessages } from './HeroGlobeMessages';
 import { useTheme } from '../../context/ThemeContext';
+import { EARTH_LAND_POINTS } from '../../data/earthLandPoints';
 
 interface CityHub {
   id: string;
@@ -18,9 +19,11 @@ interface ThemeableObjects {
   haloMat: THREE.MeshBasicMaterial;
   latLineMats: { mat: THREE.LineBasicMaterial; isEquator: boolean }[];
   lonLineMats: THREE.LineBasicMaterial[];
-  dotGeo: THREE.BufferGeometry;
-  dotMat: THREE.PointsMaterial;
-  hubMats: THREE.MeshBasicMaterial[];
+  landMat: THREE.PointsMaterial;
+  oceanMat: THREE.PointsMaterial;
+  pinMats: THREE.MeshBasicMaterial[];
+  pillarMats: THREE.LineBasicMaterial[];
+  tipMats: THREE.MeshBasicMaterial[];
   ringMats: THREE.MeshBasicMaterial[];
   baseArcMats: THREE.LineBasicMaterial[];
   streamMats: THREE.LineBasicMaterial[];
@@ -46,64 +49,51 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
   objs.coreMat.emissive.setHex(isDark ? 0x0284c7 : 0x023680);
   objs.coreMat.specular.setHex(isDark ? 0x38bdf8 : 0x60a5fa);
   objs.coreMat.shininess = isDark ? 65 : 45;
-  objs.coreMat.opacity = isDark ? 0.32 : 0.22;
+  objs.coreMat.opacity = isDark ? 0.35 : 0.22;
   objs.coreMat.needsUpdate = true;
 
-  // Atmospheric Corona Halo
+  // Atmospheric Corona Halo (Planetary Fresnel Rim)
   objs.haloMat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
-  objs.haloMat.opacity = isDark ? 0.35 : 0.16;
+  objs.haloMat.opacity = isDark ? 0.38 : 0.16;
   objs.haloMat.needsUpdate = true;
 
   // Latitude Rings
   objs.latLineMats.forEach(({ mat, isEquator }) => {
     mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
-    mat.opacity = isDark ? (isEquator ? 0.70 : 0.35) : (isEquator ? 0.35 : 0.15);
+    mat.opacity = isDark ? (isEquator ? 0.65 : 0.30) : (isEquator ? 0.30 : 0.12);
     mat.needsUpdate = true;
   });
 
   // Longitude Rings
   objs.lonLineMats.forEach((mat) => {
     mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
-    mat.opacity = isDark ? 0.32 : 0.14;
+    mat.opacity = isDark ? 0.28 : 0.12;
     mat.needsUpdate = true;
   });
 
-  // Continental Matrix Particles
-  objs.dotMat.size = isDark ? 0.046 : 0.034;
-  objs.dotMat.opacity = isDark ? 0.98 : 0.70;
-  objs.dotMat.needsUpdate = true;
+  // Continental Matrix Particles (Actual Earth Landmasses)
+  objs.landMat.size = isDark ? 0.046 : 0.036;
+  objs.landMat.opacity = isDark ? 0.98 : 0.85;
+  objs.landMat.needsUpdate = true;
 
-  const colorAttr = objs.dotGeo.getAttribute('color') as THREE.BufferAttribute;
-  if (colorAttr) {
-    const arr = colorAttr.array as Float32Array;
-    const count = arr.length / 3;
-    const cBlue = new THREE.Color(0x0256d0);
-    const cCyan = new THREE.Color(0x38bdf8);
-    const cNeon = new THREE.Color(0x00ffff);
-    const cWhite = new THREE.Color(0xffffff);
+  // Ocean Grid Dots
+  objs.oceanMat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.oceanMat.opacity = isDark ? 0.30 : 0.18;
+  objs.oceanMat.needsUpdate = true;
 
-    for (let i = 0; i < count; i++) {
-      const idx = i * 3;
-      if (isDark) {
-        const rand = Math.random();
-        const chosen = rand > 0.5 ? cNeon : rand > 0.15 ? cCyan : cWhite;
-        arr[idx] = chosen.r;
-        arr[idx + 1] = chosen.g;
-        arr[idx + 2] = chosen.b;
-      } else {
-        const isB = Math.random() > 0.4;
-        const chosen = isB ? cBlue : cCyan;
-        arr[idx] = chosen.r;
-        arr[idx + 1] = chosen.g;
-        arr[idx + 2] = chosen.b;
-      }
-    }
-    colorAttr.needsUpdate = true;
-  }
-
-  // City Hub Pins
-  objs.hubMats.forEach((mat) => {
+  // City Hub Pins & Beacons
+  objs.pinMats.forEach((mat) => {
     mat.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+    mat.needsUpdate = true;
+  });
+
+  objs.pillarMats.forEach((mat) => {
+    mat.color.setHex(isDark ? 0x00ffff : 0x38bdf8);
+    mat.needsUpdate = true;
+  });
+
+  objs.tipMats.forEach((mat) => {
+    mat.color.setHex(isDark ? 0xffffff : 0x38bdf8);
     mat.needsUpdate = true;
   });
 
@@ -139,7 +129,6 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
 }
 
 // 18 Harmoniously distributed global innovation hubs spanning all hemispheres & longitudes
-// Mathematically distributed to prevent clustering while maintaining genuine global representation
 const HUBS: CityHub[] = [
   // South Asia (Gaenr HQ Talent Hub)
   { id: 'dhaka', name: 'Dhaka', lat: 23.8103, lon: 90.4125 },
@@ -272,10 +261,11 @@ function getRouteProgress(t: number, start: number, duration: number, cycle: num
 }
 
 /**
- * Boundaryless Transparent 3D Global Connection Visual.
- * - 100% transparent PNG feel: no borders, no boxes, no edge cutoffs.
- * - Decentralized full-mesh talent network connecting hubs across all continents.
- * - Generous camera frustum padding to guarantee no clipping on top, bottom, or sides.
+ * Revolutionary 3D Connected Cyber-Planet.
+ * - Accurate Real-World Earth Continents generated from high-density geographic coordinates.
+ * - Vertical 3D Laser Beacons projecting into space from major innovation hubs.
+ * - Fiber-Optic Great-Circle Arcs with synchronized comet particle transmissions.
+ * - Interactive Mouse Gyro Tilt & Touch Drag-to-Spin for an Awwwards-caliber experience.
  */
 export const Hero3DCanvas: React.FC = () => {
   const { isDark } = useTheme();
@@ -283,6 +273,7 @@ export const Hero3DCanvas: React.FC = () => {
   useEffect(() => {
     isDarkRef.current = isDark;
   }, [isDark]);
+
   const mountRef = useRef<HTMLDivElement>(null);
   const themeObjectsRef = useRef<ThemeableObjects | null>(null);
 
@@ -299,13 +290,12 @@ export const Hero3DCanvas: React.FC = () => {
     const width = container.clientWidth || 460;
     const height = container.clientHeight || 460;
 
-    // Scene & Camera centered with ample field of view so nothing ever clips
+    // Scene & Perspective Camera with generous view frustum
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    // Positioned strictly along center (y=0) with enough z-distance
     camera.position.set(0, 0, 5.6);
 
-    // Transparent WebGL Renderer
+    // Transparent WebGL Renderer with High-DPI support
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -313,10 +303,10 @@ export const Hero3DCanvas: React.FC = () => {
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0); // 100% transparent background
+    renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
-    // Lighting - angled key & rim directional lights producing prominent 3D spherical shading
+    // Lighting: Angled Key & Rim directional lights creating rich 3D planetary shading
     const ambientLight = new THREE.AmbientLight(0xffffff, 2.2);
     scene.add(ambientLight);
 
@@ -334,10 +324,9 @@ export const Hero3DCanvas: React.FC = () => {
     globeGroup.rotation.x = 0.22;
     globeGroup.rotation.y = 0.6;
 
-    // Sized comfortably to fit inside camera frustum with >20% boundary clearance
     const GLOBE_RADIUS = 1.32;
 
-    // Inner Translucent Core Sphere - gives rich 3D sphere volume, specular gloss & natural hemisphere occlusion
+    // Inner Translucent Core Sphere: gives rich 3D volume, specular gloss & depth occlusion
     const coreGeo = new THREE.SphereGeometry(GLOBE_RADIUS * 0.985, 48, 48);
     const coreMat = new THREE.MeshPhongMaterial({
       color: 0x0256d0,
@@ -350,7 +339,7 @@ export const Hero3DCanvas: React.FC = () => {
     const coreMesh = new THREE.Mesh(coreGeo, coreMat);
     globeGroup.add(coreMesh);
 
-    // Soft Atmospheric Halo (Fresnel planetary edge glow)
+    // Atmospheric Corona Halo (Planetary Fresnel Rim Glow)
     const haloGeo = new THREE.SphereGeometry(GLOBE_RADIUS * 1.03, 32, 32);
     const haloMat = new THREE.MeshBasicMaterial({
       color: 0x0256d0,
@@ -410,62 +399,105 @@ export const Hero3DCanvas: React.FC = () => {
     }
     globeGroup.add(gridLinesGroup);
 
-    // Continental Matrix Particles
-    const pointCount = 1000;
-    const dotPositions: number[] = [];
-    const dotColors: number[] = [];
+    // 1. REAL WORLD EARTH CONTINENTS (High-Density Vector Landmass Point Cloud)
+    const landPositions: number[] = [];
+    const landColors: number[] = [];
     const colorBlue = new THREE.Color(0x0256d0);
     const colorCyan = new THREE.Color(0x38bdf8);
 
-    for (let i = 0; i < pointCount; i++) {
-      const phi = Math.acos(1 - (2 * (i + 0.5)) / pointCount);
-      const theta = Math.PI * (1 + 5 ** 0.5) * i;
+    EARTH_LAND_POINTS.forEach(([lat, lon], idx) => {
+      const pos = latLonToVector3(lat, lon, GLOBE_RADIUS * 1.002);
+      landPositions.push(pos.x, pos.y, pos.z);
+      const c = idx % 3 === 0 ? colorCyan : colorBlue;
+      landColors.push(c.r, c.g, c.b);
+    });
 
-      const x = GLOBE_RADIUS * Math.sin(phi) * Math.cos(theta);
-      const y = GLOBE_RADIUS * Math.cos(phi);
-      const z = GLOBE_RADIUS * Math.sin(phi) * Math.sin(theta);
+    const landGeo = new THREE.BufferGeometry();
+    landGeo.setAttribute('position', new THREE.Float32BufferAttribute(landPositions, 3));
+    landGeo.setAttribute('color', new THREE.Float32BufferAttribute(landColors, 3));
 
-      dotPositions.push(x, y, z);
-      const c = Math.random() > 0.4 ? colorBlue : colorCyan;
-      dotColors.push(c.r, c.g, c.b);
-    }
-
-    const dotGeo = new THREE.BufferGeometry();
-    dotGeo.setAttribute('position', new THREE.Float32BufferAttribute(dotPositions, 3));
-    dotGeo.setAttribute('color', new THREE.Float32BufferAttribute(dotColors, 3));
-
-    const dotMat = new THREE.PointsMaterial({
-      size: 0.034,
+    const landMat = new THREE.PointsMaterial({
+      size: 0.036,
       vertexColors: true,
       transparent: true,
-      opacity: 0.70,
+      opacity: 0.85,
     });
-    const pointsMesh = new THREE.Points(dotGeo, dotMat);
-    globeGroup.add(pointsMesh);
+    const landMesh = new THREE.Points(landGeo, landMat);
+    globeGroup.add(landMesh);
 
-    // Global Hub Pins with Pulse Rings
-    const hubMap = new Map<string, THREE.Vector3>();
-    const hubsGroup = new THREE.Group();
-    const pulseRings: { mesh: THREE.Mesh; hubId: string; index: number; isHQ: boolean }[] = [];
-    const hubMats: THREE.MeshBasicMaterial[] = [];
+    // 2. Faint Ethereal Ocean Coordinate Grid (subtle depth reference)
+    const oceanPositions: number[] = [];
+    const oceanCount = 350;
+    for (let i = 0; i < oceanCount; i++) {
+      const phi = Math.acos(1 - (2 * (i + 0.5)) / oceanCount);
+      const theta = Math.PI * (1 + 5 ** 0.5) * i;
+      oceanPositions.push(
+        GLOBE_RADIUS * Math.sin(phi) * Math.cos(theta),
+        GLOBE_RADIUS * Math.cos(phi),
+        GLOBE_RADIUS * Math.sin(phi) * Math.sin(theta)
+      );
+    }
+    const oceanGeo = new THREE.BufferGeometry();
+    oceanGeo.setAttribute('position', new THREE.Float32BufferAttribute(oceanPositions, 3));
+    const oceanMat = new THREE.PointsMaterial({
+      color: 0x0256d0,
+      size: 0.022,
+      transparent: true,
+      opacity: 0.18,
+    });
+    globeGroup.add(new THREE.Points(oceanGeo, oceanMat));
+
+    // 3. VERTICAL 3D HOLOGRAPHIC LASER BEACONS (Rising from Major World Tech Hubs)
+    const beaconsGroup = new THREE.Group();
+    const beaconRings: { mesh: THREE.Mesh; hubId: string; index: number; isHQ: boolean }[] = [];
+    const pinMats: THREE.MeshBasicMaterial[] = [];
+    const pillarMats: THREE.LineBasicMaterial[] = [];
+    const tipMats: THREE.MeshBasicMaterial[] = [];
     const ringMats: THREE.MeshBasicMaterial[] = [];
+    const hubMap = new Map<string, THREE.Vector3>();
+    const beaconTipMap = new Map<string, THREE.Vector3>();
 
     HUBS.forEach((hub, hubIdx) => {
-      const pos = latLonToVector3(hub.lat, hub.lon, GLOBE_RADIUS);
-      hubMap.set(hub.id, pos);
       const isHQ = hub.id === 'dhaka';
+      const surfacePos = latLonToVector3(hub.lat, hub.lon, GLOBE_RADIUS);
+      hubMap.set(hub.id, surfacePos);
 
-      // Pin Marker Core
-      const hubGeo = new THREE.SphereGeometry(isHQ ? 0.046 : 0.038, 16, 16);
-      const hubMat = new THREE.MeshBasicMaterial({
-        color: 0x0256d0,
+      // Height of 3D beacon pillar (Dhaka has the tallest flagship beacon)
+      const beaconHeight = isHQ ? 0.32 : 0.20;
+      const tipPos = latLonToVector3(hub.lat, hub.lon, GLOBE_RADIUS + beaconHeight);
+      beaconTipMap.set(hub.id, tipPos);
+
+      // Vertical 3D Laser Pillar Line
+      const pillarGeo = new THREE.BufferGeometry().setFromPoints([surfacePos, tipPos]);
+      const pillarMat = new THREE.LineBasicMaterial({
+        color: isHQ ? 0x00ffff : 0x38bdf8,
+        transparent: true,
+        opacity: isHQ ? 0.95 : 0.75,
       });
-      hubMats.push(hubMat);
-      const hubMesh = new THREE.Mesh(hubGeo, hubMat);
-      hubMesh.position.copy(pos);
-      hubsGroup.add(hubMesh);
+      pillarMats.push(pillarMat);
+      beaconsGroup.add(new THREE.Line(pillarGeo, pillarMat));
 
-      // Expanding pulse wave ring on each hub
+      // Surface Marker Pin Core
+      const pinGeo = new THREE.SphereGeometry(isHQ ? 0.046 : 0.034, 16, 16);
+      const pinMat = new THREE.MeshBasicMaterial({
+        color: isHQ ? 0x00ffff : 0x0256d0,
+      });
+      pinMats.push(pinMat);
+      const pin = new THREE.Mesh(pinGeo, pinMat);
+      pin.position.copy(surfacePos);
+      beaconsGroup.add(pin);
+
+      // Glowing Star at the Tip of the Beacon
+      const tipGeo = new THREE.SphereGeometry(isHQ ? 0.038 : 0.026, 12, 12);
+      const tipMat = new THREE.MeshBasicMaterial({
+        color: isHQ ? 0xffffff : 0x38bdf8,
+      });
+      tipMats.push(tipMat);
+      const tip = new THREE.Mesh(tipGeo, tipMat);
+      tip.position.copy(tipPos);
+      beaconsGroup.add(tip);
+
+      // Surface Radar Pulse Ring
       const ringGeo = new THREE.RingGeometry(0.016, 0.040, 24);
       const ringMat = new THREE.MeshBasicMaterial({
         color: isHQ ? 0x00ffff : 0x38bdf8,
@@ -475,11 +507,11 @@ export const Hero3DCanvas: React.FC = () => {
       });
       ringMats.push(ringMat);
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-      ringMesh.position.copy(pos);
-      ringMesh.lookAt(pos.clone().multiplyScalar(2));
-      hubsGroup.add(ringMesh);
+      ringMesh.position.copy(surfacePos);
+      ringMesh.lookAt(surfacePos.clone().multiplyScalar(2));
+      beaconsGroup.add(ringMesh);
 
-      pulseRings.push({
+      beaconRings.push({
         mesh: ringMesh,
         hubId: hub.id,
         index: hubIdx,
@@ -488,7 +520,7 @@ export const Hero3DCanvas: React.FC = () => {
 
       // Special secondary concentric beacon ring for Gaenr HQ (Dhaka)
       if (isHQ) {
-        const hqRingGeo = new THREE.RingGeometry(0.044, 0.066, 24);
+        const hqRingGeo = new THREE.RingGeometry(0.044, 0.068, 24);
         const hqRingMat = new THREE.MeshBasicMaterial({
           color: 0x38bdf8,
           side: THREE.DoubleSide,
@@ -497,11 +529,11 @@ export const Hero3DCanvas: React.FC = () => {
         });
         ringMats.push(hqRingMat);
         const hqRingMesh = new THREE.Mesh(hqRingGeo, hqRingMat);
-        hqRingMesh.position.copy(pos);
-        hqRingMesh.lookAt(pos.clone().multiplyScalar(2));
-        hubsGroup.add(hqRingMesh);
+        hqRingMesh.position.copy(surfacePos);
+        hqRingMesh.lookAt(surfacePos.clone().multiplyScalar(2));
+        beaconsGroup.add(hqRingMesh);
 
-        pulseRings.push({
+        beaconRings.push({
           mesh: hqRingMesh,
           hubId: 'dhaka',
           index: hubIdx + 0.5,
@@ -509,17 +541,14 @@ export const Hero3DCanvas: React.FC = () => {
         });
       }
     });
-    globeGroup.add(hubsGroup);
+    globeGroup.add(beaconsGroup);
 
-    // Geodesic Great-Circle Connection Arcs with Timed Transmission Beams
+    // 4. FIBER-OPTIC 3D ARCS CONNECTING THE WORLD (Launching between Beacons)
     const arcsGroup = new THREE.Group();
 
     interface ActiveStreamArc {
       route: TimedRoute;
-      norm1: THREE.Vector3;
-      axis: THREE.Vector3;
-      angle: number;
-      maxLift: number;
+      curvePoints: THREE.Vector3[];
       colorAttr: THREE.BufferAttribute;
       colorArray: Float32Array;
       pulseMesh: THREE.Mesh;
@@ -534,8 +563,8 @@ export const Hero3DCanvas: React.FC = () => {
     const pulseMats: { mat: THREE.MeshBasicMaterial; isEven: boolean }[] = [];
 
     TIMED_ROUTES.forEach((route, idx) => {
-      const fromPos = hubMap.get(route.from);
-      const toPos = hubMap.get(route.to);
+      const fromPos = beaconTipMap.get(route.from) || hubMap.get(route.from);
+      const toPos = beaconTipMap.get(route.to) || hubMap.get(route.to);
       if (!fromPos || !toPos) return;
 
       const norm1 = fromPos.clone().normalize();
@@ -549,18 +578,22 @@ export const Hero3DCanvas: React.FC = () => {
         axis.normalize();
       }
 
-      // Parabolic altitude lift proportional to distance, capped to preserve viewport boundary
+      const startR = fromPos.length();
+      const endR = toPos.length();
       const maxLift = Math.min(Math.max(angle * 0.18, 0.10), 0.28) * GLOBE_RADIUS;
 
-      // Sample 48 points along the great circle with harmonic elevation
       const segments = 48;
       const curvePoints: THREE.Vector3[] = [];
       for (let i = 0; i <= segments; i++) {
         const t = i / segments;
-        curvePoints.push(getGreatCirclePoint(norm1, axis, angle, GLOBE_RADIUS, maxLift, t));
+        const currentR = THREE.MathUtils.lerp(startR, endR, t);
+        const pt = norm1.clone().applyAxisAngle(axis, angle * t);
+        const altitude = Math.sin(t * Math.PI) * maxLift;
+        pt.multiplyScalar(currentR + altitude);
+        curvePoints.push(pt);
       }
 
-      // 1. Persistent Faint Base Guide Track (Shows Global Constellation Grid)
+      // Base Track Line (Faint subtle structural path)
       const baseGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
       const baseMat = new THREE.LineBasicMaterial({
         color: 0x0256d0,
@@ -568,10 +601,9 @@ export const Hero3DCanvas: React.FC = () => {
         opacity: 0.16,
       });
       baseArcMats.push(baseMat);
-      const baseLine = new THREE.Line(baseGeo, baseMat);
-      arcsGroup.add(baseLine);
+      arcsGroup.add(new THREE.Line(baseGeo, baseMat));
 
-      // 2. Active Luminous Comet Stream Line (Illuminates During Scheduled Transmissions)
+      // Dynamic Animated Comet Stream Line
       const streamGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
       const colorArray = new Float32Array((segments + 1) * 3);
       const colorAttr = new THREE.BufferAttribute(colorArray, 3);
@@ -583,10 +615,9 @@ export const Hero3DCanvas: React.FC = () => {
         opacity: 0.95,
       });
       streamMats.push(streamMat);
-      const streamLine = new THREE.Line(streamGeo, streamMat);
-      arcsGroup.add(streamLine);
+      arcsGroup.add(new THREE.Line(streamGeo, streamMat));
 
-      // 3. Glowing Photon Bead Travelling at the Head of the Transmission
+      // Glowing Photon Bead (Data Packet)
       const pulseGeo = new THREE.SphereGeometry(0.036, 12, 12);
       const pulseMat = new THREE.MeshBasicMaterial({
         color: idx % 2 === 0 ? 0x0256d0 : 0x0084ff,
@@ -598,10 +629,7 @@ export const Hero3DCanvas: React.FC = () => {
 
       activeArcs.push({
         route,
-        norm1,
-        axis,
-        angle,
-        maxLift,
+        curvePoints,
         colorAttr,
         colorArray,
         pulseMesh,
@@ -612,7 +640,7 @@ export const Hero3DCanvas: React.FC = () => {
     });
     globeGroup.add(arcsGroup);
 
-    // Subtle orbital ring safely contained within viewport
+    // Subtle orbital ring framing the 3D planet
     const orbitRingGeo = new THREE.RingGeometry(GLOBE_RADIUS * 1.2, GLOBE_RADIUS * 1.215, 64);
     const orbitRingMat = new THREE.MeshBasicMaterial({
       color: 0x0256d0,
@@ -634,9 +662,11 @@ export const Hero3DCanvas: React.FC = () => {
       haloMat,
       latLineMats,
       lonLineMats,
-      dotGeo,
-      dotMat,
-      hubMats,
+      landMat,
+      oceanMat,
+      pinMats,
+      pillarMats,
+      tipMats,
       ringMats,
       baseArcMats,
       streamMats,
@@ -645,6 +675,54 @@ export const Hero3DCanvas: React.FC = () => {
     };
     themeObjectsRef.current = themeObjs;
     applyThemeToObjects(themeObjs, isDark);
+
+    // 5. INTERACTIVE 3D GYRO TILT & TOUCH / DRAG-TO-SPIN
+    let isDragging = false;
+    let prevMouseX = 0;
+    let prevMouseY = 0;
+    let mouseVelocityX = 0;
+    let mouseVelocityY = 0;
+    let tiltX = 0;
+    let tiltY = 0;
+    let targetTiltX = 0;
+    let targetTiltY = 0;
+
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      prevMouseX = e.clientX;
+      prevMouseY = e.clientY;
+      container.setPointerCapture(e.pointerId);
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      const rect = container.getBoundingClientRect();
+      const normX = (e.clientX - rect.left) / rect.width - 0.5;
+      const normY = (e.clientY - rect.top) / rect.height - 0.5;
+      targetTiltX = normY * 0.45;
+      targetTiltY = normX * 0.65;
+
+      if (isDragging) {
+        const deltaX = e.clientX - prevMouseX;
+        const deltaY = e.clientY - prevMouseY;
+        mouseVelocityX = deltaX * 0.005;
+        mouseVelocityY = deltaY * 0.005;
+        globeGroup.rotation.y += mouseVelocityX;
+        globeGroup.rotation.x += mouseVelocityY;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+      }
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      isDragging = false;
+      try {
+        container.releasePointerCapture(e.pointerId);
+      } catch {}
+    };
+
+    container.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
 
     // Animation Loop
     let animationFrameId: number;
@@ -655,8 +733,18 @@ export const Hero3DCanvas: React.FC = () => {
       const now = performance.now() * 0.001;
       const isDarkNow = isDarkRef.current;
 
-      // Smooth ambient rotation
-      globeGroup.rotation.y += 0.0016;
+      // Inertial damping & ambient rotation
+      if (!isDragging) {
+        mouseVelocityX *= 0.94;
+        mouseVelocityY *= 0.94;
+        globeGroup.rotation.y += 0.0016 + mouseVelocityX;
+        globeGroup.rotation.x += mouseVelocityY;
+
+        // Smooth gyro tilt following cursor position
+        tiltX = THREE.MathUtils.lerp(tiltX, targetTiltX, 0.05);
+        tiltY = THREE.MathUtils.lerp(tiltY, targetTiltY, 0.05);
+        globeGroup.rotation.x = THREE.MathUtils.lerp(globeGroup.rotation.x, 0.22 + tiltX, 0.03);
+      }
 
       // Arrival flare tracker for destination nodes
       const hubFlares = new Map<string, number>();
@@ -679,12 +767,20 @@ export const Hero3DCanvas: React.FC = () => {
         arc.pulseMesh.visible = true;
 
         // Position photon bead at head of transmission
-        const headPt = getGreatCirclePoint(arc.norm1, arc.axis, arc.angle, GLOBE_RADIUS, arc.maxLift, progress);
+        const sampleIdx = Math.min(
+          Math.floor(progress * arc.segments),
+          arc.segments - 1
+        );
+        const subT = progress * arc.segments - sampleIdx;
+        const ptA = arc.curvePoints[sampleIdx];
+        const ptB = arc.curvePoints[sampleIdx + 1] || ptA;
+        const headPt = ptA.clone().lerp(ptB, subT);
+
         arc.pulseMesh.position.copy(headPt);
         const pScale = 0.9 + Math.sin(progress * Math.PI) * 0.35;
         arc.pulseMesh.scale.set(pScale, pScale, pScale);
 
-        // Arrival flare on destination hub as beam nears target
+        // Arrival flare on destination beacon as beam nears target
         if (progress >= 0.86) {
           const flareIntensity = Math.sin(((progress - 0.86) / 0.14) * Math.PI);
           const prevFlare = hubFlares.get(arc.route.to) || 0;
@@ -721,7 +817,7 @@ export const Hero3DCanvas: React.FC = () => {
       });
 
       // Smooth, tranquil ripple wave expansion on hub rings with destination arrival flares
-      pulseRings.forEach((pr) => {
+      beaconRings.forEach((pr) => {
         const phase = ((now * 0.55 + pr.index * 0.14) % 1.0);
         const flare = hubFlares.get(pr.hubId) || 0;
         const s = 1.0 + phase * 1.5 + flare * 0.5;
@@ -752,6 +848,9 @@ export const Hero3DCanvas: React.FC = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      container.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
@@ -761,8 +860,11 @@ export const Hero3DCanvas: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative w-full aspect-square max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] mx-auto flex items-center justify-center bg-transparent select-none">
-      <div ref={mountRef} className="w-full h-full bg-transparent flex items-center justify-center pointer-events-none" />
+    <div
+      className="relative w-full aspect-square max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] mx-auto flex items-center justify-center bg-transparent select-none cursor-grab active:cursor-grabbing"
+      title="Drag to rotate the 3D globe"
+    >
+      <div ref={mountRef} className="w-full h-full bg-transparent flex items-center justify-center touch-none" />
       <HeroGlobeMessages />
     </div>
   );
