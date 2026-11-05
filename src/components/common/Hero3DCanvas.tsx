@@ -89,7 +89,7 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
 
   objs.pillarMats.forEach((mat) => {
     mat.color.setHex(isDark ? 0x60a5fa : 0x3b82f6);
-    mat.opacity = isDark ? 0.30 : 0.20;
+    mat.opacity = isDark ? 0.20 : 0.12;
     mat.needsUpdate = true;
   });
 
@@ -98,27 +98,27 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
     mat.needsUpdate = true;
   });
 
-  // City Hub Radar Pulse Rings
+  // City Hub Radar Pulse Rings - Soft & subtle
   objs.ringMats.forEach((mat) => {
     mat.color.setHex(isDark ? 0x3b82f6 : 0x0256d0);
-    mat.opacity = isDark ? 0.40 : 0.28;
+    mat.opacity = isDark ? 0.25 : 0.18;
     mat.needsUpdate = true;
   });
 
-  // Persistent Base Arcs - Ultra-low opacity, whisper-soft ethereal guide lines
+  // Persistent Base Arcs - Even less opacity (whisper-faint 0.012 / 0.020)
   objs.baseArcMats.forEach((mat) => {
     mat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
-    mat.opacity = isDark ? 0.04 : 0.025;
+    mat.opacity = isDark ? 0.020 : 0.012;
     mat.needsUpdate = true;
   });
 
-  // Dynamic Stream Arc Materials - Soft, Translucent & Glowing
+  // Dynamic Stream Arc Materials - Even less opacity (soft, subtle, luminous 0.20 / 0.28)
   objs.streamMats.forEach((mat) => {
-    mat.opacity = isDark ? 0.45 : 0.35;
+    mat.opacity = isDark ? 0.28 : 0.20;
     mat.needsUpdate = true;
   });
 
-  // Traveling Light Pulses (Beads) - Blueish
+  // Traveling Light Pulses (Beads) - Blueish & soft
   objs.pulseMats.forEach(({ mat, isEven }) => {
     mat.color.setHex(isDark ? (isEven ? 0x3b82f6 : 0x60a5fa) : (isEven ? 0x0256d0 : 0x2563eb));
     mat.needsUpdate = true;
@@ -126,7 +126,7 @@ function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
 
   // Orbital Ring - Ultra-subtle
   objs.orbitRingMat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
-  objs.orbitRingMat.opacity = isDark ? 0.06 : 0.03;
+  objs.orbitRingMat.opacity = isDark ? 0.04 : 0.02;
   objs.orbitRingMat.needsUpdate = true;
 }
 
@@ -586,17 +586,17 @@ export const Hero3DCanvas: React.FC = () => {
       const baseGeo = new THREE.BufferGeometry();
       baseGeo.setAttribute('position', posAttr);
 
-      // Base Track Line - Ultra-low opacity (0.025) with additive blending to eliminate dark lines
+      // Base Track Line - Whisper-soft opacity (0.012) with additive blending
       const baseMat = new THREE.LineBasicMaterial({
         color: 0x60a5fa,
         transparent: true,
-        opacity: 0.025,
+        opacity: 0.012,
         blending: THREE.AdditiveBlending,
       });
       baseArcMats.push(baseMat);
       arcsGroup.add(new THREE.Line(baseGeo, baseMat));
 
-      // Dynamic Animated Stream Line - Additive Blending for ethereal blue glow
+      // Dynamic Animated Stream Line - Soft, Translucent & Glowing (0.20 opacity)
       const streamGeo = new THREE.BufferGeometry();
       streamGeo.setAttribute('position', posAttr);
       streamGeo.setAttribute('color', colorAttr);
@@ -604,18 +604,18 @@ export const Hero3DCanvas: React.FC = () => {
       const streamMat = new THREE.LineBasicMaterial({
         vertexColors: true,
         transparent: true,
-        opacity: 0.35,
+        opacity: 0.20,
         blending: THREE.AdditiveBlending,
       });
       streamMats.push(streamMat);
       arcsGroup.add(new THREE.Line(streamGeo, streamMat));
 
       // Smooth Glowing Photon Bead (Moving Data Packet)
-      const pulseGeo = new THREE.SphereGeometry(0.024, 12, 12);
+      const pulseGeo = new THREE.SphereGeometry(0.018, 12, 12);
       const pulseMat = new THREE.MeshBasicMaterial({
         color: idx % 2 === 0 ? 0x0256d0 : 0x2563eb,
         transparent: true,
-        opacity: 0.65,
+        opacity: 0.40,
         blending: THREE.AdditiveBlending,
       });
       pulseMats.push({ mat: pulseMat, isEven: idx % 2 === 0 });
@@ -635,7 +635,7 @@ export const Hero3DCanvas: React.FC = () => {
         lerpRadii,
         sinAltitudes,
         unitPoints,
-        beamLength: 0.32,
+        beamLength: 0.24,
       });
     });
     globeGroup.add(arcsGroup);
@@ -677,53 +677,109 @@ export const Hero3DCanvas: React.FC = () => {
     themeObjectsRef.current = themeObjs;
     applyThemeToObjects(themeObjs, isDark);
 
-    // 5. INTERACTIVE 3D GYRO TILT & TOUCH / DRAG-TO-SPIN
+    // 5. INTERACTIVE 3D FLEXIBLE ROTATION & TOUCH GESTURES
     let isDragging = false;
-    let prevMouseX = 0;
-    let prevMouseY = 0;
-    let mouseVelocityX = 0;
-    let mouseVelocityY = 0;
-    let tiltX = 0;
-    let tiltY = 0;
+    let prevPointerX = 0;
+    let prevPointerY = 0;
+    let velocityX = 0;
+    let velocityY = 0;
     let targetTiltX = 0;
     let targetTiltY = 0;
 
-    const onPointerDown = (e: PointerEvent) => {
+    const startDrag = (clientX: number, clientY: number) => {
       isDragging = true;
-      prevMouseX = e.clientX;
-      prevMouseY = e.clientY;
-      container.setPointerCapture(e.pointerId);
+      prevPointerX = clientX;
+      prevPointerY = clientY;
+      velocityX = 0;
+      velocityY = 0;
     };
 
-    const onPointerMove = (e: PointerEvent) => {
+    const moveDrag = (clientX: number, clientY: number) => {
       const rect = container.getBoundingClientRect();
-      const normX = (e.clientX - rect.left) / rect.width - 0.5;
-      const normY = (e.clientY - rect.top) / rect.height - 0.5;
-      targetTiltX = normY * 0.45;
-      targetTiltY = normX * 0.65;
+      const normX = (clientX - rect.left) / rect.width - 0.5;
+      const normY = (clientY - rect.top) / rect.height - 0.5;
+      targetTiltX = normY * 0.35;
+      targetTiltY = normX * 0.45;
 
       if (isDragging) {
-        const deltaX = e.clientX - prevMouseX;
-        const deltaY = e.clientY - prevMouseY;
-        mouseVelocityX = deltaX * 0.005;
-        mouseVelocityY = deltaY * 0.005;
-        globeGroup.rotation.y += mouseVelocityX;
-        globeGroup.rotation.x += mouseVelocityY;
-        prevMouseX = e.clientX;
-        prevMouseY = e.clientY;
+        const deltaX = clientX - prevPointerX;
+        const deltaY = clientY - prevPointerY;
+
+        // Agile, flexible touch sensitivity for effortless rotation
+        const sensitivity = 0.0085;
+        velocityX = deltaX * sensitivity;
+        velocityY = deltaY * sensitivity;
+
+        globeGroup.rotation.y += velocityX;
+        globeGroup.rotation.x = Math.max(-1.15, Math.min(1.15, globeGroup.rotation.x + velocityY));
+
+        prevPointerX = clientX;
+        prevPointerY = clientY;
       }
     };
 
-    const onPointerUp = (e: PointerEvent) => {
+    const endDrag = () => {
       isDragging = false;
+    };
+
+    // Pointer Events (Desktop Mouse & Pen)
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      startDrag(e.clientX, e.clientY);
+      try {
+        container.setPointerCapture(e.pointerId);
+      } catch {}
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      moveDrag(e.clientX, e.clientY);
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      endDrag();
       try {
         container.releasePointerCapture(e.pointerId);
       } catch {}
     };
 
+    const onPointerCancel = () => {
+      endDrag();
+    };
+
+    // Dedicated Native Touch Events for mobile touch rotation
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const t = e.touches[0];
+        startDrag(t.clientX, t.clientY);
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const t = e.touches[0];
+        moveDrag(t.clientX, t.clientY);
+      }
+      if (e.cancelable) {
+        e.preventDefault(); // Prevent mobile scroll conflict while interacting with globe
+      }
+    };
+
+    const onTouchEnd = () => {
+      endDrag();
+    };
+
+    renderer.domElement.style.touchAction = 'none';
+    container.style.touchAction = 'none';
+
     container.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerCancel);
+
+    container.addEventListener('touchstart', onTouchStart, { passive: false });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('touchcancel', onTouchEnd);
 
     // Animation Loop
     let animationFrameId: number;
@@ -734,25 +790,18 @@ export const Hero3DCanvas: React.FC = () => {
       const now = performance.now() * 0.001;
       const isDarkNow = isDarkRef.current;
 
-      // Inertial damping & ambient rotation
+      // Inertial damping & ambient rotation with smooth momentum flick
       if (!isDragging) {
-        mouseVelocityX *= 0.94;
-        mouseVelocityY *= 0.94;
-        globeGroup.rotation.y += 0.0016 + mouseVelocityX;
-        globeGroup.rotation.x += mouseVelocityY;
-
-        // Smooth gyro tilt following cursor position
-        tiltX = THREE.MathUtils.lerp(tiltX, targetTiltX, 0.05);
-        tiltY = THREE.MathUtils.lerp(tiltY, targetTiltY, 0.05);
-        globeGroup.rotation.x = THREE.MathUtils.lerp(globeGroup.rotation.x, 0.22 + tiltX, 0.03);
+        velocityX *= 0.94;
+        velocityY *= 0.94;
+        globeGroup.rotation.y += 0.0014 + velocityX;
+        globeGroup.rotation.x = Math.max(-1.15, Math.min(1.15, globeGroup.rotation.x + velocityY));
       }
 
       // Arrival flare tracker for destination nodes
       const hubFlares = new Map<string, number>();
 
       // Signature Blueish Stream Colors
-      // Light mode: Vibrant Sapphire & Deep Gaenr Blue
-      // Dark mode: Electric Blue & Brand Royal Blue
       const headR = isDarkNow ? 0.231 : 0.145;
       const headG = isDarkNow ? 0.510 : 0.388;
       const headB = isDarkNow ? 0.965 : 0.922;
@@ -761,7 +810,7 @@ export const Hero3DCanvas: React.FC = () => {
       const tailG = isDarkNow ? 0.306 : 0.337;
       const tailB = isDarkNow ? 0.847 : 0.816;
 
-      // CONTINUOUS, FLUID MOVING CONNECTIONS (Harmonic 3D Breathing & Moving Beams)
+      // CONTINUOUS, FLUID MOVING CONNECTIONS (Harmonic 3D Breathing & Moving Beams - Less Opacity)
       activeArcs.forEach((arc, arcIdx) => {
         // Continuous looping progress [0, 1] for every route
         const progress = ((now / arc.route.duration + arc.route.phaseOffset) % 1.0);
@@ -778,7 +827,7 @@ export const Hero3DCanvas: React.FC = () => {
         }
         arc.posAttr.needsUpdate = true;
 
-        // 2. MOVING PHOTON BEAD (Traveling continuously along the dynamically undulating arc)
+        // 2. MOVING PHOTON BEAD (Soft, translucent blueish data packet)
         const sampleIdx = Math.min(Math.floor(progress * arc.segments), arc.segments - 1);
         const subT = progress * arc.segments - sampleIdx;
         const rA = arc.lerpRadii[sampleIdx] + arc.sinAltitudes[sampleIdx] * dynamicLift;
@@ -789,9 +838,9 @@ export const Hero3DCanvas: React.FC = () => {
 
         arc.pulseMesh.position.copy(beadPos);
         const envelope = Math.sin(progress * Math.PI);
-        const pScale = 0.75 + envelope * 0.45;
+        const pScale = 0.55 + envelope * 0.30;
         arc.pulseMesh.scale.set(pScale, pScale, pScale);
-        arc.pulseMat.opacity = envelope * (isDarkNow ? 0.75 : 0.60);
+        arc.pulseMat.opacity = envelope * (isDarkNow ? 0.35 : 0.24);
 
         // Arrival flare on destination beacon as beam nears target
         if (progress >= 0.82) {
@@ -800,7 +849,7 @@ export const Hero3DCanvas: React.FC = () => {
           hubFlares.set(arc.route.to, Math.max(prevFlare, flareIntensity));
         }
 
-        // 3. CONTINUOUS FLOWING COMET STREAM (Soft Opacity & Signature Blueish Hue)
+        // 3. CONTINUOUS FLOWING COMET STREAM (Ultra-soft Opacity & Signature Blueish Hue)
         const L = arc.beamLength;
 
         for (let j = 0; j <= arc.segments; j++) {
@@ -809,7 +858,7 @@ export const Hero3DCanvas: React.FC = () => {
 
           if (d >= 0 && d <= L) {
             const t = d / L;
-            const fade = Math.pow(1 - t, 1.8) * envelope;
+            const fade = Math.pow(1 - t, 1.8) * envelope * 0.65;
             arc.colorArray[j * 3 + 0] = (headR * (1 - t) + tailR * t) * fade;
             arc.colorArray[j * 3 + 1] = (headG * (1 - t) + tailG * t) * fade;
             arc.colorArray[j * 3 + 2] = (headB * (1 - t) + tailB * t) * fade;
@@ -829,8 +878,8 @@ export const Hero3DCanvas: React.FC = () => {
         const s = 1.0 + phase * 1.4 + flare * 0.4;
         pr.mesh.scale.set(s, s, 1);
         const mat = pr.mesh.material as THREE.MeshBasicMaterial;
-        const baseOpacity = Math.sin(phase * Math.PI) * (pr.isHQ ? 0.45 : 0.35);
-        mat.opacity = Math.min(0.85, baseOpacity + flare * 0.3);
+        const baseOpacity = Math.sin(phase * Math.PI) * (pr.isHQ ? 0.35 : 0.25);
+        mat.opacity = Math.min(0.70, baseOpacity + flare * 0.25);
       });
 
       // Subtle breathing float oscillation
@@ -857,6 +906,11 @@ export const Hero3DCanvas: React.FC = () => {
       container.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerCancel);
+      container.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
@@ -867,10 +921,10 @@ export const Hero3DCanvas: React.FC = () => {
 
   return (
     <div
-      className="relative w-full aspect-square max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] mx-auto flex items-center justify-center bg-transparent select-none cursor-grab active:cursor-grabbing"
-      title="Drag to rotate the 3D globe"
+      className="relative w-full aspect-square max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] mx-auto flex items-center justify-center bg-transparent select-none touch-none cursor-grab active:cursor-grabbing"
+      title="Touch or drag to rotate the 3D globe"
     >
-      <div ref={mountRef} className="w-full h-full bg-transparent flex items-center justify-center touch-none" />
+      <div ref={mountRef} className="w-full h-full bg-transparent flex items-center justify-center touch-none select-none" />
       <HeroGlobeMessages />
     </div>
   );
