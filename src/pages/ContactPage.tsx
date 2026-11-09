@@ -173,8 +173,45 @@ export const ContactPage: React.FC = () => {
     },
   ];
 
+  // LocalBusiness & ContactPage Structured Data for Local SEO (Dhaka, Bangladesh)
+  const contactSchema = React.useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'Gaenr — Freelancing in BD & Outsourcing Ecosystem',
+    image: 'https://gaenr.com/images/gaenr-logo-card.png',
+    telephone: '+880-9647-922800',
+    email: 'hello@gaenr.com',
+    url: 'https://gaenr.com/contact',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '10/A, 15/13, Mirpur',
+      addressLocality: 'Dhaka',
+      addressRegion: 'Dhaka Division',
+      postalCode: '1216',
+      addressCountry: 'BD',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: '23.8041',
+      longitude: '90.3667',
+    },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+        opens: '10:00',
+        closes: '20:00',
+      },
+    ],
+    sameAs: SOCIAL_CHANNELS.map((s) => s.url),
+  }), []);
+
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-[#0b1324] text-slate-800 dark:text-slate-200 antialiased space-y-12 sm:space-y-14 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
+      />
       {/* =========================================================================
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - No lines or grids (clean, fluid, artistic)

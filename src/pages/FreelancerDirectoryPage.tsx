@@ -372,13 +372,16 @@ export const FreelancerDirectoryPage: React.FC = () => {
 
                   {/* Bottom Action: Full-width 'View Portfolio' button pinned to the bottom */}
                   <div className="mt-auto pt-3 w-full">
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/experts/${expert.code}`)}
-                      className="gaenr-btn-primary w-full !py-3 !rounded-full !text-sm !font-bold shadow-xs hover:shadow-md active:scale-98 transition-all cursor-pointer"
+                    <a
+                      href={`/experts/${expert.code}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(`/experts/${expert.code}`);
+                      }}
+                      className="gaenr-btn-primary w-full !py-3 !rounded-full !text-sm !font-bold shadow-xs hover:shadow-md active:scale-98 transition-all cursor-pointer flex items-center justify-center no-underline"
                     >
                       View Portfolio
-                    </button>
+                    </a>
                   </div>
                 </div>
               );

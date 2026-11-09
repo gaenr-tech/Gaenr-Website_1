@@ -285,14 +285,14 @@ const SERVICE_SUB_ITEMS: Record<string, SubServiceItem[]> = {
 };
 
 const SERVICE_BG_MAP: Record<string, string> = {
-  'graphics-design': '/images/services/graphics-design.svg',
-  'content-writing': '/images/services/content-writing.svg',
-  'video-editing': '/images/services/video-editing.svg',
-  'wordpress-website': '/images/services/wordpress-website.svg',
-  'presentation-slide-design': '/images/services/presentation-slide-design.svg',
-  'ux-ui-design': '/images/services/ux-ui-design.svg',
-  'ad-running': '/images/services/ad-running.svg',
-  'bundle': '/images/services/graphics-design.svg',
+  'graphics-design': '/images/services/graphics-design-services.jpg',
+  'content-writing': '/images/services/content-writing-copywriting-services.jpg',
+  'video-editing': '/images/services/video-editing-services.jpg',
+  'wordpress-website': '/images/services/wordpress-website-design-services.jpg',
+  'presentation-slide-design': '/images/services/presentation-slide-design-services.jpg',
+  'ux-ui-design': '/images/services/ux-ui-design-services.jpg',
+  'ad-running': '/images/services/social-media-advertising-services.jpg',
+  'bundle': '/images/services/graphics-design-services.jpg',
 };
 
 const SERVICE_BG_POS: Record<string, string> = {
@@ -354,8 +354,49 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ slug }) =>
 
   const coverImage = service.coverImageUrl || SERVICE_BG_MAP[service.slug];
 
+  // Structured Data (JSON-LD) for Search Engine Rich Results
+  const serviceSchema = React.useMemo(() => {
+    if (!service) return null;
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: service.title,
+      description: service.description,
+      serviceType: service.title,
+      provider: {
+        '@type': 'Organization',
+        name: 'Gaenr',
+        url: 'https://gaenr.com',
+        logo: 'https://gaenr.com/images/gaenr-logo-card.png',
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: 'Bangladesh',
+      },
+      url: `https://gaenr.com/services/${service.slug}`,
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: `${service.title} Deliverables`,
+        itemListElement: (service.deliverables || []).map((del, i) => ({
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: del,
+          },
+          position: i + 1,
+        })),
+      },
+    };
+  }, [service]);
+
   return (
     <div className="w-full">
+      {serviceSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+        />
+      )}
       {/* =========================================================================
           AUTHENTIC LIGHT-BLUISH HERO HEADER WITH SERVICE VECTOR ARTWORK
           - Base: Signature vibrant light blue `#006eff`

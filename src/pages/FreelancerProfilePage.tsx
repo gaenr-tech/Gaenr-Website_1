@@ -1565,8 +1565,35 @@ export const FreelancerProfilePage: React.FC<FreelancerProfilePageProps> = ({ co
     );
   };
 
+  const profileSchema = React.useMemo(() => {
+    if (!expert) return null;
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'ProfilePage',
+      mainEntity: {
+        '@type': 'Person',
+        name: `Gaenr Verified Expert ${expert.code}`,
+        jobTitle: expert.categoryTitle,
+        description: expert.statement || `${expert.categoryTitle} verified on Gaenr ecosystem.`,
+        worksFor: {
+          '@type': 'Organization',
+          name: 'Gaenr',
+          url: 'https://gaenr.com',
+        },
+        url: `https://gaenr.com/experts/${expert.code}`,
+        image: 'https://gaenr.com/images/gaenr-logo-card.png',
+      },
+    };
+  }, [expert]);
+
   return (
     <div className="relative max-w-xl sm:max-w-2xl mx-auto px-3.5 sm:px-6 py-6 sm:py-10 space-y-4 sm:space-y-6 text-left">
+      {profileSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(profileSchema) }}
+        />
+      )}
       {/* Draft banner for Operations staff */}
       {!expert.isPublic && (
         <div className="bg-amber-50 border border-amber-300 rounded-2xl p-3.5 flex items-center justify-between gap-3 text-amber-900 shadow-xs">

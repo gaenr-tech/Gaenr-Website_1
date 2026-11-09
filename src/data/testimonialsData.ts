@@ -97,8 +97,8 @@ export const TESTIMONIALS_DATA: TestimonialItem[] = [
     fullQuote:
       'Gaenr solves the two biggest pain points in offshore outsourcing: communication reliability and payment safety. Their dedicated coordination model is built for serious teams.',
     imageUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=800&q=80',
-    fallbackUrl: '/images/cand_wiki_2.jpg',
-    avatarUrl: '/images/cand_wiki_2.jpg',
+    fallbackUrl: '/images/thumb_cand_wiki_2.jpg',
+    avatarUrl: '/images/thumb_cand_wiki_2.jpg',
     avatarId: 'avatar-f1',
     facebookUrl: 'https://www.facebook.com/gaenrglobal/',
     linkedinUrl: 'https://www.linkedin.com/company/gaenrglobal/',

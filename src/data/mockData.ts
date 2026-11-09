@@ -66,7 +66,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     featuredProjectsCount: 150,
     cardImageUrl: '/images/services/graphics-design-services.jpg',
     cardImageFallbackUrl: 'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?auto=format&fit=crop&w=800&q=80',
-    coverImageUrl: '/images/services/graphics-design.svg',
+    coverImageUrl: '/images/services/graphics-design-services.jpg',
     allowedMediaTypes: ['Images/Graphics', 'PDF/Document'],
   },
   {
@@ -98,7 +98,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     featuredProjectsCount: 180,
     cardImageUrl: '/images/services/content-writing-copywriting-services.jpg',
     cardImageFallbackUrl: 'https://images.unsplash.com/photo-1636038692415-6276311a53cd?auto=format&fit=crop&w=800&q=80',
-    coverImageUrl: '/images/services/content-writing.svg',
+    coverImageUrl: '/images/services/content-writing-copywriting-services.jpg',
     allowedMediaTypes: ['PDF/Document'],
   },
   {
@@ -130,7 +130,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     featuredProjectsCount: 120,
     cardImageUrl: '/images/services/video-editing-services.jpg',
     cardImageFallbackUrl: 'https://images.unsplash.com/photo-1618329027137-a520b57c6606?auto=format&fit=crop&w=800&q=80',
-    coverImageUrl: '/images/services/video-editing.svg',
+    coverImageUrl: '/images/services/video-editing-services.jpg',
     allowedMediaTypes: ['Video files', 'Images/Graphics'],
   },
   {
@@ -162,7 +162,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     featuredProjectsCount: 95,
     cardImageUrl: '/images/services/wordpress-website-design-services.jpg',
     cardImageFallbackUrl: 'https://images.unsplash.com/photo-1566207474742-de921626ad0c?auto=format&fit=crop&w=800&q=80',
-    coverImageUrl: '/images/services/wordpress-website.svg',
+    coverImageUrl: '/images/services/wordpress-website-design-services.jpg',
     allowedMediaTypes: ['Code/Web Preview', 'Images/Graphics'],
   },
   {
@@ -194,7 +194,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     featuredProjectsCount: 80,
     cardImageUrl: '/images/services/presentation-slide-design-services.jpg',
     cardImageFallbackUrl: 'https://images.unsplash.com/photo-1588600878108-578307a3cc9d?auto=format&fit=crop&w=800&q=80',
-    coverImageUrl: '/images/services/presentation-slide-design.svg',
+    coverImageUrl: '/images/services/presentation-slide-design-services.jpg',
     allowedMediaTypes: ['PDF/Document', 'Images/Graphics'],
   },
   {
@@ -226,7 +226,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     featuredProjectsCount: 65,
     cardImageUrl: '/images/services/ux-ui-design-services.jpg',
     cardImageFallbackUrl: 'https://images.unsplash.com/photo-1586717799252-bd134ad00e26?auto=format&fit=crop&w=800&q=80',
-    coverImageUrl: '/images/services/ux-ui-design.svg',
+    coverImageUrl: '/images/services/ux-ui-design-services.jpg',
     allowedMediaTypes: ['Images/Graphics', 'Code/Web Preview'],
   },
   {
@@ -258,7 +258,7 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
     featuredProjectsCount: 75,
     cardImageUrl: '/images/services/social-media-advertising-services.jpg',
     cardImageFallbackUrl: 'https://i.pinimg.com/736x/d0/12/34/d012343994bae31b40b1ebf2c92b0e69.jpg',
-    coverImageUrl: '/images/services/ad-running.svg',
+    coverImageUrl: '/images/services/social-media-advertising-services.jpg',
     allowedMediaTypes: ['Images/Graphics', 'Video files', 'PDF/Document'],
   },
 ];

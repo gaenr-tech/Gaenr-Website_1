@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
+import { updatePageMeta } from '../utils/seo';
 import {
   BookOpen,
   Calendar,
@@ -12,13 +13,14 @@ import {
   CheckCircle2,
   Bookmark,
   TrendingUp,
+  ArrowLeft,
 } from 'lucide-react';
 
 interface BlogPost {
   id: string;
   slug: string;
   title: string;
-  category: 'Guides & Tutorials' | 'Business & Outsourcing' | 'Student Freelancers' | 'Case Studies';
+  category: 'Freelancing in BD' | 'Guides & Tutorials' | 'Business & Outsourcing' | 'Student Freelancers' | 'Case Studies';
   readTime: string;
   date: string;
   author: {
@@ -42,20 +44,310 @@ interface BlogPost {
 
 const BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-0',
+    slug: 'freelancing-in-bd-guide',
+    title: 'Freelancing in BD: The Complete Guide to Hiring Talent & Building Remote Careers in Bangladesh',
+    category: 'Freelancing in BD',
+    readTime: '8 min read',
+    date: 'Nov 08, 2026',
+    author: {
+      name: 'Gaenr',
+      role: 'Official Editorial Board',
+      avatar: '/logo.svg',
+    },
+    excerpt:
+      'Everything you need to know about freelancing in BD: market economics, hiring verified student talent, escrow fund protection, top digital domains (Graphics, Web, Video), and why 0% platform commission is changing Bangladesh.',
+    featured: true,
+    tags: ['Freelancing in BD', 'Bangladesh Freelancing', 'Hire Freelancers BD', 'Student Freelancing'],
+    content: {
+      intro:
+        'Freelancing in BD has grown from a niche subculture of individual gig-workers into one of Bangladesh’s most vital knowledge-export engines. With over 650,000 active digital creators and hundreds of tech-forward startups, Bangladesh represents an unmatched reservoir of creative firepower. This guide breaks down how modern businesses can outsource securely and how talented university students build sustainable freelance careers on Gaenr.',
+      sections: [
+        {
+          heading: '1. The Evolution of Freelancing in Bangladesh',
+          body: [
+            'Historically, freelance workers in Bangladesh depended on international platforms that imposed steep 20% platform commissions and high forex conversion deductions. Furthermore, clients overseas often lacked direct communication channels with local talent.',
+            'Gaenr introduces a closed-loop managed ecosystem where businesses in Dhaka, Chittagong, and overseas hire verified student creators directly through transparent escrow milestone contracts with zero platform fees.',
+          ],
+          keyTakeaway: 'Local managed ecosystems eliminate marketplace cuts and guarantee quality through verified institutional portfolios.',
+        },
+        {
+          heading: '2. Top Digital Freelancing Domains in High Demand Across BD',
+          body: [
+            'Businesses outsource four core digital pillars through Gaenr: 1) Graphics & Brand Identity (custom logos, pitch decks, social media kits); 2) WordPress Website Development (WooCommerce stores, Elementor layouts, Core Web Vitals speed optimization); 3) High-Retention Video Editing (reels, shorts, corporate YouTube content); 4) Strategic SEO Copywriting & Content Creation.',
+            'Each project domain is manned by university students enrolled in top departments (BUET, DU, NSU, BRACU) who produce modern, responsive deliverables without bloated generic templates.',
+          ],
+          keyTakeaway: 'Specialized subject knowledge produces vastly superior deliverables compared to generic overseas bidding mills.',
+        },
+        {
+          heading: '3. Escrow Security: How Gaenr Protects Clients and Freelancers in BD',
+          body: [
+            'The biggest risk in traditional freelancing in BD has always been payment disputes: clients fear paying upfront without work delivery, while creators fear delivering work without receiving compensation.',
+            'Gaenr Escrow solves this entirely. Client deposits are held securely in reserved escrow until the deliverable is previewed and approved. Local MFS integrations (bKash, Nagad) and direct bank transfers provide frictionless, verifiable receipts for every transaction.',
+          ],
+          keyTakeaway: 'Milestone-based escrow releases guarantee absolute peace of mind for both outsourcer and creator.',
+        },
+        {
+          heading: '4. How University Students Can Start Freelancing in BD Today',
+          body: [
+            'Unlike legacy platforms where newcomers must compete against established accounts by bidding below minimum wage, Gaenr verifies talent via real proof-of-work tests and assigns unique alphanumeric Creator Codes.',
+            'Students retain 100% of their client earnings, build verifiable professional dossiers, and receive direct company testimonials that kickstart their post-graduate careers.',
+          ],
+          keyTakeaway: 'Proof of work replaces bidding wars, opening merit-based opportunities for young Bangladeshi talent.',
+        },
+      ],
+      conclusion:
+        'Whether you are an ambitious business owner looking to scale your marketing and web assets, or a skilled university student eager to monetize your craft, Gaenr provides the definitive, commission-free gateway to freelancing in BD.',
+    },
+  },
+  {
+    id: 'post-marketplace-bd',
+    slug: 'top-freelance-marketplaces-bangladesh',
+    title: 'Top Freelance Marketplaces in Bangladesh: Why Businesses & Creators Are Choosing Local Zero-Commission Platforms in BD',
+    category: 'Freelancing in BD',
+    readTime: '9 min read',
+    date: 'Nov 07, 2026',
+    author: {
+      name: 'Gaenr',
+      role: 'Marketplace Intelligence',
+      avatar: '/logo.svg',
+    },
+    excerpt:
+      'Compare the best freelance marketplaces in Bangladesh. Discover why traditional international bidding sites lose out to managed, zero-commission ecosystems with bKash/Nagad escrow in BD.',
+    featured: false,
+    tags: ['Freelance Marketplace BD', 'Best Freelancing Platform Bangladesh', 'Freelancing Website in Bangladesh', 'Freelancing in BD'],
+    content: {
+      intro:
+        'The search for the best freelance marketplace in BD has intensified as thousands of Bangladeshi enterprises, digital agencies, and ambitious startups look to tap into local creative and technical talent. While international platforms like Upwork and Fiverr dominated the previous decade, their 20% platform commissions, complex USD withdrawal restrictions, and lack of direct dispute support have created severe friction. A new generation of managed freelancing websites in Bangladesh—led by Gaenr—is reshaping the digital workplace with zero platform markups and local escrow security.',
+      sections: [
+        {
+          heading: '1. The State of Freelance Marketplaces in BD: Global Giants vs. Local Realities',
+          body: [
+            'For years, Bangladeshi freelancers and local hiring managers had no choice but to rely on Western freelance platforms. However, when a Dhaka-based e-commerce brand hires an editor on Upwork, both parties suffer: the employer pays foreign currency transaction surcharges, and the creator loses 20% of their earnings plus international wire transfer deductions.',
+            'Furthermore, currency fluctuations and PayPal unavailability have historically created an artificial bottleneck for Bangladeshi talent. Today, forward-looking businesses require a modern freelance marketplace in BD that respects local payment methods (bKash, Nagad, Rocket, BEFTN) while maintaining international deliverable standards.',
+          ],
+          keyTakeaway: 'Legacy bidding platforms extract 20% to 30% of total project value in fees, disincentivizing top talent and inflating client costs.',
+        },
+        {
+          heading: '2. Core Criteria for Evaluating the Best Freelancing Platform in Bangladesh',
+          body: [
+            'When evaluating any freelancing website in Bangladesh, business leaders and professional creators must demand four fundamental pillars:',
+            'First, Escrow Fund Protection: Funds must be held in a neutral trust account and released only when milestones are validated. Second, Zero Platform Commissions: Creators should retain 100% of their compensation, ensuring maximum dedication to client briefs. Third, Institutional Vetting: Rather than allowing unverified accounts to spam proposals, platforms must review authentic proof of work. Fourth, Transparent Deliverables: Clear scope definitions that prevent scope creep and eliminate payment disagreements.',
+          ],
+          keyTakeaway: 'A truly reliable freelance platform combines escrow payment security with rigorous talent curation.',
+        },
+        {
+          heading: '3. Why Gaenr is Ranked Among the Best Freelance Marketplaces in BD',
+          body: [
+            'Gaenr was engineered specifically to solve the inefficiencies of conventional marketplaces. By operating as a managed ecosystem rather than an anonymous open bidding board, Gaenr connects clients directly with verified student experts from premier universities (BUET, DU, NSU, BRACU, AIUB).',
+            'Every Gaenr expert holds a unique alphanumeric Creator Code (e.g., GD2602001 for Graphics Design, VE2602002 for Video Editing). Clients can inspect actual Figma files, 4K video reels, and responsive WordPress sites before initiating a task. Most importantly, Gaenr takes 0% commission from creators, meaning businesses receive agency-tier execution at competitive, honest rates.',
+          ],
+          keyTakeaway: 'The zero-commission model guarantees that 100% of your budget goes into creative craftsmanship, not marketplace overhead.',
+        },
+        {
+          heading: '4. The Verdict: How to Choose the Right Freelance Marketplace in BD',
+          body: [
+            'If you need anonymous low-bid volume where quality is secondary, legacy platforms might suffice. But if you are building a reputable brand, launching an e-commerce platform, or scaling high-retention video content in Bangladesh, Gaenr offers the unmatched advantage of vetted talent, instant local MFS deposits, and dedicated operational support.',
+          ],
+          keyTakeaway: 'Choose platforms that align with your operational reality: local currency, verified talent, and zero middleman markups.',
+        },
+      ],
+      conclusion:
+        'The evolution of freelancing in BD has reached an inflection point. By selecting a dedicated, commission-free freelance marketplace in BD, you empower the next generation of Bangladeshi creators while securing superior business results.',
+    },
+  },
+  {
+    id: 'post-hire-freelancers-bd',
+    slug: 'how-to-hire-freelancers-in-bd',
+    title: 'How to Hire Freelancers in BD: The Complete Employer’s Guide to Sourcing Top Bangladeshi Talent Without Risk',
+    category: 'Freelancing in BD',
+    readTime: '8 min read',
+    date: 'Nov 06, 2026',
+    author: {
+      name: 'Gaenr',
+      role: 'Client Success & Talent Team',
+      avatar: '/logo.svg',
+    },
+    excerpt:
+      'A step-by-step blueprint for businesses, agencies, and founders looking to hire freelancers in BD. Learn how to verify portfolios, protect project deposits with escrow, and scale design and tech operations in Bangladesh.',
+    featured: false,
+    tags: ['Hire Freelancers in BD', 'Hire Freelancers Bangladesh', 'Outsourcing in Bangladesh', 'Freelancing in BD'],
+    content: {
+      intro:
+        'Hiring freelancers in BD has become one of the most effective strategies for companies worldwide to scale creative production, web infrastructure, and digital marketing without bloating their corporate payroll. Bangladesh boasts one of the youngest, most tech-literate populations in South Asia, with tens of thousands of skilled designers, video editors, and full-stack developers graduating every year. However, navigating unverified directories and dodging freelancer ghosting requires a systematic hiring protocol.',
+      sections: [
+        {
+          heading: '1. Why Businesses and Global Agencies Hire Freelancers in BD',
+          body: [
+            'The Oxford Internet Institute consistently ranks Bangladesh among the top two global providers of online labor. Several factors make Bangladesh an exceptional hiring ground: deep English proficiency among university graduates, favorable time zone positioning (GMT+6), high familiarity with Western digital aesthetics, and an exceptional cost-to-performance ratio.',
+            'Whether you need a custom brand identity system, a high-converting WooCommerce storefront, or weekly high-retention YouTube video edits, hiring freelancers in BD provides agile turnaround at a fraction of traditional agency retainers.',
+          ],
+          keyTakeaway: 'Hiring verified Bangladeshi freelancers offers enterprise-grade output with maximum financial agility.',
+        },
+        {
+          heading: '2. The 4 Common Traps When Hiring Freelancers in Bangladesh (And How to Avoid Them)',
+          body: [
+            'Hiring managers who rely on unverified social media groups or raw email proposals frequently encounter four classic roadblocks: 1) Plagiarized Portfolios: Candidates displaying templates they never designed; 2) Ghosting & Missed Deadlines: Uncommitted freelancers disappearing midway through sprints; 3) Unclear Milestone Scoping: Ambiguous briefs resulting in endless, frustrating revision cycles; 4) Payment Vulnerability: Paying advance deposits via unmonitored personal numbers with zero refund guarantees.',
+            'Gaenr was structured specifically to neutralize these four traps through mandatory portfolio code verification and client-protected escrow accounts.',
+          ],
+          keyTakeaway: 'Never hire through unvetted channels without escrow safeguards and live, inspectable deliverables.',
+        },
+        {
+          heading: '3. The Step-by-Step Gaenr Protocol: How to Hire Freelancers in BD Safely',
+          body: [
+            'To ensure flawless project delivery every time, follow this 4-step framework:',
+            'Step 1 — Search Verified Categories: Browse Gaenr’s expert directory across Graphics Design, Content Writing, Video Editing, WordPress Websites, Presentation Decks, and UI/UX.',
+            'Step 2 — Inspect Alphanumeric Creator Codes: Every expert has an assigned ID (such as GD2602001). Check their verified live projects, average client rating, and verified institutional background.',
+            'Step 3 — Fund the Milestone in Escrow: Deposit the agreed project fee using bKash, Nagad, or direct bank transfer. Your capital is safely held in reserve while work proceeds.',
+            'Step 4 — Review Deliverable & Approve Release: Once the final vector files, video exports, or staging website links are submitted and meet your exact scope, confirm approval to release payout to the expert.',
+          ],
+          keyTakeaway: 'Milestone escrow aligns incentives: creators work with confidence, and clients only pay for verified results.',
+        },
+        {
+          heading: '4. Top Skillsets to Outsource When Hiring Freelancers in BD',
+          body: [
+            'The highest ROI hiring categories in Bangladesh include: 1) High-Retention Short-Form Video Editing (Reels, TikTok, YouTube Shorts with dynamic motion graphics); 2) Vector Brand Identity & Typography (Figma, Illustrator master files); 3) Speed-Optimized WordPress & WooCommerce Web Development; 4) Presentation Slide Decks for investor pitches and corporate briefings.',
+          ],
+          keyTakeaway: 'Focus your remote hiring on well-defined digital deliverables with clear technical acceptance criteria.',
+        },
+      ],
+      conclusion:
+        'Hiring freelancers in BD does not have to be a gamble. By utilizing Gaenr’s verified talent directory and escrow security, you gain an elite on-demand workforce that drives measurable growth for your business.',
+    },
+  },
+  {
+    id: 'post-student-freelancing-bd',
+    slug: 'student-freelancing-in-bd-guide',
+    title: 'Student Freelancing in BD: How Bangladeshi University Students Build High-Paying Remote Careers',
+    category: 'Freelancing in BD',
+    readTime: '10 min read',
+    date: 'Nov 05, 2026',
+    author: {
+      name: 'Gaenr',
+      role: 'Student Community & Mentorship',
+      avatar: '/logo.svg',
+    },
+    excerpt:
+      'The definitive roadmap for university students in Bangladesh looking to start freelancing. How students in BUET, DU, NSU, BRACU balance studies, bypass bidding traps, and earn 100% of their fees through Gaenr.',
+    featured: false,
+    tags: ['Student Freelancing BD', 'Freelancing in BD', 'Start Freelancing Bangladesh', 'Student Freelancing in Bangladesh'],
+    content: {
+      intro:
+        'Student freelancing in BD has emerged as a transformative cultural and financial movement. Rather than waiting until graduation to build a resume or relying on traditional campus tutoring, ambitious students at BUET, Dhaka University, NSU, BRACU, AIUB, and institutions nationwide are transforming their laptop skills into lucrative freelance careers. Here is the realistic, step-by-step roadmap to start student freelancing in Bangladesh without burning out your GPA.',
+      sections: [
+        {
+          heading: '1. Why Student Freelancing in BD is the Smartest Career Move You Can Make',
+          body: [
+            'The modern corporate job market no longer values generic university degrees without demonstrable proof of work. Employers look for graduates who have solved real commercial challenges, communicated with demanding clients, and delivered high-stakes projects on deadline.',
+            'By engaging in student freelancing in BD, you accomplish three game-changing milestones simultaneously: you attain financial independence during university, build a verifiable portfolio of commercial deliverables, and build an entrepreneurial mindset that sets you years ahead of your graduating class.',
+          ],
+          keyTakeaway: 'Freelancing in university is not just about pocket money; it is the ultimate real-world business internship.',
+        },
+        {
+          heading: '2. The 3 Biggest Roadblocks Facing Student Freelancers in Bangladesh',
+          body: [
+            'Most undergraduate students who attempt freelancing give up within three months due to avoidable structural hurdles:',
+            'First, The Global Bidding War: Joining platforms where 80 applicants bid pennies for the same project destroys morale. Second, Payment Friction: Lacking international credit cards or PayPal accounts leaves earned money trapped offshore. Third, Academic Overwhelm: Taking on open-ended freelance contracts right before midterm exam weeks leads to missed deadlines and poor grades.',
+            'Gaenr was designed by university creators to dismantle every single one of these barriers.',
+          ],
+          keyTakeaway: 'Bidding wars and payment friction are symptoms of flawed platforms, not a lack of talent.',
+        },
+        {
+          heading: '3. The Gaenr Playbook: How to Launch Your Student Freelancing Journey in BD',
+          body: [
+            'Step 1 — Master One High-Value Skill: Choose a single high-demand lane. For visual design: Figma and Adobe Illustrator. For video: Premiere Pro, DaVinci Resolve, and After Effects. For web: responsive WordPress development, custom CSS, and Core Web Vitals optimization.',
+            'Step 2 — Construct 3 Polished Concept Projects: If you do not have clients yet, build complete concept redesigns for well-known Bangladeshi companies (e.g., redesigning a local grocery delivery app or creating a dynamic promo reel for a consumer electronics startup).',
+            'Step 3 — Apply for Gaenr Expert Onboarding: Submit your live deliverables to Gaenr’s review panel. Once approved, you receive an official verified Creator Code (e.g., GD2602001) and digital ID credentials.',
+            'Step 4 — Receive Direct Client Tasks & Keep 100%: Gaenr assigns client briefs matching your verified specialization. You complete the deliverable, submit through our secure upload portal, and receive payment directly to your bKash or Nagad wallet with zero platform deductions.',
+          ],
+          keyTakeaway: 'Focus on depth of skill and live proof of work rather than mass-bidding on random jobs.',
+        },
+        {
+          heading: '4. How to Balance University Exams and Freelancing Deliverables',
+          body: [
+            'Successful student freelancers apply ruthless time-blocking: dedicate 2 to 3 focused evening hours on weekdays and reserve Saturdays for deep execution sprints. During semester finals, update your Gaenr representative in advance to pause incoming project assignments.',
+          ],
+          keyTakeaway: 'Professional communication and calendar discipline protect both your client reputation and your GPA.',
+        },
+      ],
+      conclusion:
+        'Student freelancing in BD is your launchpad to creative mastery and financial freedom. Apply to join Gaenr today, secure your verified creator code, and start monetizing your genuine skills.',
+    },
+  },
+  {
+    id: 'post-outsourcing-in-bd',
+    slug: 'freelance-outsourcing-in-bangladesh',
+    title: 'Freelance Outsourcing in Bangladesh: Why Global Brands & Local Startups Are Outsourcing to BD in 2026',
+    category: 'Freelancing in BD',
+    readTime: '7 min read',
+    date: 'Nov 04, 2026',
+    author: {
+      name: 'Gaenr',
+      role: 'Workforce & Economic Intelligence',
+      avatar: '/logo.svg',
+    },
+    excerpt:
+      'Explore why Bangladesh is emerging as the premier hub for creative and technical freelance outsourcing in BD. Cost efficiency, English fluency, high-retention video capabilities, and managed zero-commission delivery.',
+    featured: false,
+    tags: ['Freelance Outsourcing BD', 'Outsourcing in Bangladesh', 'BPO Bangladesh', 'Freelancing in BD'],
+    content: {
+      intro:
+        'Freelance outsourcing in Bangladesh has evolved far beyond low-cost data entry and basic administrative support. Today, Bangladesh stands as one of the world’s most dynamic creative hubs, powering video post-production for major international creators, building e-commerce infrastructure for fast-growing D2C brands, and designing intuitive user interfaces for venture-backed startups. Discover why both domestic enterprises and overseas businesses are making freelance outsourcing in BD their strategic competitive edge.',
+      sections: [
+        {
+          heading: '1. The Macro Powerhouse: Bangladesh’s Digital Workforce',
+          body: [
+            'Bangladesh’s ICT revolution is backed by tangible structural advantages: over 650,000 active digital professionals, nationwide submarine cable fiber connectivity, and high-speed mobile internet infrastructure spanning all 64 districts. Furthermore, with an average workforce age of 27.6 years, Bangladesh possesses an inherently digital-native generation that understands modern social media culture, algorithmic engagement, and clean software aesthetics.',
+            'For organizations seeking agile talent without corporate agency overhead, freelance outsourcing in BD provides an unbeatable blend of volume, speed, and creative dexterity.',
+          ],
+          keyTakeaway: 'A young, digitally fluent population makes Bangladesh a premier outsourcing powerhouse.',
+        },
+        {
+          heading: '2. Comparative Cost & Efficiency: Why BD Outperforms Regional Competitors',
+          body: [
+            'When comparing freelance outsourcing destinations across South and Southeast Asia, Bangladesh delivers exceptional cost efficiency without compromising technical precision. Compared to Western agency rates—where video editing retainers easily exceed $3,000 to $5,000 monthly—outsourcing through Gaenr’s verified talent network in Bangladesh delivers equivalent or superior deliverables at 60% to 75% lower cost basis.',
+            'Because Gaenr charges zero platform commission and operates with escrow milestone releases, both international founders and local Bangladeshi businesses get direct, unfiltered access to elite creative talent.',
+          ],
+          keyTakeaway: 'Outsourcing to BD unlocks immense capital efficiency, allowing companies to reinvest savings into business growth.',
+        },
+        {
+          heading: '3. Dominant Freelance Outsourcing Domains in BD',
+          body: [
+            'Four primary fields dominate freelance outsourcing in Bangladesh:',
+            '1. High-Retention Video Production: Editing viral TikToks, Instagram Reels, and episodic YouTube videos with kinetic captions, sound design, and color grading.',
+            '2. Brand Identity & Vector Illustration: Complete corporate visual systems, logo suites, iconography, and investor pitch decks.',
+            '3. Performance WordPress & WooCommerce Engineering: Lightweight, mobile-first web applications designed for rapid load times and high conversions.',
+            '4. Social Media Advertising & Funnel Optimization: Setting up targeted Meta and Google ad campaigns with custom event tracking and conversion analytics.',
+          ],
+          keyTakeaway: 'Focus on strategic digital assets that directly impact audience acquisition and revenue conversion.',
+        },
+        {
+          heading: '4. The Gaenr Managed Model: Enterprise Quality with Freelance Agility',
+          body: [
+            'Traditional outsourcing often suffers from communication lapses and inconsistent quality. Gaenr bridges this gap with its managed ecosystem: every project is assigned an operational representative, every expert is vetted by portfolio benchmarks, and all payments are secured under milestone-based escrow.',
+          ],
+          keyTakeaway: 'A managed freelance model provides the reliability of an agency with the cost advantage of independent talent.',
+        },
+      ],
+      conclusion:
+        'Freelance outsourcing in Bangladesh is no longer an experiment—it is the modern playbook for ambitious companies. Experience frictionless, zero-commission outsourcing with Gaenr today.',
+    },
+  },
+  {
     id: 'post-1',
     slug: 'zero-commission-advantage-bangladesh',
     title: 'The Zero-Commission Ecosystem: Why Gaenr Connects Clients Directly to Student Talent',
     category: 'Business & Outsourcing',
     readTime: '6 min read',
-    date: 'Oct 01, 2026',
+    date: 'Nov 02, 2026',
     author: {
-      name: 'Gaenr Operations Team',
+      name: 'Gaenr',
       role: 'Ecosystem Strategy',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+      avatar: '/logo.svg',
     },
     excerpt:
       'Traditional global marketplaces take up to 20% commission from freelancers and charge extra conversion fees to clients. Learn why Gaenr chose a 100% direct escrow, zero-commission structure.',
-    featured: true,
+    featured: false,
     tags: ['Ecosystem', 'Zero Commission', 'Freelance Economics', 'Bangladesh'],
     content: {
       intro:
@@ -95,11 +387,11 @@ const BLOG_POSTS: BlogPost[] = [
     title: 'How Student Creatives Build High-Ticket Portfolios Without Past Corporate Clients',
     category: 'Student Freelancers',
     readTime: '5 min read',
-    date: 'Sep 28, 2026',
+    date: 'Oct 30, 2026',
     author: {
-      name: 'Adnan Sami',
-      role: 'Senior UI/UX Mentor',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+      name: 'Gaenr',
+      role: 'UI/UX & Creative Review',
+      avatar: '/logo.svg',
     },
     excerpt:
       'Struggling to land your first outsourcing client because you lack corporate case studies? Here is how to create compelling, verified proof-of-work deliverables that win clients.',
@@ -133,11 +425,11 @@ const BLOG_POSTS: BlogPost[] = [
     title: 'Short-Form Video Editing Playbook: Hooking Viewers in the First 3 Seconds',
     category: 'Guides & Tutorials',
     readTime: '7 min read',
-    date: 'Sep 24, 2026',
+    date: 'Oct 26, 2026',
     author: {
-      name: 'Fariha Rahman',
+      name: 'Gaenr',
       role: 'Creative Media Lead',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+      avatar: '/logo.svg',
     },
     excerpt:
       'TikTok, Instagram Reels, and YouTube Shorts require an entirely different editing psychology than traditional horizontal video. Master the visual retention curve.',
@@ -170,11 +462,11 @@ const BLOG_POSTS: BlogPost[] = [
     title: 'Core Web Vitals for WordPress: Achieving 90+ Mobile Speed Without Theme Bloat',
     category: 'Guides & Tutorials',
     readTime: '8 min read',
-    date: 'Sep 20, 2026',
+    date: 'Oct 21, 2026',
     author: {
-      name: 'Nayeem Chowdhury',
+      name: 'Gaenr',
       role: 'Lead Web Engineer',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+      avatar: '/logo.svg',
     },
     excerpt:
       'A slow website costs businesses over 40% of their mobile conversions. Here is how our verified WordPress experts eliminate bloat and optimize LCP/INP scores.',
@@ -207,11 +499,11 @@ const BLOG_POSTS: BlogPost[] = [
     title: 'The Outsourcer’s Guide: How to Assign Tasks and Protect Escrow Funds',
     category: 'Business & Outsourcing',
     readTime: '5 min read',
-    date: 'Sep 15, 2026',
+    date: 'Oct 16, 2026',
     author: {
-      name: 'Gaenr Client Success',
+      name: 'Gaenr',
       role: 'Trust & Verification',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+      avatar: '/logo.svg',
     },
     excerpt:
       'Outsourcing should be empowering, not risky. Discover the best practices for scoping deliverables, setting review deadlines, and approving milestones on Gaenr.',
@@ -244,11 +536,11 @@ const BLOG_POSTS: BlogPost[] = [
     title: 'Case Study: How an Emerging Fintech Rebranded in 10 Days via Student Talent',
     category: 'Case Studies',
     readTime: '6 min read',
-    date: 'Sep 10, 2026',
+    date: 'Oct 10, 2026',
     author: {
-      name: 'Tanvir Hasan',
-      role: 'Brand Designer (Expert GD2602001)',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+      name: 'Gaenr',
+      role: 'Brand Design Case Studies',
+      avatar: '/logo.svg',
     },
     excerpt:
       'A behind-the-scenes look at how a digital payment startup in Dhaka hired a verified student designer on Gaenr and achieved a modern, trustworthy brand identity.',
@@ -281,17 +573,95 @@ const BLOG_POSTS: BlogPost[] = [
 
 const CATEGORIES = [
   'All',
+  'Freelancing in BD',
   'Business & Outsourcing',
   'Student Freelancers',
   'Guides & Tutorials',
   'Case Studies',
 ] as const;
 
-export const BlogsPage: React.FC = () => {
+export interface BlogsPageProps {
+  initialSlug?: string;
+}
+
+export const BlogsPage: React.FC<BlogsPageProps> = ({ initialSlug }) => {
   const { navigate, showToast } = useApp();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activePost, setActivePost] = useState<BlogPost | null>(null);
+  const [activePost, setActivePost] = useState<BlogPost | null>(() => {
+    if (initialSlug) {
+      const clean = initialSlug.replace(/\/+$/, '').trim().toLowerCase();
+      return (
+        BLOG_POSTS.find((p) => p.slug.toLowerCase() === clean) || null
+      );
+    }
+    return null;
+  });
+
+  // Sync active post with URL changes or initialSlug prop
+  useEffect(() => {
+    if (initialSlug) {
+      const clean = initialSlug.replace(/\/+$/, '').trim().toLowerCase();
+      const match = BLOG_POSTS.find((p) => p.slug.toLowerCase() === clean);
+      setActivePost(match || null);
+    } else {
+      setActivePost(null);
+    }
+  }, [initialSlug]);
+
+  // Update document title and meta tags when reading an article
+  useEffect(() => {
+    if (activePost) {
+      updatePageMeta(`/blogs/${activePost.slug}`, {
+        title: `${activePost.title} | Gaenr Insights`,
+        description: activePost.excerpt,
+        canonical: `https://gaenr.com/blogs/${activePost.slug}`,
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      updatePageMeta('/blogs');
+    }
+  }, [activePost]);
+
+  const openArticle = (post: BlogPost) => {
+    setActivePost(post);
+    navigate(`/blogs/${post.slug}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const closeArticle = () => {
+    setActivePost(null);
+    navigate('/blogs');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const blogPostSchema = useMemo(() => {
+    if (!activePost) return null;
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: activePost.title,
+      description: activePost.excerpt,
+      datePublished: activePost.date,
+      dateModified: activePost.date,
+      author: {
+        '@type': 'Organization',
+        name: 'Gaenr',
+        url: 'https://gaenr.com',
+        logo: 'https://gaenr.com/logo.svg',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Gaenr',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://gaenr.com/logo.svg',
+        },
+      },
+      mainEntityOfPage: `https://gaenr.com/blogs/${activePost.slug}`,
+      keywords: activePost.tags.join(', '),
+    };
+  }, [activePost]);
 
   const filteredPosts = BLOG_POSTS.filter((post) => {
     const matchesCategory =
@@ -309,14 +679,245 @@ export const BlogsPage: React.FC = () => {
   const handleShare = (post: BlogPost, e: React.MouseEvent) => {
     e.stopPropagation();
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      const url = `${window.location.origin}/blogs#${post.slug}`;
+      const url = `${window.location.origin}/blogs/${post.slug}`;
       navigator.clipboard.writeText(url);
       showToast('Article link copied to clipboard!', 'success');
     }
   };
 
+  if (activePost) {
+    return (
+      <div className="min-h-screen text-slate-800 antialiased pb-20">
+        {blogPostSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostSchema) }}
+          />
+        )}
+
+        {/* Top Sticky Navigation / Breadcrumb */}
+        <div className="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-30 shadow-2xs">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={closeArticle}
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#006eff] transition-colors cursor-pointer group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <span>Back to all articles</span>
+            </button>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={(e) => handleShare(activePost, e)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-[#006eff] hover:bg-blue-50 border border-slate-200 hover:border-blue-200 transition-colors cursor-pointer"
+                title="Share this article"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Share</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Article Content Layout */}
+        <article className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 space-y-8">
+          {/* Metadata & Title */}
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+              <span className="px-3 py-1 rounded-full font-bold uppercase tracking-wider bg-blue-50 text-[#006eff] border border-blue-100">
+                {activePost.category}
+              </span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-500 flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                {activePost.readTime}
+              </span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-500 flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                {activePost.date}
+              </span>
+            </div>
+
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-snug sm:leading-tight">
+              {activePost.title}
+            </h1>
+
+            {/* Author Byline: Official Gaenr Identity */}
+            <div className="pt-2 flex items-center gap-3.5 border-y border-slate-100 py-4">
+              <img
+                src={activePost.author.avatar}
+                alt={activePost.author.name}
+                className="w-12 h-12 rounded-full object-contain p-2 bg-blue-50/70 border border-slate-200 shadow-2xs shrink-0"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm sm:text-base font-bold text-slate-900">
+                    {activePost.author.name}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100/70 text-[#0048ba]">
+                    <Sparkles className="w-2.5 h-2.5" /> Verified Editorial
+                  </span>
+                </div>
+                <div className="text-xs text-slate-500 font-mono">
+                  {activePost.author.role}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Intro Card */}
+          <div className="bg-gradient-to-br from-blue-50/80 via-sky-50/40 to-slate-50 border border-blue-100 rounded-2xl p-5 sm:p-7 text-base sm:text-lg text-slate-800 font-medium leading-relaxed shadow-2xs">
+            {activePost.content.intro}
+          </div>
+
+          {/* Article Body Sections */}
+          <div className="space-y-10 pt-2 text-slate-700">
+            {activePost.content.sections.map((sec, sIdx) => (
+              <section key={sIdx} className="space-y-4">
+                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                  {sec.heading}
+                </h2>
+                {sec.body.map((para, pIdx) => (
+                  <p key={pIdx} className="text-slate-700 leading-relaxed text-sm sm:text-base">
+                    {para}
+                  </p>
+                ))}
+                {sec.keyTakeaway && (
+                  <div className="flex items-start gap-3 p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-xl text-xs sm:text-sm text-emerald-950 font-semibold shadow-2xs">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <span><strong>Key Insight:</strong> {sec.keyTakeaway}</span>
+                  </div>
+                )}
+              </section>
+            ))}
+
+            {/* Conclusion */}
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-3">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#006eff]">
+                Key Takeaway &amp; Conclusion
+              </span>
+              <p className="text-slate-800 text-sm sm:text-base italic leading-relaxed">
+                &ldquo;{activePost.content.conclusion}&rdquo;
+              </p>
+            </div>
+
+            {/* Tags */}
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+              <span className="text-xs font-mono text-slate-400">Topics:</span>
+              {activePost.tags.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => {
+                    closeArticle();
+                    setSearchQuery(t);
+                  }}
+                  className="px-3 py-1 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-[#006eff] text-xs font-medium text-slate-600 font-mono transition-colors cursor-pointer"
+                >
+                  #{t}
+                </button>
+              ))}
+            </div>
+
+            {/* Gaenr Hiring / Talent Platform Banner */}
+            <div className="bg-gradient-to-br from-[#0048ba] via-[#006eff] to-[#003d99] text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
+              <div className="space-y-2 text-center sm:text-left">
+                <h3 className="text-xl sm:text-2xl font-bold">
+                  Hire Vetted Freelance Talent or Join Gaenr
+                </h3>
+                <p className="text-xs sm:text-sm text-white/90 max-w-lg">
+                  Gaenr connects verified Bangladeshi student freelancers and top digital specialists directly with businesses worldwide without excessive marketplace cuts.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => navigate('/freelancers')}
+                  className="w-full sm:w-auto px-5 py-3 bg-white text-[#0048ba] hover:bg-slate-100 font-bold rounded-xl text-xs transition-all shadow-sm cursor-pointer"
+                >
+                  Explore Talent
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate('/join-as-expert')}
+                  className="w-full sm:w-auto px-5 py-3 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl text-xs transition-all border border-white/30 cursor-pointer"
+                >
+                  Join as Expert
+                </button>
+              </div>
+            </div>
+
+            {/* Related Articles Section */}
+            <div className="space-y-4 pt-6 border-t border-slate-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900">
+                  Related Guides &amp; Insights
+                </h3>
+                <button
+                  type="button"
+                  onClick={closeArticle}
+                  className="text-xs font-bold text-[#006eff] hover:underline cursor-pointer"
+                >
+                  View All &rarr;
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {BLOG_POSTS.filter((p) => p.id !== activePost.id)
+                  .slice(0, 3)
+                  .map((relPost) => (
+                    <div
+                      key={relPost.id}
+                      onClick={() => openArticle(relPost)}
+                      className="p-4 bg-white border border-slate-200 hover:border-blue-400 rounded-2xl shadow-2xs hover:shadow-sm transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
+                    >
+                      <div className="space-y-2">
+                        <span className="text-[10px] font-mono font-bold uppercase text-[#006eff]">
+                          {relPost.category}
+                        </span>
+                        <h4 className="text-sm font-bold text-slate-900 group-hover:text-[#006eff] transition-colors line-clamp-2">
+                          {relPost.title}
+                        </h4>
+                        <p className="text-xs text-slate-500 line-clamp-2">
+                          {relPost.excerpt}
+                        </p>
+                      </div>
+                      <span className="text-xs font-bold text-[#006eff] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                        <span>Read</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {/* Bottom Back Button */}
+            <div className="pt-6 text-center">
+              <button
+                type="button"
+                onClick={closeArticle}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Return to Blog Directory</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen text-slate-800 antialiased space-y-10 sm:space-y-12 pb-20">
+      {blogPostSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostSchema) }}
+        />
+      )}
       {/* =========================================================================
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - Headline: Gaenr Insights & Blogs
@@ -418,13 +1019,54 @@ export const BlogsPage: React.FC = () => {
               </button>
             ))}
           </div>
+
+          {/* Quick Keyword Discovery Pills */}
+          <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 text-xs">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono mr-1">
+              BD Focus Topics:
+            </span>
+            {[
+              'Freelancing in BD',
+              'Freelance Marketplace BD',
+              'Hire Freelancers in BD',
+              'Student Freelancing BD',
+              'Outsourcing in Bangladesh',
+            ].map((kw) => (
+              <button
+                key={kw}
+                onClick={() => {
+                  setSelectedCategory('All');
+                  setSearchQuery(kw);
+                }}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all cursor-pointer border ${
+                  searchQuery.toLowerCase() === kw.toLowerCase()
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                    : 'bg-blue-50/70 hover:bg-blue-100/80 text-blue-700 border-blue-200/60'
+                }`}
+              >
+                #{kw}
+              </button>
+            ))}
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-[11px] text-slate-500 hover:text-red-600 underline font-medium ml-1"
+              >
+                Reset Search
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Featured Editorial Post (shown when on "All" without search query) */}
         {selectedCategory === 'All' && !searchQuery.trim() && featuredPost && (
-          <div
-            onClick={() => setActivePost(featuredPost)}
-            className="group relative bg-gradient-to-br from-slate-900 via-slate-850 to-blue-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl hover:shadow-2xl transition-all cursor-pointer overflow-hidden border border-slate-800"
+          <a
+            href={`/blogs/${featuredPost.slug}`}
+            onClick={(e) => {
+              e.preventDefault();
+              openArticle(featuredPost);
+            }}
+            className="group relative block bg-gradient-to-br from-slate-900 via-slate-850 to-blue-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl hover:shadow-2xl transition-all cursor-pointer overflow-hidden border border-slate-800 no-underline"
           >
             <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
             <div className="relative z-10 max-w-3xl space-y-4 sm:space-y-5">
@@ -457,7 +1099,7 @@ export const BlogsPage: React.FC = () => {
                   <img
                     src={featuredPost.author.avatar}
                     alt={featuredPost.author.name}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
+                    className="w-10 h-10 rounded-full object-contain p-1.5 bg-white border-2 border-white/30 shadow-xs"
                   />
                   <div>
                     <div className="text-xs sm:text-sm font-bold text-white">
@@ -475,7 +1117,7 @@ export const BlogsPage: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </a>
         )}
 
         {/* Articles Grid */}
@@ -501,10 +1143,14 @@ export const BlogsPage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredPosts.map((post) => (
-              <article
+              <a
                 key={post.id}
-                onClick={() => setActivePost(post)}
-                className="group bg-white border border-slate-200/90 hover:border-blue-300 rounded-3xl p-6 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-5 cursor-pointer"
+                href={`/blogs/${post.slug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  openArticle(post);
+                }}
+                className="group bg-white block border border-slate-200/90 hover:border-blue-300 rounded-3xl p-6 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-5 cursor-pointer no-underline text-inherit"
               >
                 <div className="space-y-3.5">
                   {/* Top Meta: Category + Read Time + Share */}
@@ -557,7 +1203,7 @@ export const BlogsPage: React.FC = () => {
                     <img
                       src={post.author.avatar}
                       alt={post.author.name}
-                      className="w-7 h-7 rounded-full object-cover shrink-0 border border-slate-200"
+                      className="w-7 h-7 rounded-full object-contain p-1 bg-white shrink-0 border border-slate-200 shadow-2xs"
                     />
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-slate-800 truncate">
@@ -574,7 +1220,7 @@ export const BlogsPage: React.FC = () => {
                     <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
-              </article>
+              </a>
             ))}
           </div>
         )}
@@ -609,138 +1255,6 @@ export const BlogsPage: React.FC = () => {
           </div>
         </div>
       </main>
-
-      {/* =========================================================================
-          FULL ARTICLE READER MODAL
-         ========================================================================= */}
-      {activePost && (
-        <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setActivePost(null);
-          }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in overflow-y-auto"
-        >
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-3xl w-full p-6 sm:p-9 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 my-auto max-h-[92vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[#006eff] border border-blue-100 font-mono">
-                  {activePost.category}
-                </span>
-                <span className="text-xs text-slate-400 font-mono flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {activePost.readTime}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={(e) => handleShare(activePost, e)}
-                  className="p-2 text-slate-400 hover:text-[#006eff] hover:bg-blue-50 rounded-xl transition-colors cursor-pointer"
-                  title="Share article"
-                >
-                  <Share2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setActivePost(null)}
-                  className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-                  title="Close article"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Article Title & Author */}
-            <div className="space-y-4">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
-                {activePost.title}
-              </h1>
-
-              <div className="flex items-center gap-3 pt-1">
-                <img
-                  src={activePost.author.avatar}
-                  alt={activePost.author.name}
-                  className="w-11 h-11 rounded-full object-cover border-2 border-slate-200"
-                />
-                <div>
-                  <div className="text-sm font-bold text-slate-900">
-                    {activePost.author.name}
-                  </div>
-                  <div className="text-xs text-slate-500 font-mono flex items-center gap-2">
-                    <span>{activePost.author.role}</span>
-                    <span>•</span>
-                    <span>{activePost.date}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Article Content */}
-            <div className="space-y-6 text-slate-700 text-sm sm:text-base leading-relaxed pt-2">
-              <p className="text-base sm:text-lg text-slate-800 font-medium leading-relaxed bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200/80">
-                {activePost.content.intro}
-              </p>
-
-              {activePost.content.sections.map((sec, sIdx) => (
-                <div key={sIdx} className="space-y-3 pt-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-                    {sec.heading}
-                  </h3>
-                  {sec.body.map((para, pIdx) => (
-                    <p key={pIdx} className="text-slate-600 leading-relaxed text-sm sm:text-base">
-                      {para}
-                    </p>
-                  ))}
-                  {sec.keyTakeaway && (
-                    <div className="flex items-start gap-3 p-3.5 bg-blue-50/70 border border-blue-100 rounded-xl text-xs sm:text-sm text-[#0048ba] font-semibold">
-                      <CheckCircle2 className="w-4 h-4 text-[#006eff] shrink-0 mt-0.5" />
-                      <span>{sec.keyTakeaway}</span>
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              <div className="pt-4 border-t border-slate-100 space-y-3">
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
-                  Final Thoughts
-                </h4>
-                <p className="text-slate-700 leading-relaxed italic text-sm sm:text-base">
-                  &ldquo;{activePost.content.conclusion}&rdquo;
-                </p>
-              </div>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 pt-4">
-                {activePost.tags.map((t) => (
-                  <span
-                    key={t}
-                    className="px-3 py-1 rounded-full bg-slate-100 text-xs font-semibold text-slate-700 font-mono"
-                  >
-                    #{t}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-xs text-slate-400">
-                <Bookmark className="w-4 h-4 text-[#006eff]" />
-                <span>Gaenr Verified Editorial Publication</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActivePost(null)}
-                className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-colors cursor-pointer text-center"
-              >
-                Close Article
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

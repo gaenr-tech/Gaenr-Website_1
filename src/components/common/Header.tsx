@@ -50,6 +50,7 @@ export const Header: React.FC = () => {
     { label: 'Home', route: '/' },
     { label: 'Services', route: '/services' },
     { label: 'Experts', route: '/experts' },
+    { label: 'Blogs', route: '/blogs' },
     { label: 'Testimonial', route: '/testimonials' },
     { label: 'Contact', route: '/contact' },
   ];
@@ -76,9 +77,13 @@ export const Header: React.FC = () => {
         }}
       >
         {/* Zone 1: Frameless Wordmark & Logo */}
-        <button
-          onClick={() => handleNavClick('/')}
-          className="group flex items-center gap-2.5 text-left focus-visible:outline-2 focus-visible:outline-blue-600 cursor-pointer"
+        <a
+          href="/"
+          onClick={(e) => {
+            e.preventDefault();
+            handleNavClick('/');
+          }}
+          className="group flex items-center gap-2.5 text-left focus-visible:outline-2 focus-visible:outline-blue-600 cursor-pointer no-underline"
           aria-label="Gaenr Homepage"
         >
           <div className="flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
@@ -91,7 +96,7 @@ export const Header: React.FC = () => {
           <span className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white select-none transition-colors">
             {branding.siteTitle}
           </span>
-        </button>
+        </a>
 
         {/* Zone 2: Navigation Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
@@ -102,10 +107,14 @@ export const Header: React.FC = () => {
                 : currentRoute.startsWith(link.route);
 
             return (
-              <button
+              <a
                 key={link.route}
-                onClick={() => handleNavClick(link.route)}
-                className={`relative py-1 transition-colors whitespace-nowrap cursor-pointer ${
+                href={link.route}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(link.route);
+                }}
+                className={`relative py-1 transition-colors whitespace-nowrap cursor-pointer no-underline ${
                   isActive
                     ? 'text-blue-600 dark:text-blue-400 font-semibold'
                     : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
@@ -120,7 +129,7 @@ export const Header: React.FC = () => {
                 {isActive && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full" />
                 )}
-              </button>
+              </a>
             );
           })}
         </nav>
@@ -208,17 +217,21 @@ export const Header: React.FC = () => {
                   ? currentRoute === '/'
                   : currentRoute.startsWith(link.route);
               return (
-                <button
+                <a
                   key={link.route}
-                  onClick={() => handleNavClick(link.route)}
-                  className={`flex items-center justify-between text-left px-3 py-2.5 rounded-lg text-base font-medium transition-colors cursor-pointer ${
+                  href={link.route}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(link.route);
+                  }}
+                  className={`flex items-center justify-between text-left px-3 py-2.5 rounded-lg text-base font-medium transition-colors cursor-pointer no-underline ${
                     isActive
                       ? 'bg-blue-50 dark:bg-blue-600/25 dark:text-blue-400 dark:border dark:border-blue-500/30 font-semibold'
                       : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/8'
                   }`}
                 >
                   <span>{link.label}</span>
-                </button>
+                </a>
               );
             })}
           </div>

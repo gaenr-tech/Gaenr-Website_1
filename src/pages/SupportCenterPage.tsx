@@ -127,8 +127,26 @@ export const SupportCenterPage: React.FC = () => {
     setOpenFaq((prev) => (prev === id ? null : id));
   };
 
+  // Structured Data (JSON-LD) for Search Engine Rich FAQ Accordions
+  const faqSchema = React.useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQS.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }), []);
+
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 antialiased space-y-10 sm:space-y-12 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       {/* =========================================================================
           HERO BANNER: Artistic Organic Flowing Aurora & Smooth Waves
           - Matching standard py-12 sm:py-16 banner across ecosystem

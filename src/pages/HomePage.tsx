@@ -22,6 +22,7 @@ import {
   Briefcase,
   TrendingUp,
   Percent,
+  BookOpen,
 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
@@ -240,6 +241,11 @@ export const HomePage: React.FC = () => {
             {/* Left Content Column: order-2 on mobile (below visual), order-1 on desktop */}
             <div className="lg:col-span-6 space-y-6 text-left order-2 lg:order-1">
               <div className="space-y-3">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50/90 dark:bg-blue-950/70 border border-blue-200/90 dark:border-blue-500/30 text-xs font-semibold text-[#0256d0] dark:text-[#38bdf8] shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-[#0256d0] dark:bg-[#38bdf8] animate-pulse" />
+                  <span>The Managed Ecosystem for Freelancing in BD</span>
+                </div>
+
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.14]">
                   ARE YOU <br />
                   <span className="text-[#0256d0] dark:text-[#38bdf8] drop-shadow-[0_2px_12px_rgba(56,189,248,0.35)]">
@@ -248,7 +254,7 @@ export const HomePage: React.FC = () => {
                 </h1>
 
                 <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
-                  Assign your tasks and get reliable results. Gaenr connects you with verified experts who deliver efficiently, So you can focus on what matters.
+                  Experience modern <strong>freelancing in BD</strong> with zero platform fees. Gaenr connects businesses with verified student freelancers in Bangladesh for graphics design, WordPress, video editing, and managed outsourcing with 100% escrow protection.
                 </p>
               </div>
 
@@ -326,22 +332,26 @@ export const HomePage: React.FC = () => {
 
               <div className="space-y-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-xl">
                 <p>
-                  Gaenr connects skilled freelancers directly with clients who need quality work done efficiently—no bidding wars, no unnecessary layers.
+                  Transforming freelancing in Bangladesh: Gaenr connects skilled student creators directly with businesses needing quality digital deliverables—no bidding wars, zero platform markups, and fast turnaround.
                 </p>
                 <p>
-                  Direct matching, clear project confirmation, and escrow security that protects every delivery.
+                  Direct talent matching, clear project confirmation, and escrow security that protects every delivery from Dhaka to global markets.
                 </p>
               </div>
 
               {/* Section link button with animated underline */}
               <div className="pt-2">
-                <button
-                  onClick={() => navigate('/about-us')}
-                  className="gaenr-link-btn !text-base"
+                <a
+                  href="/about-us"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/about-us');
+                  }}
+                  className="gaenr-link-btn !text-base no-underline"
                 >
                   <span>Know More About Us</span>
                   <ChevronRight className="w-4 h-4" />
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -381,13 +391,17 @@ export const HomePage: React.FC = () => {
 
               {/* Section link button with animated underline */}
               <div className="pt-2">
-                <button
-                  onClick={() => navigate('/feedback')}
-                  className="gaenr-link-btn !text-base"
+                <a
+                  href="/feedback"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/feedback');
+                  }}
+                  className="gaenr-link-btn !text-base no-underline"
                 >
                   <span>Share Feedback</span>
                   <ChevronRight className="w-4 h-4" />
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -409,17 +423,24 @@ export const HomePage: React.FC = () => {
               Available Services
             </span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
-              Services That Move You Forward
+              Top Freelancing Services in BD
             </h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+              Discover in-demand freelancing services in Bangladesh delivered by verified university talent with direct milestone escrow.
+            </p>
           </div>
 
           {/* 6 Services Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
             {coreServices.map((service) => (
-              <div
+              <a
                 key={service.slug}
-                onClick={() => navigate(`/services/${service.slug}`)}
-                className="group p-5 bg-white dark:bg-[#14213d]/85 dark:border-white/12 dark:backdrop-blur-md hover:border-[#0256d0] dark:hover:border-blue-400/60 hover:shadow-md dark:hover:shadow-[0_8px_30px_rgba(2,86,208,0.25)] border border-slate-200/90 rounded-2xl shadow-xs transition-all cursor-pointer space-y-2.5 flex flex-col justify-start text-left"
+                href={`/services/${service.slug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/services/${service.slug}`);
+                }}
+                className="group p-5 bg-white dark:bg-[#14213d]/85 dark:border-white/12 dark:backdrop-blur-md hover:border-[#0256d0] dark:hover:border-blue-400/60 hover:shadow-md dark:hover:shadow-[0_8px_30px_rgba(2,86,208,0.25)] border border-slate-200/90 rounded-2xl shadow-xs transition-all cursor-pointer space-y-2.5 flex flex-col justify-start text-left no-underline text-inherit"
               >
                 {/* Visual Icon Badge */}
                 <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/40 border border-blue-100 dark:border-blue-500/30 flex items-center justify-center transition-transform group-hover:scale-105">
@@ -433,19 +454,23 @@ export const HomePage: React.FC = () => {
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                   {service.desc}
                 </p>
-              </div>
+              </a>
             ))}
           </div>
 
           {/* Main Section CTA: Centered with animated underline */}
           <div className="pt-6 flex justify-center">
-            <button
-              onClick={() => navigate('/services')}
-              className="gaenr-link-btn !text-base"
+            <a
+              href="/services"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/services');
+              }}
+              className="gaenr-link-btn !text-base no-underline"
             >
               <span>Let's Explore</span>
               <ChevronRight className="w-4 h-4" />
-            </button>
+            </a>
           </div>
         </div>
       </section>
@@ -563,7 +588,7 @@ export const HomePage: React.FC = () => {
               <span>Gaenr's Offerings</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              An Ecosystem Designed for Your Growth
+              An Ecosystem Designed for Freelancing in BD
             </h2>
           </div>
 
@@ -579,7 +604,7 @@ export const HomePage: React.FC = () => {
                 <div className="flex items-center justify-between gap-2">
                   <div className="space-y-0.5 min-w-0">
                     <span className="text-[#0256d0] dark:text-[#38bdf8] font-bold text-xs uppercase tracking-wider block">For Outsourcers</span>
-                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate">Hire Verified Experts</h3>
+                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate">Hire Verified Freelancers in BD</h3>
                   </div>
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#eff6ff] text-[#0256d0] border border-blue-200 whitespace-nowrap shrink-0 dark:!bg-white dark:!text-[#0248ad] dark:!border-white dark:shadow-[0_0_14px_rgba(255,255,255,0.4)] badge-highlight-white">
                     0% Platform Fee
@@ -711,7 +736,7 @@ export const HomePage: React.FC = () => {
                 <div className="flex items-center justify-between gap-2">
                   <div className="space-y-0.5 min-w-0">
                     <span className="text-[#0256d0] dark:text-[#38bdf8] font-bold text-xs uppercase tracking-wider block">For Experts</span>
-                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate">Earn While You Build</h3>
+                    <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate">Start Freelancing in BD</h3>
                   </div>
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-[#eff6ff] text-[#0256d0] border border-blue-200 whitespace-nowrap shrink-0 dark:!bg-white dark:!text-[#0248ad] dark:!border-white dark:shadow-[0_0_14px_rgba(255,255,255,0.4)] badge-highlight-white">
                     Guaranteed Pay
@@ -1187,6 +1212,119 @@ export const HomePage: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION: Freelancing in BD — Editorial & Industry Insights
+         ========================================================================= */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 border-t border-slate-200/80 dark:border-slate-800/80 bg-slate-50/70 dark:bg-[#070b14]">
+        <div className="max-w-7xl mx-auto space-y-12">
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-3 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-[#006eff] border border-blue-500/20">
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Freelancing in BD — Intelligence</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Guides &amp; Playbooks on Freelancing in Bangladesh
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+                Actionable blueprints on hiring verified student creators, protecting deposits through escrow, and understanding digital outsourcing economics in BD.
+              </p>
+            </div>
+
+            <button
+              onClick={() => navigate('/blogs')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 hover:border-[#006eff] font-bold text-xs sm:text-sm transition-all shadow-xs shrink-0 self-start md:self-auto cursor-pointer"
+            >
+              <span>Explore All Articles</span>
+              <ArrowRight className="w-4 h-4 text-[#006eff]" />
+            </button>
+          </div>
+
+          {/* 3 Featured Articles Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                slug: 'freelancing-in-bd-guide',
+                category: 'Freelancing in BD',
+                readTime: '8 min read',
+                date: 'Nov 08, 2026',
+                title: 'Freelancing in BD: The Complete Guide to Hiring Talent & Building Remote Careers in Bangladesh',
+                excerpt: 'Everything you need to know about freelancing in BD: market economics, hiring verified student talent, escrow fund protection, and 0% platform commission.',
+                tags: ['Freelancing in BD', 'Hire Freelancers BD'],
+              },
+              {
+                slug: 'top-freelance-marketplaces-bangladesh',
+                category: 'Freelancing in BD',
+                readTime: '9 min read',
+                date: 'Nov 07, 2026',
+                title: 'Top Freelance Marketplaces in Bangladesh: Why Businesses & Creators Choose Zero-Commission in BD',
+                excerpt: 'Compare the best freelance marketplaces in Bangladesh. Discover why traditional bidding sites lose out to managed, zero-commission ecosystems with bKash/Nagad escrow in BD.',
+                tags: ['Freelance Marketplace BD', 'Best Platform BD'],
+              },
+              {
+                slug: 'how-to-hire-freelancers-in-bd',
+                category: 'Freelancing in BD',
+                readTime: '8 min read',
+                date: 'Nov 06, 2026',
+                title: 'How to Hire Freelancers in BD: The Complete Employer’s Guide to Sourcing Top Talent Without Risk',
+                excerpt: 'A step-by-step blueprint for businesses, agencies, and founders looking to hire freelancers in BD. Learn how to verify portfolios and protect deposits with escrow.',
+                tags: ['Hire Freelancers in BD', 'Outsourcing BD'],
+              },
+            ].map((art) => (
+              <a
+                key={art.slug}
+                href={`/blogs/${art.slug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/blogs/${art.slug}`);
+                }}
+                className="group bg-white dark:bg-[#0c1322] border border-slate-200/90 dark:border-slate-800 rounded-3xl p-6 shadow-xs hover:shadow-xl hover:border-blue-400 dark:hover:border-blue-500 transition-all flex flex-col justify-between space-y-4 no-underline cursor-pointer"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="px-2.5 py-0.5 rounded-full font-mono font-bold text-[10px] uppercase bg-blue-50 dark:bg-blue-950/60 text-[#006eff] border border-blue-200/60 dark:border-blue-800/60">
+                      {art.category}
+                    </span>
+                    <span className="text-slate-400 font-mono text-[11px]">{art.readTime}</span>
+                  </div>
+
+                  <h3 className="font-extrabold text-base text-slate-900 dark:text-white group-hover:text-[#006eff] transition-colors leading-snug line-clamp-2">
+                    {art.title}
+                  </h3>
+
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">
+                    {art.excerpt}
+                  </p>
+
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {art.tags.map((t) => (
+                      <span key={t} className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-medium">
+                        #{t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <img src="/logo.svg" alt="Gaenr" className="w-6 h-6 rounded-full object-contain p-0.5 bg-white border border-slate-200" />
+                    <div>
+                      <p className="text-xs font-bold text-slate-900 dark:text-slate-200">Gaenr</p>
+                      <p className="text-[10px] text-slate-400 font-mono">{art.date}</p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#006eff] group-hover:translate-x-1 transition-transform">
+                    <span>Read</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+              </a>
+            ))}
           </div>
         </div>
       </section>

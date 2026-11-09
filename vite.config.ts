@@ -142,6 +142,12 @@ export default defineConfig(() => {
             if (id.includes('node_modules/lucide-react')) {
               return 'vendor-icons';
             }
+            if (id.includes('node_modules/pdf-lib') || id.includes('node_modules/@pdf-lib')) {
+              return 'vendor-pdf';
+            }
+            if (id.includes('node_modules/modern-screenshot')) {
+              return 'vendor-screenshot';
+            }
           },
         },
       },

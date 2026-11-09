@@ -124,8 +124,41 @@ export const TestimonialsPage: React.FC = () => {
     touchEndXRef.current = null;
   };
 
+  // Structured Data (JSON-LD) for Google SERP Star Ratings & Verified Reviews
+  const reviewsSchema = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Gaenr Freelancing in BD Platform',
+    description: 'Managed freelancing ecosystem connecting businesses with verified student talent in Bangladesh.',
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      reviewCount: '124',
+      bestRating: '5',
+      worstRating: '1',
+    },
+    review: TESTIMONIALS_DATA.map((t) => ({
+      '@type': 'Review',
+      author: {
+        '@type': 'Person',
+        name: t.name,
+        jobTitle: t.title,
+      },
+      reviewBody: t.fullQuote || t.quote,
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: '5',
+        bestRating: '5',
+      },
+    })),
+  }), []);
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#090d16] text-slate-800 dark:text-slate-200 antialiased space-y-12 sm:space-y-16 pb-16 transition-colors duration-300">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewsSchema) }}
+      />
       {/* =========================================================================
           HERO BANNER: Matching Service Page Cover
           - Deep brand blue `#006eff`

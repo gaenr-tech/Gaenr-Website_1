@@ -14,13 +14,17 @@ const maxBodyBytes = 8 * 1024 * 1024;
 
 const corsOrigin = process.env.CORS_ORIGIN || '*';
 
-const send = (res, status, body, contentType = 'application/json; charset=utf-8') => {
+const send = (res, status, body, contentType = 'application/json; charset=utf-8', extraHeaders = {}) => {
   res.writeHead(status, {
     'Content-Type': contentType,
     'Cache-Control': 'no-store, no-cache, must-revalidate',
     'Access-Control-Allow-Origin': corsOrigin,
     'Access-Control-Allow-Methods': 'GET,POST,PUT,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cache-Control',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'SAMEORIGIN',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    ...extraHeaders,
   });
   if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
     res.end(body);
@@ -60,20 +64,49 @@ const serveStatic = async (req, res) => {
   try {
     const stat = await fs.stat(safePath);
     if (stat.isFile()) {
-      const extension = path.extname(safePath);
+      const extension = path.extname(safePath).toLowerCase();
       const contentTypes = {
         '.html': 'text/html; charset=utf-8',
         '.js': 'text/javascript; charset=utf-8',
         '.css': 'text/css; charset=utf-8',
         '.svg': 'image/svg+xml',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.webp': 'image/webp',
+        '.gif': 'image/gif',
+        '.ico': 'image/x-icon',
+        '.woff2': 'font/woff2',
+        '.woff': 'font/woff',
+        '.ttf': 'font/ttf',
         '.json': 'application/json; charset=utf-8',
+        '.xml': 'application/xml; charset=utf-8',
+        '.txt': 'text/plain; charset=utf-8',
       };
-      send(res, 200, await fs.readFile(safePath), contentTypes[extension] || 'application/octet-stream');
+
+      // Set optimized caching headers
+      let cacheControl = 'no-store, no-cache, must-revalidate';
+      if (safePath.includes(`${path.sep}assets${path.sep}`) || extension === '.woff2' || extension === '.woff') {
+        // Hashed bundle assets & fonts: immutable cache for 1 year
+        cacheControl = 'public, max-age=31536000, immutable';
+      } else if (['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif', '.ico'].includes(extension)) {
+        // Static imagery: 7 days cache with revalidation
+        cacheControl = 'public, max-age=604800, stale-while-revalidate=86400';
+      } else if (extension === '.html') {
+        // HTML entry files: revalidate immediately for fresh deployments
+        cacheControl = 'no-cache, must-revalidate';
+      }
+
+      send(res, 200, await fs.readFile(safePath), contentTypes[extension] || 'application/octet-stream', {
+        'Cache-Control': cacheControl,
+      });
       return;
     }
   } catch {}
   try {
-    send(res, 200, await fs.readFile(path.join(distDir, 'index.html')), 'text/html; charset=utf-8');
+    send(res, 200, await fs.readFile(path.join(distDir, 'index.html')), 'text/html; charset=utf-8', {
+      'Cache-Control': 'no-cache, must-revalidate',
+    });
   } catch {
     send(res, 404, { error: 'Frontend build not found. Run npm run build first.' });
   }

@@ -31,9 +31,11 @@ import { TermsPage } from './pages/policies/TermsPage';
 import { ReturnPolicyPage } from './pages/policies/ReturnPolicyPage';
 import { SupportCenterPage } from './pages/SupportCenterPage';
 import { BlogsPage } from './pages/BlogsPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { GaenrChatbot } from './components/chatbot/GaenrChatbot';
 import { SitePreloader } from './components/common/SitePreloader';
+import { updatePageMeta } from './utils/seo';
 import { ServiceSlug } from './types';
 import { X, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
@@ -96,9 +98,23 @@ const AppContent: React.FC = () => {
     };
   }, []);
 
+  // Synchronize SEO document title, meta tags, and canonical links on route change
+  React.useEffect(() => {
+    updatePageMeta(currentRoute);
+  }, [currentRoute]);
+
   const renderCurrentPage = () => {
     // Normalize path by stripping query parameters and hash anchors for robust matching
     const cleanRoute = currentRoute.split('#')[0].split('?')[0];
+
+    // Blog article route match: /blogs/:slug or /blog/:slug
+    if (cleanRoute.startsWith('/blogs/') || cleanRoute.startsWith('/blog/')) {
+      const slug = cleanRoute.replace(/^\/(blogs|blog)\//, '').replace(/\/+$/, '').trim();
+      if (slug) {
+        return <BlogsPage initialSlug={slug} />;
+      }
+      return <BlogsPage />;
+    }
 
     // Service detail route match: /services/:slug
     if (cleanRoute.startsWith('/services/')) {
@@ -218,9 +234,11 @@ const AppContent: React.FC = () => {
       case '/manage/applications':
       case '/manage/feedbacks':
         return <AdminDashboard />;
+      case '':
       case '/':
-      default:
         return <HomePage />;
+      default:
+        return <NotFoundPage />;
     }
   };
 

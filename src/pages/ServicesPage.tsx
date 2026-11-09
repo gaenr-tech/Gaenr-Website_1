@@ -226,10 +226,14 @@ export const ServicesPage: React.FC = () => {
         {/* 7 Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
           {servicesList.map((svc) => (
-            <div
+            <a
               key={svc.slug}
-              onClick={() => navigate(`/services/${svc.slug}`)}
-              className="group bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:border-[#0256d0]/60 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
+              href={`/services/${svc.slug}`}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(`/services/${svc.slug}`);
+              }}
+              className="group bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:border-[#0256d0]/60 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer no-underline text-inherit"
             >
               {/* Photo preview header with smooth zoom hover */}
               <div className="p-4 sm:p-5 pb-3">
@@ -270,7 +274,7 @@ export const ServicesPage: React.FC = () => {
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </section>

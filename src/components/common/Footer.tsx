@@ -151,44 +151,64 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <button
-                  onClick={() => navigate('/about-us')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="/about-us"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/about-us');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer block no-underline text-inherit"
                 >
                   About Us
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={() => navigate('/contact')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="/contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/contact');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer block no-underline text-inherit"
                 >
                   Contact Us
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={() => navigate('/join-as-expert')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="/join-as-expert"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/join-as-expert');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer block no-underline text-inherit"
                 >
                   Careers
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={() => navigate('/blogs')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="/blogs"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/blogs');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer block no-underline text-inherit"
                 >
                   Blogs
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={() => navigate('/feedback')}
-                  className="transition-colors cursor-pointer text-[#1877F2] hover:underline font-semibold"
+                <a
+                  href="/feedback"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/feedback');
+                  }}
+                  className="transition-colors cursor-pointer text-[#1877F2] hover:underline font-semibold block no-underline"
                 >
                   Share Feedback
-                </button>
+                </a>
               </li>
             </ul>
           </div>
@@ -200,36 +220,52 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <button
-                  onClick={() => navigate('/privacy-policy')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="/privacy-policy"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/privacy-policy');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer block no-underline text-inherit"
                 >
                   Privacy Policy
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={() => navigate('/terms')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="/terms"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/terms');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer block no-underline text-inherit"
                 >
                   Terms of Service
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={() => navigate('/return-policy')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="/return-policy"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/return-policy');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer block no-underline text-inherit"
                 >
                   Return Policy
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={() => navigate('/support')}
-                  className="hover:text-white transition-colors cursor-pointer"
+                <a
+                  href="/support"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate('/support');
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer block no-underline text-inherit"
                 >
                   Support Center
-                </button>
+                </a>
               </li>
             </ul>
           </div>
@@ -242,8 +278,10 @@ export const Footer: React.FC = () => {
               </h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <button
-                    onClick={() => {
+                  <a
+                    href="/join-as-expert#how-to-get-payment"
+                    onClick={(e) => {
+                      e.preventDefault();
                       if (currentRoute.split('#')[0] === '/join-as-expert') {
                         window.location.hash = 'how-to-get-payment';
                         window.dispatchEvent(new CustomEvent('select-expert-slide', { detail: { slideIndex: 2 } }));
@@ -255,14 +293,16 @@ export const Footer: React.FC = () => {
                         navigate('/join-as-expert#how-to-get-payment');
                       }
                     }}
-                    className="hover:text-white transition-colors cursor-pointer text-left"
+                    className="hover:text-white transition-colors cursor-pointer text-left block no-underline text-inherit"
                   >
                     Payment Procedure
-                  </button>
+                  </a>
                 </li>
                 <li>
-                  <button
-                    onClick={() => {
+                  <a
+                    href="/services#how-to-assign-task"
+                    onClick={(e) => {
+                      e.preventDefault();
                       if (currentRoute.split('#')[0] === '/services') {
                         const el = document.getElementById('how-to-assign-task');
                         if (el) {
@@ -272,18 +312,22 @@ export const Footer: React.FC = () => {
                         navigate('/services#how-to-assign-task');
                       }
                     }}
-                    className="hover:text-white transition-colors cursor-pointer text-left"
+                    className="hover:text-white transition-colors cursor-pointer text-left block no-underline text-inherit"
                   >
                     Task Assign Process
-                  </button>
+                  </a>
                 </li>
                 <li>
-                  <button
-                    onClick={() => navigate('/join-as-expert')}
-                    className="hover:text-white transition-colors cursor-pointer text-left"
+                  <a
+                    href="/join-as-expert"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/join-as-expert');
+                    }}
+                    className="hover:text-white transition-colors cursor-pointer text-left block no-underline text-inherit"
                   >
                     Become an Expert Process
-                  </button>
+                  </a>
                 </li>
               </ul>
             </div>
