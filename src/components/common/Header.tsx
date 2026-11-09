@@ -50,7 +50,6 @@ export const Header: React.FC = () => {
     { label: 'Home', route: '/' },
     { label: 'Services', route: '/services' },
     { label: 'Experts', route: '/experts' },
-    { label: 'Blogs', route: '/blogs' },
     { label: 'Testimonial', route: '/testimonials' },
     { label: 'Contact', route: '/contact' },
   ];

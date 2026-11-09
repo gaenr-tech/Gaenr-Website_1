@@ -78,8 +78,8 @@ export const NotFoundPage: React.FC = () => {
 
         {/* Quick Links */}
         <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800/60 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500 dark:text-slate-400">
-          <button onClick={() => navigate('/blogs/freelancing-in-bd-guide')} className="hover:text-[#006eff] transition-colors flex items-center gap-1">
-            Freelancing in BD Guide <ArrowRight className="w-3 h-3" />
+          <button onClick={() => navigate('/blogs')} className="hover:text-[#006eff] transition-colors flex items-center gap-1">
+            Gaenr Academy Insights <ArrowRight className="w-3 h-3" />
           </button>
           <span>•</span>
           <button onClick={() => navigate('/support')} className="hover:text-[#006eff] transition-colors flex items-center gap-1">

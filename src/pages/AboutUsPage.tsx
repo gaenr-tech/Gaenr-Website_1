@@ -55,7 +55,7 @@ export const AboutUsPage: React.FC = () => {
             About Us
           </h1>
           <p className="text-sm sm:text-base text-white/95 font-normal leading-relaxed text-center">
-            Gaenr is Bangladesh’s dedicated marketplace for verified experts connecting talent students with clients.
+            Gaenr is a Bangladesh-based freelancing platform for all—connecting verified student talent and creators with clients worldwide and locally.
           </p>
         </article>
       </section>
@@ -83,10 +83,10 @@ export const AboutUsPage: React.FC = () => {
           </h2>
           <div className="space-y-4 text-sm sm:text-base text-slate-600 leading-relaxed">
             <p>
-              Gaenr is a Bangladesh-based freelance platform built for the local economy. We connect skilled professionals including students, independent specialists, homemakers, and entrepreneurs with businesses and individuals seeking reliable, high-quality work at competitive local rates.
+              Gaenr is a Bangladesh-based freelancing platform for all. We connect skilled student specialists, independent professionals, and emerging creators with businesses, startups, and clients worldwide and locally seeking reliable, high-quality execution without excessive commissions or friction.
             </p>
             <p>
-              Unlike global freelancing platforms, Gaenr eliminates complex payment gateways and high commission fees, making it easier for Bangladeshi talent to earn and for clients to get work done.
+              By combining structured milestone escrow, verified talent portfolios, and direct collaboration, Gaenr eliminates middleman markups and complicated barriers, making it seamless for talent to earn and for clients to get exceptional work done.
             </p>
           </div>
         </article>
@@ -165,7 +165,7 @@ export const AboutUsPage: React.FC = () => {
                 <Wallet className="size-6 sm:size-7 -rotate-45 text-[#006eff]" />
               </div>
               <p className="font-semibold text-white text-xs sm:text-sm leading-snug">
-                Local Currency Payments
+                Frictionless Secure Payments
               </p>
             </li>
 

@@ -177,7 +177,7 @@ export const ContactPage: React.FC = () => {
   const contactSchema = React.useMemo(() => ({
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: 'Gaenr — Freelancing in BD & Outsourcing Ecosystem',
+    name: 'Gaenr — Managed Freelance & Outsourcing Ecosystem',
     image: 'https://gaenr.com/images/gaenr-logo-card.png',
     telephone: '+880-9647-922800',
     email: 'hello@gaenr.com',

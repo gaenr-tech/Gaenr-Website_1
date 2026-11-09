@@ -47,92 +47,136 @@ const SERVICE_META: Record<string, { title: string; description: string }> = {
 };
 
 const BLOG_META: Record<string, { title: string; description: string }> = {
+  'oxford-online-labour-index-bangladesh-talent': {
+    title: 'Empirical Evidence: Bangladesh in the Oxford Online Labour Index | Gaenr Academy',
+    description: 'Academic analysis of Oxford Internet Institute (OII) data showing Bangladesh capturing 16% of global digital labor supply, ranking 2nd worldwide.',
+  },
+  'economics-of-freelance-escrow-vs-bidding-markets': {
+    title: 'Contract Theory & Asymmetric Information: Escrow vs. Bidding Markets | Gaenr Academy',
+    description: 'An economic analysis using Akerlof\'s Market for Lemons and Williamson\'s transaction cost framework to prove why uncurated bidding auctions fail.',
+  },
+  'neuroscience-of-short-form-video-retention-research': {
+    title: 'The Neuroscience of Short-Form Video Retention: 1,500ms Cognitive Window | Gaenr Academy',
+    description: 'Empirical research on visual cognitive processing, saccadic eye movement, and dopamine reward circuitry in high-retention video editing.',
+  },
+  'google-core-web-vitals-performance-economics': {
+    title: 'The Millisecond Economy: Core Web Vitals & Conversion Yields | Gaenr Academy',
+    description: 'Analyzing 10,000+ domains across Deloitte, Google CrUX, and Aberdeen Group studies. Proving how 100ms latency cuts elevate conversion rates by 8.4%.',
+  },
+  'human-capital-theory-student-freelancing-research': {
+    title: 'Gary Becker\'s Human Capital Theory Applied to Student Freelancing | Gaenr Academy',
+    description: 'A socioeconomic inquiry into student digital labor. How university students build verified market proof-of-work, accelerating career velocity by 42%.',
+  },
   'freelancing-in-bd-guide': {
-    title: 'Freelancing in BD: The Complete Guide to Hiring Talent & Remote Careers in Bangladesh | Gaenr',
-    description: 'Everything you need to know about freelancing in BD: market economics, hiring verified student talent, escrow fund protection, and 0% platform commission.',
+    title: 'Freelancing Guide: Hiring Verified Talent & Managing Remote Work | Gaenr Academy',
+    description: 'Strategic insights on digital collaboration, verified talent selection, escrow fund protection, and frictionless execution.',
   },
   'top-freelance-marketplaces-bangladesh': {
-    title: 'Top Freelance Marketplaces in Bangladesh — Best Freelancing Platform in BD | Gaenr',
-    description: 'Compare the best freelance marketplaces in Bangladesh. Discover why traditional bidding sites lose out to managed, zero-commission ecosystems with bKash/Nagad escrow in BD.',
+    title: 'Analyzing Freelance Marketplaces: The Shift Toward Curated Ecosystems | Gaenr Academy',
+    description: 'A structural comparison of traditional bidding platforms versus managed, zero-commission ecosystems with escrow protection.',
   },
   'how-to-hire-freelancers-in-bd': {
-    title: 'How to Hire Freelancers in BD — Verified Employer Playbook | Gaenr',
-    description: 'Step-by-step blueprint to hire freelancers in BD. Learn how to verify portfolios, protect project deposits with escrow, and scale design and tech operations in Bangladesh.',
+    title: 'How to Hire Digital Freelancers: Verified Employer Playbook | Gaenr Academy',
+    description: 'Step-by-step blueprint to evaluate portfolios, structure milestone deliverables, and scale creative and technical operations.',
   },
   'student-freelancing-in-bd-guide': {
-    title: 'Student Freelancing in BD — How University Students Earn in Bangladesh | Gaenr',
-    description: 'The definitive roadmap for university students in Bangladesh looking to start freelancing. How students in BUET, DU, NSU balance studies and earn 100% of their fees.',
+    title: 'Student Freelancing Roadmap: Academic Balance & Skill Monetization | Gaenr Academy',
+    description: 'Practical framework for university students balancing academic coursework with high-value technical and creative client work.',
   },
   'freelance-outsourcing-in-bangladesh': {
-    title: 'Freelance Outsourcing in Bangladesh — Digital Outsourcing in BD | Gaenr',
-    description: 'Explore why global brands and local startups choose freelance outsourcing in BD. Cost efficiency, English fluency, high-retention video capabilities, and managed escrow delivery.',
+    title: 'Global Outsourcing Dynamics: The Rise of Specialized Digital Hubs | Gaenr Academy',
+    description: 'How businesses worldwide leverage verified talent hubs for video production, modern web development, and digital marketing.',
+  },
+  'zero-commission-advantage-bangladesh': {
+    title: 'The Zero-Commission Advantage: Aligning Incentives in Knowledge Work | Gaenr Academy',
+    description: 'Why high platform commissions distort market pricing and why zero-commission models attract top-tier creative professionals.',
+  },
+  'student-freelancer-proof-of-work-guide': {
+    title: 'Building Proof-of-Work: The Student Freelancer\'s Asset Guide | Gaenr Academy',
+    description: 'Why live, verifiable case studies and milestone outcomes outperform generic resumes in modern client acquisition.',
+  },
+  'video-editing-retention-playbook': {
+    title: 'Video Retention Playbook: Pacing, Motion, and Sound Design Systems | Gaenr Academy',
+    description: 'Technical framework for editors creating high-engagement social media content across TikTok, Instagram Reels, and YouTube Shorts.',
+  },
+  'wordpress-speed-optimization-checklist': {
+    title: 'WordPress Speed Optimization: Achieving Sub-Second Page Loads | Gaenr Academy',
+    description: 'Engineered guide to database optimization, cache architectures, and asset minification for production WordPress websites.',
+  },
+  'outsourcing-creative-work-risk-free': {
+    title: 'Risk-Free Creative Outsourcing: Escrow, Briefs, and Milestones | Gaenr Academy',
+    description: 'How founders and marketing teams safeguard budgets using milestone-based escrow delivery and clear revision protocols.',
+  },
+  'case-study-dhaka-fintech-rebrand': {
+    title: 'Case Study: Scaling Visual Identity for an Emerging Fintech Brand | Gaenr Academy',
+    description: 'Detailed breakdown of an end-to-end rebranding sprint: typography, design system, component libraries, and performance marketing assets.',
   },
 };
 
 const STATIC_ROUTE_META: Record<string, PageMeta> = {
   '/': {
-    title: 'Freelancing in BD — Hire Top Freelancers & Outsourcing Ecosystem | Gaenr',
-    description: 'Looking for freelancing in BD? Gaenr connects clients with verified student freelancers across Bangladesh for graphics design, WordPress, video editing, and outsourcing with zero platform commission.',
+    title: 'Gaenr — Bangladesh-Based Freelancing Platform for All',
+    description: 'Gaenr is a Bangladesh-based freelancing platform connecting global businesses, startups, and clients with verified student talent and digital experts with zero commission.',
     canonical: `${BASE_URL}/`,
   },
   '/services': {
-    title: 'Freelancing & Outsourcing Services in Bangladesh | Gaenr',
-    description: 'Explore top freelancing services in BD: graphics design, content writing, video editing, WordPress website design, UI/UX, and social media advertising with verified student talent.',
+    title: 'Services & Managed Outsourcing | Gaenr',
+    description: 'Explore creative and digital services on Gaenr: graphics design, content writing, video editing, WordPress website design, UI/UX, and social media advertising.',
     canonical: `${BASE_URL}/services`,
   },
   '/experts': {
-    title: 'Hire Freelancers in BD — Verified Student Freelancer Directory | Gaenr',
-    description: 'Browse top freelancers in BD. Inspect verified portfolios, completed deliverables, client reviews, and direct escrow hiring for graphics design, web, and video.',
+    title: 'Verified Digital Experts & Creator Directory | Gaenr',
+    description: 'Browse verified student talent and digital specialists on Gaenr. Inspect verified portfolios, deliverables, client reviews, and direct escrow hiring.',
     canonical: `${BASE_URL}/experts`,
   },
   '/freelancers': {
-    title: 'Hire Freelancers in BD — Verified Student Freelancer Directory | Gaenr',
-    description: 'Browse top freelancers in BD. Inspect verified portfolios, completed deliverables, client reviews, and direct escrow hiring for graphics design, web, and video.',
+    title: 'Verified Digital Experts & Creator Directory | Gaenr',
+    description: 'Browse verified student talent and digital specialists on Gaenr. Inspect verified portfolios, deliverables, client reviews, and direct escrow hiring.',
     canonical: `${BASE_URL}/experts`,
   },
   '/about': {
-    title: 'About Us — The Gaenr Mission & Ecosystem | Gaenr',
-    description: 'Discover Gaenr’s vision: empowering top university students with verified proof of work while providing businesses with direct, reliable freelancing in BD.',
+    title: 'About Us — Bangladesh-Based Freelancing Platform for All | Gaenr',
+    description: 'Discover Gaenr: a Bangladesh-based freelancing platform connecting verified student creators with clients worldwide and locally with zero commission.',
     canonical: `${BASE_URL}/about-us`,
   },
   '/about-us': {
-    title: 'About Us — The Gaenr Mission & Ecosystem | Gaenr',
-    description: 'Discover Gaenr’s vision: empowering top university students with verified proof of work while providing businesses with direct, reliable freelancing in BD.',
+    title: 'About Us — Bangladesh-Based Freelancing Platform for All | Gaenr',
+    description: 'Discover Gaenr: a Bangladesh-based freelancing platform connecting verified student creators with clients worldwide and locally with zero commission.',
     canonical: `${BASE_URL}/about-us`,
   },
   '/testimonials': {
     title: 'Client Testimonials & Verified Case Studies | Gaenr',
-    description: 'Read authentic reviews and feedback from founders, agency owners, and companies who outsource digital projects and hire freelancers in BD through Gaenr.',
+    description: 'Read authentic reviews and feedback from founders, agency owners, and companies who outsource digital projects and work with talent through Gaenr.',
     canonical: `${BASE_URL}/testimonials`,
   },
   '/blogs': {
-    title: 'Insights, Guides & Case Studies on Freelancing in BD | Gaenr Blog',
-    description: 'Actionable articles on freelancing in BD, zero-commission economics, web performance, and student career growth in Bangladesh.',
+    title: 'Gaenr Academy — Research, Insights & Industry Guides',
+    description: 'Authoritative research-backed articles, digital market studies, and guides by Gaenr Academy on outsourcing economics and digital craftsmanship.',
     canonical: `${BASE_URL}/blogs`,
   },
   '/blog': {
-    title: 'Insights, Guides & Case Studies on Freelancing in BD | Gaenr Blog',
-    description: 'Actionable articles on freelancing in BD, zero-commission economics, web performance, and student career growth in Bangladesh.',
+    title: 'Gaenr Academy — Research, Insights & Industry Guides',
+    description: 'Authoritative research-backed articles, digital market studies, and guides by Gaenr Academy on outsourcing economics and digital craftsmanship.',
     canonical: `${BASE_URL}/blogs`,
   },
   '/support': {
     title: 'Support Center & Frequently Asked Questions | Gaenr',
-    description: 'Get immediate answers about project escrow, refund guarantees, bKash & Nagad payment methods, and hiring freelancers in BD.',
+    description: 'Get immediate answers about project escrow, refund guarantees, payment methods, and collaborating with talent on Gaenr.',
     canonical: `${BASE_URL}/support`,
   },
   '/support-center': {
     title: 'Support Center & Frequently Asked Questions | Gaenr',
-    description: 'Get immediate answers about project escrow, refund guarantees, bKash & Nagad payment methods, and hiring freelancers in BD.',
+    description: 'Get immediate answers about project escrow, refund guarantees, payment methods, and collaborating with talent on Gaenr.',
     canonical: `${BASE_URL}/support`,
   },
   '/contact': {
-    title: 'Contact Us & Office Location in Dhaka | Gaenr',
-    description: 'Contact Gaenr in Dhaka, Bangladesh. Call 09647 922 800 or email hello@gaenr.com for immediate project onboarding and enterprise inquiries.',
+    title: 'Contact Us & Office Location | Gaenr',
+    description: 'Contact Gaenr. Call 09647 922 800 or email hello@gaenr.com for immediate project onboarding and enterprise inquiries.',
     canonical: `${BASE_URL}/contact`,
   },
   '/join-as-expert': {
-    title: 'Freelancing in BD for Students — Apply as Verified Freelancer | Gaenr',
-    description: 'Start freelancing in BD with 0% platform commission. Gaenr connects university students and creators with verified clients and direct escrow payouts.',
+    title: 'Join as Verified Expert — Monetize Your Craft | Gaenr',
+    description: 'Monetize your craft with 0% platform commission. Gaenr connects university students and creators with verified clients and direct escrow payouts.',
     canonical: `${BASE_URL}/join-as-expert`,
   },
   '/feedback': {

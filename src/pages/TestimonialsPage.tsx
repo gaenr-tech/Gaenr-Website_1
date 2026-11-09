@@ -128,8 +128,8 @@ export const TestimonialsPage: React.FC = () => {
   const reviewsSchema = useMemo(() => ({
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: 'Gaenr Freelancing in BD Platform',
-    description: 'Managed freelancing ecosystem connecting businesses with verified student talent in Bangladesh.',
+    name: 'Gaenr Managed Freelancing Platform',
+    description: 'Managed freelancing ecosystem connecting businesses with verified student talent.',
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: '4.9',
