@@ -51,8 +51,8 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '8 min read',
     date: 'Nov 08, 2026',
     author: {
-      name: 'Gaenr',
-      role: 'Official Editorial Board',
+      name: 'Gaenr Academy',
+      role: 'Editorial & Research Board',
       avatar: '/logo.svg',
     },
     excerpt:
@@ -108,7 +108,7 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '9 min read',
     date: 'Nov 07, 2026',
     author: {
-      name: 'Gaenr',
+      name: 'Gaenr Academy',
       role: 'Marketplace Intelligence',
       avatar: '/logo.svg',
     },
@@ -164,7 +164,7 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '8 min read',
     date: 'Nov 06, 2026',
     author: {
-      name: 'Gaenr',
+      name: 'Gaenr Academy',
       role: 'Client Success & Talent Team',
       avatar: '/logo.svg',
     },
@@ -223,7 +223,7 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '10 min read',
     date: 'Nov 05, 2026',
     author: {
-      name: 'Gaenr',
+      name: 'Gaenr Academy',
       role: 'Student Community & Mentorship',
       avatar: '/logo.svg',
     },
@@ -282,8 +282,8 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '7 min read',
     date: 'Nov 04, 2026',
     author: {
-      name: 'Gaenr',
-      role: 'Workforce & Economic Intelligence',
+      name: 'Gaenr Academy',
+      role: 'Workforce & Economic Research',
       avatar: '/logo.svg',
     },
     excerpt:
@@ -341,8 +341,8 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '6 min read',
     date: 'Nov 02, 2026',
     author: {
-      name: 'Gaenr',
-      role: 'Ecosystem Strategy',
+      name: 'Gaenr Academy',
+      role: 'Ecosystem Strategy Team',
       avatar: '/logo.svg',
     },
     excerpt:
@@ -389,7 +389,7 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '5 min read',
     date: 'Oct 30, 2026',
     author: {
-      name: 'Gaenr',
+      name: 'Gaenr Academy',
       role: 'UI/UX & Creative Review',
       avatar: '/logo.svg',
     },
@@ -427,8 +427,8 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '7 min read',
     date: 'Oct 26, 2026',
     author: {
-      name: 'Gaenr',
-      role: 'Creative Media Lead',
+      name: 'Gaenr Academy',
+      role: 'Creative Media Production',
       avatar: '/logo.svg',
     },
     excerpt:
@@ -464,8 +464,8 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '8 min read',
     date: 'Oct 21, 2026',
     author: {
-      name: 'Gaenr',
-      role: 'Lead Web Engineer',
+      name: 'Gaenr Academy',
+      role: 'Lead Web Engineering',
       avatar: '/logo.svg',
     },
     excerpt:
@@ -501,7 +501,7 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '5 min read',
     date: 'Oct 16, 2026',
     author: {
-      name: 'Gaenr',
+      name: 'Gaenr Academy',
       role: 'Trust & Verification',
       avatar: '/logo.svg',
     },
@@ -538,8 +538,8 @@ const BLOG_POSTS: BlogPost[] = [
     readTime: '6 min read',
     date: 'Oct 10, 2026',
     author: {
-      name: 'Gaenr',
-      role: 'Brand Design Case Studies',
+      name: 'Gaenr Academy',
+      role: 'Brand Case Studies',
       avatar: '/logo.svg',
     },
     excerpt:
@@ -646,13 +646,13 @@ export const BlogsPage: React.FC<BlogsPageProps> = ({ initialSlug }) => {
       dateModified: activePost.date,
       author: {
         '@type': 'Organization',
-        name: 'Gaenr',
-        url: 'https://gaenr.com',
+        name: 'Gaenr Academy',
+        url: 'https://gaenr.com/blogs',
         logo: 'https://gaenr.com/logo.svg',
       },
       publisher: {
         '@type': 'Organization',
-        name: 'Gaenr',
+        name: 'Gaenr Academy',
         logo: {
           '@type': 'ImageObject',
           url: 'https://gaenr.com/logo.svg',
@@ -745,20 +745,22 @@ export const BlogsPage: React.FC<BlogsPageProps> = ({ initialSlug }) => {
               {activePost.title}
             </h1>
 
-            {/* Author Byline: Official Gaenr Identity */}
-            <div className="pt-2 flex items-center gap-3.5 border-y border-slate-100 py-4">
-              <img
-                src={activePost.author.avatar}
-                alt={activePost.author.name}
-                className="w-12 h-12 rounded-full object-contain p-2 bg-blue-50/70 border border-slate-200 shadow-2xs shrink-0"
-              />
+            {/* Author Byline: Official Gaenr Academy Identity */}
+            <div className="pt-2 flex items-center gap-4 border-y border-slate-100 py-4">
+              <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-center p-2 shrink-0">
+                <img
+                  src={activePost.author.avatar}
+                  alt={activePost.author.name}
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-sm sm:text-base font-bold text-slate-900">
                     {activePost.author.name}
                   </span>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100/70 text-[#0048ba]">
-                    <Sparkles className="w-2.5 h-2.5" /> Verified Editorial
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-[#0048ba] border border-blue-200/60 font-mono">
+                    <Sparkles className="w-2.5 h-2.5 text-[#006eff]" /> Gaenr Academy Verified
                   </span>
                 </div>
                 <div className="text-xs text-slate-500 font-mono">
@@ -1095,17 +1097,19 @@ export const BlogsPage: React.FC<BlogsPageProps> = ({ initialSlug }) => {
               </p>
 
               <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={featuredPost.author.avatar}
-                    alt={featuredPost.author.name}
-                    className="w-10 h-10 rounded-full object-contain p-1.5 bg-white border-2 border-white/30 shadow-xs"
-                  />
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-white border border-white/30 shadow-sm flex items-center justify-center p-2 shrink-0">
+                    <img
+                      src={featuredPost.author.avatar}
+                      alt={featuredPost.author.name}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                   <div>
                     <div className="text-xs sm:text-sm font-bold text-white">
                       {featuredPost.author.name}
                     </div>
-                    <div className="text-[11px] text-slate-400 font-mono">
+                    <div className="text-[11px] text-slate-300 font-mono">
                       {featuredPost.author.role}
                     </div>
                   </div>
@@ -1199,17 +1203,19 @@ export const BlogsPage: React.FC<BlogsPageProps> = ({ initialSlug }) => {
 
                 {/* Footer: Author Info & Read CTA */}
                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <img
-                      src={post.author.avatar}
-                      alt={post.author.name}
-                      className="w-7 h-7 rounded-full object-contain p-1 bg-white shrink-0 border border-slate-200 shadow-2xs"
-                    />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center p-1.5 shrink-0">
+                      <img
+                        src={post.author.avatar}
+                        alt={post.author.name}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-800 truncate">
+                      <p className="text-xs font-bold text-slate-900 truncate">
                         {post.author.name}
                       </p>
-                      <p className="text-[10px] text-slate-400 font-mono truncate">
+                      <p className="text-[10px] text-slate-500 font-mono truncate">
                         {post.date}
                       </p>
                     </div>

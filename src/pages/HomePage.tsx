@@ -1311,10 +1311,12 @@ export const HomePage: React.FC = () => {
                 </div>
 
                 <div className="pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <img src="/logo.svg" alt="Gaenr" className="w-6 h-6 rounded-full object-contain p-0.5 bg-white border border-slate-200" />
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-white border border-slate-200/90 dark:border-slate-700 shadow-2xs flex items-center justify-center p-1 shrink-0">
+                      <img src="/logo.svg" alt="Gaenr Academy" className="w-full h-full object-contain" />
+                    </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-slate-200">Gaenr</p>
+                      <p className="text-xs font-bold text-slate-900 dark:text-slate-200">Gaenr Academy</p>
                       <p className="text-[10px] text-slate-400 font-mono">{art.date}</p>
                     </div>
                   </div>
