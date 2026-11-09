@@ -13,7 +13,7 @@ export interface PageMeta {
 
 const SITE_NAME = 'Gaenr';
 const BASE_URL = 'https://gaenr.com';
-const DEFAULT_OG_IMAGE = 'https://gaenr.com/images/gaenr-logo-card.png?v=3';
+const DEFAULT_OG_IMAGE = 'https://gaenr.com/images/gaenr-logo-card.png?v=4';
 
 const SERVICE_META: Record<string, { title: string; description: string }> = {
   'graphics-design': {
