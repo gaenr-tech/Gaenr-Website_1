@@ -13,7 +13,7 @@ export interface PageMeta {
 
 const SITE_NAME = 'Gaenr';
 const BASE_URL = 'https://gaenr.com';
-const DEFAULT_OG_IMAGE = 'https://gaenr.com/images/gaenr-logo-card.png';
+const DEFAULT_OG_IMAGE = 'https://gaenr.com/images/gaenr-logo-card.png?v=2';
 
 const SERVICE_META: Record<string, { title: string; description: string }> = {
   'graphics-design': {
@@ -115,8 +115,8 @@ const BLOG_META: Record<string, { title: string; description: string }> = {
 
 const STATIC_ROUTE_META: Record<string, PageMeta> = {
   '/': {
-    title: 'Gaenr — Bangladesh-Based Freelancing Platform for All',
-    description: 'Gaenr is a Bangladesh-based freelancing platform connecting global businesses, startups, and clients with verified student talent and digital experts with zero commission.',
+    title: 'Gaenr - Are You #ReadyToChange?',
+    description: 'Gaenr connects businesses and clients worldwide with verified student talent and digital experts with zero platform fees. Are you #ReadyToChange?',
     canonical: `${BASE_URL}/`,
   },
   '/services': {
@@ -135,12 +135,12 @@ const STATIC_ROUTE_META: Record<string, PageMeta> = {
     canonical: `${BASE_URL}/experts`,
   },
   '/about': {
-    title: 'About Us — Bangladesh-Based Freelancing Platform for All | Gaenr',
+    title: 'About Us - Bangladesh-Based Freelancing Platform for All | Gaenr',
     description: 'Discover Gaenr: a Bangladesh-based freelancing platform connecting verified student creators with clients worldwide and locally with zero commission.',
     canonical: `${BASE_URL}/about-us`,
   },
   '/about-us': {
-    title: 'About Us — Bangladesh-Based Freelancing Platform for All | Gaenr',
+    title: 'About Us - Bangladesh-Based Freelancing Platform for All | Gaenr',
     description: 'Discover Gaenr: a Bangladesh-based freelancing platform connecting verified student creators with clients worldwide and locally with zero commission.',
     canonical: `${BASE_URL}/about-us`,
   },
@@ -258,10 +258,10 @@ export function getMetaForRoute(
 
   // Default fallback
   return {
-    title: overrides?.title || `${SITE_NAME} — Freelancing & Outsourcing Ecosystem`,
+    title: overrides?.title || `${SITE_NAME} - Are You #ReadyToChange?`,
     description:
       overrides?.description ||
-      'Gaenr connects businesses in Bangladesh with verified student experts for graphics design, content writing, video editing, WordPress websites, and managed outsourcing.',
+      'Gaenr connects businesses and clients worldwide with verified student talent and digital experts with zero platform fees.',
     canonical: overrides?.canonical || `${BASE_URL}${cleanRoute}`,
     ogImage: overrides?.ogImage || DEFAULT_OG_IMAGE,
   };
