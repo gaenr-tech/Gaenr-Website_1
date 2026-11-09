@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 // @ts-ignore
-import { readState, persistState, mergeState, handleSendEmail } from './serverApi.js';
+import { readState, persistState, mergeState, handleSendEmail, saveIdCardImage, handleSaveApplication, handleNotify } from './serverApi.js';
 
 function gaenrApiPlugin() {
   return {
@@ -81,24 +81,31 @@ function gaenrApiPlugin() {
           }
         }
 
-        // 3. Application lookup endpoint (allows guest browser to fetch specific application immediately)
-        if (url.pathname === '/api/application' && req.method === 'GET') {
+        // 3. Application lookup and submission endpoint
+        if (url.pathname === '/api/application') {
           try {
-            const id = url.searchParams.get('id');
-            if (!id) return sendJson(400, { error: 'Missing application id parameter' });
-            const currentDb = await readState();
-            const rawApps = currentDb.state?.['gaenr_expert_applications'];
-            let apps: any[] = [];
-            if (typeof rawApps === 'string') {
-              try {
-                apps = JSON.parse(rawApps);
-              } catch {}
-            } else if (Array.isArray(rawApps)) {
-              apps = rawApps;
+            if (req.method === 'GET') {
+              const id = url.searchParams.get('id');
+              if (!id) return sendJson(400, { error: 'Missing application id parameter' });
+              const currentDb = await readState();
+              const rawApps = currentDb.state?.['gaenr_expert_applications'];
+              let apps: any[] = [];
+              if (typeof rawApps === 'string') {
+                try {
+                  apps = JSON.parse(rawApps);
+                } catch {}
+              } else if (Array.isArray(rawApps)) {
+                apps = rawApps;
+              }
+              const found = apps.find((a: any) => a.id === id);
+              if (!found) return sendJson(404, { error: 'Application record not found' });
+              return sendJson(200, found);
             }
-            const found = apps.find((a: any) => a.id === id);
-            if (!found) return sendJson(404, { error: 'Application record not found' });
-            return sendJson(200, found);
+            if (req.method === 'POST') {
+              const payload = await readBody();
+              const result = await handleSaveApplication(payload);
+              return sendJson(result.ok ? 200 : 400, result);
+            }
           } catch (err: any) {
             return sendJson(500, { error: err.message });
           }
@@ -109,6 +116,39 @@ function gaenrApiPlugin() {
           try {
             const payload = await readBody();
             const result = await handleSendEmail(payload);
+            return sendJson(200, result);
+          } catch (err: any) {
+            return sendJson(500, { error: err.message });
+          }
+        }
+
+        // 5. ID Card endpoint (supports caching generated card PNGs & redirection)
+        if (url.pathname === '/api/id-card') {
+          try {
+            if (req.method === 'POST') {
+              const payload = await readBody();
+              const code = payload.code || '';
+              const imageData = payload.imageData || '';
+              if (!code || !imageData) return sendJson(400, { error: 'code and imageData required' });
+              const result = await saveIdCardImage(code, imageData);
+              return sendJson(200, result);
+            }
+            if (req.method === 'GET') {
+              const code = url.searchParams.get('code') || '';
+              res.statusCode = 302;
+              res.setHeader('Location', `/download/id-card/${encodeURIComponent(code)}`);
+              return res.end();
+            }
+          } catch (err: any) {
+            return sendJson(500, { error: err.message });
+          }
+        }
+
+        // 6. Platform notification & feedback endpoint
+        if (url.pathname === '/api/notify' && req.method === 'POST') {
+          try {
+            const payload = await readBody();
+            const result = await handleNotify(payload);
             return sendJson(200, result);
           } catch (err: any) {
             return sendJson(500, { error: err.message });
@@ -154,6 +194,9 @@ export default defineConfig(() => {
       chunkSizeWarningLimit: 800,
     },
     server: {
+      host: '0.0.0.0',
+      port: 3000,
+      allowedHosts: true,
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {
@@ -162,3 +205,4 @@ export default defineConfig(() => {
     },
   };
 });
+

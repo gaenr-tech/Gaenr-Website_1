@@ -2,10 +2,10 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readState, persistState, mergeState, handleSendEmail } from './serverApi.js';
+import { readState, persistState, mergeState, handleSendEmail, saveIdCardImage, handleSaveApplication, handleNotify } from './serverApi.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const port = Number(process.env.PORT || 8787);
+const port = Number(process.env.PORT || 3000);
 const host = process.env.HOST || '0.0.0.0';
 const dataDir = path.join(__dirname, 'data');
 const stateFile = path.join(dataDir, 'gaenr-state.json');
@@ -141,22 +141,29 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // Application lookup endpoint (allows guest browser to fetch specific application immediately)
-  if (requestUrl.pathname === '/api/application' && req.method === 'GET') {
+  // Application lookup & submission endpoint
+  if (requestUrl.pathname === '/api/application') {
     try {
-      const id = requestUrl.searchParams.get('id');
-      if (!id) return send(res, 400, { error: 'Missing application id parameter' });
-      const currentDb = await readState();
-      const rawApps = currentDb.state?.['gaenr_expert_applications'];
-      let apps = [];
-      if (typeof rawApps === 'string') {
-        try { apps = JSON.parse(rawApps); } catch {}
-      } else if (Array.isArray(rawApps)) {
-        apps = rawApps;
+      if (req.method === 'GET') {
+        const id = requestUrl.searchParams.get('id');
+        if (!id) return send(res, 400, { error: 'Missing application id parameter' });
+        const currentDb = await readState();
+        const rawApps = currentDb.state?.['gaenr_expert_applications'];
+        let apps = [];
+        if (typeof rawApps === 'string') {
+          try { apps = JSON.parse(rawApps); } catch {}
+        } else if (Array.isArray(rawApps)) {
+          apps = rawApps;
+        }
+        const found = apps.find((a) => a.id === id);
+        if (!found) return send(res, 404, { error: 'Application record not found' });
+        return send(res, 200, found);
       }
-      const found = apps.find((a) => a.id === id);
-      if (!found) return send(res, 404, { error: 'Application record not found' });
-      return send(res, 200, found);
+      if (req.method === 'POST') {
+        const payload = await readBody(req);
+        const result = await handleSaveApplication(payload);
+        return send(res, result.ok ? 200 : 400, result);
+      }
     } catch (err) {
       return send(res, 500, { error: err.message });
     }
@@ -170,6 +177,38 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, result);
     } catch (error) {
       return send(res, 500, { error: error.message || 'Failed to dispatch email' });
+    }
+  }
+
+  // ID Card endpoint
+  if (requestUrl.pathname === '/api/id-card') {
+    try {
+      if (req.method === 'POST') {
+        const payload = await readBody(req);
+        const code = payload.code || '';
+        const imageData = payload.imageData || '';
+        if (!code || !imageData) return send(res, 400, { error: 'code and imageData required' });
+        const result = await saveIdCardImage(code, imageData);
+        return send(res, 200, result);
+      }
+      if (req.method === 'GET') {
+        const code = requestUrl.searchParams.get('code') || '';
+        res.writeHead(302, { Location: `/download/id-card/${encodeURIComponent(code)}` });
+        return res.end();
+      }
+    } catch (err) {
+      return send(res, 500, { error: err.message });
+    }
+  }
+
+  // Platform notifications & feedback endpoint
+  if (requestUrl.pathname === '/api/notify' && req.method === 'POST') {
+    try {
+      const payload = await readBody(req);
+      const result = await handleNotify(payload);
+      return send(res, 200, result);
+    } catch (err) {
+      return send(res, 500, { error: err.message });
     }
   }
 

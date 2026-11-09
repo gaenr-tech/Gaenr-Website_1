@@ -323,3 +323,183 @@ export const handleSendEmail = async (payload) => {
 
   return { ok: true, delivery, recipient };
 };
+
+const idCardsFile = path.join(dataDir, 'id-cards.json');
+const notificationsFile = path.join(dataDir, 'notifications.json');
+
+export const saveIdCardImage = async (code, imageData) => {
+  try {
+    await fs.mkdir(dataDir, { recursive: true });
+    let cards = {};
+    try {
+      const raw = await fs.readFile(idCardsFile, 'utf8');
+      cards = JSON.parse(raw) || {};
+    } catch {}
+    cards[code] = imageData;
+    await fs.writeFile(idCardsFile, JSON.stringify(cards, null, 2), 'utf8');
+    return { ok: true, code };
+  } catch (err) {
+    console.warn('saveIdCardImage error:', err.message);
+    return { ok: false, error: err.message };
+  }
+};
+
+export const getIdCardImage = async (code) => {
+  try {
+    const raw = await fs.readFile(idCardsFile, 'utf8');
+    const cards = JSON.parse(raw) || {};
+    return cards[code] || null;
+  } catch {
+    return null;
+  }
+};
+
+export const handleSaveApplication = async (body) => {
+  const id = body.id || body.applicationId;
+  const onboardingData = body.onboardingData;
+  const baseApp = body.baseApp || {};
+
+  if (!id || !onboardingData) {
+    return { ok: false, error: 'Missing applicationId or onboardingData' };
+  }
+
+  const currentDb = await readState();
+  const state = currentDb.state || {};
+  let apps = [];
+  const rawApps = state.gaenr_expert_applications;
+  if (Array.isArray(rawApps)) {
+    apps = rawApps;
+  } else if (typeof rawApps === 'string') {
+    try {
+      apps = JSON.parse(rawApps);
+    } catch {}
+  }
+
+  let found = apps.find((a) => a && a.id === id);
+  if (found) {
+    if (found.onboardingData && found.onboardingData.statement) {
+      return { ok: true, alreadySubmitted: true, application: found };
+    }
+    found.onboardingData = {
+      ...onboardingData,
+      submittedAt: new Date().toISOString(),
+    };
+    found.status = 'submitted';
+  } else {
+    found = {
+      id,
+      fullName: baseApp.fullName || 'Verified Expert',
+      email: baseApp.email || '',
+      whatsapp: baseApp.whatsapp || '',
+      gender: baseApp.gender || 'Male',
+      skill: baseApp.skill || 'Verified Skill',
+      otherSkill: baseApp.otherSkill,
+      status: 'submitted',
+      createdAt: baseApp.createdAt || new Date().toISOString(),
+      occupation: baseApp.occupation || 'Freelance Expert',
+      address: baseApp.address || 'Bangladesh',
+      experience: baseApp.experience || 'Verified',
+      portfolioUrl: baseApp.portfolioUrl || '',
+      googleDriveAssetFolderUrl: '',
+      onboardingData: {
+        ...onboardingData,
+        submittedAt: new Date().toISOString(),
+      },
+    };
+    apps.push(found);
+  }
+
+  state.gaenr_expert_applications = JSON.stringify(apps);
+  await persistState({
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    state,
+  });
+
+  return { ok: true, saved: true, application: found };
+};
+
+export const handleNotify = async (body) => {
+  const { type, data, timestamp = new Date().toISOString() } = body || {};
+  if (!type) return { ok: false, error: 'Notification type is required' };
+
+  try {
+    const currentDb = await readState();
+    const state = currentDb.state || {};
+
+    if (type === 'feedback_submission' && data) {
+      let feedbacks = [];
+      const rawFb = state.gaenr_feedbacks;
+      if (Array.isArray(rawFb)) feedbacks = rawFb;
+      else if (typeof rawFb === 'string') {
+        try { feedbacks = JSON.parse(rawFb); } catch {}
+      }
+      feedbacks.unshift({
+        id: `fb_${Date.now()}`,
+        name: data.name?.trim() || undefined,
+        email: data.email?.trim() || undefined,
+        userType: data.userType || 'Visitor',
+        category: data.category || 'General Feedback',
+        message: data.message?.trim() || '',
+        createdAt: timestamp,
+      });
+      state.gaenr_feedbacks = JSON.stringify(feedbacks.slice(0, 300));
+    } else if (type === 'expert_application' && data) {
+      let apps = [];
+      const rawApps = state.gaenr_expert_applications;
+      if (Array.isArray(rawApps)) apps = rawApps;
+      else if (typeof rawApps === 'string') {
+        try { apps = JSON.parse(rawApps); } catch {}
+      }
+      apps.unshift({
+        id: `app_${Date.now()}`,
+        ...data,
+        status: 'applied',
+        createdAt: timestamp,
+      });
+      state.gaenr_expert_applications = JSON.stringify(apps.slice(0, 300));
+    } else if (type === 'expert_onboarding' && data) {
+      let apps = [];
+      const rawApps = state.gaenr_expert_applications;
+      if (Array.isArray(rawApps)) apps = rawApps;
+      else if (typeof rawApps === 'string') {
+        try { apps = JSON.parse(rawApps); } catch {}
+      }
+      const targetId = data.applicationId || data.id;
+      const idx = apps.findIndex((a) => a && a.id === targetId);
+      if (idx !== -1) {
+        apps[idx] = {
+          ...apps[idx],
+          onboardingData: data,
+          status: 'applied',
+          updatedAt: timestamp,
+        };
+      }
+      state.gaenr_expert_applications = JSON.stringify(apps);
+    }
+
+    await persistState({
+      version: 1,
+      updatedAt: new Date().toISOString(),
+      state,
+    });
+
+    try {
+      await fs.mkdir(dataDir, { recursive: true });
+      let logs = [];
+      try {
+        const raw = await fs.readFile(notificationsFile, 'utf8');
+        logs = JSON.parse(raw) || [];
+      } catch {}
+      logs.unshift({ id: `notif_${Date.now()}`, type, data, timestamp });
+      if (logs.length > 200) logs = logs.slice(0, 200);
+      await fs.writeFile(notificationsFile, JSON.stringify(logs, null, 2), 'utf8');
+    } catch {}
+
+    return { ok: true, type, timestamp };
+  } catch (err) {
+    console.warn('handleNotify error:', err.message);
+    return { ok: false, error: err.message };
+  }
+};
+
