@@ -31,6 +31,7 @@ import { TermsPage } from './pages/policies/TermsPage';
 import { ReturnPolicyPage } from './pages/policies/ReturnPolicyPage';
 import { SupportCenterPage } from './pages/SupportCenterPage';
 import { BlogsPage } from './pages/BlogsPage';
+import { LogoWhiteBgPage } from './pages/LogoWhiteBgPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { GaenrChatbot } from './components/chatbot/GaenrChatbot';
@@ -215,6 +216,11 @@ const AppContent: React.FC = () => {
       case '/support':
       case '/support-center':
         return <SupportCenterPage />;
+      case '/logo-white-bg':
+      case '/logo':
+      case '/brand/logo':
+      case '/brand-logo':
+        return <LogoWhiteBgPage />;
       case '/operations':
       case '/ops':
       case '/admin':

@@ -9,6 +9,7 @@ export interface PageMeta {
   canonical?: string;
   ogImage?: string;
   ogType?: string;
+  robots?: string;
 }
 
 const SITE_NAME = 'Gaenr';
@@ -179,6 +180,13 @@ const STATIC_ROUTE_META: Record<string, PageMeta> = {
     description: 'Monetize your craft with 0% platform commission. Gaenr connects university students and creators with verified clients and direct escrow payouts.',
     canonical: `${BASE_URL}/join-as-expert`,
   },
+  '/logo-white-bg': {
+    title: 'Gaenr Logo — White Background',
+    description: 'Official Gaenr brand logo on pure white background.',
+    canonical: `${BASE_URL}/logo-white-bg`,
+    ogImage: `${BASE_URL}/logo-white-bg.png`,
+    robots: 'noindex, nofollow',
+  },
   '/feedback': {
     title: 'Share Feedback & Project Review | Gaenr',
     description: 'Share your feedback, report an issue, or review your experience with Gaenr to help us build a better outsourcing ecosystem.',
@@ -252,7 +260,8 @@ export function getMetaForRoute(
       title: overrides?.title || staticMeta.title,
       description: overrides?.description || staticMeta.description,
       canonical: overrides?.canonical || `${BASE_URL}${cleanRoute === '/' ? '' : cleanRoute}`,
-      ogImage: overrides?.ogImage || DEFAULT_OG_IMAGE,
+      ogImage: overrides?.ogImage || staticMeta.ogImage || DEFAULT_OG_IMAGE,
+      robots: overrides?.robots || staticMeta.robots || 'index, follow',
     };
   }
 
@@ -289,8 +298,9 @@ export function updatePageMeta(route: string, overrides?: Partial<PageMeta>): vo
     el.setAttribute('content', content);
   };
 
-  // 3. Standard Description
+  // 3. Standard Description & Robots
   setMetaTag('name', 'description', meta.description);
+  setMetaTag('name', 'robots', meta.robots || 'index, follow');
 
   // 4. Open Graph Tags
   setMetaTag('property', 'og:title', meta.title);
