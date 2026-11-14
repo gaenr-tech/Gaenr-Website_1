@@ -19,12 +19,13 @@ interface ThemeableObjects {
   haloMat: THREE.MeshBasicMaterial;
   latLineMats: { mat: THREE.LineBasicMaterial; isEquator: boolean }[];
   lonLineMats: THREE.LineBasicMaterial[];
+  landGeo: THREE.BufferGeometry;
   landMat: THREE.PointsMaterial;
   oceanMat: THREE.PointsMaterial;
-  pinMats: THREE.MeshBasicMaterial[];
-  pillarMats: THREE.LineBasicMaterial[];
-  tipMats: THREE.MeshBasicMaterial[];
-  ringMats: THREE.MeshBasicMaterial[];
+  pinMats: { mat: THREE.MeshBasicMaterial; isHQ: boolean }[];
+  pillarMats: { mat: THREE.LineBasicMaterial; isHQ: boolean }[];
+  tipMats: { mat: THREE.MeshBasicMaterial; isHQ: boolean }[];
+  ringMats: { mat: THREE.MeshBasicMaterial; isHQ: boolean }[];
   baseArcMats: THREE.LineBasicMaterial[];
   streamMats: THREE.LineBasicMaterial[];
   pulseMats: { mat: THREE.MeshBasicMaterial; isEven: boolean }[];
@@ -32,101 +33,119 @@ interface ThemeableObjects {
 }
 
 function applyThemeToObjects(objs: ThemeableObjects, isDark: boolean) {
-  // Ambient Light - soft blue tint
-  objs.ambientLight.color.setHex(isDark ? 0xdbeafe : 0xf0f7ff);
-  objs.ambientLight.intensity = isDark ? 3.0 : 2.2;
+  // Ambient Light - space illumination
+  objs.ambientLight.color.setHex(isDark ? 0x0f172a : 0xf0f7ff);
+  objs.ambientLight.intensity = isDark ? 1.8 : 2.2;
 
-  // Key Blue Directional Light
-  objs.blueLight.color.setHex(isDark ? 0x2563eb : 0x0256d0);
-  objs.blueLight.intensity = isDark ? 4.2 : 3.2;
+  // Key Directional Light - Casting vivid electric cyan radiance in dark mode
+  objs.blueLight.color.setHex(isDark ? 0x38bdf8 : 0x0256d0);
+  objs.blueLight.intensity = isDark ? 3.8 : 3.2;
 
-  // Secondary Blue Directional Light
-  objs.secondaryBlueLight.color.setHex(isDark ? 0x3b82f6 : 0x1d4ed8);
-  objs.secondaryBlueLight.intensity = isDark ? 3.0 : 2.0;
+  // Secondary Directional Light - Fill light
+  objs.secondaryBlueLight.color.setHex(isDark ? 0x0284c7 : 0x1d4ed8);
+  objs.secondaryBlueLight.intensity = isDark ? 2.4 : 2.0;
 
-  // Core Globe Sphere - rich 3D planetary volume
-  objs.coreMat.color.setHex(isDark ? 0x1d4ed8 : 0x0256d0);
-  objs.coreMat.emissive.setHex(isDark ? 0x1e3a8a : 0x023680);
-  objs.coreMat.specular.setHex(isDark ? 0x60a5fa : 0x3b82f6);
-  objs.coreMat.shininess = isDark ? 55 : 40;
-  objs.coreMat.opacity = isDark ? 0.28 : 0.18;
+  // Core Globe Sphere - deep cosmic crystalline sphere with glossy cyan reflection
+  objs.coreMat.color.setHex(isDark ? 0x0a192f : 0x0256d0);
+  objs.coreMat.emissive.setHex(isDark ? 0x04142a : 0x023680);
+  objs.coreMat.specular.setHex(isDark ? 0x38bdf8 : 0x3b82f6);
+  objs.coreMat.shininess = isDark ? 65 : 40;
+  objs.coreMat.opacity = isDark ? 0.32 : 0.18;
   objs.coreMat.needsUpdate = true;
 
-  // Atmospheric Corona Halo (Planetary Fresnel Rim Glow)
-  objs.haloMat.color.setHex(isDark ? 0x2563eb : 0x0256d0);
-  objs.haloMat.opacity = isDark ? 0.22 : 0.12;
+  // Atmospheric Corona Halo (Planetary Fresnel Rim Glow - Luminous Cyan in Dark Mode)
+  objs.haloMat.color.setHex(isDark ? 0x0ea5e9 : 0x0256d0);
+  objs.haloMat.opacity = isDark ? 0.28 : 0.12;
   objs.haloMat.needsUpdate = true;
 
-  // Latitude Coordinate Rings (Ultra-faint, whisper-soft)
+  // Latitude Coordinate Rings (Faint cyber grid lines)
   objs.latLineMats.forEach(({ mat, isEquator }) => {
-    mat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
-    mat.opacity = isDark ? (isEquator ? 0.08 : 0.03) : (isEquator ? 0.05 : 0.02);
+    mat.color.setHex(isDark ? 0x0ea5e9 : 0x60a5fa);
+    mat.opacity = isDark ? (isEquator ? 0.12 : 0.045) : (isEquator ? 0.05 : 0.02);
     mat.needsUpdate = true;
   });
 
-  // Longitude Coordinate Rings (Ultra-faint, whisper-soft)
+  // Longitude Coordinate Rings
   objs.lonLineMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
-    mat.opacity = isDark ? 0.04 : 0.02;
+    mat.color.setHex(isDark ? 0x0ea5e9 : 0x60a5fa);
+    mat.opacity = isDark ? 0.045 : 0.02;
     mat.needsUpdate = true;
   });
 
-  // Continental Landmass Particles
-  objs.landMat.size = isDark ? 0.044 : 0.035;
-  objs.landMat.opacity = isDark ? 0.95 : 0.82;
+  // Continental Landmass Particles - Vibrant electric cyan & sky blue in dark mode
+  const colorAttr = objs.landGeo.getAttribute('color') as THREE.BufferAttribute;
+  if (colorAttr) {
+    const lightPrimary = new THREE.Color(0x0256d0);
+    const lightSecondary = new THREE.Color(0x3b82f6);
+    const darkPrimary = new THREE.Color(0x38bdf8);   // radiant electric sky cyan
+    const darkSecondary = new THREE.Color(0x67e8f9); // luminous bright ice cyan
+
+    const primary = isDark ? darkPrimary : lightPrimary;
+    const secondary = isDark ? darkSecondary : lightSecondary;
+
+    const count = colorAttr.count;
+    for (let i = 0; i < count; i++) {
+      const c = i % 3 === 0 ? secondary : primary;
+      colorAttr.setXYZ(i, c.r, c.g, c.b);
+    }
+    colorAttr.needsUpdate = true;
+  }
+  objs.landMat.size = isDark ? 0.046 : 0.035;
+  objs.landMat.opacity = isDark ? 0.98 : 0.82;
   objs.landMat.needsUpdate = true;
 
   // Ocean Grid Dots (Faint Depth)
-  objs.oceanMat.color.setHex(isDark ? 0x2563eb : 0x0256d0);
-  objs.oceanMat.opacity = isDark ? 0.16 : 0.10;
+  objs.oceanMat.color.setHex(isDark ? 0x0284c7 : 0x0256d0);
+  objs.oceanMat.opacity = isDark ? 0.18 : 0.10;
+  objs.oceanMat.size = isDark ? 0.024 : 0.020;
   objs.oceanMat.needsUpdate = true;
 
-  // City Hub Pins & Beacons (Blueish)
-  objs.pinMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x3b82f6 : 0x0256d0);
+  // City Hub Pins & Beacons (Electric Cyan & Neon accents)
+  objs.pinMats.forEach(({ mat, isHQ }) => {
+    mat.color.setHex(isDark ? (isHQ ? 0x38bdf8 : 0x0284c7) : (isHQ ? 0x3b82f6 : 0x0256d0));
     mat.needsUpdate = true;
   });
 
-  objs.pillarMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x60a5fa : 0x3b82f6);
-    mat.opacity = isDark ? 0.20 : 0.12;
+  objs.pillarMats.forEach(({ mat, isHQ }) => {
+    mat.color.setHex(isDark ? (isHQ ? 0x00f0ff : 0x38bdf8) : (isHQ ? 0x3b82f6 : 0x60a5fa));
+    mat.opacity = isDark ? (isHQ ? 0.65 : 0.40) : (isHQ ? 0.35 : 0.12);
     mat.needsUpdate = true;
   });
 
-  objs.tipMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x60a5fa : 0x3b82f6);
+  objs.tipMats.forEach(({ mat, isHQ }) => {
+    mat.color.setHex(isDark ? (isHQ ? 0xffffff : 0xe0f2fe) : (isHQ ? 0x60a5fa : 0x3b82f6));
     mat.needsUpdate = true;
   });
 
-  // City Hub Radar Pulse Rings - Soft & subtle
-  objs.ringMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x3b82f6 : 0x0256d0);
-    mat.opacity = isDark ? 0.25 : 0.18;
+  // City Hub Radar Pulse Rings - Radiant cyber rings
+  objs.ringMats.forEach(({ mat, isHQ }) => {
+    mat.color.setHex(isDark ? (isHQ ? 0x38bdf8 : 0x00f0ff) : (isHQ ? 0x3b82f6 : 0x0256d0));
+    mat.opacity = isDark ? (isHQ ? 0.55 : 0.40) : (isHQ ? 0.35 : 0.18);
     mat.needsUpdate = true;
   });
 
-  // Persistent Base Arcs - Even less opacity (whisper-faint 0.012 / 0.020)
+  // Persistent Base Arcs - Visible constellation routes in dark mode
   objs.baseArcMats.forEach((mat) => {
-    mat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
-    mat.opacity = isDark ? 0.020 : 0.012;
+    mat.color.setHex(isDark ? 0x0284c7 : 0x60a5fa);
+    mat.opacity = isDark ? 0.075 : 0.012;
     mat.needsUpdate = true;
   });
 
-  // Dynamic Stream Arc Materials - Even less opacity (soft, subtle, luminous 0.20 / 0.28)
+  // Dynamic Stream Arc Materials - Glowing laser fiber optics in dark mode
   objs.streamMats.forEach((mat) => {
-    mat.opacity = isDark ? 0.28 : 0.20;
+    mat.opacity = isDark ? 0.82 : 0.20;
     mat.needsUpdate = true;
   });
 
-  // Traveling Light Pulses (Beads) - Blueish & soft
+  // Traveling Light Pulses (Beads) - Radiant neon packets in dark mode
   objs.pulseMats.forEach(({ mat, isEven }) => {
-    mat.color.setHex(isDark ? (isEven ? 0x3b82f6 : 0x60a5fa) : (isEven ? 0x0256d0 : 0x2563eb));
+    mat.color.setHex(isDark ? (isEven ? 0x00f0ff : 0x38bdf8) : (isEven ? 0x0256d0 : 0x2563eb));
     mat.needsUpdate = true;
   });
 
-  // Orbital Ring - Ultra-subtle
-  objs.orbitRingMat.color.setHex(isDark ? 0x3b82f6 : 0x60a5fa);
-  objs.orbitRingMat.opacity = isDark ? 0.04 : 0.02;
+  // Orbital Ring
+  objs.orbitRingMat.color.setHex(isDark ? 0x38bdf8 : 0x60a5fa);
+  objs.orbitRingMat.opacity = isDark ? 0.075 : 0.02;
   objs.orbitRingMat.needsUpdate = true;
 }
 
@@ -421,10 +440,10 @@ export const Hero3DCanvas: React.FC = () => {
     // 3. VERTICAL 3D HOLOGRAPHIC LASER BEACONS (Rising from Major World Tech Hubs)
     const beaconsGroup = new THREE.Group();
     const beaconRings: { mesh: THREE.Mesh; hubId: string; index: number; isHQ: boolean }[] = [];
-    const pinMats: THREE.MeshBasicMaterial[] = [];
-    const pillarMats: THREE.LineBasicMaterial[] = [];
-    const tipMats: THREE.MeshBasicMaterial[] = [];
-    const ringMats: THREE.MeshBasicMaterial[] = [];
+    const pinMats: { mat: THREE.MeshBasicMaterial; isHQ: boolean }[] = [];
+    const pillarMats: { mat: THREE.LineBasicMaterial; isHQ: boolean }[] = [];
+    const tipMats: { mat: THREE.MeshBasicMaterial; isHQ: boolean }[] = [];
+    const ringMats: { mat: THREE.MeshBasicMaterial; isHQ: boolean }[] = [];
     const hubMap = new Map<string, THREE.Vector3>();
     const beaconTipMap = new Map<string, THREE.Vector3>();
 
@@ -446,7 +465,7 @@ export const Hero3DCanvas: React.FC = () => {
         opacity: isHQ ? 0.35 : 0.20,
         blending: THREE.AdditiveBlending,
       });
-      pillarMats.push(pillarMat);
+      pillarMats.push({ mat: pillarMat, isHQ });
       beaconsGroup.add(new THREE.Line(pillarGeo, pillarMat));
 
       // Surface Marker Pin Core
@@ -454,7 +473,7 @@ export const Hero3DCanvas: React.FC = () => {
       const pinMat = new THREE.MeshBasicMaterial({
         color: isHQ ? 0x3b82f6 : 0x0256d0,
       });
-      pinMats.push(pinMat);
+      pinMats.push({ mat: pinMat, isHQ });
       const pin = new THREE.Mesh(pinGeo, pinMat);
       pin.position.copy(surfacePos);
       beaconsGroup.add(pin);
@@ -464,7 +483,7 @@ export const Hero3DCanvas: React.FC = () => {
       const tipMat = new THREE.MeshBasicMaterial({
         color: isHQ ? 0x60a5fa : 0x3b82f6,
       });
-      tipMats.push(tipMat);
+      tipMats.push({ mat: tipMat, isHQ });
       const tip = new THREE.Mesh(tipGeo, tipMat);
       tip.position.copy(tipPos);
       beaconsGroup.add(tip);
@@ -477,7 +496,7 @@ export const Hero3DCanvas: React.FC = () => {
         transparent: true,
         opacity: 0.35,
       });
-      ringMats.push(ringMat);
+      ringMats.push({ mat: ringMat, isHQ });
       const ringMesh = new THREE.Mesh(ringGeo, ringMat);
       ringMesh.position.copy(surfacePos);
       ringMesh.lookAt(surfacePos.clone().multiplyScalar(2));
@@ -499,7 +518,7 @@ export const Hero3DCanvas: React.FC = () => {
           transparent: true,
           opacity: 0.45,
         });
-        ringMats.push(hqRingMat);
+        ringMats.push({ mat: hqRingMat, isHQ: true });
         const hqRingMesh = new THREE.Mesh(hqRingGeo, hqRingMat);
         hqRingMesh.position.copy(surfacePos);
         hqRingMesh.lookAt(surfacePos.clone().multiplyScalar(2));
@@ -663,6 +682,7 @@ export const Hero3DCanvas: React.FC = () => {
       haloMat,
       latLineMats,
       lonLineMats,
+      landGeo,
       landMat,
       oceanMat,
       pinMats,
@@ -823,16 +843,16 @@ export const Hero3DCanvas: React.FC = () => {
       // Arrival flare tracker for destination nodes
       const hubFlares = new Map<string, number>();
 
-      // Signature Blueish Stream Colors
-      const headR = isDarkNow ? 0.231 : 0.145;
-      const headG = isDarkNow ? 0.510 : 0.388;
-      const headB = isDarkNow ? 0.965 : 0.922;
+      // Signature Stream Colors (Luminous Electric Cyan & Vivid Sky Blue in Dark Mode)
+      const headR = isDarkNow ? 0.32 : 0.145;
+      const headG = isDarkNow ? 0.92 : 0.388;
+      const headB = isDarkNow ? 1.00 : 0.922;
 
-      const tailR = isDarkNow ? 0.114 : 0.008;
-      const tailG = isDarkNow ? 0.306 : 0.337;
-      const tailB = isDarkNow ? 0.847 : 0.816;
+      const tailR = isDarkNow ? 0.06 : 0.008;
+      const tailG = isDarkNow ? 0.52 : 0.337;
+      const tailB = isDarkNow ? 0.98 : 0.816;
 
-      // CONTINUOUS, FLUID MOVING CONNECTIONS (Harmonic 3D Breathing & Moving Beams - Less Opacity)
+      // CONTINUOUS, FLUID MOVING CONNECTIONS (Harmonic 3D Breathing & Moving Beams)
       activeArcs.forEach((arc, arcIdx) => {
         // Continuous looping progress [0, 1] for every route
         const progress = ((now / arc.route.duration + arc.route.phaseOffset) % 1.0);
@@ -849,7 +869,7 @@ export const Hero3DCanvas: React.FC = () => {
         }
         arc.posAttr.needsUpdate = true;
 
-        // 2. MOVING PHOTON BEAD (Soft, translucent blueish data packet)
+        // 2. MOVING PHOTON BEAD (Radiant neon data packet in dark mode)
         const sampleIdx = Math.min(Math.floor(progress * arc.segments), arc.segments - 1);
         const subT = progress * arc.segments - sampleIdx;
         const rA = arc.lerpRadii[sampleIdx] + arc.sinAltitudes[sampleIdx] * dynamicLift;
@@ -860,9 +880,9 @@ export const Hero3DCanvas: React.FC = () => {
 
         arc.pulseMesh.position.copy(beadPos);
         const envelope = Math.sin(progress * Math.PI);
-        const pScale = 0.55 + envelope * 0.30;
+        const pScale = (0.55 + envelope * 0.30) * (isDarkNow ? 1.25 : 1.0);
         arc.pulseMesh.scale.set(pScale, pScale, pScale);
-        arc.pulseMat.opacity = envelope * (isDarkNow ? 0.35 : 0.24);
+        arc.pulseMat.opacity = envelope * (isDarkNow ? 0.88 : 0.24);
 
         // Arrival flare on destination beacon as beam nears target
         if (progress >= 0.82) {
@@ -871,8 +891,9 @@ export const Hero3DCanvas: React.FC = () => {
           hubFlares.set(arc.route.to, Math.max(prevFlare, flareIntensity));
         }
 
-        // 3. CONTINUOUS FLOWING COMET STREAM (Ultra-soft Opacity & Signature Blueish Hue)
+        // 3. CONTINUOUS FLOWING COMET STREAM (High-visibility glowing fiber beams in dark mode)
         const L = arc.beamLength;
+        const fadeMultiplier = isDarkNow ? 0.95 : 0.65;
 
         for (let j = 0; j <= arc.segments; j++) {
           const s = j / arc.segments;
@@ -880,7 +901,7 @@ export const Hero3DCanvas: React.FC = () => {
 
           if (d >= 0 && d <= L) {
             const t = d / L;
-            const fade = Math.pow(1 - t, 1.8) * envelope * 0.65;
+            const fade = Math.pow(1 - t, 1.6) * envelope * fadeMultiplier;
             arc.colorArray[j * 3 + 0] = (headR * (1 - t) + tailR * t) * fade;
             arc.colorArray[j * 3 + 1] = (headG * (1 - t) + tailG * t) * fade;
             arc.colorArray[j * 3 + 2] = (headB * (1 - t) + tailB * t) * fade;
@@ -900,8 +921,8 @@ export const Hero3DCanvas: React.FC = () => {
         const s = 1.0 + phase * 1.4 + flare * 0.4;
         pr.mesh.scale.set(s, s, 1);
         const mat = pr.mesh.material as THREE.MeshBasicMaterial;
-        const baseOpacity = Math.sin(phase * Math.PI) * (pr.isHQ ? 0.35 : 0.25);
-        mat.opacity = Math.min(0.70, baseOpacity + flare * 0.25);
+        const baseOpacity = Math.sin(phase * Math.PI) * (pr.isHQ ? (isDarkNow ? 0.55 : 0.35) : (isDarkNow ? 0.40 : 0.25));
+        mat.opacity = Math.min(0.85, baseOpacity + flare * (isDarkNow ? 0.35 : 0.25));
       });
 
       // Subtle breathing float oscillation
